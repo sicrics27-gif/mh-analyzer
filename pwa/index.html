@@ -2395,13 +2395,31 @@ function HealthUI(root, H) {
     var pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: ub64(box.iv) }, k || key, ub64(box.ct));
     return JSON.parse(td.decode(pt));
   }
-  function touch() { clearTimeout(idleT); if (key) idleT = setTimeout(function () { lock(); }, IDLE_MS); }
-  function lock() { key = null; clearTimeout(idleT); if (onLock) onLock(); }
+  // 잠금 해제 상태 유지: 앱이 다시 열려도(뒤로가기·로그인 다녀오기·새로고침) 마지막 사용 후 30분까지는 그대로 열림.
+  // 열쇠는 '꺼낼 수 없는(non-extractable)' 형태로 이 기기 저장소에만 보관 → 비밀번호 자체는 어디에도 남지 않음.
+  var lastAct = 0, lastPersist = 0;
+  function persist(force) {
+    if (mem || !key) return;
+    var now = Date.now(); if (!force && now - lastPersist < 30000) return; lastPersist = now;
+    put('meta', 'sess', { key: key, exp: now + IDLE_MS }).catch(function () { });
+  }
+  function touch() { clearTimeout(idleT); lastAct = Date.now(); if (key) { idleT = setTimeout(function () { lock(); }, IDLE_MS); persist(); } }
+  function lock() { key = null; clearTimeout(idleT); lastPersist = 0; if (!mem) del('meta', 'sess').catch(function () { }); if (onLock) onLock(); }
+  function checkIdle() { if (key && lastAct && Date.now() - lastAct > IDLE_MS) lock(); }
+  async function resume() {
+    if (mem || key) return !!key;
+    try {
+      var ss = await get('meta', 'sess'); if (!ss || !ss.key || !(ss.exp > Date.now())) return false;
+      var v = await get('meta', 'vault'); if (!v || (await dec(v.check, ss.key)) !== 'ok') return false;
+      key = ss.key; touch(); persist(true); return true;
+    } catch (e) { return false; }
+  }
 
   async function status() {
     if (!root.crypto || !crypto.subtle) return 'nocrypto';
     try { await db(); } catch (e) { mem = {}; }
     if (key) return 'open';
+    if (await resume()) return 'open';
     var v = await get('meta', 'vault');
     return v ? 'locked' : 'new';
   }
@@ -2409,13 +2427,13 @@ function HealthUI(root, H) {
     var salt = crypto.getRandomValues(new Uint8Array(16));
     key = await derive(pin, salt);
     await put('meta', 'vault', { salt: b64(salt), iter: ITER, check: await enc('ok'), created: Date.now() });
-    touch(); return true;
+    touch(); persist(true); return true;
   }
   async function unlock(pin) {
     var v = await get('meta', 'vault'); if (!v) return false;
     var k = await derive(pin, ub64(v.salt));
     try { if ((await dec(v.check, k)) !== 'ok') return false; } catch (e) { return false; }
-    key = k; touch(); return true;
+    key = k; touch(); persist(true); return true;
   }
   async function wipe() { await clear('idx'); await clear('data'); await clear('meta'); key = null; }
 
@@ -2467,7 +2485,7 @@ function HealthUI(root, H) {
       } catch (e) { }
     }
     await put('meta', 'vault', remote);
-    key = k; touch();
+    key = k; touch(); persist(true);
     return true;
   }
 
@@ -2502,7 +2520,7 @@ function HealthUI(root, H) {
     list: list, saveHead: saveHead, saveData: saveData, loadData: loadData, remove: remove,
     exportBackup: exportBackup, importBackup: importBackup,
     rawAll: rawAll, rawData: rawData, putRaw: putRaw, vault: vault, adoptVault: adoptVault,
-    onChange: function (f) { onChange = f; }, isOpen: function () { return !!key; },
+    onChange: function (f) { onChange = f; }, isOpen: function () { return !!key; }, checkIdle: checkIdle,
     isMemory: function () { return !!mem; }, onLock: function (f) { onLock = f; }
   };
 })(this);
@@ -2524,6 +2542,35 @@ function HealthUI(root, H) {
 
   // ---------- 로그인 / 접근 토큰 ----------
   var tok = null, tokExp = 0, gisP = null, tc = null;
+  function ss(k, v) { try { if (v === undefined) return JSON.parse(sessionStorage.getItem(k) || 'null'); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; } }
+  function keepTok(t, sec) { tok = t; tokExp = Date.now() + (Math.max(120, +sec || 3600) - 60) * 1000; ss('mhs_tok', { t: tok, e: tokExp }); }
+  (function () { var x = ss('mhs_tok'); if (x && x.t && x.e > Date.now()) { tok = x.t; tokExp = x.e; } })();
+  // 휴대폰(설치한 앱)에서는 팝업 대신 '페이지 이동' 방식으로 로그인: 팝업 창이 따로 뜨거나 앱이 꺼지는 문제 방지
+  function redirectUri() { return location.origin + location.pathname.replace(/index\.html$/, ''); }
+  function useRedirect() {
+    if (IS_DESKTOP) return false;
+    try { if (root.matchMedia && root.matchMedia('(display-mode: standalone)').matches) return true; } catch (e) { }
+    return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '');
+  }
+  function goAuth(prompt, purpose) {
+    var st = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    ls('mhs_oauth', { st: st, purpose: purpose, at: Date.now() });
+    var q = { client_id: CFG.webClientId, redirect_uri: redirectUri(), response_type: 'token', scope: SCOPE, include_granted_scopes: 'true', state: st };
+    if (prompt) q.prompt = prompt;
+    location.assign('https://accounts.google.com/o/oauth2/v2/auth?' + Object.keys(q).map(function (k) { return k + '=' + encodeURIComponent(q[k]); }).join('&'));
+    return new Promise(function () { }); // 페이지가 넘어감
+  }
+  // 로그인하고 돌아왔을 때: 주소 뒤(#)의 결과 읽기
+  var authResult = null;
+  (function () {
+    var h = String(location.hash || ''); if (!/access_token=|error=/.test(h)) return;
+    var p = {}; h.replace(/^#/, '').split('&').forEach(function (kv) { var i = kv.indexOf('='); if (i > 0) p[kv.slice(0, i)] = decodeURIComponent(kv.slice(i + 1).replace(/\+/g, ' ')); });
+    var pend = ls('mhs_oauth'); ls('mhs_oauth', null);
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { }
+    if (!pend || p.state !== pend.st) return;
+    if (p.access_token) { keepTok(p.access_token, p.expires_in); if (pend.purpose === 'connect') { state.on = true; save(); } authResult = { ok: true, purpose: pend.purpose }; }
+    else authResult = { ok: false, purpose: pend.purpose, error: p.error || 'error' };
+  })();
   function supported() {
     if (IS_DESKTOP) return true;
     if (/^__/.test(CFG.webClientId)) return false;
@@ -2540,12 +2587,13 @@ function HealthUI(root, H) {
     return gisP;
   }
   // 웹: 반드시 버튼을 누른 직후에 호출 (팝업 차단 방지)
-  function loginWeb(silent) {
+  function loginWeb(silent, purpose) {
+    if (useRedirect()) return goAuth(silent ? 'none' : (purpose === 'connect' ? 'consent select_account' : 'select_account'), purpose || 'login');
     return new Promise(function (res, rej) {
       var run = function () {
         tc = root.google.accounts.oauth2.initTokenClient({
           client_id: CFG.webClientId, scope: SCOPE,
-          callback: function (r) { if (r && r.access_token) { tok = r.access_token; tokExp = Date.now() + (r.expires_in - 60) * 1000; res(tok); } else rej(new Error((r && r.error) || '로그인 취소')); },
+          callback: function (r) { if (r && r.access_token) { keepTok(r.access_token, r.expires_in); res(tok); } else rej(new Error((r && r.error) || '로그인 취소')); },
           error_callback: function (e) { rej(new Error(e && e.type === 'popup_closed' ? '로그인 창이 닫혔습니다' : (e && e.message) || '로그인 실패')); }
         });
         tc.requestAccessToken({ prompt: silent ? '' : 'consent' });
@@ -2561,15 +2609,23 @@ function HealthUI(root, H) {
   }
   async function connect() {
     if (IS_DESKTOP) { await inv('google_login'); }
-    else { await loginWeb(false); }
+    else { await loginWeb(false, 'connect'); }
     state.on = true; save();
   }
   // 잠금 해제 버튼을 누를 때 함께 호출: 웹은 조용히 토큰 받기
-  function warm() { if (!state.on || IS_DESKTOP || !supported()) return; if (tok && Date.now() < tokExp) return; loginWeb(true).catch(function () { }); }
+  function warm() { if (!state.on || IS_DESKTOP || !supported() || useRedirect()) return; if (tok && Date.now() < tokExp) return; loginWeb(true).catch(function () { }); }
+  // 휴대폰: 앱을 열었는데 접근 토큰이 없으면 조용히 한 번 다녀오기(화면 표시 없이 1초 안팎). 실패하면 반복하지 않음
+  function autoRefresh() {
+    if (!state.on || !useRedirect() || !supported()) return false;
+    if (tok && Date.now() < tokExp) return false;
+    if (authResult && !authResult.ok) return false;
+    var last = ss('mhs_auto') || 0; if (Date.now() - last < 10 * 60 * 1000) return false;
+    ss('mhs_auto', Date.now()); goAuth('none', 'refresh'); return true;
+  }
   async function disconnect() {
     if (IS_DESKTOP) { try { await inv('google_logout'); } catch (e) { } }
     else if (tok && root.google && root.google.accounts) { try { root.google.accounts.oauth2.revoke(tok, function () { }); } catch (e) { } }
-    tok = null; tokExp = 0; state = { on: false, last: 0 }; save();
+    tok = null; tokExp = 0; ss('mhs_tok', null); state = { on: false, last: 0 }; save();
   }
 
   // ---------- 드라이브 ----------
@@ -2577,7 +2633,7 @@ function HealthUI(root, H) {
     var t = await token();
     opt = opt || {}; opt.headers = Object.assign({ Authorization: 'Bearer ' + t }, opt.headers || {});
     var r = await fetch(url, opt);
-    if (r.status === 401) { tok = null; var e = new Error('NEED_LOGIN'); e.code = 'NEED_LOGIN'; throw e; }
+    if (r.status === 401) { tok = null; ss('mhs_tok', null); var e = new Error('NEED_LOGIN'); e.code = 'NEED_LOGIN'; throw e; }
     if (!r.ok) throw new Error('구글 드라이브 오류 ' + r.status);
     return r;
   }
@@ -2662,7 +2718,8 @@ function HealthUI(root, H) {
   root.Sync = {
     cfg: CFG, supported: supported, isOn: function () { return !!state.on; }, last: function () { return state.last; },
     isDesktop: IS_DESKTOP, connect: connect, disconnect: disconnect, warm: warm, run: run, soon: soon,
-    loginWeb: loginWeb, on: function (f) { listeners.push(f); }
+    loginWeb: loginWeb, on: function (f) { listeners.push(f); }, autoRefresh: autoRefresh, useRedirect: useRedirect,
+    authResult: function () { var r = authResult; return r; }, redirectUri: redirectUri
   };
 })(this);
 
@@ -2708,6 +2765,7 @@ function HealthUI(root, H) {
   async function boot(){
     var st = await Store.status();
     memMode = Store.isMemory();
+    if (st === 'open') { enterApp(); return; }
     drawLock(st);
   }
   function drawLock(st){
@@ -2754,8 +2812,31 @@ function HealthUI(root, H) {
     renderList(); showWelcome();
     drawSync(); drawClipToggle();
     checkUpdate();
-    if (Sync.isOn()) syncNow();
+    armBack();
+    var ar = Sync.authResult && Sync.authResult();
+    if (ar && ar.ok && ar.purpose === 'connect') toast('구글 계정을 연결했습니다');
+    if (ar && !ar.ok && ar.purpose !== 'refresh') toast(ar.error === 'access_denied' ? '구글 로그인을 취소했습니다' : '구글 로그인하지 못했습니다 (' + ar.error + ')');
+    if (Sync.isOn()) { if (Sync.autoRefresh && Sync.autoRefresh()) return; syncNow(); }
   }
+
+  // ================= 뒤로가기 (휴대폰·브라우저) =================
+  // 앱 안에서 뒤로가기를 누르면 창을 닫는 대신 한 단계씩 돌아감: 창 닫기 → 상품 상세 → 고객 목록 → (한 번 더 누르면 종료)
+  var backArmed = false, backAt = 0;
+  function armBack(){ if (backArmed) return; try { history.pushState({ mhs: 1 }, ''); backArmed = true; } catch(e){} }
+  function stepBack(){
+    if (!$('modal').hidden) { $('modal').hidden = true; return true; }
+    if (!$('dlg').hidden) { closeDlg(); return true; }
+    if (S.pv) { S.pv = null; renderCustomer(); return true; }
+    if ($('shell').classList.contains('has-c') || S.cur) { showWelcome(); return true; }
+    return false;
+  }
+  window.addEventListener('popstate', function(){
+    backArmed = false;
+    if (!$('lock').hidden || $('shell').hidden) return;
+    if (stepBack()) { armBack(); return; }
+    if (Date.now() - backAt < 2500) return; // 두 번째: 그대로 나감
+    backAt = Date.now(); toast('뒤로 버튼을 한 번 더 누르면 닫힙니다'); armBack();
+  });
 
   // ================= 구글 동기화 =================
   var syncSt = null;
@@ -2808,10 +2889,11 @@ function HealthUI(root, H) {
       '<div>연결하면 고객 등록·분석·메모가 강남혁 님 구글 드라이브의 <b>앱 전용 숨김 공간</b>에 자동으로 올라가고, 같은 구글 계정을 연결한 PC·휴대폰에서 자동으로 받아옵니다.</div>' +
       '<div class="safe">' + IC.lock + '<span>올리기 전에 <b>잠금 비밀번호로 암호화</b>합니다. 구글을 포함해 누구도 내용을 볼 수 없고, 드라이브 화면에도 보이지 않습니다. 모든 기기는 같은 잠금 비밀번호를 쓰게 됩니다.</span></div>' +
       '<div class="note">고객 개인정보를 외부 저장소에 보관하는 것에 대한 회사 규정이 있다면 확인 후 사용하세요. 언제든 연결 해제할 수 있습니다.</div>' +
+      (Sync.isDesktop ? '<div class="fwarn"><b>기본 브라우저(크롬) 창이 따로 열립니다.</b> 거기서 계정을 고르고 <b>허용</b>을 누르면 "연결 완료"가 뜹니다. 그 창은 닫고 이 프로그램으로 돌아오면 자동으로 이어집니다.</div>' : Sync.useRedirect && Sync.useRedirect() ? '<div class="fwarn">구글 로그인 화면으로 넘어갔다가, 계정을 고르고 <b>허용</b>을 누르면 이 앱으로 자동으로 돌아옵니다. (잠금은 풀린 채로 돌아옵니다)</div>' : '') +
       '<div class="ferr" id="cErr"></div></div><div class="mrow"><button class="btn lg" type="button" id="cCancel">취소</button><button class="go" type="button" id="cOk">구글 계정 연결</button></div>');
     $('cCancel').onclick = closeDlg;
     $('cOk').onclick = function(){
-      var b = this; b.disabled = true; b.textContent = Sync.isDesktop ? '브라우저에서 로그인하세요…' : '연결 중…';
+      var b = this; b.disabled = true; b.textContent = Sync.isDesktop ? '크롬 창에서 계정을 고르세요…' : '구글로 이동 중…';
       Sync.connect().then(function(){ closeDlg(); drawSync(); toast('구글 계정을 연결했습니다'); syncNow(); }, function(e){ b.disabled = false; b.textContent = '구글 계정 연결'; $('cErr').textContent = '연결하지 못했습니다: ' + (e && e.message ? e.message : e); });
     };
   }
@@ -2820,13 +2902,13 @@ function HealthUI(root, H) {
     var a = b.dataset.sync;
     if (a === 'connect') openSyncConnect();
     else if (a === 'now') syncNow();
-    else if (a === 'login') (Sync.isDesktop ? Sync.connect() : Sync.loginWeb(true)).then(function(){ syncNow(); }, function(er){ toast('로그인하지 못했습니다: ' + (er && er.message || er)); });
+    else if (a === 'login') (Sync.isDesktop ? Sync.connect() : Sync.loginWeb(!(Sync.useRedirect && Sync.useRedirect()), 'login')).then(function(){ syncNow(); }, function(er){ toast('로그인하지 못했습니다: ' + (er && er.message || er)); });
     else if (a === 'off') { if (!confirm('구글 동기화를 끌까요? 이 기기의 고객 자료는 그대로 남고, 구글에 올라간 암호화 자료도 지워지지 않습니다.')) return; Sync.disconnect().then(function(){ syncSt = null; drawSync(); toast('구글 동기화를 껐습니다'); }); }
   });
   Store.onChange(function(){ Sync.soon(); });
   Sync.on(function(st){ if (st.status === 'running' || st.status === 'ok') { syncSt = st; drawSync(); } });
   setInterval(function(){ if (Sync.isOn() && Store.isOpen() && document.visibilityState === 'visible') syncNow(); }, 5 * 60 * 1000);
-  document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'visible' && Sync.isOn() && Store.isOpen()) Sync.soon(); });
+  document.addEventListener('visibilitychange', function(){ if (document.visibilityState !== 'visible') return; if (Store.checkIdle) Store.checkIdle(); if (Sync.isOn() && Store.isOpen()) Sync.soon(); });
 
   // ================= 고객 목록 =================
   function ageOf(birth, base){
@@ -2880,7 +2962,7 @@ function HealthUI(root, H) {
       if (S.data && !c.sample && !c.asOf && S.DD && S.DD.asOf) { c.asOf = S.DD.asOf; c.lastVisit = S.DD.last; try { S.cur = await Store.saveHead(c); S.list = await Store.list(); } catch(e){} }
     }
     if (S.data && S.data.covOnly && /prod|hist|health/.test(S.tab || 'prod')) S.tab = 'cov';
-    $('shell').classList.add('has-c');
+    $('shell').classList.add('has-c'); armBack();
     renderList(); renderCustomer();
     window.scrollTo(0, 0);
   }
@@ -3522,7 +3604,7 @@ function HealthUI(root, H) {
   });
 
   // ================= 대화상자 =================
-  function openDlg(html, cls){ $('dlgBox').className = 'mbox ' + (cls || ''); $('dlgBox').innerHTML = html; $('dlg').hidden = false; }
+  function openDlg(html, cls){ armBack(); $('dlgBox').className = 'mbox ' + (cls || ''); $('dlgBox').innerHTML = html; $('dlg').hidden = false; }
   function closeDlg(){ $('dlg').hidden = true; $('dlgBox').innerHTML = ''; FILES = []; FSTATE = {}; }
   $('dlg').addEventListener('click', function(e){ if (e.target === this) closeDlg(); });
 
