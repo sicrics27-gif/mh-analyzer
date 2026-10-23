@@ -129,3 +129,11 @@ pub fn google_logout(app: tauri::AppHandle) -> Result<(), String> {
     if let Ok(p) = store_path(&app) { let _ = std::fs::remove_file(p); }
     Ok(())
 }
+
+/// 바로가기: https 주소만 기본 브라우저로 엽니다.
+#[tauri::command]
+pub fn open_url(url: String) -> Result<(), String> {
+    if !url.starts_with("https://") || url.contains(' ') || url.contains('"') { return Err("허용되지 않는 주소".into()); }
+    open_browser(&url);
+    Ok(())
+}
