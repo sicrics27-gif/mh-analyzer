@@ -8,7 +8,7 @@ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 use tauri::Manager;
 
 include!("google_cfg.rs");
-const SCOPE: &str = "https://www.googleapis.com/auth/drive.appdata";
+const SCOPE: &str = "openid email https://www.googleapis.com/auth/drive.appdata";
 
 static TOKEN: Mutex<Option<(String, u64)>> = Mutex::new(None);
 

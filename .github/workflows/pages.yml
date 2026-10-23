@@ -2,6 +2,7 @@ name: 휴대폰 앱(PWA) 배포
 on:
   push:
     branches: [main]
+    paths-ignore: ['access.json']
   workflow_dispatch:
 permissions:
   contents: read

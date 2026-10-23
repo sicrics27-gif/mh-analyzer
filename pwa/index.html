@@ -791,6 +791,17 @@ table.cvr td.r{text-align:right;white-space:nowrap;font-weight:600;font-variant-
 @media print{.khero,.cvhero{box-shadow:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}.stb,.kh-act,.gseg{display:none!important}}
 @media (max-width:600px){table.kl{min-width:520px}table.kl th:nth-child(4),table.kl td:nth-child(4),table.kl th:nth-child(5),table.kl td:nth-child(5){display:none}.ksec{flex-direction:column;align-items:flex-start}.kh-num{font-size:32px}}
 
+.sfoot .adm{grid-column:1/-1;color:var(--gold2);border-color:rgba(217,188,134,.3)}
+.admbox{width:min(860px,100%)}
+.admsw{display:flex;gap:12px;align-items:center;justify-content:space-between;background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.admadd{display:flex;gap:8px;flex-wrap:wrap}
+.admadd input{flex:1 1 180px;height:42px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--paper);font:inherit}
+.admadd .go{height:42px;padding:0 18px}
+.admbox table.t{min-width:640px}.admbox table.t td{vertical-align:middle}
+.admbox tr.u-off td{opacity:.6}.admbox tr.u-del td{opacity:.4}
+.admbox .mono{font-family:var(--f-mono);font-size:13px;letter-spacing:.03em;white-space:nowrap}
+#admBody{display:flex;flex-direction:column;gap:12px}
+
 </style>
 </head>
 <body>
@@ -804,7 +815,7 @@ table.cvr td.r{text-align:right;white-space:nowrap;font-weight:600;font-variant-
     <div class="clist" id="clist"></div>
     <div class="sclip" id="sclip" hidden></div>
     <div class="ssync" id="ssync"></div>
-    <div class="sfoot"><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button></div>
+    <div class="sfoot"><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button><button id="admBtn" type="button" class="adm">사용자 관리</button></div>
     <input type="file" id="bkFile" accept=".json,application/json" hidden>
     <div class="slock"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6 10V8a6 6 0 1 1 12 0v2h1v12H5V10zm2 0h8V8a4 4 0 1 0-8 0z"/></svg>고객 정보는 잠금 비밀번호로 암호화 저장 <span id="verTag"></span></div>
     <div id="memBan" class="membanner" hidden>저장소를 쓸 수 없는 화면입니다 · 창을 닫으면 사라집니다</div>
@@ -2442,7 +2453,7 @@ function HealthUI(root, H) {
     touch();
     var rows = await all('idx');
     var out = [];
-    for (var i = 0; i < rows.length; i++) { try { var h = await dec(rows[i]); if (!h.deleted) out.push(h); } catch (e) { } }
+    for (var i = 0; i < rows.length; i++) { try { var h = await dec(rows[i]); if (!h.deleted && !h.hidden) out.push(h); } catch (e) { } }
     return out.sort(function (a, b) { return (b.updated || 0) - (a.updated || 0); });
   }
   var onChange = null;
@@ -2531,7 +2542,7 @@ function HealthUI(root, H) {
 // 내용은 잠금 비밀번호로 암호화되어 있어 구글도 읽을 수 없습니다.
 (function (root) {
   var CFG = { webClientId: '406779183746-5oal4875a7jnvvml7f8c91su68mfrsv0.apps.googleusercontent.com' };
-  var SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
+  var SCOPE = 'openid email https://www.googleapis.com/auth/drive.appdata';
   var DRIVE = 'https://www.googleapis.com/drive/v3/files', UPLOAD = 'https://www.googleapis.com/upload/drive/v3/files';
   var IS_DESKTOP = !!(root.__TAURI__ && root.__TAURI__.core && root.__TAURI__.core.invoke);
   function inv(cmd, args) { return root.__TAURI__.core.invoke(cmd, args || {}); }
@@ -2715,12 +2726,118 @@ function HealthUI(root, H) {
   var t = null;
   function soon() { if (!state.on) return; clearTimeout(t); t = setTimeout(function () { if (Store.isOpen()) run(); }, 2500); }
 
-  root.Sync = {
+  // 로그인한 구글 계정 이메일 (사용 권한 본인 확인용)
+  async function userEmail() {
+    var r = await api('https://www.googleapis.com/oauth2/v3/userinfo');
+    var j = await r.json(); if (!j.email) throw new Error('이메일을 확인하지 못했습니다'); return String(j.email).toLowerCase();
+  }
+  async function loginForEmail() {
+    if (IS_DESKTOP) await inv('google_login'); else await loginWeb(false, 'activate');
+    return userEmail();
+  }
+  root.Sync = { userEmail: userEmail, loginForEmail: loginForEmail,
     cfg: CFG, supported: supported, isOn: function () { return !!state.on; }, last: function () { return state.last; },
     isDesktop: IS_DESKTOP, connect: connect, disconnect: disconnect, warm: warm, run: run, soon: soon,
     loginWeb: loginWeb, on: function (f) { listeners.push(f); }, autoRefresh: autoRefresh, useRedirect: useRedirect,
     authResult: function () { var r = authResult; return r; }, redirectUri: redirectUri
   };
+})(this);
+
+</script>
+<script>
+// 사용 권한(초대 코드): 관리자가 발급한 코드가 있는 사람만 프로그램을 씀.
+// 허용 목록은 관리자 GitHub 저장소의 access.json (코드·이메일은 알아볼 수 없게 바꾼 값만 저장).
+(function (root) {
+  var REPO = 'sicrics27-gif/mh-analyzer', PATH = 'access.json';
+  var te = new TextEncoder(), td = new TextDecoder();
+  var ALPH = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  function ls(k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem(k) || 'null'); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; } }
+  async function sha(s) { var b = new Uint8Array(await crypto.subtle.digest('SHA-256', te.encode(s))); return Array.prototype.map.call(b, function (x) { return ('0' + x.toString(16)).slice(-2); }).join('').slice(0, 24); }
+  function norm(c) { var s = String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); if (/^MH/.test(s) && s.length === 18) s = s.slice(2); return s.length === 16 ? 'MH-' + s.match(/.{4}/g).join('-') : ''; }
+  function newCode() { var r = crypto.getRandomValues(new Uint8Array(16)), s = ''; for (var i = 0; i < 16; i++) s += ALPH[r[i] % 32]; return 'MH-' + s.match(/.{4}/g).join('-'); }
+  function codeHash(c) { return sha('mhc:' + norm(c)); }
+  function mailHash(e) { return sha('mhs:' + String(e || '').trim().toLowerCase()); }
+  function b64dec(b) { var bin = atob(String(b).replace(/\s/g, '')), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return td.decode(u); }
+  function b64enc(s) { var u = te.encode(s), bin = ''; for (var i = 0; i < u.length; i += 0x8000) bin += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(bin); }
+  function skip() { return !!root.claude || /claude\.ai|claudeusercontent/.test(location.hostname || ''); }
+
+  // 허용 목록 받기 (항상 인터넷에서 새로)
+  async function fetchList() {
+    var urls = [
+      { u: 'https://api.github.com/repos/' + REPO + '/contents/' + PATH + '?ref=main&t=' + Date.now(), h: { Accept: 'application/vnd.github.raw' } },
+      { u: 'https://raw.githubusercontent.com/' + REPO + '/main/' + PATH + '?t=' + Date.now(), h: {} }
+    ];
+    var last = null;
+    for (var i = 0; i < urls.length; i++) {
+      try {
+        var r = await fetch(urls[i].u, { cache: 'no-store', headers: urls[i].h });
+        if (r.status === 404) return { v: 1, on: false, users: {} };
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        var j = await r.json(); if (!j.users) j.users = {}; return j;
+      } catch (e) { last = e; }
+    }
+    var er = new Error('OFFLINE'); er.code = 'OFFLINE'; er.cause = last; throw er;
+  }
+  // 이 기기의 권한 상태: off(코드 기능 꺼짐) | ok | need(코드 없음) | revoked(정지·삭제) | offline
+  async function check() {
+    if (skip()) return { state: 'off' };
+    var list; try { list = await fetchList(); } catch (e) { return { state: 'offline' }; }
+    if (!list.on) return { state: 'off', list: list };
+    var lic = ls('mhs_lic');
+    if (!lic) return { state: 'need', list: list };
+    var u = list.users[lic.c];
+    if (!u || u.s !== 1 || u.e !== lic.e) return { state: 'revoked', list: list, removed: !u };
+    return { state: 'ok', list: list };
+  }
+  // 코드 확인 (1단계): 목록에 있고 사용 중인지
+  async function lookup(code) {
+    var c = norm(code); if (!c) return { error: 'format' };
+    var list = await fetchList(), h = await codeHash(c), u = list.users[h];
+    if (!u) return { error: 'unknown' };
+    if (u.s !== 1) return { error: 'revoked' };
+    return { c: h, e: u.e };
+  }
+  // 코드 + 구글 이메일 일치 확인 (2단계) → 이 기기에 등록
+  async function activate(pend, email) {
+    if (email !== null && (await mailHash(email)) !== pend.e) return false;
+    ls('mhs_lic', { c: pend.c, e: pend.e, at: Date.now() }); ls('mhs_lic_pend', null); return true;
+  }
+
+  // ---------- 관리자: GitHub 목록 고치기 ----------
+  function gh(token, path, opt) {
+    opt = opt || {}; opt.headers = Object.assign({ Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' }, opt.headers || {});
+    return fetch('https://api.github.com' + path, opt);
+  }
+  async function verifyToken(token) {
+    var r = await gh(token, '/repos/' + REPO);
+    if (r.status === 401) throw new Error('토큰이 올바르지 않거나 만료되었습니다');
+    if (!r.ok) throw new Error('저장소에 접근할 수 없습니다 (' + r.status + ')');
+    var j = await r.json(); if (!(j.permissions && j.permissions.push)) throw new Error('이 토큰에는 쓰기 권한(Contents: Read and write)이 없습니다');
+    return true;
+  }
+  async function readAdmin(token) {
+    var r = await gh(token, '/repos/' + REPO + '/contents/' + PATH + '?ref=main&t=' + Date.now(), { cache: 'no-store' });
+    if (r.status === 404) return { sha: null, list: { v: 1, on: false, users: {} } };
+    if (!r.ok) throw new Error('목록을 읽지 못했습니다 (' + r.status + ')');
+    var j = await r.json(), list = JSON.parse(b64dec(j.content)); if (!list.users) list.users = {};
+    return { sha: j.sha, list: list };
+  }
+  // fn(list) 로 고친 뒤 저장 (동시에 고친 경우 한 번 다시 시도)
+  async function edit(token, fn, msg) {
+    for (var t = 0; t < 2; t++) {
+      var cur = await readAdmin(token); fn(cur.list); cur.list.v = 1; cur.list.updated = new Date().toISOString();
+      var body = { message: msg || '사용자 권한 변경', content: b64enc(JSON.stringify(cur.list, null, 1) + '\n'), branch: 'main' };
+      if (cur.sha) body.sha = cur.sha;
+      var r = await gh(token, '/repos/' + REPO + '/contents/' + PATH, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      if (r.ok) return cur.list;
+      if (r.status !== 409 && r.status !== 422) throw new Error('저장하지 못했습니다 (' + r.status + ')');
+    }
+    throw new Error('저장하지 못했습니다. 잠시 후 다시 시도하세요');
+  }
+
+  root.Access = { REPO: REPO, check: check, lookup: lookup, activate: activate, fetchList: fetchList, newCode: newCode, norm: norm, codeHash: codeHash, mailHash: mailHash,
+    verifyToken: verifyToken, readAdmin: readAdmin, edit: edit, lic: function () { return ls('mhs_lic'); }, setLic: function (v) { ls('mhs_lic', v); },
+    pend: function (v) { return ls('mhs_lic_pend', v); }, skip: skip };
 })(this);
 
 </script>
@@ -2763,6 +2880,7 @@ function HealthUI(root, H) {
   // ================= 잠금 =================
   var memMode = false;
   async function boot(){
+    if (!(await gate())) return;
     var st = await Store.status();
     memMode = Store.isMemory();
     if (st === 'open') { enterApp(); return; }
@@ -2800,7 +2918,147 @@ function HealthUI(root, H) {
       await Store.wipe(); drawLock('new');
     };
   }
-  Store.onLock(function(){ S.cur = null; S.data = null; drawLock('locked'); toast('일정 시간 사용하지 않아 잠갔습니다'); });
+  Store.onLock(function(){ S.cur = null; S.data = null; if (ACC.revoking) return; drawLock('locked'); toast('잠갔습니다'); });
+
+  // ================= 사용 권한 (초대 코드) =================
+  var ACC = { lastOk: 0 };
+  function gateBox(h){ $('shell').hidden = true; $('lock').hidden = false; $('lbox').innerHTML = '<div class="lmark">' + IC.shield + '<span>병력고지 분석기</span></div>' + h; }
+  async function gate(){
+    if (!window.Access || Access.skip()) return true;
+    gateBox('<h1>사용 권한 확인 중…</h1><p>잠시만 기다려 주세요.</p>');
+    // 구글 본인 확인을 다녀온 경우 (휴대폰)
+    var ar = Sync.authResult && Sync.authResult(), pend = Access.pend();
+    if (ar && ar.purpose === 'activate' && pend) {
+      if (!ar.ok) { drawActivate('구글 로그인을 마치지 못했습니다. 다시 시도하세요.', pend); return false; }
+      try { var em = await Sync.userEmail(); if (!(await Access.activate(pend, em))) { drawActivate('이 코드는 ' + '다른 구글 계정용입니다. 코드를 받을 때 알려 준 지메일로 로그인하세요.', pend); return false; } toast('사용 등록을 마쳤습니다'); }
+      catch(e){ drawActivate('구글 계정을 확인하지 못했습니다: ' + (e.message || e), pend); return false; }
+    }
+    var r = await Access.check();
+    if (r.state === 'off' || r.state === 'ok') { ACC.lastOk = Date.now(); return true; }
+    if (r.state === 'offline') { gateBox('<h1>인터넷 연결이 필요합니다</h1><p>프로그램을 열 때마다 사용 권한을 확인합니다. 와이파이나 데이터 연결을 확인한 뒤 다시 시도하세요.</p><div class="ferr"></div><button class="go" id="gRetry" type="button">다시 시도</button>'); $('gRetry').onclick = function(){ boot(); }; return false; }
+    if (r.state === 'revoked') { drawRevoked(); return false; }
+    drawActivate('', null); return false;
+  }
+  function drawRevoked(){
+    gateBox('<h1>사용 권한이 정지되었습니다</h1><div class="safe">' + IC.lock + '<span>이 기기의 초대 코드가 정지되었거나 삭제되었습니다. 코드를 발급해 준 관리자에게 문의하세요.<br>이 기기에 저장된 고객 자료는 지워지지 않고 암호화된 채 그대로 남아 있습니다.</span></div><button class="go" id="gRetry" type="button">다시 확인</button><button class="lnk" id="gNew" type="button">새 초대 코드 입력</button>');
+    $('gRetry').onclick = function(){ boot(); };
+    $('gNew').onclick = function(){ Access.setLic(null); drawActivate('', null); };
+  }
+  function drawActivate(msg, pend){
+    var step2 = !!pend;
+    gateBox('<h1>초대 코드 입력</h1><p>이 프로그램은 관리자에게 <b>초대 코드</b>를 받은 분만 쓸 수 있습니다. 받은 코드를 넣고, 코드를 받을 때 알려 준 <b>구글(지메일) 계정</b>으로 본인 확인을 해 주세요.</p>' +
+      '<input id="gCode" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="MH-XXXX-XXXX-XXXX-XXXX" style="letter-spacing:.06em;font-size:16px"' + (step2 ? ' disabled value="확인된 코드"' : '') + '>' +
+      '<div class="ferr" id="gErr">' + esc(msg || '') + '</div>' +
+      (step2 ? '<button class="go" id="gMail" type="button">' + IC.cloud + ' 구글 계정으로 본인 확인</button><button class="lnk" id="gBack" type="button">다른 코드 입력</button>' : '<button class="go" id="gOk" type="button">코드 확인</button>') +
+      '<div class="note" style="text-align:center">코드가 없으면 관리자에게 요청하세요.</div>');
+    if (step2) {
+      $('gBack').onclick = function(){ Access.pend(null); drawActivate('', null); };
+      $('gMail').onclick = async function(){
+        var b = this; b.disabled = true; b.textContent = Sync.isDesktop ? '크롬 창에서 계정을 고르세요…' : '구글로 이동 중…';
+        try {
+          var em = location.protocol === 'file:' ? null : await Sync.loginForEmail();
+          if (await Access.activate(pend, em)) { toast('사용 등록을 마쳤습니다'); boot(); }
+          else drawActivate('이 코드는 다른 구글 계정용입니다. 코드를 받을 때 알려 준 지메일로 로그인하세요.', pend);
+        } catch(e){ drawActivate('구글 계정을 확인하지 못했습니다: ' + (e && e.message || e), pend); }
+      };
+      return;
+    }
+    var inp = $('gCode'); setTimeout(function(){ inp.focus(); }, 50);
+    var go = async function(){
+      var err = $('gErr'), b = $('gOk'); err.textContent = '';
+      b.disabled = true; b.textContent = '확인 중…';
+      try {
+        var r = await Access.lookup(inp.value);
+        if (r.error) { b.disabled = false; b.textContent = '코드 확인'; err.textContent = r.error === 'format' ? '코드 형식이 맞지 않습니다. MH-로 시작하는 16자리를 그대로 붙여 넣으세요.' : r.error === 'revoked' ? '정지된 코드입니다. 관리자에게 문의하세요.' : '등록되지 않은 코드입니다. 다시 확인해 주세요.'; return; }
+        Access.pend(r); drawActivate('', r);
+      } catch(e){ b.disabled = false; b.textContent = '코드 확인'; err.textContent = '인터넷 연결을 확인한 뒤 다시 시도하세요.'; }
+    };
+    $('gOk').onclick = go; inp.addEventListener('keydown', function(e){ if (e.key === 'Enter') go(); });
+  }
+  // 쓰는 중에도 30분마다(화면 다시 볼 때 포함) 확인 → 정지되면 바로 잠금
+  async function recheck(){
+    if (!window.Access || Access.skip() || !Store.isOpen()) return;
+    if (Date.now() - ACC.lastOk < 10 * 60 * 1000) return;
+    var r = await Access.check();
+    if (r.state === 'ok' || r.state === 'off') { ACC.lastOk = Date.now(); return; }
+    if (r.state === 'revoked' || r.state === 'need') { ACC.revoking = true; Store.lock(); ACC.revoking = false; drawRevoked(); }
+  }
+  setInterval(function(){ if (document.visibilityState === 'visible') recheck(); }, 30 * 60 * 1000);
+  document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'visible') recheck(); });
+
+  // ================= 관리자: 사용자 관리 =================
+  var ADM = { id: '__admin' };
+  async function admLoad(){ try { return (await Store.loadData(ADM.id)) || null; } catch(e){ return null; } }
+  async function admSave(d){ await Store.saveHead({ id: ADM.id, hidden: true, name: '__admin', status: 'admin', created: d.created || Date.now() }); await Store.saveData(ADM.id, d); }
+  function invite(u){ return '[병력고지 분석기 사용 안내]\n' + u.name + '님, 병력고지 분석기 초대 코드입니다.\n\n초대 코드: ' + u.code + '\n등록할 구글 계정: ' + u.email + '\n\n① 설치\n· 휴대폰: https://sicrics27-gif.github.io/mh-analyzer/ 를 크롬으로 열고 메뉴(⋮) → "홈 화면에 추가"\n· PC: https://github.com/' + Access.REPO + '/releases/latest 에서 MH-Analyzer-setup.exe 설치\n② 처음 열면 나오는 화면에 코드를 넣고, 위 구글 계정으로 본인 확인\n③ 잠금 비밀번호를 만들고 시작'; }
+  async function openAdmin(){
+    var d = await admLoad();
+    if (!d || !d.token) { admSetup(d); return; }
+    openDlg('<h4>' + IC.user + ' 사용자 관리</h4><div id="admBody"><p class="note">불러오는 중…</p></div>', 'wide admbox');
+    admDraw(d);
+  }
+  function admSetup(d){
+    openDlg('<h4>' + IC.user + ' 사용자 관리 — 처음 설정</h4><div class="form" style="font-size:14px;line-height:1.7">' +
+      '<div>초대 코드 목록은 강남혁 님 GitHub 저장소(' + esc(Access.REPO) + ')의 <b>access.json</b>에 저장됩니다. 프로그램이 이 파일을 고칠 수 있도록 <b>GitHub 토큰</b>을 한 번 넣어 주세요.</div>' +
+      '<div class="safe">' + IC.lock + '<span>토큰은 이 기기의 잠금 비밀번호로 암호화해 저장하고, 구글 동기화를 켜 두면 강남혁 님의 다른 기기에도 함께 옮겨집니다. 관리자가 아닌 분은 이 화면을 닫으세요.</span></div>' +
+      '<label class="l">GitHub 토큰 (github_pat_로 시작)</label><input id="admTok" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…">' +
+      '<div class="ferr" id="admErr"></div></div><div class="mrow"><button class="btn lg" type="button" id="admX">닫기</button><button class="go" type="button" id="admGo">연결 확인</button></div>');
+    $('admX').onclick = closeDlg;
+    $('admGo').onclick = async function(){
+      var t = $('admTok').value.trim(), b = this; if (!t) { $('admErr').textContent = '토큰을 붙여 넣으세요.'; return; }
+      b.disabled = true; b.textContent = '확인 중…';
+      try { await Access.verifyToken(t); var nd = Object.assign({ users: [], created: Date.now() }, d || {}, { token: t }); await admSave(nd); toast('관리자 연결을 마쳤습니다'); openAdmin(); }
+      catch(e){ b.disabled = false; b.textContent = '연결 확인'; $('admErr').textContent = e.message || String(e); }
+    };
+  }
+  async function admDraw(d, note){
+    var box = $('admBody'); if (!box) return;
+    var list; try { list = (await Access.readAdmin(d.token)).list; } catch(e){ box.innerHTML = '<div class="ferr">' + esc(e.message || e) + '</div><button class="btn lg" type="button" id="admRe">토큰 다시 넣기</button>'; $('admRe').onclick = function(){ admSetup(d); }; return; }
+    var me = Access.lic(), meOk = me && list.users[me.c] && list.users[me.c].s === 1;
+    var rows = d.users.map(function(u, i){ var e = list.users[u.ch]; var st = !e ? 'del' : e.s === 1 ? 'on' : 'off';
+      return '<tr class="u-' + st + '"><td><b>' + esc(u.name) + '</b>' + (u.self ? ' <span class="gen">관리자</span>' : '') + '<br><small class="note">' + esc(u.email) + '</small></td><td class="mono">' + esc(u.code) + '</td><td class="n">' + dot(new Date(u.t).toISOString().slice(0, 10)) + '</td><td>' +
+        (st === 'del' ? '<span class="tag x">삭제됨</span>' : '<span class="stb"><button type="button" data-au="' + i + '" data-as="1" aria-pressed="' + (st === 'on') + '">사용 중</button><button type="button" data-au="' + i + '" data-as="0" aria-pressed="' + (st === 'off') + '">정지</button></span>') + '</td><td>' +
+        (st === 'del' ? '' : '<button type="button" class="pb" data-ac="' + i + '">안내문 복사</button>') + '</td></tr>'; }).join('');
+    box.innerHTML = (note ? '<div class="gapban a">' + note + '</div>' : '') +
+      '<div class="admsw"><div><b>초대 코드 사용</b><br><small class="note">' + (list.on ? '켜짐 — 코드를 받은 사람만 프로그램을 열 수 있습니다.' : '꺼짐 — 지금은 누구나 열 수 있습니다. 동료들에게 코드를 다 보낸 뒤 켜세요.') + '</small></div><span class="stb"><button type="button" data-aon="1" aria-pressed="' + !!list.on + '">켜기</button><button type="button" data-aon="0" aria-pressed="' + !list.on + '">끄기</button></span></div>' +
+      (!meOk ? '<div class="gapban r">' + IC.warn + '<span>이 기기에 관리자 본인 코드가 등록되어 있지 않습니다. 코드 사용을 켜기 전에 아래 <b>내 코드로 등록</b>을 먼저 하세요.</span></div>' : '') +
+      '<div class="admadd"><input id="auName" type="text" placeholder="이름 (예: 김오션)"><input id="auMail" type="email" placeholder="구글 계정 (예: ocean@gmail.com)"><button class="go" type="button" id="auGo">코드 발급</button>' + (!meOk ? '<button class="btn lg" type="button" id="auMe">내 코드로 등록</button>' : '') + '</div><div class="ferr" id="auErr"></div>' +
+      '<div class="tw"><table class="t"><thead><tr><th>이름 · 구글 계정</th><th>초대 코드</th><th>발급일</th><th>권한</th><th></th></tr></thead><tbody>' + (rows || '<tr><td colspan="5" class="note" style="text-align:center;padding:16px">아직 발급한 코드가 없습니다.</td></tr>') + '</tbody></table></div>' +
+      '<p class="note">정지는 상대방 프로그램이 열리거나(또는 쓰는 중 30분 안에) 바로 막힙니다. 다시 <b>사용 중</b>으로 바꾸면 같은 코드로 다시 쓸 수 있습니다. 동료의 고객 자료는 각자 기기·구글 계정에만 있어 관리자도 볼 수 없습니다.</p>' +
+      '<div class="mrow"><button class="btn lg" type="button" id="admTokRe" style="margin-right:auto">토큰 바꾸기</button><button class="btn lg" type="button" id="admX2">닫기</button></div>';
+    var busy = function(on){ box.querySelectorAll('button,input').forEach(function(x){ x.disabled = on; }); };
+    var run = async function(fn, msg, after){ busy(true); try { await Access.edit(d.token, fn, msg); if (after) await after(); await admSave(d); admDraw(d); } catch(e){ busy(false); $('auErr').textContent = e.message || String(e); } };
+    $('admX2').onclick = closeDlg;
+    $('admTokRe').onclick = function(){ admSetup(d); };
+    var issue = async function(name, mail, self){
+      var code = Access.newCode(), ch = await Access.codeHash(code), eh = await Access.mailHash(mail);
+      var u = { name: name, email: mail.toLowerCase(), code: code, ch: ch, eh: eh, t: Date.now(), self: !!self };
+      await run(function(L){ L.users[ch] = { s: 1, e: eh, t: new Date().toISOString().slice(0, 10) }; }, '초대 코드 발급', async function(){ d.users.push(u); if (self) Access.setLic({ c: ch, e: eh, at: Date.now() }); });
+      if (!self) { copyText(invite(u), '안내문'); toast(name + '님 코드를 발급하고 안내문을 복사했습니다 · 카톡에 붙여 넣으세요'); }
+    };
+    $('auGo').onclick = function(){
+      var n = $('auName').value.trim(), m = $('auMail').value.trim();
+      if (!n || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m)) { $('auErr').textContent = '이름과 구글 계정(이메일)을 정확히 넣으세요.'; return; }
+      if (d.users.some(function(u){ return u.email === m.toLowerCase() && list.users[u.ch]; })) { if (!confirm(m + ' 에게 이미 발급한 코드가 있습니다. 새 코드를 하나 더 발급할까요?')) return; }
+      issue(n, m, false);
+    };
+    if ($('auMe')) $('auMe').onclick = function(){
+      var m = prompt('관리자 본인 구글 계정(이메일)을 입력하세요.', 'sicrics27@gmail.com'); if (!m) return;
+      issue('관리자(나)', m.trim(), true);
+    };
+    box.querySelectorAll('[data-as]').forEach(function(b){ b.onclick = function(){
+      var u = d.users[+b.dataset.au], s = +b.dataset.as;
+      if (u.self && s === 0 && !confirm('관리자 본인 코드를 정지하면 이 기기도 막힙니다. 계속할까요?')) return;
+      run(function(L){ if (L.users[u.ch]) L.users[u.ch].s = s; }, s ? '권한 복구: ' + u.name : '권한 정지: ' + u.name);
+    }; });
+    box.querySelectorAll('[data-ac]').forEach(function(b){ b.onclick = function(){ copyText(invite(d.users[+b.dataset.ac]), '안내문'); }; });
+    box.querySelectorAll('[data-aon]').forEach(function(b){ b.onclick = function(){
+      var on = b.dataset.aon === '1';
+      if (on && !meOk) { $('auErr').textContent = '먼저 "내 코드로 등록"을 하세요. 그렇지 않으면 이 기기도 막힙니다.'; return; }
+      if (on && !confirm('초대 코드 사용을 켜면, 코드를 받아 등록하지 않은 사람은 다음에 프로그램을 열 때부터 쓸 수 없습니다. 켤까요?')) return;
+      run(function(L){ L.on = on; }, on ? '초대 코드 사용 켜기' : '초대 코드 사용 끄기');
+    }; });
+  }
 
   // ================= 상태 =================
   var S = { list: [], cur: null, data: null, E: null, HI: null, CL: null, HP: null, tab: 'prod', pv: null, pvTab: 'sum', hmode: 'code', filter: 'all', q: '' };
@@ -3578,6 +3836,7 @@ function HealthUI(root, H) {
   $('newCust').onclick = function(){ openCustForm(null); };
   $('sample').onclick = function(){ openCustomer('sample'); };
   $('lockBtn').onclick = function(){ Store.lock(); };
+  $('admBtn').onclick = function(){ openAdmin(); };
   $('mClose').onclick = function(){ $('modal').hidden = true; };
   $('modal').addEventListener('click', function(e){ if (e.target === this) this.hidden = true; });
   $('mCopy').onclick = function(){
