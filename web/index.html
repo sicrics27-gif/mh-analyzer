@@ -506,6 +506,11 @@ table.cl td.r,table.ht td.n,.gc b,.pl li .n{font-family:var(--f-body);font-varia
 .smb-r .go{height:42px;padding:0 16px;font-size:14.5px}
 .smb-r label.btn{cursor:pointer}
 
+.updbar{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:80;width:min(680px,calc(100vw - 32px));display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--paper);border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));border-radius:14px;padding:10px 14px;box-shadow:0 12px 30px rgba(10,20,40,.2);font-size:14px}
+.updbar svg{color:var(--green)}
+.updbar span{flex:1 1 220px}
+.updbar .go{height:38px;padding:0 16px;font-size:14px}
+
 </style>
 </head>
 <body>
@@ -521,7 +526,7 @@ table.cl td.r,table.ht td.n,.gc b,.pl li .n{font-family:var(--f-body);font-varia
     <div class="ssync" id="ssync"></div>
     <div class="sfoot"><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button></div>
     <input type="file" id="bkFile" accept=".json,application/json" hidden>
-    <div class="slock"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6 10V8a6 6 0 1 1 12 0v2h1v12H5V10zm2 0h8V8a4 4 0 1 0-8 0z"/></svg>고객 정보는 잠금 비밀번호로 암호화 저장</div>
+    <div class="slock"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6 10V8a6 6 0 1 1 12 0v2h1v12H5V10zm2 0h8V8a4 4 0 1 0-8 0z"/></svg>고객 정보는 잠금 비밀번호로 암호화 저장 <span id="verTag"></span></div>
     <div id="memBan" class="membanner" hidden>저장소를 쓸 수 없는 화면입니다 · 창을 닫으면 사라집니다</div>
   </aside>
   <main class="main" id="main"></main>
@@ -2213,6 +2218,7 @@ function HealthUI(root, H) {
     S.list = await Store.list();
     renderList(); showWelcome();
     drawSync(); drawClipToggle();
+    checkUpdate();
     if (Sync.isOn()) syncNow();
   }
 
@@ -2989,6 +2995,34 @@ function HealthUI(root, H) {
       if (people.length) showClipCard(people);
     });
   }
+
+  // ---------- 새 버전 알림 (PC 프로그램) ----------
+  var myBuild = 0;
+  async function checkUpdate(){
+    if (!IS_DESKTOP) return;
+    try { myBuild = await window.__TAURI__.core.invoke('app_build'); } catch(e){ return; }
+    var vb = $('verTag'); if (vb) vb.textContent = myBuild ? '버전 ' + myBuild : '';
+    if (!myBuild) return;
+    try {
+      var r = await fetch('https://api.github.com/repos/sicrics27-gif/mh-analyzer/releases/latest', { cache: 'no-store' });
+      if (!r.ok) return;
+      var j = await r.json(), latest = parseInt(String(j.tag_name || '').replace(/\D/g, ''), 10) || 0;
+      if (latest > myBuild) showUpdate(latest);
+    } catch(e){}
+  }
+  function showUpdate(latest){
+    if ($('updBar')) return;
+    var el = document.createElement('div'); el.id = 'updBar'; el.className = 'updbar'; el.setAttribute('role', 'status');
+    el.innerHTML = IC.ok + '<span><b>새 버전이 있습니다</b> (지금 ' + myBuild + ' → 최신 ' + latest + ') · 고객 자료는 그대로 남습니다</span><button type="button" class="go" id="updGo">지금 업데이트</button><button type="button" class="btn" id="updLater">나중에</button>';
+    document.body.appendChild(el);
+    $('updLater').onclick = function(){ el.remove(); };
+    $('updGo').onclick = async function(){
+      var b = this; b.disabled = true; b.textContent = '받는 중… (몇 초~1분)';
+      try { await window.__TAURI__.core.invoke('update_now'); }
+      catch(e){ b.disabled = false; b.textContent = '다시 시도'; toast(String(e && e.message || e)); }
+    };
+  }
+  setInterval(function(){ if (IS_DESKTOP && !$('updBar')) checkUpdate(); }, 6 * 60 * 60 * 1000);
 
   // ---------- 서류 받기 (고객 인증으로 직접 조회) ----------
   var DOCS = [

@@ -20,6 +20,7 @@ jobs:
         working-directory: src-tauri
         env:
           GOOGLE_DESKTOP_SECRET: ${{ secrets.GOOGLE_DESKTOP_SECRET }}
+          APP_BUILD: ${{ github.run_number }}
         run: cargo tauri build
       - name: 실행 파일 모으기
         shell: pwsh
