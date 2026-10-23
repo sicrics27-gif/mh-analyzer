@@ -15,6 +15,7 @@ base64 = "0.22"
 sha2 = "0.10"
 getrandom = "0.2"
 ureq = { version = "2", features = ["json"] }
+arboard = { version = "3", default-features = false }
 
 [profile.release]
 opt-level = "s"

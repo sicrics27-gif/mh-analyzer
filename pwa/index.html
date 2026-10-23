@@ -495,6 +495,17 @@ table.cl td.r,table.ht td.n,.gc b,.pl li .n{font-family:var(--f-body);font-varia
 .ditem ul{margin:2px 0 0;padding-left:18px;color:var(--ink2);font-size:12.5px}
 .lnk2{border:0;background:none;color:var(--accent);cursor:pointer;font-size:13px;padding:0;display:inline-flex;gap:4px;align-items:center;text-decoration:underline}
 
+/* SMemo 복사 감지 */
+.sclip button{display:flex;gap:8px;align-items:flex-start;width:100%;text-align:left;border:1px solid color-mix(in srgb,var(--side-ink) 20%,transparent);background:transparent;color:var(--side-ink);border-radius:10px;padding:8px 10px;cursor:pointer;font-size:13px}
+.sclip button[aria-pressed="false"]{opacity:.65}
+.sclip small{color:var(--side-mute);font-size:11.5px}
+.sclip svg{margin-top:2px}
+.clipcard{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:70;width:min(420px,calc(100vw - 32px));background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 32px rgba(10,20,40,.22);padding:12px 14px;display:flex;flex-direction:column;gap:8px;font-size:14px}
+.cc-h{display:flex;gap:8px;align-items:center}.cc-h svg{color:var(--accent)}
+.cc-x{margin-left:auto;border:0;background:none;font-size:20px;line-height:1;cursor:pointer;color:var(--mute)}
+.cc-r{display:flex;gap:6px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:8px}
+.cc-r span{margin-right:auto}
+
 </style>
 </head>
 <body>
@@ -506,6 +517,7 @@ table.cl td.r,table.ht td.n,.gc b,.pl li .n{font-family:var(--f-body);font-varia
     <div class="sqw"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" class="sq" type="search" placeholder="고객 검색" autocomplete="off"></div>
     <div class="sfilt" id="sfilt"><button id="fAll" type="button" data-f="all">전체</button><button id="fDone" type="button" data-f="done">완료</button><button id="fWait" type="button" data-f="wait">대기</button></div>
     <div class="clist" id="clist"></div>
+    <div class="sclip" id="sclip" hidden></div>
     <div class="ssync" id="ssync"></div>
     <div class="sfoot"><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button></div>
     <input type="file" id="bkFile" accept=".json,application/json" hidden>
@@ -2200,7 +2212,7 @@ function HealthUI(root, H) {
     $('memBan').hidden = !memMode;
     S.list = await Store.list();
     renderList(); showWelcome();
-    drawSync();
+    drawSync(); drawClipToggle();
     if (Sync.isOn()) syncNow();
   }
 
@@ -2893,6 +2905,47 @@ function HealthUI(root, H) {
       if (picks.length === 1 && last) openCustomer(last.id);
     };
     setTimeout(function(){ $('pTxt').focus(); }, 30);
+  }
+
+  // ---------- SMemo 연동: 복사 감지 (PC 프로그램) ----------
+  var clipOn = true; try { clipOn = localStorage.getItem('mhs_clip') !== '0'; } catch(e){}
+  function drawClipToggle(){
+    var box = $('sclip'); if (!box) return;
+    if (!IS_DESKTOP) { box.hidden = true; return; }
+    box.hidden = false;
+    box.innerHTML = '<button type="button" id="clipTg" aria-pressed="' + clipOn + '">' + IC.doc + '<span>SMemo 복사 감지 <b>' + (clipOn ? '켜짐' : '꺼짐') + '</b><br><small>고객 메모를 복사하면 자동으로 찾거나 등록</small></span></button>';
+    $('clipTg').onclick = function(){ clipOn = !clipOn; try { localStorage.setItem('mhs_clip', clipOn ? '1' : '0'); } catch(e){} window.__TAURI__.core.invoke('clip_watch', { on: clipOn }).catch(function(){}); drawClipToggle(); toast(clipOn ? 'SMemo 복사 감지를 켰습니다' : 'SMemo 복사 감지를 껐습니다'); };
+  }
+  function showClipCard(people){
+    var old = $('clipCard'); if (old) old.remove();
+    var have = {}; S.list.forEach(function(c){ have[c.name + c.birth] = c; });
+    var el = document.createElement('div'); el.id = 'clipCard'; el.className = 'clipcard'; el.setAttribute('role', 'status');
+    el.innerHTML = '<div class="cc-h">' + IC.doc + '<b>SMemo 메모에서 고객을 찾았습니다</b><button type="button" class="cc-x" aria-label="닫기">×</button></div>' +
+      people.slice(0, 5).map(function(p, i){ var ex = have[p.name + p.birth];
+        return '<div class="cc-r"><span><b>' + esc(p.name) + '</b> ' + sexTxt(p.sex) + ' · ' + birthTxt(p.birth) + (ex ? ' <small class="note">등록됨' + (ex.status === 'done' ? ' · 분석완료' : '') + '</small>' : '') + '</span>' +
+          (ex ? '<button type="button" class="btn" data-cc-open="' + ex.id + '">열기</button>' : '<button type="button" class="btn" data-cc-add="' + i + '">등록</button><button type="button" class="btn pri" data-cc-addf="' + i + '">등록 후 파일 첨부</button>') + '</div>';
+      }).join('') + '<div class="note">이름·성별·생년월일만 가져옵니다. 주민번호 뒷자리·연락처는 저장하지 않습니다.</div>';
+    document.body.appendChild(el);
+    var close = function(){ el.remove(); };
+    el.querySelector('.cc-x').onclick = close;
+    clearTimeout(showClipCard._t); showClipCard._t = setTimeout(close, 20000);
+    el.addEventListener('click', async function(e){
+      var b = e.target.closest('[data-cc-open],[data-cc-add],[data-cc-addf]'); if (!b) return;
+      if (b.dataset.ccOpen) { close(); openCustomer(b.dataset.ccOpen); return; }
+      var p = people[+(b.dataset.ccAdd || b.dataset.ccAddf)];
+      var h = await Store.saveHead({ status: 'wait', name: p.name, sex: p.sex, birth: p.birth, memo: '', from: 'smemo' });
+      S.list = await Store.list(); renderList(); close(); toast(p.name + ' 고객을 등록했습니다');
+      await openCustomer(h.id);
+      if (b.dataset.ccAddf) openFiles();
+    });
+  }
+  if (IS_DESKTOP && window.__TAURI__.event) {
+    window.__TAURI__.core.invoke('clip_watch', { on: clipOn }).catch(function(){});
+    window.__TAURI__.event.listen('memo-copied', function(ev){
+      if (!clipOn || !Store.isOpen() || $('shell').hidden) return;
+      var people = parsePeople(ev.payload || '');
+      if (people.length) showClipCard(people);
+    });
   }
 
   // ---------- 서류 받기 (고객 인증으로 직접 조회) ----------
