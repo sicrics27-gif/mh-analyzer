@@ -1961,6 +1961,22 @@ function HealthUI(root, H) {
     return null;
   }
 
+  // 1~N종 수술처럼 종별로 나뉜 특약은 수술 1건에 한 종만 지급 → 평균 한 줄로 (규칙 5-1)
+  function tierRiders(c) {
+    if (c._tier) return c._tier;
+    var out = [], grp = {};
+    c.riders.forEach(function (r) {
+      var m = r.name.match(/\((\d+)종\)/);
+      if (r.type === '정액' && m && /수술/.test(r.name)) {
+        var k = r.name.replace(/\(\d+종\)/, '').replace(/\s+/g, ' ');
+        if (!grp[k]) { grp[k] = { type: '정액', name: k + ' (종별 평균)', list: [] }; out.push(grp[k]); }
+        grp[k].list.push(r.amount);
+      } else out.push(r);
+    });
+    out.forEach(function (g) { if (g.list) { g.amount = Math.round(g.list.reduce(function (a, b) { return a + b; }, 0) / g.list.length); g.amtText = (g.amount / 1e4) + '만'; g.tier = g.list.length; } });
+    Object.defineProperty(c, '_tier', { value: out, enumerable: false });
+    return out;
+  }
   // 실손 계약 → 세대
   function silsonPlan(cov) {
     if (!cov) return [];
@@ -1994,7 +2010,7 @@ function HealthUI(root, H) {
         var hits = {};
         cov.contracts.forEach(function (c, ci) {
           if (!inRange(c, v.date)) return;
-          c.riders.forEach(function (rd) {
+          tierRiders(c).forEach(function (rd) {
             if (rd.type !== '정액' || !rd.amount) return;
             var R = ruleOf(rd.name); if (!R) return;
             R._n = rd.name; var code = R.ev(v); if (!code) return;
