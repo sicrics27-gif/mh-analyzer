@@ -1,0 +1,2568 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>병력고지 분석기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+
+/* 레이아웃: 위쪽 입력 패널 → 아래 리포트(요약 배지 → 3개월 → 5년 고지 카드 → 추가 상병 → 건강검진) 한 줄 흐름 */
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:anywhere}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 60px;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{margin:0;text-wrap:balance}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* 입력 패널 */
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.brand{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.brand h1{font-size:22px;font-weight:700;letter-spacing:-.01em}
+.brand span{color:var(--mute);font-size:13px}
+.drop{border:1.5px dashed var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;background:var(--soft);cursor:pointer;transition:border-color .15s}
+.drop.on{border-color:var(--accent);background:var(--accent-soft)}
+.drop b{font-size:15px}
+.drop small{color:var(--mute);font-size:12.5px}
+.files{display:flex;flex-wrap:wrap;gap:6px}
+.fchip{font-size:12.5px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--paper);display:inline-flex;gap:6px;align-items:center}
+.fchip i{font-style:normal;color:var(--mute)}
+.fchip.ok i{color:var(--green)} .fchip.bad{border-color:var(--red)} .fchip.bad i{color:var(--red)}
+.ctrls{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font-size:12px;font-weight:600;color:var(--ink2);letter-spacing:.02em}
+.field input,.field select{height:42px;border:1px solid var(--line);border-radius:8px;padding:0 12px;background:var(--paper);width:100%}
+.modes{display:flex;flex-wrap:wrap;gap:6px}
+.mode{border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:8px 12px;cursor:pointer;font-size:14px;font-weight:500}
+.mode .mono{font-size:13.5px}
+.mode[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.go{height:46px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:700;font-size:16px;cursor:pointer}
+.go:disabled{opacity:.5;cursor:default}
+.note{font-size:12.5px;color:var(--mute)}
+.err{color:var(--red);font-size:13.5px;white-space:pre-line}
+
+/* 리포트 */
+.report{display:flex;flex-direction:column;gap:18px}
+.rhead{background:var(--accent);color:var(--on-accent);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:10px}
+.rhead .eyebrow{font-size:12px;letter-spacing:.12em;opacity:.75}
+.rhead h2{font-size:24px;font-weight:700}
+.rmeta{display:flex;flex-wrap:wrap;gap:8px}
+.rmeta div{background:color-mix(in srgb,var(--on-accent) 14%,transparent);border-radius:8px;padding:6px 12px;font-size:13px}
+.rmeta b{font-weight:600;margin-left:6px}
+.sample{display:inline-block;background:var(--amber-soft);color:var(--amber);font-weight:700;font-size:12px;padding:3px 10px;border-radius:999px;align-self:flex-start}
+.tally{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.tl{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:2px;cursor:pointer;text-align:left}
+.tl span{font-size:12.5px;color:var(--ink2)}
+.tl b{font-size:24px;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.tl.hit b{color:var(--red)} .tl.zero b{color:var(--mute)}
+.warnbox{border-radius:var(--r);padding:12px 14px;font-size:13.5px;line-height:1.7;background:var(--amber-soft);color:var(--ink)}
+.warnbox b{color:var(--amber)}
+.sec{display:flex;flex-direction:column;gap:10px}
+.sec-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--ink);padding-bottom:6px}
+.sec-h h3{font-size:17px;font-weight:700}
+.sec-h span{font-size:12.5px;color:var(--mute)}
+.empty{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:16px;color:var(--ink2);font-size:14px}
+
+.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.card-top{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.dx{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 260px}
+.dx .code{font-family:var(--f-mono);font-size:13px;color:var(--accent);font-weight:600}
+.dx .name{font-size:16.5px;font-weight:700}
+.dx .sub{font-size:13px;color:var(--ink2)}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font-size:12.5px;font-weight:600;padding:3px 9px;border-radius:6px;background:var(--red-soft);color:var(--red)}
+.chip.amb{background:var(--amber-soft);color:var(--amber)}
+.tl.amb.hit b{color:var(--amber)}
+.tally.small .tl{padding:8px 12px}.tally.small .tl b{font-size:18px}
+table.ck td:first-child{white-space:nowrap;font-weight:600}
+.ok{color:var(--green);font-weight:700}.no{color:var(--amber);font-weight:700}
+.red{color:var(--red)}.amber{color:var(--amber)}
+.why{color:var(--ink2)}
+ol.qs{margin:0;padding:14px 16px 14px 34px;display:flex;flex-direction:column;gap:8px;font-size:14px}
+.qtag{display:inline-block;font-size:11.5px;font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:5px;padding:1px 6px;margin-right:6px}
+.sumbar{display:flex;gap:8px;flex-wrap:wrap}.sumbar .go{flex:1 1 220px}
+.chip.gr{background:var(--soft);color:var(--mute);font-weight:500}
+.kv{display:grid;grid-template-columns:110px 1fr;font-size:14px}
+.kv>div{padding:9px 16px;border-bottom:1px solid var(--line)}
+.kv>div:nth-child(odd){color:var(--ink2);font-size:13px;background:var(--soft);padding-right:8px}
+.kv>div:nth-last-child(-n+2){border-bottom:0}
+.kv ul{margin:0;padding-left:16px}
+.pill{display:inline-block;font-size:12px;padding:1px 7px;border-radius:5px;background:var(--accent-soft);color:var(--accent);font-weight:600;margin-right:4px}
+.acts{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line);flex-wrap:wrap;background:var(--soft)}
+.btn{border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:7px 12px;font-size:13.5px;font-weight:600;cursor:pointer}
+.btn.pri{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+details{font-size:13.5px}
+details summary{cursor:pointer;color:var(--accent);font-weight:600}
+details .inner{margin-top:6px;max-height:280px;overflow:auto;background:var(--soft);border-radius:8px;padding:8px 10px;font-size:12.5px;line-height:1.65}
+.alert{font-size:13px;color:var(--amber);font-weight:600}
+
+table.t{width:100%;min-width:640px;border-collapse:collapse;font-size:13.5px}
+.tw{overflow-x:auto;background:var(--paper);border:1px solid var(--line);border-radius:12px}
+table.t th{background:var(--soft);font-weight:600;color:var(--ink2);text-align:left;padding:9px 12px;font-size:12.5px;white-space:nowrap}
+table.t td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+table.t td.n{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.v-red{color:var(--red);font-weight:700} .v-amb{color:var(--amber);font-weight:700}
+
+.extra-row{display:flex;justify-content:space-between;gap:10px;padding:10px 14px;border-top:1px solid var(--line);font-size:14px;flex-wrap:wrap}
+.extra-row:first-child{border-top:0}
+.extra-row .mono{color:var(--accent);font-size:12.5px;margin-right:6px}
+.extra-row small{color:var(--mute)}
+
+.modal{position:fixed;inset:0;background:rgba(10,20,22,.55);display:flex;align-items:center;justify-content:center;z-index:50;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.mbox{background:var(--paper);border-radius:14px;width:min(600px,100%);max-height:100%;display:flex;flex-direction:column;gap:10px;padding:18px}
+.mbox h4{margin:0;font-size:16px}
+.mbox p{margin:0;font-size:12.5px;color:var(--amber)}
+.mbox textarea{width:100%;min-height:300px;border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--soft);font:13px/1.7 var(--f-body);resize:vertical}
+.mrow{display:flex;gap:8px;justify-content:flex-end}
+.foot{font-size:12px;color:var(--mute);line-height:1.8;text-align:center}
+@media (max-width:560px){.kv{grid-template-columns:86px 1fr}.kv>div{padding:8px 10px}.rhead h2{font-size:20px}}
+
+/* ===== 대시보드 레이아웃: PC는 왼쪽 입력 / 오른쪽 결과, 모바일은 위아래 ===== */
+.wrap.app{max-width:1320px}
+@media (min-width:1000px){
+  .wrap.app{display:grid;grid-template-columns:360px minmax(0,1fr);align-items:start;gap:22px}
+  .panel.side{position:sticky;top:16px;max-height:calc(100vh - 32px);overflow:auto}
+  .panel.side .ctrls{grid-template-columns:1fr 1fr}
+}
+.mainc{display:flex;flex-direction:column;gap:18px;min-width:0}
+.rhead h2 .crit{display:inline-block;font-size:14px;font-weight:600;padding:3px 10px;border-radius:999px;background:color-mix(in srgb,var(--on-accent) 18%,transparent);vertical-align:middle;margin-left:6px}
+.actbar{display:flex;gap:8px;flex-wrap:wrap;align-items:stretch}
+.actbar .go{flex:1 1 200px}
+.actbar .btn{height:46px;padding:0 16px}
+.btn:disabled{opacity:.45;cursor:default}
+.tabs{display:flex;gap:4px;overflow-x:auto;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:6px 0;border-bottom:1px solid var(--line);scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:0;background:transparent;padding:9px 14px;border-radius:999px;font-weight:600;font-size:14.5px;color:var(--ink2);cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.tab .cnt{font-family:var(--f-mono);font-size:12px;background:var(--soft);border:1px solid var(--line);color:var(--ink2);border-radius:999px;padding:0 7px;line-height:18px}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.tab[aria-selected="true"] .cnt{background:transparent;border-color:color-mix(in srgb,var(--bg) 40%,transparent);color:var(--bg)}
+.tab-disc .cnt{color:var(--red)}.tab-chk .cnt{color:var(--amber)}
+.tabp{display:flex;flex-direction:column;gap:12px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:640px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:14px 16px;text-align:left;cursor:pointer;display:grid;grid-template-columns:1fr auto;align-items:end;gap:2px 6px}
+.kpi span{grid-column:1/-1;font-size:13px;font-weight:600;color:var(--ink2)}
+.kpi b{font-size:34px;line-height:1.05;font-family:var(--f-mono);font-variant-numeric:tabular-nums;color:var(--mute)}
+.kpi small{color:var(--mute);font-size:12px;align-self:end;padding-bottom:4px}
+.kpi.red.on{border-color:color-mix(in srgb,var(--red) 45%,var(--line));background:var(--red-soft)}.kpi.red.on b{color:var(--red)}
+.kpi.amber.on{border-color:color-mix(in srgb,var(--amber) 45%,var(--line));background:var(--amber-soft)}.kpi.amber.on b{color:var(--amber)}
+.kpi.blue.on b{color:var(--accent)}
+.minis{display:flex;flex-wrap:wrap;gap:6px}
+.mini{font-size:12.5px;padding:4px 10px;border-radius:999px;background:var(--paper);border:1px solid var(--line);color:var(--mute)}
+.mini b{font-family:var(--f-mono);margin-left:2px}
+.mini.on{color:var(--red);border-color:color-mix(in srgb,var(--red) 35%,var(--line))}
+.briefs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.bgroup{background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.bg-t{font-size:13px;font-weight:700;padding:10px 14px;border-bottom:1px solid var(--line)}
+.bg-t.red{color:var(--red)}.bg-t.amber{color:var(--amber)}.bg-t.blue{color:var(--accent)}
+.brief{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline;text-align:left;border:0;border-bottom:1px solid var(--line);background:transparent;padding:10px 14px;cursor:pointer}
+.brief:last-child{border-bottom:0}
+.brief:hover{background:var(--soft)}
+.brief .mono{color:var(--accent);font-size:12.5px}
+.brief b{font-size:14.5px}
+.brief .chips{flex-basis:100%}
+.bgroup .empty{border:0;border-radius:0}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;z-index:60;max-width:calc(100% - 32px)}
+/* ===== 질병예측 ===== */
+.hp{display:flex;flex-direction:column;gap:14px}
+.hp-top{display:flex;flex-direction:column;gap:14px}
+.hp-years{display:flex;gap:6px;flex-wrap:wrap}
+.hp-y{border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:6px 12px;cursor:pointer;font-weight:700;font-family:var(--f-mono);display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.hp-y small{font-weight:500;font-size:11px;color:var(--mute)}
+.hp-y[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.hp-y[aria-pressed="true"] small{color:inherit;opacity:.8}
+.hp-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-top:4px}
+.hp-h h4{margin:0;font-size:16px}
+.hp-h span{font-size:12.5px;color:var(--mute)}
+.hp-organs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+@media (max-width:760px){.hp-organs{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.hp-organ{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;min-width:0}
+.hp-organ small{font-size:11.5px;color:var(--mute)}
+.ring{width:84px;height:84px;max-width:100%}
+.ring-bg{fill:none;stroke:var(--line);stroke-width:7}
+.ring-fg{fill:none;stroke-width:7;stroke-linecap:round;stroke:var(--mute)}
+.ring text{font:700 20px var(--f-mono);fill:var(--ink)}
+.ring.t-g .ring-fg{stroke:var(--green)}.ring.t-a .ring-fg{stroke:var(--amber)}.ring.t-r .ring-fg{stroke:var(--red)}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--soft);color:var(--mute)}
+.tag.t-g{background:var(--green-soft);color:var(--green)}.tag.t-y{background:var(--green-soft);color:var(--green)}.tag.t-a{background:var(--amber-soft);color:var(--amber)}.tag.t-o{background:var(--red-soft);color:var(--red)}.tag.t-r{background:var(--red);color:var(--paper)}
+.hp-risks{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.hp-risk{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.hp-rt{display:flex;flex-direction:column}.hp-rt small{font-size:11.5px;color:var(--mute)}
+.gauge{display:grid;grid-template-columns:repeat(10,1fr);gap:3px}
+.gauge i{height:8px;border-radius:3px;background:var(--line)}
+.gauge i.on{background:var(--green)}
+.gauge i.on.s5,.gauge i.on.s6{background:var(--amber)}
+.gauge i.on.s7,.gauge i.on.s8{background:color-mix(in srgb,var(--red) 70%,var(--amber))}
+.gauge i.on.s9,.gauge i.on.s10{background:var(--red)}
+.gauge i.on.s3,.gauge i.on.s4{background:color-mix(in srgb,var(--green) 55%,var(--amber))}
+.hp-rf{display:flex;justify-content:space-between;align-items:center}
+.lvn{font:700 20px var(--f-mono)}.lvn small{font-size:12px;color:var(--mute)}
+.hp-warns{display:flex;flex-direction:column;gap:10px}
+.hp-warn{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+@media (max-width:700px){.hp-warn{grid-template-columns:1fr}}
+.hp-wl{padding:14px 16px;display:flex;flex-direction:column;gap:3px;border-left:4px solid var(--amber)}
+.hp-warn.lv2 .hp-wl{border-left-color:var(--red)}
+.hp-wl b{font-size:15px}.hp-wl span{font-size:13.5px;color:var(--ink2)}
+.hp-wr{padding:14px 16px;background:var(--soft);display:flex;flex-direction:column;gap:2px}
+.hp-wr small{font-size:11.5px;font-weight:700;color:var(--mute);letter-spacing:.04em}
+.hp-wr p{margin:0 0 6px;font-size:13.5px}
+.hp-op{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.hp-op p{margin:0;font-size:14px}.hp-op p.hot{color:var(--red);font-weight:600}
+.hp-op small{color:var(--mute);font-size:12px}
+.hp-t td.dim{color:var(--mute)}
+.hp-t em{font-style:normal;font-size:11px;margin-left:3px}.hp-t em.up{color:var(--red)}.hp-t em.dn{color:var(--green)}
+.hp-t td small{font-size:11px;font-weight:600}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+
+:root{
+  --bg:#F2F4F9; --paper:#FFFFFF; --ink:#172033; --ink2:#4A5670; --mute:#8590A6; --line:#DCE2EE; --soft:#F6F8FC;
+  --accent:#1F3F9E; --accent-soft:#E3EAFB; --on-accent:#FFFFFF;
+  --side:#1B347F; --side2:#244499; --side-ink:#E9EEFF; --side-mute:#A9B7E3;
+  --red:#D2362F; --red-soft:#FDE9E7; --amber:#B86E00; --amber-soft:#FFF1D9; --green:#178A4C; --green-soft:#E1F4E8;
+  --f-body:"IBM Plex Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1424; --paper:#161E33; --ink:#E4E9F5; --ink2:#AEB9D3; --mute:#7C88A6; --line:#28324D; --soft:#1B2440;
+  --accent:#8FA9F5; --accent-soft:#1F2C55; --on-accent:#0B1430;
+  --side:#0A1230; --side2:#16224A; --side-ink:#E4E9F5; --side-mute:#8D9BC7;
+  --red:#F2827A; --red-soft:#3A1D1E; --amber:#E9B45C; --amber-soft:#3A2C14; --green:#6DD39C; --green-soft:#14301F; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1424; --paper:#161E33; --ink:#E4E9F5; --ink2:#AEB9D3; --mute:#7C88A6; --line:#28324D; --soft:#1B2440;
+  --accent:#8FA9F5; --accent-soft:#1F2C55; --on-accent:#0B1430;
+  --side:#0A1230; --side2:#16224A; --side-ink:#E4E9F5; --side-mute:#8D9BC7;
+  --red:#F2827A; --red-soft:#3A1D1E; --amber:#E9B45C; --amber-soft:#3A2C14; --green:#6DD39C; --green-soft:#14301F; color-scheme:dark}
+html,body{margin:0;background:var(--bg)}
+body{min-height:100dvh}
+svg.i{width:16px;height:16px;flex:0 0 auto;vertical-align:-3px}
+
+/* ===== 잠금 화면 ===== */
+.lock{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px 16px;background:var(--side);background:linear-gradient(160deg,var(--side) 0%,var(--side2) 100%)}
+.lbox{background:var(--paper);border-radius:18px;width:min(420px,100%);padding:28px 24px;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.lbox h1{font-size:22px}
+.lbox p{margin:0;font-size:13.5px;color:var(--ink2)}
+.lbox input{height:48px;border:1px solid var(--line);border-radius:10px;padding:0 14px;font-size:18px;letter-spacing:.2em;background:var(--soft);width:100%}
+.lbox .go{width:100%}
+.lbox .lnk{background:none;border:0;color:var(--mute);font-size:12.5px;text-decoration:underline;cursor:pointer;align-self:center}
+.lmark{display:flex;align-items:center;gap:10px;color:var(--accent);font-weight:700}
+.lmark svg{width:34px;height:34px}
+.safe{display:flex;gap:8px;align-items:flex-start;background:var(--accent-soft);color:var(--ink);border-radius:10px;padding:10px 12px;font-size:12.5px;line-height:1.6}
+.safe svg{color:var(--accent);margin-top:2px}
+
+/* ===== 전체 틀 ===== */
+.shell{display:grid;grid-template-columns:280px minmax(0,1fr);min-height:100dvh}
+.side{background:var(--side);color:var(--side-ink);display:flex;flex-direction:column;gap:10px;padding:18px 14px 14px;position:sticky;top:0;height:100dvh;overflow:auto}
+.sbrand{display:flex;flex-direction:column;gap:2px;padding:0 4px 6px}
+.sbrand b{font-size:19px;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+.sbrand b svg{width:24px;height:24px}
+.sbrand small{color:var(--side-mute);font-size:12px}
+.sbtn{display:flex;align-items:center;justify-content:center;gap:8px;height:44px;border-radius:10px;border:1px solid color-mix(in srgb,var(--side-ink) 22%,transparent);background:transparent;color:var(--side-ink);font-weight:700;font-size:15px;cursor:pointer;width:100%}
+.sbtn.pri{background:#3D63D6;border-color:#3D63D6;color:#fff}
+.sbtn:hover{filter:brightness(1.08)}
+.sq{height:40px;border-radius:10px;border:0;padding:0 12px 0 36px;background:var(--paper);color:var(--ink);width:100%;font-size:14px}
+.sqw{position:relative}.sqw svg{position:absolute;left:11px;top:12px;color:var(--mute)}
+.sfilt{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.sfilt button{height:32px;border-radius:8px;border:1px solid color-mix(in srgb,var(--side-ink) 20%,transparent);background:transparent;color:var(--side-mute);font-size:13px;cursor:pointer}
+.sfilt button[aria-pressed="true"]{background:var(--side2);color:#fff;border-color:transparent;font-weight:700}
+.clist{display:flex;flex-direction:column;gap:2px;flex:1 1 auto;min-height:120px}
+.cgrp{font-size:12px;color:var(--side-mute);padding:10px 6px 4px}
+.citem{display:flex;flex-direction:column;gap:2px;text-align:left;border:0;border-radius:10px;background:transparent;color:var(--side-ink);padding:9px 10px;cursor:pointer;width:100%}
+.citem:hover{background:color-mix(in srgb,var(--side2) 70%,transparent)}
+.citem[aria-current="true"]{background:#3D63D6;color:#fff}
+.citem .r1{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.citem .r1 b{font-size:15px}
+.citem .r1 small{color:inherit;opacity:.75;font-size:12.5px}
+.citem .r1 .stt{margin-left:auto;font-size:12px;font-weight:700;color:#7EE2A8}
+.citem .r1 .stt.w{color:#FFD27A}
+.citem .r2{font-size:12.5px;opacity:.85}
+.citem .r2.ok{color:#9FE7BE;opacity:1}
+.cempty{font-size:13px;color:var(--side-mute);padding:14px 8px;line-height:1.7}
+.sfoot{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+.sfoot button{height:34px;border-radius:8px;border:1px solid color-mix(in srgb,var(--side-ink) 20%,transparent);background:transparent;color:var(--side-ink);font-size:12.5px;cursor:pointer}
+.sfoot button:hover{background:var(--side2)}
+.slock{font-size:11.5px;color:var(--side-mute);display:flex;gap:6px;align-items:center;padding:4px 4px 0}
+
+.main{min-width:0;padding:18px 22px 40px;display:flex;flex-direction:column;gap:14px}
+.welcome{max-width:760px;margin:6vh auto 0;display:flex;flex-direction:column;gap:16px}
+.welcome h2{font-size:24px}
+.welcome p{margin:0;color:var(--ink2)}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.step{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.step b{font-size:15px}.step span{font-size:13px;color:var(--ink2)}
+.step i{font-style:normal;font:700 13px var(--f-mono);color:var(--accent);background:var(--accent-soft);border-radius:999px;width:26px;height:26px;display:grid;place-items:center}
+@media (max-width:640px){.steps{grid-template-columns:1fr}}
+.membanner{background:var(--amber-soft);color:var(--amber);border-radius:10px;padding:8px 12px;font-size:13px;font-weight:600}
+
+/* 고객 머리글 */
+.chead{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:12px}
+.chead h2{font-size:26px;font-weight:700}
+.cmeta{color:var(--ink2);font-size:14px}
+.cact{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.stbadge{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:999px;font-weight:700;font-size:13.5px;background:var(--green);color:#fff}
+.stbadge.w{background:var(--amber-soft);color:var(--amber)}
+.btn{display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.btn.lg{height:38px;padding:0 14px}
+.back{display:none}
+.memo{font-size:13.5px}
+.memo summary{color:var(--ink2);font-weight:600}
+.memo textarea{width:100%;min-height:70px;margin-top:6px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--paper);font:13.5px/1.6 var(--f-body);resize:vertical}
+.rebase{font-size:12.5px;color:var(--mute)}
+.rebase button{border:0;background:none;color:var(--accent);text-decoration:underline;cursor:pointer;font-size:12.5px;padding:0}
+
+/* 메인 탭 */
+.ptabs{display:flex;gap:6px;flex-wrap:wrap;position:sticky;top:0;z-index:6;background:var(--bg);padding:6px 0}
+.ptab{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 18px;border-radius:10px 10px 0 0;border:1px solid var(--line);border-bottom:0;background:var(--soft);color:var(--ink2);font-weight:600;font-size:15px;cursor:pointer}
+.ptab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.ptab .cnt{font:600 12px var(--f-mono);background:color-mix(in srgb,currentColor 14%,transparent);border-radius:999px;padding:0 7px;line-height:18px}
+.ppane{display:flex;flex-direction:column;gap:12px}
+
+/* 판정표 */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));gap:10px}
+@media (max-width:560px){.pgrid{grid-template-columns:1fr}}
+.pc{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.pc-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pc-h h4{margin:0;font-size:16px;font-weight:700;color:var(--accent);margin-right:auto}
+.pc-a{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.pb{display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 10px;border-radius:999px;border:1px solid var(--line);background:var(--paper);font-size:13px;font-weight:600;cursor:pointer;color:var(--ink)}
+.pb:hover{border-color:var(--accent);color:var(--accent)}
+.bdg{display:inline-flex;align-items:center;height:26px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:700}
+.bdg.y{background:var(--red);color:#fff}.bdg.c{background:var(--amber);color:#fff}.bdg.n{background:var(--green);color:#fff}
+.pl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.pl li{display:grid;grid-template-columns:minmax(0,1fr) 64px 92px;align-items:center;gap:8px;font-size:14px;padding:3px 0;border-top:1px dashed var(--line)}
+.pl li:first-child{border-top:0}
+.pl li .n{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.pl li .n small{display:block;font-size:11px;color:var(--amber);line-height:1.1}
+.pl .s{display:inline-flex;align-items:center;gap:4px;font-weight:700;font-size:13.5px}
+.pl .s.y{color:var(--red)}.pl .s.c{color:var(--amber)}.pl .s.n{color:var(--green)}
+.pfoot{font-size:12.5px;color:var(--mute);line-height:1.8}
+.psum{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.psum .chipx{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:13.5px;font-weight:700;background:var(--paper);border:1px solid var(--line)}
+.psum .chipx.ok{color:var(--green);border-color:color-mix(in srgb,var(--green) 40%,var(--line))}
+.psum .chipx.bad{color:var(--red);border-color:color-mix(in srgb,var(--red) 40%,var(--line))}
+
+/* 진료이력 */
+.hbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--paper)}
+.seg button{border:0;background:transparent;padding:8px 14px;font-weight:600;font-size:14px;cursor:pointer;color:var(--ink2)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.hbar .sp{margin-left:auto}
+table.ht{min-width:960px}
+table.ht thead th{background:var(--accent);color:var(--on-accent);font-size:13px;position:sticky;top:0}
+table.ht td{padding:6px 10px;font-size:13.5px;vertical-align:middle}
+table.ht td.c{text-align:center}
+table.ht tr.grp td{background:var(--accent-soft);color:var(--accent);font-weight:700;padding:7px 10px}
+table.ht tr.grp td svg{margin-right:6px}
+table.ht td.unk{color:var(--mute)}
+.tw.ht-w{max-height:72vh;overflow:auto}
+.ckm{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:5px;font-size:12px;font-weight:700;color:#fff}
+.ckm.y{background:var(--green)}.ckm.n{background:color-mix(in srgb,var(--red) 80%,transparent)}
+.ckm.n{opacity:.55}
+.notes{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:12.5px;color:var(--ink2);line-height:1.8;margin:0;list-style:none}
+.notes li::before{content:"※ "}
+
+/* 미청구 */
+.gcards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+@media (max-width:760px){.gcards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.gc{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 14px;display:flex;flex-direction:column}
+.gc span{font-size:12.5px;color:var(--mute)}
+.gc b{font:700 19px var(--f-mono);color:var(--accent);font-variant-numeric:tabular-nums}
+.gc small{font-size:11px;color:var(--mute)}
+table.cl{min-width:880px}
+table.cl thead th{background:var(--accent);color:var(--on-accent);text-align:center;font-size:13px}
+table.cl td{padding:5px 10px;font-size:13.5px;white-space:nowrap}
+table.cl td.r{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+table.cl tr.tot td{background:var(--accent-soft);color:var(--accent);font-weight:700}
+table.cl tr.tot td.g{color:var(--red)}
+table.cl td.z{color:var(--mute)}
+table.cl td.inp{color:var(--red);font-weight:700}
+.subt{font-size:13px;color:var(--ink2)}
+
+/* 상품 상세 */
+.pvh{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pvh h3{font-size:19px;margin-right:auto}
+.pnote{background:var(--accent-soft);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--ink)}
+
+/* 파일 첨부 창 */
+.fbox{width:min(640px,100%)}
+.fbox h4{display:flex;gap:8px;align-items:center}
+.fdrop{border:1.5px dashed var(--line);border-radius:12px;padding:16px;text-align:center;background:var(--soft);cursor:pointer;display:flex;flex-direction:column;gap:4px;align-items:center}
+.fdrop.on{border-color:var(--accent);background:var(--accent-soft)}
+.fdrop b{font-size:14.5px}.fdrop small{color:var(--mute);font-size:12.5px;line-height:1.6}
+.flist{min-height:90px;max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:6px;display:flex;flex-direction:column;gap:2px;background:var(--paper)}
+.frow{display:flex;gap:8px;align-items:center;font-size:13.5px;padding:4px 6px;border-radius:6px}
+.frow:hover{background:var(--soft)}
+.frow span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.frow i{font-style:normal;font-size:12px;color:var(--mute)}
+.frow.ok i{color:var(--green);font-weight:600}.frow.bad i{color:var(--red);font-weight:600}
+.frow button{border:0;background:none;color:var(--mute);cursor:pointer;font-size:16px;line-height:1}
+.fneed{display:flex;flex-wrap:wrap;gap:4px}
+.fneed span{font-size:12px;padding:2px 8px;border-radius:999px;background:var(--soft);border:1px solid var(--line);color:var(--mute)}
+.fneed span.on{background:var(--green-soft);color:var(--green);border-color:transparent;font-weight:600}
+.prog{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.prog i{display:block;height:100%;background:var(--accent);width:0;transition:width .2s}
+
+/* 고객 등록 창 */
+.form{display:flex;flex-direction:column;gap:12px}
+.form label.l{font-size:13px;font-weight:600;color:var(--ink2)}
+.form input[type=text],.form input[type=password],.form input[inputmode]{height:44px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--paper);width:100%;font-size:15px}
+.form textarea{border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--paper);width:100%;min-height:60px;font:14px/1.6 var(--f-body)}
+.sexsel{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sexsel button{height:44px;border:1px solid var(--line);border-radius:10px;background:var(--paper);font-weight:700;cursor:pointer}
+.sexsel button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.consent{display:flex;gap:8px;align-items:center;font-size:13px}
+.mbox .mrow .go{height:42px;padding:0 20px;font-size:15px}
+.mbox.wide{width:min(760px,100%)}
+.ferr{color:var(--red);font-size:13px;white-space:pre-line}
+.fwarn{background:var(--amber-soft);color:var(--ink);border-radius:8px;padding:8px 12px;font-size:13px;white-space:pre-line}
+
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr}
+  .side{position:static;height:auto;min-height:100dvh}
+  .shell.has-c .side{display:none}
+  .shell:not(.has-c) .main{display:none}
+  .main{padding:12px 14px 40px}
+  .back{display:inline-flex}
+  .chead h2{font-size:22px}
+  .cact{margin-left:0;width:100%}
+  .ptabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .ptab{padding:0 12px;font-size:14px;height:40px;flex:0 0 auto}
+  .ptab .lbl-long{display:none}
+}
+@media print{.side,.ptabs,.cact,.hbar .seg,.memo{display:none!important}.shell{display:block}}
+/* 숫자: 본문 글꼴 + 고정폭 숫자 (오프라인에서도 한글이 고르게 보이도록) */
+table.cl td.r,table.ht td.n,.gc b,.pl li .n{font-family:var(--f-body);font-variant-numeric:tabular-nums}
+.gc b{font-weight:700}
+
+</style>
+</head>
+<body>
+<div id="lock" class="lock"><div class="lbox" id="lbox"><p>불러오는 중…</p></div></div>
+<div class="shell" id="shell" hidden>
+  <aside class="side" aria-label="고객 목록">
+    <div class="sbrand"><b><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5zm-1 13-4-4 1.4-1.4L11 12.2l4.6-4.6L17 9z"/></svg>병력고지 분석기</b><small>고지 판정 · 진료이력 · 미청구 보험금 · 건강 분석</small></div>
+    <button class="sbtn pri" id="newCust" type="button"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><circle cx="10" cy="8" r="4"/><path d="M2 21c0-4 4-7 8-7s8 3 8 7zM19 8h2v3h3v2h-3v3h-2v-3h-3v-2h3z"/></svg>신규 고객 등록</button>
+    <div class="sqw"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" class="sq" type="search" placeholder="고객 검색" autocomplete="off"></div>
+    <div class="sfilt" id="sfilt"><button id="fAll" type="button" data-f="all">전체</button><button id="fDone" type="button" data-f="done">완료</button><button id="fWait" type="button" data-f="wait">대기</button></div>
+    <div class="clist" id="clist"></div>
+    <div class="sfoot"><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button></div>
+    <input type="file" id="bkFile" accept=".json,application/json" hidden>
+    <div class="slock"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6 10V8a6 6 0 1 1 12 0v2h1v12H5V10zm2 0h8V8a4 4 0 1 0-8 0z"/></svg>고객 정보는 이 기기에만 암호화 저장 · 서버 전송 없음</div>
+    <div id="memBan" class="membanner" hidden>저장소를 쓸 수 없는 화면입니다 · 창을 닫으면 사라집니다</div>
+  </aside>
+  <main class="main" id="main"></main>
+</div>
+<template id="tplWelcome">
+  <div class="welcome">
+    <h2>고객을 선택하거나 새로 등록하세요</h2>
+    <p>MH스캐너처럼 고객을 먼저 등록하고 파일을 첨부하면, 모든 상품의 고지 판정표를 한 번에 만들어 이 기기에 저장합니다.</p>
+    <div class="steps">
+      <div class="step"><i>1</i><b>고객 등록</b><span>이름 · 성별 · 생년월일 (생년월일은 PDF 비밀번호로 자동 사용)</span></div>
+      <div class="step"><i>2</i><b>파일 첨부</b><span>심평원 기본·세부·처방, 공단 요양급여·건강검진, 투약이력 엑셀</span></div>
+      <div class="step"><i>3</i><b>전 상품 판정</b><span>표준체 · 간편 3.N.5 · 실손 · 운전자 + 진료이력 · 미청구 보험금 · 건강 분석</span></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="go" type="button" data-act="new" style="padding:0 24px">신규 고객 등록</button><button class="btn lg" type="button" data-act="sample">예시 고객 보기</button></div>
+  </div>
+</template>
+<div class="toast" id="toast" role="status" hidden></div>
+<div class="modal" id="dlg" hidden><div class="mbox" id="dlgBox" role="dialog" aria-modal="true"></div></div>
+<div class="modal" id="modal" hidden>
+  <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <h4 id="mTitle">고지양식</h4>
+    <p>완치여부·치료내용·추가검사 항목은 세부진료 내역을 참고해 고객과 꼭 교차 확인하세요.</p>
+    <textarea id="mText" readonly></textarea>
+    <div class="mrow"><span id="mMsg" class="note" style="align-self:center;margin-right:auto"></span><button class="btn" id="mClose" type="button">닫기</button><button class="btn pri" id="mCopy" type="button">복사</button></div>
+  </div>
+</div>
+
+<script src="lib/pdf.worker.min.js"></script>
+<script src="lib/pdf.min.js"></script>
+<script src="lib/jszip.min.js"></script>
+<script src="lib/xlsx.full.min.js"></script>
+<script>
+// PDF 표 추출 엔진 (브라우저/Node 공용) - pdf.js 3.11
+(function (root) {
+  function mul(m, n) {
+    return [m[0]*n[0]+m[2]*n[1], m[1]*n[0]+m[3]*n[1], m[0]*n[2]+m[2]*n[3], m[1]*n[2]+m[3]*n[3], m[0]*n[4]+m[2]*n[5]+m[4], m[1]*n[4]+m[3]*n[5]+m[5]];
+  }
+  function ap(m, x, y) { return [m[0]*x+m[2]*y+m[4], m[1]*x+m[3]*y+m[5]]; }
+
+  async function pageSegments(pdfjsLib, page) {
+    var OPS = pdfjsLib.OPS;
+    var ol = await page.getOperatorList();
+    var ctm = [1,0,0,1,0,0], stack = [], segs = [];
+    for (var i = 0; i < ol.fnArray.length; i++) {
+      var fn = ol.fnArray[i], args = ol.argsArray[i];
+      if (fn === OPS.save) stack.push(ctm.slice());
+      else if (fn === OPS.restore) ctm = stack.pop() || [1,0,0,1,0,0];
+      else if (fn === OPS.transform) ctm = mul(ctm, args);
+      else if (fn === OPS.constructPath) {
+        var ops = args[0], co = args[1], k = 0, cur = null, start = null;
+        for (var j = 0; j < ops.length; j++) {
+          var o = ops[j];
+          if (o === OPS.moveTo) { cur = ap(ctm, co[k], co[k+1]); start = cur; k += 2; }
+          else if (o === OPS.lineTo) { var p = ap(ctm, co[k], co[k+1]); if (cur) segs.push([cur[0],cur[1],p[0],p[1]]); cur = p; k += 2; }
+          else if (o === OPS.rectangle) {
+            var x = co[k], y = co[k+1], w = co[k+2], h = co[k+3]; k += 4;
+            var a = ap(ctm,x,y), b = ap(ctm,x+w,y), c = ap(ctm,x+w,y+h), d = ap(ctm,x,y+h);
+            segs.push([a[0],a[1],b[0],b[1]],[b[0],b[1],c[0],c[1]],[c[0],c[1],d[0],d[1]],[d[0],d[1],a[0],a[1]]);
+          }
+          else if (o === OPS.curveTo) { k += 6; }
+          else if (o === OPS.curveTo2 || o === OPS.curveTo3) { k += 4; }
+          else if (o === OPS.closePath) { if (cur && start) segs.push([cur[0],cur[1],start[0],start[1]]); cur = start; }
+        }
+      }
+    }
+    return segs;
+  }
+
+  function clusterVals(vals, tol) {
+    vals.sort(function(a,b){return a-b;});
+    var out = [];
+    vals.forEach(function(v){ if (!out.length || v - out[out.length-1] > tol) out.push(v); });
+    return out;
+  }
+
+  // 한 페이지를 괘선 격자로 나눠 행 배열 반환 (각 행 = 셀 문자열 배열)
+  async function pageTable(pdfjsLib, page) {
+    var segs = await pageSegments(pdfjsLib, page);
+    var H = [], V = [];
+    segs.forEach(function(s){
+      var dx = Math.abs(s[2]-s[0]), dy = Math.abs(s[3]-s[1]);
+      if (dy < 0.8 && dx > 3) H.push({y:(s[1]+s[3])/2, x0:Math.min(s[0],s[2]), x1:Math.max(s[0],s[2])});
+      else if (dx < 0.8 && dy > 3) V.push({x:(s[0]+s[2])/2, y0:Math.min(s[1],s[3]), y1:Math.max(s[1],s[3])});
+    });
+    var tc = await page.getTextContent();
+    var items = tc.items.filter(function(it){ return it.str && it.str.trim(); }).map(function(it){
+      var fs = Math.hypot(it.transform[2], it.transform[3]) || 8;
+      return { s: it.str, x: it.transform[4], y: it.transform[5], w: it.width, cx: it.transform[4] + it.width/2, cy: it.transform[5] + fs*0.35, fs: fs };
+    });
+    if (!H.length || !V.length) return { rows: [], items: items, H: H, V: V };
+    var ys = clusterVals(H.map(function(h){return h.y;}), 1.5).reverse(); // 위 -> 아래 (PDF y는 위가 큼)
+    var xs = clusterVals(V.map(function(v){return v.x;}), 1.5);
+    var nR = ys.length - 1, nC = xs.length - 1;
+    var grid = [];
+    for (var r = 0; r < nR; r++) { grid.push([]); for (var c = 0; c < nC; c++) grid[r].push([]); }
+    items.forEach(function(it){
+      var r = -1, c = -1;
+      for (var i = 0; i < nR; i++) if (it.cy <= ys[i] && it.cy > ys[i+1]) { r = i; break; }
+      for (var j = 0; j < nC; j++) if (it.cx >= xs[j] && it.cx < xs[j+1]) { c = j; break; }
+      if (r >= 0 && c >= 0) grid[r][c].push(it);
+    });
+    var rows = grid.map(function(row){
+      return row.map(function(cell){
+        cell.sort(function(a,b){ return Math.abs(a.y-b.y) > 2 ? b.y - a.y : a.x - b.x; });
+        var out = '', last = null;
+        cell.forEach(function(it){
+          if (last) {
+            if (Math.abs(it.y - last.y) > 2) out += '';            // 줄바꿈: 붙여쓰기
+            else if (it.x - (last.x + last.w) > last.fs * 0.25) out += ' ';
+          }
+          out += it.s; last = it;
+        });
+        return out.replace(/\s+/g, ' ').trim();
+      });
+    }).filter(function(r){ return r.some(function(c){ return c; }); });
+    return { rows: rows, items: items, H: H, V: V };
+  }
+
+  async function openPdf(pdfjsLib, data, passwords) {
+    var tries = [undefined].concat(passwords || []);
+    var lastErr;
+    for (var i = 0; i < tries.length; i++) {
+      try {
+        var opts = { data: data.slice ? data.slice(0) : data, isEvalSupported: false };
+        if (tries[i] !== undefined) opts.password = tries[i];
+        var doc = await pdfjsLib.getDocument(opts).promise;
+        return doc;
+      } catch (e) {
+        lastErr = e;
+        if (!e || e.name !== 'PasswordException') throw e;
+      }
+    }
+    var err = new Error('비밀번호가 맞지 않습니다');
+    err.code = 'PASSWORD';
+    throw err;
+  }
+
+  async function pageText(page) {
+    var tc = await page.getTextContent();
+    // y 기준 줄 단위 텍스트
+    var its = tc.items.filter(function(it){return it.str.trim();}).map(function(it){ return {s:it.str, x:it.transform[4], y:it.transform[5], w:it.width}; });
+    its.sort(function(a,b){ return Math.abs(a.y-b.y) > 3 ? b.y-a.y : a.x-b.x; });
+    var lines = [], cur = null;
+    its.forEach(function(it){
+      if (!cur || Math.abs(cur.y - it.y) > 3) { cur = { y: it.y, parts: [] }; lines.push(cur); }
+      cur.parts.push(it);
+    });
+    return lines.map(function(l){ return l.parts.map(function(p){return p.s;}).join(' ').replace(/\s+/g,' ').trim(); });
+  }
+
+  var api = { pageTable: pageTable, openPdf: openPdf, pageText: pageText };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.PdfTable = api;
+})(this);
+
+
+</script>
+<script>
+// 병력 고지 판정 엔진 (브라우저/Node 공용)
+(function (root) {
+  // ---------- 날짜 ----------
+  function pd(s) { var t = String(s || '').trim(); var m = t.match(/(\d{4})[-.](\d{1,2})[-.](\d{1,2})/) || t.match(/^(\d{4})(\d{2})(\d{2})$/); return m ? new Date(Date.UTC(+m[1], +m[2]-1, +m[3])) : null; }
+  function fmt(d) { return d.toISOString().slice(0, 10); }
+  function short(s) { return String(s).slice(2); } // 22-12-20
+  function addM(d, months) { var r = new Date(d.getTime()); var day = r.getUTCDate(); r.setUTCDate(1); r.setUTCMonth(r.getUTCMonth() + months); var last = new Date(Date.UTC(r.getUTCFullYear(), r.getUTCMonth()+1, 0)).getUTCDate(); r.setUTCDate(Math.min(day, last)); return r; }
+  function num(s) { var n = parseFloat(String(s || '').replace(/[^\d.\-]/g, '')); return isNaN(n) ? 0 : n; }
+
+  // ---------- 상병코드 ----------
+  function normCode(raw) {
+    var s = String(raw || '').replace(/\s/g, '').toUpperCase();
+    if (!s || s === '$' || !/^[A-Z]/.test(s)) return { code: '', src: '' };
+    var src = '';
+    if (/^[AB][A-Z]\d/.test(s)) { src = s[0] === 'A' ? '양방' : '한방'; s = s.slice(1); }
+    return { code: s.length > 3 ? s.slice(0, 3) + '.' + s.slice(3) : s, src: src };
+  }
+  function cleanName(n) { return String(n || '').replace(/^\((양방|한방)\)\s*/, '').trim(); }
+  function c3(code) { return code.replace('.', '').slice(0, 3); }
+  function inRange(code, a, b) { var k = c3(code); return k >= a && k <= b; }
+  function startsAny(code, list) { var k = code.replace('.', ''); return list.some(function (p) { return k.indexOf(p) === 0; }); }
+
+  // 표준체 11대 질병
+  function std11(code) {
+    if (!code) return '';
+    if (inRange(code, 'C91', 'C95')) return '백혈병';
+    if (inRange(code, 'C00', 'C97')) return '암';
+    if (inRange(code, 'D00', 'D09')) return '암(제자리암)';
+    if (inRange(code, 'D37', 'D48')) return '암(경계성종양)';
+    if (inRange(code, 'I10', 'I15') || startsAny(code, ['R030'])) return '고혈압';
+    if (c3(code) === 'I20') return '협심증';
+    if (inRange(code, 'I21', 'I23') || startsAny(code, ['I252'])) return '심근경색';
+    if (inRange(code, 'I05', 'I08') || inRange(code, 'I34', 'I39')) return '심장판막증';
+    if (startsAny(code, ['K703', 'K717', 'K74'])) return '간경화';
+    if (inRange(code, 'I60', 'I64') || c3(code) === 'I69') return '뇌졸중';
+    if (inRange(code, 'E10', 'E14') || startsAny(code, ['H360'])) return '당뇨병';
+    if (inRange(code, 'B20', 'B24') || c3(code) === 'Z21') return '에이즈(HIV)';
+    if (inRange(code, 'K60', 'K62') || c3(code) === 'K64' || c3(code) === 'I84') return '직장·항문 질환';
+    return '';
+  }
+  // 중대질병과 관련 있지만 보험사마다 판단이 갈리는 상병 (확인 필요)
+  function majorSuspect(code) {
+    if (!code) return '';
+    if (startsAny(code, ['Z030', 'Z031'])) return '암 의심(관찰)';
+    if (startsAny(code, ['Z033'])) return '신경계(뇌) 질환 의심(관찰)';
+    if (startsAny(code, ['Z034', 'Z035'])) return '심장질환 의심(관찰)';
+    if (c3(code) === 'G45' || c3(code) === 'G46') return '일과성 뇌허혈·뇌혈관 증후군';
+    if (inRange(code, 'I65', 'I68')) return '뇌혈관 질환(뇌졸중 범위 확인)';
+    if (inRange(code, 'I24', 'I25') && !startsAny(code, ['I252'])) return '허혈성 심장질환(협심증·심근경색 범위 확인)';
+    if (inRange(code, 'I44', 'I49')) return '부정맥·전도장애(심장질환 범위 확인)';
+    if (inRange(code, 'I50', 'I51')) return '심부전·기타 심장질환';
+    if (startsAny(code, ['R73', 'R81'])) return '고혈당·당뇨 의심';
+    if (startsAny(code, ['K70', 'K71', 'K72', 'K73', 'K75', 'K76'])) return '간질환(간경화 진행 여부 확인)';
+    if (startsAny(code, ['R91', 'R92', 'R93', 'R94', 'N63', 'R22', 'R59'])) return '이상 소견·종괴(암 감별 확인)';
+    if (startsAny(code, ['K635', 'K638'])) return '결장 용종(직장·항문질환 범위 확인)';
+    if (inRange(code, 'D10', 'D36')) return '양성 종양(추적관찰 여부 확인)';
+    return '';
+  }
+  function chronicHD(code) { // 고혈압·당뇨·고지혈증
+    if (!code) return '';
+    if (inRange(code, 'I10', 'I15') || startsAny(code, ['R030'])) return '고혈압';
+    if (inRange(code, 'E10', 'E14') || startsAny(code, ['H360', 'R73'])) return '당뇨';
+    if (c3(code) === 'E78') return '고지혈증';
+    return '';
+  }
+  // 간편 6대 질병
+  function simple6(code) {
+    if (startsAny(code, ['Z034'])) return '심근경색(의심·관찰)';
+    var n = std11(code);
+    if (n === '암' || n === '백혈병' || n === '암(제자리암)') return n === '백혈병' ? '암(백혈병)' : n;
+    if (n === '협심증' || n === '심근경색' || n === '심장판막증' || n === '간경화' || n === '뇌졸중') return n;
+    return '';
+  }
+
+  // ---------- 진료내역 분류 ----------
+  var SURG_RE = /수술|절제술|적출술|성형술|봉합술|고정술|치환술|이식술|절개술|배액술|결찰술|재건술|교정술|접합술|관혈적|형성술|박리술|천공술|삽입술|폐쇄술|우회술|중재술|색전술|용종절제|점막절제|제거술|발거술|쇄석술|절석술|광응고술|임플란트.*식립|조갑|침생검|재소파술|유방생검|소작술/;
+  var SURG_EX = /수술후처치|발치술|치석|치근활택|치주소파|구강내소염|치관확장|약물소작|첩모발거|드레싱|BURR|SAW|NEEDLE|SNARE|CLIP|FORCEPS|재료|소모품|단순처치|처치\[|창상처치|기본진료료|이구전색/i;
+  var PROC_RE = /주입술|흡인술|천자|생검|레이저|체외충격파|고주파|소작|구강내소염|치관확장|첩모발거|매복|봉합|절개|적출|제거/;
+  var PROC_EX = /BURR|SAW|NEEDLE|SNARE|CLIP|FORCEPS|재료|소모품|드레싱|기본진료료|이구전색|치석|조직병리|검사료|차단술|신경블록|전달마취|침윤마취|재활|저출력레이저|수복물|보철물|계측|지각과민|단순처치/i;
+  var EXAM_RE = /\bCT\b|CT진단|MRI|자기공명|전산화단층|초음파|내시경|조직병리|생검|PET-?CT|혈관조영|골밀도|심초음파|뇌파|근전도|유방촬영|조영/;
+  var EXAM_EX = /세척|소독|재료|NEEDLE|SNARE|CLIP|소모/i;
+  function isPharm(h, dept) { return /약국$|약국\s*$/.test(h) || (/약국/.test(h) && /일반의/.test(dept || '')); }
+
+  // ---------- 원본 표 -> 레코드 ----------
+  function rowsToRecords(rows, need) {
+    // 헤더 찾기
+    var out = [], hdr = null;
+    rows.forEach(function (r) {
+      if (r[0] === '순번') { hdr = r; return; }
+      if (!hdr || !/^\d+$/.test(r[0] || '')) return;
+      var o = {};
+      hdr.forEach(function (h, i) { o[h.replace(/\s/g, '')] = (r[i] || '').trim(); });
+      out.push(o);
+    });
+    return out;
+  }
+  function pick(o, keys) { for (var i = 0; i < keys.length; i++) { for (var k in o) if (k.indexOf(keys[i]) === 0) return o[k]; } return ''; }
+
+  function buildBasic(rows) {
+    return rowsToRecords(rows).map(function (o) {
+      var c = normCode(pick(o, ['주상병코드']));
+      return { date: (pd(pick(o, ['진료시작일'])) ? fmt(pd(pick(o, ['진료시작일']))) : ''), hosp: pick(o, ['병·의원']).replace(/\s+/g, ''), hospDisp: pick(o, ['병·의원']), dept: pick(o, ['진단과']), type: pick(o, ['입원/외래', '입원']), code: c.code, src: c.src, name: cleanName(pick(o, ['주상병명'])), days: num(pick(o, ['내원일수', '진료일수'])), car: !!pick(o, ['자동차보험']), pay: num(pick(o, ['내가낸의료비', '본인부담'])), total: num(pick(o, ['총진료비'])) };
+    }).filter(function (r) { return r.date; });
+  }
+  function buildDetail(rows) {
+    return rowsToRecords(rows).map(function (o) {
+      return { date: fmt(pd(pick(o, ['진료시작일'])) || new Date(0)), hosp: pick(o, ['병·의원']).replace(/\s+/g, ''), cat: pick(o, ['진료내역']), item: pick(o, ['코드명']), days: num(pick(o, ['총투약일수'])) };
+    });
+  }
+  function buildRx(rows) {
+    return rowsToRecords(rows).map(function (o) {
+      return { date: fmt(pd(pick(o, ['진료시작일'])) || new Date(0)), hosp: pick(o, ['병·의원']).replace(/\s+/g, ''), kind: pick(o, ['처방/조제', '처방']), drug: pick(o, ['약품명']), ingr: pick(o, ['성분명']), dose: num(pick(o, ['1회투약량'])), times: num(pick(o, ['1일투여횟수'])), days: num(pick(o, ['총투약일수'])) };
+    });
+  }
+  // 요양급여내역서: 압축 행 패턴 파싱
+  function buildRecent(rows) {
+    var recs = [], period = '', cur = null;
+    rows.forEach(function (r) {
+      var c = r.filter(function (x) { return x; });
+      c.forEach(function (x, i) { if (x === '발급기간' && c[i + 1]) period = c[i + 1]; });
+      if (c.length >= 3 && /^\d{4}\.\d{2}\.\d{2}$/.test(c[0])) {
+        cur = { date: fmt(pd(c[0])), inDays: num(c[1]), hosp: (c[2] || '').replace(/\s+/g, ''), hospDisp: c[2] || '', type: '', rxDays: 0, name: '', code: '' };
+        recs.push(cur); return;
+      }
+      if (cur && !cur.type) {
+        var j = 0; if (/^\d+$/.test(c[0]) && /^(외래|입원|약국)/.test(c[1] || '')) j = 1;
+        if (/^(외래|입원|약국)/.test(c[j] || '')) {
+          cur.type = c[j]; cur.rxDays = num(c[j + 1]);
+          var rest = c.slice(j + 2);
+          var ci = rest.findIndex(function (x) { return /^[A-Z]\d{2,}[0-9A-Z]*$/.test(x); });
+          if (ci >= 0) { cur.code = normCode(rest[ci]).code; cur.name = rest.slice(0, ci).join(''); }
+          var money = rest.slice(ci >= 0 ? ci + 1 : 0).filter(function (x) { return /^[\d,]+$/.test(x); });
+          if (money.length) cur.pay = num(money[0]);
+        }
+      }
+    });
+    return { rows: recs, period: period };
+  }
+
+  // 내가 먹는 약 한눈에(투약이력) 엑셀: 행 배열 -> 처방 레코드 (처방기관 기준)
+  function buildTuyak(rows) {
+    var hi = -1, H = null;
+    for (var i = 0; i < rows.length; i++) { var r = (rows[i] || []).map(function (x) { return String(x == null ? '' : x).replace(/\s/g, ''); }); if (r.indexOf('조제일자') >= 0 && r.indexOf('제품명') >= 0) { hi = i; H = r; break; } }
+    if (hi < 0) return [];
+    var col = function (n) { return H.indexOf(n); };
+    var cD = col('조제일자'), cH = col('처방기관'), cP = col('조제기관'), cN = col('제품명'), cI = col('성분명'), cC = col('약효분류'), cDo = col('1회투약량'), cT = col('1일투여횟수'), cDy = col('총투약일수');
+    var out = [];
+    rows.slice(hi + 1).forEach(function (r) {
+      if (!r) return; var d = pd(String(r[cD] || ''));
+      if (!d) return;
+      var hosp = String(r[cH] || r[cP] || '').replace(/\s+/g, '');
+      out.push({ date: fmt(d), hosp: hosp, pharm: String(r[cP] || '').replace(/\s+/g, ''), kind: '투약이력', drug: String(r[cN] || ''), ingr: String(r[cI] || ''), cls: String(r[cC] || ''), dose: num(r[cDo]), times: num(r[cT]), days: num(r[cDy]), src: '투약이력' });
+    });
+    return out;
+  }
+  // 처방 자료 합치기 (같은 병원·날짜·성분은 하나로)
+  function mergeRx(a, b) {
+    var key = function (x) { return x.hosp + '|' + x.date + '|' + (String(x.ingr || '').toLowerCase().replace(/[^a-z]/g, '').slice(0, 12) || String(x.drug).slice(0, 6)); };
+    var seen = {}; a.forEach(function (x) { seen[key(x)] = 1; });
+    return a.concat(b.filter(function (x) { if (seen[key(x)]) return false; seen[key(x)] = 1; return true; }));
+  }
+
+  // ---------- 판정 ----------
+  function analyze(input, opt) {
+    var base = pd(opt.baseDate) || new Date();
+    var d5 = addM(base, -60), d3m = addM(base, -3);
+    var mode = opt.mode; // 'std' | 'simple'
+    var N = opt.N == null ? 5 : opt.N, M = opt.M == null ? 5 : opt.M;
+    var dN = addM(base, -12 * N), dM = addM(base, -12 * M);
+    var majorFn = mode === 'std' ? std11 : simple6;
+    var majorLabel = mode === 'std' ? '11대질병' : '중대질병';
+
+    var basic = input.basic || [], detail = input.detail || [], rx = input.rx || [], recent = (input.recent && input.recent.rows) || [];
+    var inWin = function (r) { var d = pd(r.date); return d && d >= d5 && d <= base; };
+
+    var hospRows = basic.filter(function (r) { return !isPharm(r.hosp, r.dept) && inWin(r); });
+    // 요양급여내역서(공단) 병원 진료 중 심평원 자료에 없는 것 추가
+    var basicKeys = {}; basic.forEach(function (r) { basicKeys[r.hosp + '|' + r.date] = 1; });
+    recent.forEach(function (r) {
+      if (/약국/.test(r.type) || !r.code || basicKeys[r.hosp + '|' + r.date] || !inWin(r)) return;
+      hospRows.push({ date: r.date, hosp: r.hosp, hospDisp: r.hospDisp, dept: '', type: r.type, code: r.code, src: '', name: r.name, days: r.inDays || 1, fromRecent: true });
+    });
+    var pharmRows = basic.filter(function (r) { return isPharm(r.hosp, r.dept) && inWin(r); });
+
+    // 병원 방문 단위 (병원+날짜)
+    var visitKey = function (h, d) { return h + '|' + d; };
+    var visits = {};
+    hospRows.forEach(function (r) {
+      var k = visitKey(r.hosp, r.date);
+      if (!visits[k]) visits[k] = { hosp: r.hosp, hospDisp: r.hospDisp, dept: r.dept, date: r.date, rows: [] };
+      visits[k].rows.push(r);
+    });
+    // 병원 처방 (외래/입원 처방 행)
+    var rxByVisit = {}, rxPharm = {};
+    rx.forEach(function (x) {
+      var k = visitKey(x.hosp, x.date);
+      if (visits[k]) (rxByVisit[k] = rxByVisit[k] || []).push(x);
+      else (rxPharm[k] = rxPharm[k] || []).push(x);
+    });
+    var drugKey = function (s) { return String(s || '').replace(/\(.*$/, '').replace(/[_\s].*$/, '').replace(/\d.*$/, ''); };
+    var ingrKey = function (s) { return String(s || '').toLowerCase().replace(/[^a-z]/g, '').slice(0, 12); };
+
+    // 약국 행 -> 병원 방문 연결 (같은 날짜, 약 성분 일치 > 코드 일치 > 단일 병원)
+    var pharmLinks = []; // {visitKey, pharm row, drugs}
+    pharmRows.forEach(function (p) {
+      var cands = Object.keys(visits).filter(function (k) { return visits[k].date === p.date; });
+      var pdrugs = rxPharm[visitKey(p.hosp, p.date)] || [];
+      var best = null, bestScore = -1;
+      cands.forEach(function (k) {
+        var hd = rxByVisit[k] || [], score = 0;
+        pdrugs.forEach(function (a) { if (hd.some(function (b) { return ingrKey(a.ingr) && ingrKey(a.ingr) === ingrKey(b.ingr); })) score += 10; });
+        if (visits[k].rows.some(function (r) { return r.code === p.code; })) score += 3;
+        if (score > bestScore) { bestScore = score; best = k; }
+      });
+      if (best) pharmLinks.push({ vk: best, p: p, drugs: pdrugs });
+    });
+
+    // 카드: 상병코드 단위
+    var cards = {};
+    function card(code, name, src) {
+      if (!cards[code]) cards[code] = { code: code, name: name, src: src, visits: [], hosps: {}, pharmCodes: {}, surg: [], proc: [], exams: [], details: {}, meds: [], inpDays: 0, outDays: 0, disc: [], first: null, last: null };
+      return cards[code];
+    }
+    // 방문별 주상병: 입원 행 > 내원일수 큰 행 > 자료 순서. 주상병이 된 적 없이 다른 상병과 함께만 나온 상병은 그 주상병 카드에 묶음
+    function primaryOf(v) {
+      var coded = v.rows.filter(function (r) { return r.code; });
+      if (!coded.length) return null;
+      var pool = coded.filter(function (r) { return /입원/.test(r.type); });
+      if (!pool.length) pool = coded;
+      return pool.reduce(function (b, r) { return (r.days || 0) > (b.days || 0) ? r : b; }, pool[0]);
+    }
+    var asPrimary = {};
+    Object.keys(visits).forEach(function (k) { var p = primaryOf(visits[k]); if (p) asPrimary[p.code] = 1; });
+    Object.keys(visits).forEach(function (k) {
+      var v = visits[k];
+      var mainRow = primaryOf(v);
+      if (!mainRow) return;
+      var codesSeen = {};
+      v.rows.forEach(function (r) {
+        if (!r.code || codesSeen[r.code]) return; codesSeen[r.code] = 1;
+        var absorbed = !asPrimary[r.code] && r.code !== mainRow.code;
+        var c = absorbed ? card(mainRow.code, mainRow.name, mainRow.src) : card(r.code, r.name, r.src);
+        if (absorbed) { c.siblings = c.siblings || {}; c.siblings[r.code] = r.name; if (codesSeen['@' + mainRow.code]) return; }
+        codesSeen['@' + c.code] = 1;
+        var isIn = v.rows.some(function (x) { return (x.code === r.code || x.code === c.code) && /입원/.test(x.type); });
+        c.visits.push({ hosp: v.hosp, hospDisp: v.hospDisp, dept: v.dept, date: v.date, inp: isIn, days: 1 });
+        var h = c.hosps[v.hosp] = c.hosps[v.hosp] || { name: v.hospDisp || v.hosp, dept: {}, dates: {}, inp: 0, out: 0, first: v.date, last: v.date };
+        h.dept[v.dept] = 1;
+        var dd = isIn ? Math.max(1, Math.max.apply(null, v.rows.filter(function (x) { return x.code === r.code || x.code === c.code; }).map(function (x) { return x.days || 0; }))) : 1;
+        if (!h.dates[v.date]) { h.dates[v.date] = 1; if (isIn) h.inp += dd; else h.out += 1; }
+        if (v.date < h.first) h.first = v.date; if (v.date > h.last) h.last = v.date;
+      });
+      var c = cards[mainRow.code];
+      // 세부진료 (같은 병원+날짜)
+      detail.forEach(function (d) {
+        if (d.hosp !== v.hosp || d.date !== v.date) return;
+        (c.details[v.date + ' ' + (v.hospDisp || v.hosp)] = c.details[v.date + ' ' + (v.hospDisp || v.hosp)] || []).push(d.item);
+        if (SURG_RE.test(d.item) && !SURG_EX.test(d.item) && (/처치|수술|수혈|마취/.test(d.cat) || /생검|광응고|쇄석|절석|임플란트|조갑/.test(d.item))) c.surg.push({ date: v.date, hosp: v.hospDisp || v.hosp, item: d.item });
+        else if (PROC_RE.test(d.item) && !PROC_EX.test(d.item)) c.proc.push({ date: v.date, hosp: v.hospDisp || v.hosp, item: d.item });
+        if (d.item && (EXAM_RE.test(d.item) || /영상진단|방사선|특수장비|핵의학/.test(d.cat)) && !EXAM_EX.test(d.item) && !/PACS|영상저장/.test(d.item)) c.exams.push({ date: v.date, hosp: v.hospDisp || v.hosp, item: d.item });
+      });
+      // 투약
+      var drugs = (rxByVisit[k] || []).slice();
+      pharmLinks.filter(function (l) { return l.vk === k; }).forEach(function (l) {
+        l.drugs.forEach(function (a) { if (!drugs.some(function (b) { return ingrKey(a.ingr) === ingrKey(b.ingr) && ingrKey(a.ingr); })) drugs.push(a); });
+        if (l.p.code && l.p.code !== mainRow.code && !v.rows.some(function (r) { return r.code === l.p.code; })) {
+          var pc = c.pharmCodes[l.p.code] = c.pharmCodes[l.p.code] || { code: l.p.code, name: l.p.name, pharm: l.p.hosp, dates: [] };
+          pc.dates.push(v.date);
+        }
+      });
+      if (drugs.length) c.meds.push({ date: v.date, hosp: v.hospDisp || v.hosp, drugs: drugs.map(function (x) { return { name: x.drug, days: x.days }; }) });
+    });
+
+    // 카드 집계
+    var list = Object.keys(cards).map(function (k) { return cards[k]; });
+    // 날짜 기준 처방 묶음 (병원 외래 + 약국 조제 모두)
+    var rxByDate = {};
+    rx.forEach(function (x) { (rxByDate[x.date] = rxByDate[x.date] || []).push(x); });
+    list.forEach(function (c) {
+      c.visits.sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+      c.first = c.visits[0].date; c.last = c.visits[c.visits.length - 1].date;
+      Object.keys(c.hosps).forEach(function (h) { c.inpDays += c.hosps[h].inp; c.outDays += c.hosps[h].out; });
+      // 그 상병 방문(병원+날짜)에 연결된 처방과, 그 방문에 연결된 약국 조제만 집계 (같은 날 다른 병원 처방은 제외)
+      var maxMed = 0, cumByDrug = {};
+      c.meds.forEach(function (m) {
+        var perDrug = {};
+        m.drugs.forEach(function (x) { if ((x.days || 0) > (perDrug[x.name] || 0)) perDrug[x.name] = x.days || 0; });
+        m.drugs = Object.keys(perDrug).map(function (n) { return { name: n, days: perDrug[n] }; });
+        m.drugs.forEach(function (x) { if (x.days > maxMed) maxMed = x.days; cumByDrug[x.name] = (cumByDrug[x.name] || 0) + x.days; });
+      });
+      c.maxMed = maxMed;
+      c.medTotals = Object.keys(cumByDrug).map(function (n) { return { name: n, days: cumByDrug[n] }; }).sort(function (a, b) { return b.days - a.days; });
+      c.rxDays = c.medTotals.length ? c.medTotals[0].days : 0; // 대표 약물 누적일수
+    });
+    // 동일원인 합산 (3자리 코드)
+    var groups = {};
+    list.forEach(function (c) { (groups[c3(c.code)] = groups[c3(c.code)] || []).push(c); });
+    list.forEach(function (c) {
+      var g = groups[c3(c.code)];
+      c.group = g.length > 1 ? { key: c3(c.code), total: g.reduce(function (s, x) { return s + x.outDays + x.inpDays; }, 0), rx: g.reduce(function (s, x) { return s + x.rxDays; }, 0), members: g } : null;
+    });
+
+    // 같은 병원 연속 치료(30일 이내 간격) 묶음: 상병코드가 달라도 같은 질환일 수 있어 확인용
+    var hospEp = {};
+    (function () {
+      var byH = {};
+      Object.keys(visits).forEach(function (k) { var v = visits[k]; (byH[v.hosp] = byH[v.hosp] || {})[v.date] = 1; });
+      Object.keys(byH).forEach(function (h) {
+        var ds = Object.keys(byH[h]).sort(), ep = [], eps = [];
+        ds.forEach(function (d, i) { if (i && (pd(d) - pd(ds[i - 1])) / 864e5 > 30) { eps.push(ep); ep = []; } ep.push(d); });
+        if (ep.length) eps.push(ep);
+        eps.forEach(function (e) { e.forEach(function (d) { hospEp[h + '|' + d] = e; }); });
+      });
+    })();
+    var d1y = addM(base, -12);
+
+    // 고지 판정: lv 'y' = 고지 대상, 'c' = 확인 필요
+    list.forEach(function (c) {
+      var D = [];
+      var add = function (lv, k, t, q) { D.push({ lv: lv, k: k, t: t, q: q || '' }); };
+      var winY = mode === 'std' ? d5 : dN;
+      var inpN = c.visits.filter(function (v) { return v.inp && pd(v.date) >= winY; });
+      var surgN = c.surg.filter(function (s) { return pd(s.date) >= winY; });
+      var procN = c.proc.filter(function (s) { return pd(s.date) >= winY; });
+      var hs = Object.keys(c.hosps).map(function (h) { return c.hosps[h].name; }).join(', ');
+      var major = majorFn(c.code), sus = majorSuspect(c.code) || (mode === 'simple' && std11(c.code) && !major ? std11(c.code) : '');
+      var tot = c.group ? c.group.total : c.outDays + c.inpDays;
+      var sumVisitMax = c.meds.reduce(function (s, m) { return s + Math.max.apply(null, m.drugs.map(function (d) { return d.days || 0; }).concat([0])); }, 0);
+      var ex1y = c.exams.filter(function (e) { return pd(e.date) >= d1y; });
+      var ex3m = c.exams.filter(function (e) { return pd(e.date) >= d3m; });
+      var maxEp = 0, epH = '';
+      c.visits.forEach(function (v) { var e = hospEp[v.hosp + '|' + v.date]; if (e && e.length > maxEp) { maxEp = e.length; epH = v.hospDisp || v.hosp; } });
+      var procNames = function (arr) { var u = {}; arr.forEach(function (p) { u[p.item.replace(/[\[(].*$/, '')] = 1; }); return Object.keys(u).slice(0, 3).join(', '); };
+
+      if (mode === 'std') {
+        if (inpN.length) add('y', '입원', '입원(5년 이내)');
+        if (surgN.length) add('y', '수술', '수술(5년 이내)');
+        if (!surgN.length && !procN.length && /^S[0-9]1|^T1[4-9]/.test(c.code.replace('.', '')) && pd(c.last) >= winY) add('c', '시술', '상처·이물 진료 — 봉합·제거 등 처치(수술) 여부 확인', hs + ' 진료 때 상처 봉합이나 이물 제거 같은 처치를 받으셨나요?');
+        if (!surgN.length && procN.length) add('c', '시술', '시술 — 수술 해당 여부 확인 (' + procNames(procN) + ')', hs + '에서 ' + procNames(procN) + ' 받으신 적이 있는데, 병원에서 수술로 안내받으셨나요?');
+        if (tot >= 7) add('y', '7일이상', '7일이상 치료(5년 이내)' + (c.group && c.outDays + c.inpDays < 7 ? ' · 동일원인 합산' : ''));
+        else if (maxEp >= 7) add('c', '7일이상', '7일이상 치료 가능성 — ' + epH + ' 연속 치료 ' + maxEp + '일 (같은 질환인지 확인)', epH + '에서 비슷한 시기에 ' + maxEp + '일 치료받으셨는데, 같은 질환으로 계속 치료받으신 건가요?');
+        if (c.rxDays >= 30) add('y', '30일이상', '30일이상 투약(5년 이내)');
+        else if (sumVisitMax >= 20) add('c', '30일이상', '30일이상 투약 가능성 — 처방 합계 ' + sumVisitMax + '일 (같은 약 계속 복용·추가 처방 여부 확인)', c.name + ' 관련 약을 합계 ' + sumVisitMax + '일 처방받으셨는데, 같은 약을 계속 드신 건가요?');
+        if (major) add('y', '질병', '11대질병(' + major + ')');
+        else if (sus) add('c', '질병', '중대질병 관련 확인 — ' + sus, c.name + ' 진단 이후 확진이나 추적검사, 치료를 받으신 적이 있나요?');
+        var hasY = D.some(function (d) { return d.lv === 'y'; });
+        if (ex1y.length) add(hasY ? 'y' : 'c', '정밀', '1년 이내 정밀검사 — 추가검사·재검사 소견 확인 (' + uniqStr(ex1y.map(function (e) { return e.item.replace(/[\[(].*$/, ''); })).slice(0, 2).join(', ') + ')', (ex1y[ex1y.length - 1].hosp) + '(' + ex1y[ex1y.length - 1].date.slice(2) + ')에서 받으신 ' + uniqStr(ex1y.map(function (e) { return e.item.replace(/[\[(].*$/, ''); }))[0] + ' 결과로 재검사나 추가검사 소견을 들으셨나요?');
+      } else {
+        if (N > 0 && inpN.length) add('y', '입원', '입원(' + N + '년 이내)');
+        if (N > 0 && surgN.length) add('y', '수술', '수술(' + N + '년 이내)');
+        if (N > 0 && !surgN.length && !procN.length && /^S[0-9]1|^T1[4-9]/.test(c.code.replace('.', '')) && pd(c.last) >= winY) add('c', '시술', '상처·이물 진료 — 봉합·제거 등 처치(수술) 여부 확인', hs + ' 진료 때 상처 봉합이나 이물 제거 같은 처치를 받으셨나요?');
+        if (N > 0 && !surgN.length && procN.length) add('c', '시술', '시술 — 수술 해당 여부 확인 (' + procNames(procN) + ')', hs + '에서 ' + procNames(procN) + ' 받으신 적이 있는데, 병원에서 수술로 안내받으셨나요?');
+        if (major && pd(c.last) >= dM) add('y', '질병', '중대질병(' + major + ', ' + M + '년 이내)');
+        else if (sus && pd(c.last) >= dM) add('c', '질병', '중대질병 관련 확인 — ' + sus, c.name + ' 진단 이후 확진이나 추적검사, 치료를 받으신 적이 있나요?');
+        if (ex3m.length) add('c', '정밀', '3개월 이내 검사 — 추가검사·재검사 소견 확인', ex3m[ex3m.length - 1].hosp + '(' + ex3m[ex3m.length - 1].date.slice(2) + ')에서 최근 받으신 검사 결과로 재검사나 추가검사 소견을 들으셨나요?');
+        var ch = chronicHD(c.code);
+        if (ch && opt.chronic) add('c', '만성', ch + ' — 상품의 고혈압·당뇨 고지 기준 확인 (진단·투약 이력)', '');
+      }
+      // 약국 조제 상병
+      Object.keys(c.pharmCodes).forEach(function (pc) {
+        var m = std11(pc) || majorSuspect(pc);
+        if (m) D.unshift({ lv: 'c', k: '질병', pharm: true, t: '약국 조제 상병 ' + pc + ' ' + c.pharmCodes[pc].name + ' — 고지 가능성 있음 (병원 진단명 확인)', q: c.pharmCodes[pc].pharm + '에서 ' + c.pharmCodes[pc].name + '(으)로 조제된 기록이 있는데, 이 병으로 진단받으신 적이 있나요?' });
+      });
+      c.disc = D;
+      c.tier = D.some(function (d) { return d.lv === 'y'; }) ? 'disc' : D.length ? 'check' : 'none';
+      // 간편: N년 경과로 빠진 입원/수술 안내
+      c.expired = [];
+      if (mode === 'simple') {
+        if (c.visits.some(function (v) { return v.inp; }) && !D.some(function (d) { return d.k === '입원'; })) c.expired.push('입원 ' + (N > 0 ? N + '년 경과' : '질문 없음'));
+        if (c.surg.length && !D.some(function (d) { return d.k === '수술'; })) c.expired.push('수술 ' + (N > 0 ? N + '년 경과' : '질문 없음'));
+      }
+      // 미해당 사유
+      if (c.tier === 'none') {
+        var rs = [];
+        if (mode === 'std') {
+          rs.push('치료 ' + tot + '일(7일 미만)');
+          rs.push(c.rxDays ? '투약 누적 ' + c.rxDays + '일(30일 미만)' : '투약 없음');
+          rs.push(c.visits.some(function (v) { return v.inp; }) ? '입원 5년 경과' : '입원 없음');
+          rs.push(c.surg.length || c.proc.length ? '수술·시술 5년 경과' : '수술 없음');
+        } else {
+          rs.push(c.visits.some(function (v) { return v.inp; }) ? '입원 ' + N + '년 경과' : '입원 없음');
+          rs.push(c.surg.length ? '수술 ' + N + '년 경과' : '수술 없음');
+          rs.push('중대질병 아님');
+        }
+        c.reason = rs.join(' · ');
+      }
+    });
+    function uniqStr(a) { var u = {}; return a.filter(function (x) { if (u[x]) return false; u[x] = 1; return true; }); }
+
+    var byLast = function (a, b) { return b.last < a.last ? -1 : 1; };
+    var main = list.filter(function (c) { return c.tier === 'disc'; }).sort(byLast);
+    var check = list.filter(function (c) { return c.tier === 'check'; }).sort(byLast);
+    var extra = list.filter(function (c) { return c.tier === 'none'; }).sort(byLast);
+
+    // 3개월 이내
+    var knownCodes = {}; list.forEach(function (c) { if (pd(c.first) < d3m) knownCodes[c.code] = 1; });
+    var r3 = [];
+    var seen = {};
+    recent.forEach(function (r) {
+      var d = pd(r.date); if (!d || d < d3m || d > base) return;
+      seen[r.hosp + '|' + r.date] = 1;
+      r3.push({ date: r.date, hosp: r.hospDisp || r.hosp, type: r.type, days: r.inDays, rxDays: r.rxDays, code: r.code, name: r.name, src: '요양급여내역서' });
+    });
+    basic.forEach(function (r) {
+      var d = pd(r.date); if (!d || d < d3m || d > base || seen[r.hosp + '|' + r.date]) return;
+      r3.push({ date: r.date, hosp: r.hospDisp || r.hosp, type: isPharm(r.hosp, r.dept) ? '약국' : r.type, days: r.days, rxDays: 0, code: r.code, name: r.name, src: '심평원 기본진료' });
+    });
+    // 처방조제 자료에만 있는 최근 병원 방문(심평원 기본·공단 자료에 아직 없는 것): 같은 병원의 이전 상병으로 추정
+    basic.forEach(function (r) { seen[r.hosp + '|' + r.date] = 1; });
+    rx.forEach(function (x) {
+      var d = pd(x.date); if (!d || d < d3m || d > base || seen[x.hosp + '|' + x.date] || isPharm(x.hosp, '')) return;
+      seen[x.hosp + '|' + x.date] = 1;
+      var prev = basic.filter(function (b) { return b.hosp === x.hosp && b.code && b.date < x.date; }).sort(function (a, b) { return a.date < b.date ? 1 : -1; })[0];
+      r3.push({ date: x.date, hosp: x.hosp, type: '외래', days: 1, rxDays: x.days, code: prev ? prev.code : '', name: prev ? prev.name + ' (같은 병원 이전 진단으로 추정)' : '', src: x.src === '투약이력' ? '내가 먹는 약(투약이력)' : '심평원 처방조제', guessed: true });
+    });
+    r3.forEach(function (x) {
+      var pharm = /약국/.test(x.type);
+      if (mode === 'std') x.judge = '3개월 이내 진단·치료' + (pharm || x.rxDays ? '·투약' : '');
+      else if (pharm) x.judge = '투약 — 기존 처방과 약 종류·용량 비교 필요 (신규·증량이면 고지)';
+      else if (x.code && knownCodes[x.code]) x.judge = '기왕증 통원 (처방 유지·감소면 유지 고지)';
+      else x.judge = '신규 진료 — 진단명·추가검사 소견 확인 필요';
+      x.major = majorFn(x.code);
+    });
+    r3.sort(function (a, b) { return a.date < b.date ? 1 : -1; });
+
+    // 3개월 이내: 상병(없으면 병원) 단위 카드로 묶기
+    var ik3 = function (s) { return String(s || '').toLowerCase().replace(/[^a-z]/g, '').slice(0, 12); };
+    var hospDates = {}; r3.forEach(function (x) { if (!/약국/.test(x.type)) (hospDates[x.date] = hospDates[x.date] || []).push(x); });
+    var g3 = {};
+    r3.forEach(function (x) {
+      var pharm = /약국/.test(x.type);
+      var target = x;
+      if (pharm) { var hs = hospDates[x.date] || []; target = hs.filter(function (h) { return !x.code || h.code === x.code; })[0] || hs[0] || x; }
+      if (pharm && target === x && !x.code) {
+        // 약국만 있는 최근 조제: 같은 성분을 예전에 처방받은 상병으로 추정
+        var ings = rx.filter(function (q) { return q.date === x.date && (q.hosp === (x.hospKey || x.hosp) || q.hosp === String(x.hosp).replace(/\s+/g, '')); }).map(function (q) { return ik3(q.ingr) || q.drug; });
+        var bestC = null, bestN = 0, bestD = '';
+        list.forEach(function (c) { c.meds.forEach(function (m) { if (pd(m.date) >= d3m) return; var n = 0; m.drugs.forEach(function (dd) { var rr = rx.filter(function (q) { return q.drug === dd.name; })[0]; if (rr && ings.indexOf(ik3(rr.ingr) || rr.drug) >= 0) n++; }); if (n > bestN || (n === bestN && n > 0 && m.date > bestD)) { bestN = n; bestC = c; bestD = m.date; } }); });
+        if (bestC) target = { code: bestC.code, name: bestC.name + ' (같은 약 처방 이력으로 추정)', hosp: x.hosp, date: x.date };
+      }
+      var key = target.code ? target.code : '?' + (target.hosp || x.hosp);
+      var g = g3[key] = g3[key] || { code: target.code || '', name: target.code ? target.name : '', hosps: {}, dates: {}, rx: false, src: {}, first: x.date, last: x.date };
+      if (!pharm || target === x) { g.hosps[target.hosp] = 1; g.dates[target.date] = 1; }
+      if (pharm || x.rxDays > 1) g.rx = true;
+      g.src[x.src] = 1;
+      if (x.date < g.first) g.first = x.date; if (x.date > g.last) g.last = x.date;
+    });
+    // 기존 투약(3개월 전) 성분/용량과 비교
+    var before = {}, inWin3 = {};
+    list.forEach(function (c) { c.meds.forEach(function (m) { var tgt = pd(m.date) < d3m ? before : inWin3; m.drugs.forEach(function (d) { var k = c.code + '|' + d.name; tgt[k] = Math.max(tgt[k] || 0, 1); }); }); });
+    var rxIn = rx.filter(function (x) { var d = pd(x.date); return d && d >= d3m && d <= base; });
+    var rxBefore = rx.filter(function (x) { var d = pd(x.date); return d && d < d3m && d >= d5; });
+    var cards3 = Object.keys(g3).map(function (k) {
+      var g = g3[k];
+      var dates = Object.keys(g.dates);
+      var hs = Object.keys(g.hosps);
+      var winDrugs = rxIn.filter(function (x) { return dates.indexOf(x.date) >= 0; });
+      if (winDrugs.length) g.rx = true;
+      var newDrug = null;
+      if (g.code && knownCodes[g.code]) {
+        var prevHosp = {}; basic.forEach(function (b) { if (b.code === g.code && pd(b.date) < d3m) prevHosp[b.hosp + '|' + b.date] = 1; });
+        var prev = {}; rxBefore.forEach(function (x) { if (prevHosp[x.hosp + '|' + x.date] || Object.keys(prevHosp).some(function (pk) { return pk.split('|')[1] === x.date; })) { var q = (x.dose || 1) * (x.times || 1); prev[ik3(x.ingr) || x.drug] = Math.max(prev[ik3(x.ingr) || x.drug] || 0, q); } });
+        winDrugs.forEach(function (x) { var key = ik3(x.ingr) || x.drug; var q = (x.dose || 1) * (x.times || 1); if (!(key in prev) || q > prev[key]) { if (!newDrug || x.date < newDrug.date) newDrug = x; } });
+      }
+      var judge;
+      if (mode === 'std') judge = '3개월 이내 진단·치료' + (g.rx ? '·투약' : '');
+      else if (!g.code) judge = '진단명 확인 필요 — 병원·처방일자로 고객에게 확인';
+      else if (knownCodes[g.code] && !newDrug) judge = '3개월 이내 기왕증 단순 통원 처방(처방약품 유지/감소·진료 유지 고지)';
+      else if (knownCodes[g.code]) judge = '3개월 이내 투약 신규 또는 증가(' + newDrug.date.slice(5).replace('-', '/') + ' 발생)';
+      else judge = '3개월 이내 신규 진료' + (g.rx ? '·투약' : '') + ' — 진단명·추가검사 소견 확인';
+      return { code: g.code, name: g.name, hosps: hs, days: dates.length, first: g.first, last: g.last, rx: g.rx, judge: judge, major: majorFn(g.code), src: Object.keys(g.src).join(', ') };
+    }).sort(function (a, b) { return a.last < b.last ? 1 : -1; });
+
+    var counts = { 입원: 0, 수술: 0, '7일이상': 0, '30일이상': 0, 질병: 0, 정밀: 0, 시술: 0, 만성: 0 };
+    main.forEach(function (c) { var s = {}; c.disc.forEach(function (d) { if (d.lv === 'y' && !s[d.k]) { counts[d.k]++; s[d.k] = 1; } }); });
+
+    // 고객 확인 질문
+    var questions = [];
+    cards3.forEach(function (x) {
+      var where = (x.hosps.join(', ') || '병원') + '(' + x.first.slice(5).replace('-', '/') + (x.first !== x.last ? '~' + x.last.slice(5).replace('-', '/') : '') + ')';
+      if (!x.code) questions.push({ sec: '3개월', q: where + ' 조제약은 어떤 질환으로 처방받으셨나요? 입원·수술·추가검사 권유가 있었나요?' });
+      else questions.push({ sec: '3개월', q: where + ' ' + x.name.replace(/ \(.*\)$/, '') + ' 진료 때 추가검사·재검사나 입원·수술 권유를 받으셨나요?' + (mode === 'simple' ? ' 약이 새로 추가되거나 용량이 늘었나요?' : '') });
+    });
+    main.concat(check).forEach(function (c) { c.disc.forEach(function (d) { if (d.lv === 'c' && d.q) questions.push({ sec: '확인 필요', code: c.code, q: d.q }); }); });
+    questions.push({ sec: '공통', q: '심평원 자료에 나오지 않는 비급여 치료(도수치료, 비급여 주사, 한방 비급여 등)를 받으신 적이 있나요?' });
+    questions.push({ sec: '공통', q: '현재 복용 중인 약이 있나요? 최근 약이 바뀌거나 용량이 늘었나요?' });
+    questions.push({ sec: '공통', q: '건강검진에서 재검사·추가검사(정밀검사) 소견을 받은 적이 있나요?' });
+    if (mode === 'simple' && N > 5) questions.push({ sec: '공통', q: N + '년 이내 입원·수술 질문: 심평원 자료는 5년치만 나옵니다. 5년보다 전(' + fmt(dN).slice(0, 4) + '년 이후)에 입원하거나 수술받으신 적이 있나요?' });
+
+
+    return {
+      base: fmt(base), from5: fmt(d5), from3m: fmt(d3m), mode: mode, N: N, M: M,
+      label: mode === 'std' ? '표준체 5년 고지 (일반심사)' : '유병자 간편심사 3.' + N + '.' + M,
+      majorLabel: majorLabel, main: main, check: check, extra: extra, questions: questions, recent3m: r3, recent3mCards: cards3, counts: counts,
+      dataRange: basic.length ? { from: basic.reduce(function (m, r) { return r.date < m ? r.date : m; }, '9999'), to: basic.reduce(function (m, r) { return r.date > m ? r.date : m; }, '0000') } : null,
+      recentPeriod: input.recent ? input.recent.period : ''
+    };
+  }
+
+  // 세부진료 항목 분류: 'surg' | 'proc' | '' , exam 여부
+  function classifyDetail(d) {
+    var out = { surg: false, proc: false, exam: false };
+    if (SURG_RE.test(d.item) && !SURG_EX.test(d.item) && (/처치|수술|수혈|마취/.test(d.cat) || /생검|광응고|쇄석|절석|임플란트|조갑/.test(d.item))) out.surg = true;
+    else if (PROC_RE.test(d.item) && !PROC_EX.test(d.item)) out.proc = true;
+    if (d.item && (EXAM_RE.test(d.item) || /영상진단|방사선|특수장비|핵의학/.test(d.cat)) && !EXAM_EX.test(d.item) && !/PACS|영상저장/.test(d.item)) out.exam = true;
+    return out;
+  }
+  var api = { analyze: analyze, classifyDetail: classifyDetail, majorSuspect: majorSuspect, chronicHD: chronicHD, addM: addM, pd: pd, fmt: fmt, buildTuyak: buildTuyak, mergeRx: mergeRx, buildBasic: buildBasic, buildDetail: buildDetail, buildRx: buildRx, buildRecent: buildRecent, normCode: normCode, std11: std11, simple6: simple6, isPharm: isPharm };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.Analyzer = api;
+})(this);
+
+
+</script>
+<script>
+// ===== 질병예측(건강검진) 분석 + 화면 =====
+// HealthAnalyze: 계산만 (페이지 안에서 실행). HealthUI: 화면 그리기 (페이지와 다운로드 리포트 양쪽에서 실행되도록 외부 의존 없음)
+function HealthAnalyze(all, checkup, sex) {
+  var KEYS = [
+    ['bp', /혈압/, '혈압', 'mmHg'], ['fbs', /식전혈당|공복혈당/, '공복혈당', 'mg/dL'], ['tc', /총콜레/, '총콜레스테롤', 'mg/dL'],
+    ['ldl', /LDL/, 'LDL 콜레스테롤', 'mg/dL'], ['hdl', /HDL/, 'HDL 콜레스테롤', 'mg/dL'], ['tg', /중성지방/, '중성지방', 'mg/dL'],
+    ['ast', /^AST/, 'AST', 'U/L'], ['alt', /^ALT/, 'ALT', 'U/L'], ['ggt', /감마/, '감마지피티', 'U/L'],
+    ['gfr', /신사구체/, '사구체여과율(GFR)', 'mL/min'], ['cr', /크레아티닌/, '혈청크레아티닌', 'mg/dL'], ['up', /요단백/, '요단백', ''],
+    ['bmi', /체질량/, '체질량지수(BMI)', 'kg/㎡'], ['waist', /허리/, '허리둘레', 'cm'], ['hb', /혈색소/, '혈색소', 'g/dL'],
+    ['ht', /^신장$/, '신장', 'cm'], ['wt', /체중/, '체중', 'kg']
+  ];
+  var F = sex === 'F';
+  function n(v) { var x = parseFloat(String(v).replace(/[^\d.]/g, '')); return isNaN(x) ? null : x; }
+  function J(k, v) {
+    var x = n(v);
+    if (k === 'bp') { var p = String(v).split('/').map(function (t) { return parseFloat(t); }); var s = p[0], d = p[1] || 0; if (!s) return null;
+      if (s >= 160 || d >= 100) return [2, '고혈압 의심(2기)']; if (s >= 140 || d >= 90) return [2, '고혈압 의심']; if (s >= 130 || d >= 80) return [1, '고혈압 전단계']; if (s >= 120) return [1, '주의 혈압']; return [0, '정상']; }
+    if (k === 'up') { if (/약양성/.test(v)) return [1, '약양성']; if (/양성/.test(v)) return [2, '양성']; if (/음성/.test(v)) return [0, '음성']; return null; }
+    if (x === null) return null;
+    switch (k) {
+      case 'fbs': return x >= 126 ? [2, '당뇨 의심'] : x >= 100 ? [1, '공복혈당장애'] : [0, '정상'];
+      case 'tc': return x >= 240 ? [2, '높음'] : x >= 200 ? [1, '경계'] : [0, '정상'];
+      case 'ldl': return x >= 160 ? [2, '높음'] : x >= 130 ? [1, '경계'] : [0, '정상'];
+      case 'hdl': return x < 40 ? [1, '낮음'] : x >= 60 ? [0, '좋음'] : [0, '정상'];
+      case 'tg': return x >= 200 ? [2, '높음'] : x >= 150 ? [1, '경계'] : [0, '정상'];
+      case 'ast': case 'alt': return x > 80 ? [2, '높음'] : x > 40 ? [1, '경계'] : [0, '정상'];
+      case 'ggt': var g = F ? 35 : 63; return x > g * 2 ? [2, '높음'] : x > g ? [1, '경계'] : [0, '정상'];
+      case 'gfr': return x < 60 ? [2, '신기능 저하'] : x < 90 ? [1, '경도 감소'] : [0, '정상'];
+      case 'cr': return x > 1.5 ? [2, '높음'] : x > 1.2 ? [1, '경계'] : [0, '정상'];
+      case 'bmi': return x >= 30 ? [2, '고도비만'] : x >= 25 ? [1, '비만'] : x >= 23 ? [1, '과체중'] : x < 18.5 ? [1, '저체중'] : [0, '정상'];
+      case 'waist': return x >= (F ? 85 : 90) ? [1, '복부비만'] : [0, '정상'];
+      case 'hb': var lo = F ? 12 : 13; return x < lo - 2 ? [2, '빈혈 의심'] : x < lo ? [1, '경계'] : [0, '정상'];
+    }
+    return [-1, ''];
+  }
+  var items = (all && all.items) || {}, years = ((all && all.years) || []).map(function (y) { return y.y; });
+  var rows = KEYS.map(function (K) {
+    var label = Object.keys(items).filter(function (l) { return K[1].test(l.replace(/\s/g, '')); })[0];
+    if (!label) return null;
+    var vals = {};
+    years.forEach(function (y) { var v = items[label].vals[y]; if (v) { var j = J(K[0], v) || [-1, '']; vals[y] = { v: v, lv: j[0], lab: j[1] }; } });
+    return { k: K[0], name: K[2], unit: K[3], vals: vals };
+  }).filter(Boolean);
+  var by = {}; rows.forEach(function (r) { by[r.k] = r; });
+  function get(y, k) { return by[k] && by[k].vals[y]; }
+  function num(y, k) { var c = get(y, k); return c ? n(c.v) : null; }
+  var GROUPS = [['비만', 'BMI·허리둘레', ['bmi', 'waist']], ['혈당', '공복혈당', ['fbs']], ['심혈관', '혈압·콜레스테롤', ['bp', 'tc', 'ldl', 'hdl', 'tg']], ['간', 'AST·ALT·γGTP', ['ast', 'alt', 'ggt']], ['신장', 'GFR·크레아티닌·요단백', ['gfr', 'cr', 'up']]];
+  var GUIDE = {
+    '비만': ['체중·허리둘레 관리(식사량 조절, 주 150분 이상 유산소 운동)', '신장·체중은 청약서 고지 항목입니다. 일부 상품은 BMI 기준으로 인수가 제한될 수 있습니다.'],
+    '혈당': ['당화혈색소(HbA1c) 검사로 당뇨 여부를 확인하세요', '당뇨 진단·투약 이력은 11대 질병 고지 대상입니다. 혈당 재검사·추가검사 소견을 받았다면 확인이 필요합니다.'],
+    '심혈관': ['저염식, 규칙적 운동, 금연·절주. 수치가 계속 높으면 내과 진료 권장', '고혈압 진단·투약은 11대 질병 고지 대상이고, 고지혈증 약 복용은 30일 이상 투약·3개월 이내 투약 질문에 해당할 수 있습니다.'],
+    '간': ['음주·체중 관리, 복부 초음파로 지방간 여부 확인 권장', '간 수치 이상으로 초음파 등 추가검사를 받았다면 1년 이내 추가검사 질문을 확인하세요.'],
+    '신장': ['수분 섭취, 혈압·혈당 관리, 정기적인 신장기능 검사 권장', '신장 질환 진단이나 소변·신장 재검사 소견 여부를 확인하세요.']
+  };
+  function yearData(y) {
+    var organs = GROUPS.map(function (G) {
+      var cells = G[2].map(function (k) { return get(y, k); }).filter(function (c) { return c && c.lv >= 0; });
+      if (!cells.length) return { name: G[0], sub: G[1], score: null };
+      var s = 100; cells.forEach(function (c) { s -= c.lv === 2 ? 30 : c.lv === 1 ? 12 : 0; });
+      s = Math.max(20, s);
+      return { name: G[0], sub: G[1], score: s, tone: s >= 85 ? 'g' : s >= 65 ? 'a' : 'r', lbl: s >= 85 ? '양호' : s >= 65 ? '주의' : '위험' };
+    });
+    var bp = get(y, 'bp'), sb = bp ? parseFloat(String(bp.v).split('/')[0]) : null, db = bp ? parseFloat(String(bp.v).split('/')[1]) : null;
+    var fbs = num(y, 'fbs'), bmi = num(y, 'bmi'), tc = num(y, 'tc'), ldl = num(y, 'ldl'), hdl = num(y, 'hdl'), tg = num(y, 'tg');
+    var ast = num(y, 'ast'), alt = num(y, 'alt'), ggt = num(y, 'ggt'), gfr = num(y, 'gfr'), up = get(y, 'up');
+    function cl(v) { return Math.max(1, Math.min(10, Math.round(v))); }
+    var risks = [];
+    risks.push({ name: '고혈압', sub: '혈압', level: sb == null ? null : cl((sb >= 160 || db >= 100 ? 9 : sb >= 140 || db >= 90 ? 8 : sb >= 130 || db >= 80 ? 6 : sb >= 120 ? 4 : 2) + (bmi >= 25 ? 1 : 0)) });
+    risks.push({ name: '당뇨병', sub: '공복혈당', level: fbs == null ? null : cl((fbs >= 140 ? 9 : fbs >= 126 ? 8 : fbs >= 110 ? 6 : fbs >= 100 ? 4 : fbs >= 90 ? 2 : 1) + ((bmi >= 25 || tg >= 150) ? 1 : 0)) });
+    var lipid = [tc != null ? (tc >= 240 ? 8 : tc >= 200 ? 5 : 2) : null, ldl != null ? (ldl >= 160 ? 8 : ldl >= 130 ? 5 : 2) : null, tg != null ? (tg >= 200 ? 7 : tg >= 150 ? 5 : 2) : null, hdl != null ? (hdl < 40 ? 5 : 1) : null].filter(function (v) { return v != null; });
+    risks.push({ name: '고지혈증', sub: '콜레스테롤·중성지방', level: lipid.length ? cl(Math.max.apply(null, lipid)) : null });
+    var lv = [ast, alt].filter(function (v) { return v != null; });
+    risks.push({ name: '간질환', sub: '간수치·지방간', level: lv.length || ggt != null ? cl(Math.max(Math.max.apply(null, lv.concat([0])) > 80 ? 8 : Math.max.apply(null, lv.concat([0])) > 40 ? 5 : 2, ggt != null ? (ggt > (F ? 70 : 126) ? 8 : ggt > (F ? 35 : 63) ? 5 : 2) : 0) + (bmi >= 25 ? 1 : 0)) : null });
+    risks.push({ name: '신장질환', sub: 'GFR·요단백', level: gfr == null ? null : cl((gfr < 45 ? 9 : gfr < 60 ? 7 : gfr < 75 ? 5 : gfr < 90 ? 3 : 1) + (up && up.lv === 2 ? 2 : up && up.lv === 1 ? 1 : 0)) });
+    risks.push({ name: '비만', sub: 'BMI', level: bmi == null ? null : cl(bmi >= 30 ? 8 : bmi >= 25 ? 6 : bmi >= 23 ? 4 : 2) });
+    var rf = 0, known = 0;
+    if (sb != null) { known++; if (sb >= 130 || db >= 80) rf++; }
+    if (fbs != null) { known++; if (fbs >= 100) rf++; }
+    if (ldl != null || tc != null) { known++; if (ldl >= 130 || tc >= 200) rf++; }
+    if (hdl != null) { known++; if (hdl < 40) rf++; }
+    if (bmi != null) { known++; if (bmi >= 25) rf++; }
+    risks.push({ name: '심뇌혈관질환', sub: '위험요인 ' + rf + '개', level: known ? cl(1 + rf * 2) : null });
+    risks.forEach(function (r) { if (r.level == null) return; r.tone = r.level <= 2 ? 'g' : r.level <= 4 ? 'y' : r.level <= 6 ? 'a' : r.level <= 8 ? 'o' : 'r'; r.lbl = r.level <= 2 ? '낮음' : r.level <= 4 ? '보통' : r.level <= 6 ? '주의' : r.level <= 8 ? '높음' : '매우 높음'; });
+    var warns = [];
+    GROUPS.forEach(function (G) {
+      var bad = G[2].map(function (k) { var c = get(y, k); return c && c.lv >= 1 ? { k: k, c: c } : null; }).filter(Boolean);
+      if (!bad.length) return;
+      var worst = Math.max.apply(null, bad.map(function (b) { return b.c.lv; }));
+      warns.push({ title: G[0] + ' 관리 필요', lv: worst, vals: bad.map(function (b) { return by[b.k].name + ' ' + b.c.v + ' (' + b.c.lab + ')'; }), guide: GUIDE[G[0]][0], ins: GUIDE[G[0]][1] });
+    });
+    warns.sort(function (a, b) { return b.lv - a.lv; });
+    return { organs: organs, risks: risks, warns: warns };
+  }
+  var per = {}; years.forEach(function (y) { per[y] = yearData(y); });
+  var dates = {}; ((all && all.years) || []).forEach(function (y) { dates[y.y] = y.d; });
+  return { years: years, dates: dates, rows: rows, per: per, sex: sex || '', opinion: (checkup && checkup.lines) || [], checkDate: (checkup && checkup.date) || '' };
+}
+
+function HealthUI(root, H) {
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  if (!H || !H.years || !H.years.length) { root.innerHTML = '<div class="empty">건강검진 자료가 없습니다. 공단 "검진결과 한눈에 보기" PDF를 함께 올리면 질병예측 분석이 나옵니다.</div>'; return; }
+  var cur = H.years[H.years.length - 1];
+  function ring(s, tone) {
+    var r = 36, C = 2 * Math.PI * r, d = s == null ? 0 : C * s / 100;
+    return '<svg viewBox="0 0 88 88" class="ring t-' + (tone || 'n') + '" aria-hidden="true"><circle cx="44" cy="44" r="' + r + '" class="ring-bg"/><circle cx="44" cy="44" r="' + r + '" class="ring-fg" stroke-dasharray="' + d.toFixed(1) + ' ' + (C - d).toFixed(1) + '" transform="rotate(-90 44 44)"/><text x="44" y="51" text-anchor="middle">' + (s == null ? '–' : s) + '</text></svg>';
+  }
+  function top() {
+    var Y = H.per[cur];
+    var h = '<div class="hp-years" role="tablist">' + H.years.map(function (y) { return '<button type="button" class="hp-y" data-y="' + y + '" aria-pressed="' + (y === cur) + '">' + y + '<small>' + esc(H.dates[y] || '') + '</small></button>'; }).join('') + '</div>';
+    h += '<div class="hp-h"><h4>계통별 건강 점수</h4><span>' + cur + '년 검진 수치 기준 · 100점 만점</span></div><div class="hp-organs">' + Y.organs.map(function (o) { return '<div class="hp-organ">' + ring(o.score, o.tone) + '<b>' + esc(o.name) + '</b><small>' + esc(o.sub) + '</small>' + (o.score == null ? '<span class="tag t-n">자료 없음</span>' : '<span class="tag t-' + o.tone + '">' + o.lbl + '</span>') + '</div>'; }).join('') + '</div>';
+    h += '<div class="hp-h"><h4>질환 위험도</h4><span>검진 수치로 본 1~10단계 · 참고용</span></div><div class="hp-risks">' + Y.risks.map(function (r) {
+      var seg = ''; for (var i = 1; i <= 10; i++) seg += '<i class="' + (r.level != null && i <= r.level ? 'on s' + i : '') + '"></i>';
+      return '<div class="hp-risk"><div class="hp-rt"><b>' + esc(r.name) + '</b><small>' + esc(r.sub) + '</small></div><div class="gauge">' + seg + '</div><div class="hp-rf">' + (r.level == null ? '<span class="tag t-n">자료 없음</span>' : '<span class="tag t-' + r.tone + '">' + r.lbl + '</span><span class="lvn">' + r.level + '<small>/10</small></span>') + '</div></div>';
+    }).join('') + '</div>';
+    h += '<div class="hp-h"><h4>경고 신호 · 관리 가이드 · 보험 체크</h4><span>' + cur + '년</span></div>';
+    h += Y.warns.length ? '<div class="hp-warns">' + Y.warns.map(function (w) { return '<div class="hp-warn lv' + w.lv + '"><div class="hp-wl"><b>' + esc(w.title) + '</b>' + w.vals.map(function (v) { return '<span>' + esc(v) + '</span>'; }).join('') + '</div><div class="hp-wr"><small>관리 가이드</small><p>' + esc(w.guide) + '</p><small>보험 체크</small><p>' + esc(w.ins) + '</p></div></div>'; }).join('') + '</div>' : '<div class="empty">이 해에는 관리가 필요한 수치가 없습니다.</div>';
+    return h;
+  }
+  function table() {
+    var ys = H.years;
+    var h = '<div class="hp-h"><h4>연도별 검진 수치</h4><span>▲▼ 직전 검진 대비 · 빨강 질환 의심 · 주황 경계</span></div><div class="tw"><table class="t hp-t"><thead><tr><th>항목</th>' + ys.map(function (y) { return '<th class="mono">' + y + '<br><small>' + esc(H.dates[y] || '') + '</small></th>'; }).join('') + '<th>단위</th></tr></thead><tbody>';
+    H.rows.forEach(function (r) {
+      var prev = null;
+      h += '<tr><td>' + esc(r.name) + '</td>' + ys.map(function (y) {
+        var c = r.vals[y]; if (!c) return '<td class="n dim">-</td>';
+        var x = parseFloat(String(c.v)), ar = '';
+        if (prev != null && !isNaN(x) && r.k !== 'ht') ar = x > prev ? '<em class="up">▲</em>' : x < prev ? '<em class="dn">▼</em>' : '';
+        if (!isNaN(x)) prev = x;
+        return '<td class="n' + (c.lv === 2 ? ' v-red' : c.lv === 1 ? ' v-amb' : '') + '">' + esc(c.v) + ar + (c.lv >= 1 ? '<br><small>' + esc(c.lab) + '</small>' : '') + '</td>';
+      }).join('') + '<td><small class="note">' + esc(r.unit) + '</small></td></tr>';
+    });
+    return h + '</tbody></table></div>';
+  }
+  function opinion() {
+    if (!H.opinion.length) return '';
+    return '<div class="hp-op"><b>건강검진 결과통보서 소견' + (H.checkDate ? ' · ' + esc(H.checkDate) : '') + '</b>' + H.opinion.map(function (l) { var hot = /유질환|질환\s*의심|의심\s*질환|재검|추적|수치\s*이상|소견/.test(l) && !/^생활습관/.test(l); return '<p' + (hot ? ' class="hot"' : '') + '>' + esc(l) + '</p>'; }).join('') + '<small>"재검사·추적관찰" 소견은 1년 이내 추가검사 질문, "유질환"은 진단·투약 고지와 연결해서 확인하세요.</small></div>';
+  }
+  function draw() { root.innerHTML = opinion() + '<div class="hp-top">' + top() + '</div>' + table(); }
+  draw();
+  root.addEventListener('click', function (e) { var b = e.target.closest('.hp-y'); if (!b) return; cur = b.getAttribute('data-y'); draw(); });
+}
+
+
+</script>
+<script>
+// 진료이력(병원별) + 미청구 보험금(실손 1~5세대) 계산 (브라우저/Node 공용)
+(function (root) {
+  var A = root.Analyzer || (typeof require !== 'undefined' ? require('./analyzer.js') : null);
+
+  function isPharm(h, dept) { return A.isPharm(h, dept); }
+  function addY(base, y) { return A.fmt(A.addM(A.pd(base), -12 * y)); }
+
+  // 방문 단위 모델: 병원 방문(병원+날짜), 약국 조제(약국+날짜)
+  function buildVisits(input, base, years) {
+    var from = addY(base, years || 5);
+    var inWin = function (d) { return d && d > from && d <= base; };
+    var basic = input.basic || [], recent = (input.recent && input.recent.rows) || [], rx = input.rx || [], detail = input.detail || [];
+    var visits = {}, pharms = {};
+    function vkey(h, d) { return h + '|' + d; }
+    function addVisit(r, src) {
+      var k = vkey(r.hosp, r.date);
+      var v = visits[k];
+      if (!v) v = visits[k] = { key: k, hosp: r.hosp, hospDisp: r.hospDisp || r.hosp, date: r.date, codes: [], depts: {}, inp: false, inDays: 0, pay: 0, src: src, rx: false, surg: [], exam: [], pharm: [] };
+      if (r.code && !v.codes.some(function (c) { return c.code === r.code; })) v.codes.push({ code: r.code, name: r.name });
+      if (r.dept) v.depts[r.dept] = 1;
+      if (/입원/.test(r.type || '')) { v.inp = true; v.inDays = Math.max(v.inDays, r.days || r.inDays || 1); }
+      v.pay += r.pay || 0;
+      return v;
+    }
+    function addPharm(r, src) {
+      var k = vkey(r.hosp, r.date);
+      var p = pharms[k];
+      if (!p) p = pharms[k] = { key: k, hosp: r.hosp, hospDisp: r.hospDisp || r.hosp, date: r.date, codes: [], pay: 0, src: src, link: null };
+      if (r.code && !p.codes.some(function (c) { return c.code === r.code; })) p.codes.push({ code: r.code, name: r.name });
+      p.pay += r.pay || 0;
+      return p;
+    }
+    var basicKeys = {};
+    basic.forEach(function (r) {
+      if (!inWin(r.date)) return;
+      basicKeys[vkey(r.hosp, r.date)] = 1;
+      if (isPharm(r.hosp, r.dept)) addPharm(r, 'basic'); else addVisit(r, 'basic');
+    });
+    recent.forEach(function (r) {
+      if (!inWin(r.date) || basicKeys[vkey(r.hosp, r.date)]) return;
+      var rr = { hosp: r.hosp, hospDisp: r.hospDisp, date: r.date, code: r.code, name: r.name, type: r.type, days: r.inDays, pay: r.pay || 0 };
+      if (/약국/.test(r.type) || isPharm(r.hosp, '')) addPharm(rr, 'recent'); else addVisit(rr, 'recent');
+    });
+    // 처방(병원 처방·투약이력)에만 있는 병원 방문: 진단명 파악 불가
+    rx.forEach(function (x) {
+      if (!inWin(x.date) || !x.hosp || isPharm(x.hosp, '')) return;
+      var k = vkey(x.hosp, x.date);
+      if (!visits[k]) { visits[k] = { key: k, hosp: x.hosp, hospDisp: x.hosp, date: x.date, codes: [], depts: {}, inp: false, inDays: 0, pay: 0, src: 'rx', rx: true, surg: [], exam: [], pharm: [] }; }
+      visits[k].rx = true;
+    });
+    // 세부진료: 수술·검사
+    detail.forEach(function (d) {
+      var v = visits[vkey(d.hosp, d.date)]; if (!v) return;
+      var c = A.classifyDetail(d);
+      if (c.surg && v.surg.indexOf(d.item) < 0) v.surg.push(d.item);
+      if (c.exam && v.exam.indexOf(d.item) < 0) v.exam.push(d.item);
+    });
+    // 약국 → 같은 날 병원 방문에 연결
+    var byDate = {};
+    Object.keys(visits).forEach(function (k) { var v = visits[k]; (byDate[v.date] = byDate[v.date] || []).push(v); });
+    var ingr = function (s) { return String(s || '').toLowerCase().replace(/[^a-z]/g, '').slice(0, 12); };
+    Object.keys(pharms).forEach(function (k) {
+      var p = pharms[k], cands = byDate[p.date] || [];
+      if (!cands.length) return;
+      var best = null, bestS = -1;
+      var pIng = rx.filter(function (x) { return x.date === p.date && x.hosp === p.hosp; }).map(function (x) { return ingr(x.ingr); }).filter(Boolean);
+      cands.forEach(function (v) {
+        var s = 0;
+        if (p.codes.some(function (c) { return v.codes.some(function (d) { return d.code === c.code; }); })) s += 5;
+        var vIng = rx.filter(function (x) { return x.date === v.date && x.hosp === v.hosp; }).map(function (x) { return ingr(x.ingr); });
+        if (pIng.some(function (a) { return vIng.indexOf(a) >= 0; })) s += 10;
+        if (v.rx) s += 1;
+        if (s > bestS) { bestS = s; best = v; }
+      });
+      p.link = best.key; best.pharm.push(p); best.rx = true;
+    });
+    return { visits: visits, pharms: pharms, from: from };
+  }
+
+  // 진료이력: 병원별 묶음
+  function history(input, base) {
+    var M = buildVisits(input, base, 5);
+    var groups = {};
+    function g(h, disp) { return groups[h] = groups[h] || { hosp: h, name: disp, pharmNames: {}, visits: [], last: '' }; }
+    Object.keys(M.visits).forEach(function (k) {
+      var v = M.visits[k], G = g(v.hosp, v.hospDisp);
+      G.visits.push(v); if (v.date > G.last) G.last = v.date;
+      v.pharm.forEach(function (p) { G.pharmNames[p.hospDisp] = 1; });
+    });
+    Object.keys(M.pharms).forEach(function (k) {
+      var p = M.pharms[k]; if (p.link) return;
+      var G = g(p.hosp, p.hospDisp);
+      var v = { key: k, hosp: p.hosp, hospDisp: p.hospDisp, date: p.date, codes: p.codes, depts: {}, inp: false, inDays: 0, pay: 0, src: p.src, rx: true, surg: [], exam: [], pharm: [p], pharmOnly: true };
+      G.visits.push(v); if (v.date > G.last) G.last = v.date;
+    });
+    var list = Object.keys(groups).map(function (k) { return groups[k]; }).sort(function (a, b) { return a.last < b.last ? 1 : -1; });
+    list.forEach(function (G) {
+      G.visits.sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; });
+      G.pharmList = Object.keys(G.pharmNames);
+      // 진단별 요약
+      var by = {};
+      G.visits.forEach(function (v) {
+        var codes = v.codes.length ? v.codes.slice(0, 1) : [{ code: '', name: '' }];
+        codes.forEach(function (c) {
+          var r = by[c.code] = by[c.code] || { code: c.code, name: c.name, depts: {}, dates: {}, first: v.date, last: v.date, dx: !!c.code, rx: false, inp: false, surg: false, exam: false, inDays: 0 };
+          Object.keys(v.depts).forEach(function (d) { r.depts[d] = 1; });
+          r.dates[v.date] = 1;
+          if (v.date < r.first) r.first = v.date; if (v.date > r.last) r.last = v.date;
+          if (v.rx || v.pharm.length) r.rx = true;
+          if (v.inp) { r.inp = true; r.inDays += v.inDays; }
+          if (v.surg.length) r.surg = true;
+          if (v.exam.length) r.exam = true;
+        });
+      });
+      G.byCode = Object.keys(by).map(function (k) { var r = by[k]; r.days = Object.keys(r.dates).length + (r.inDays ? Math.max(0, r.inDays - 1) : 0); r.deptList = Object.keys(r.depts).filter(Boolean); return r; })
+        .sort(function (a, b) { return a.last < b.last ? 1 : -1; });
+    });
+    return { groups: list, from: M.from };
+  }
+
+  // ---------- 실손 세대별 계산 ----------
+  // 요양기관 종별 추정 (이름 기준)
+  function level(name) {
+    var n = String(name || '');
+    if (/대학교병원|대학병원|대학교의과대학|서울아산|삼성서울|세브란스|서울성모|상급종합/.test(n)) return 'top';
+    if (/종합병원|의료원/.test(n)) return 'gen';
+    if (/의원$|의원\s|치과의원|한의원|보건소|보건지소|보건진료소/.test(n) || /의원/.test(n) && !/병원/.test(n)) return 'clinic';
+    if (/병원/.test(n)) return 'hosp';
+    return 'clinic';
+  }
+  var DED = { clinic: 10000, hosp: 15000, gen: 20000, top: 20000 };
+  var DED4 = { clinic: 10000, hosp: 10000, gen: 20000, top: 20000 };
+  var RATE5 = { clinic: 0.3, hosp: 0.4, gen: 0.5, top: 0.6 };
+  function floor10(x) { return Math.max(0, Math.round(x)); }
+  function gens(h, p, lv, inp) {
+    h = h || 0; p = p || 0;
+    if (inp) {
+      var t = h + p;
+      return [t, t * 0.9, t * 0.9, t * 0.8, t * 0.8].map(floor10);
+    }
+    var g1 = Math.max(0, h - 5000) + Math.max(0, p - 5000);
+    var g2 = Math.max(0, h - Math.max(DED[lv], h * 0.2)) + Math.max(0, p - Math.max(8000, p * 0.2));
+    var g3 = Math.max(0, h - Math.max(DED[lv], h * 0.1)) + Math.max(0, p - Math.max(8000, p * 0.1));
+    var t = h + p;
+    var g4 = Math.max(0, t - Math.max(DED4[lv], t * 0.2));
+    var g5 = Math.max(0, t - Math.max(DED4[lv], t * RATE5[lv]));
+    return [g1, g2, g3, g4, g5].map(floor10);
+  }
+  function claims(input, base) {
+    var M = buildVisits(input, base, 3);
+    var rows = [];
+    Object.keys(M.visits).forEach(function (k) {
+      var v = M.visits[k];
+      var pp = v.pharm.reduce(function (s, p) { return s + p.pay; }, 0);
+      if (!v.pay && !pp) return;
+      var lv = level(v.hospDisp);
+      rows.push({ date: v.date, hosp: v.hospDisp, inp: v.inp, h: v.pay, p: v.pharm.length ? pp : null, lv: lv, g: gens(v.pay, pp, lv, v.inp), surg: v.surg.length > 0 });
+    });
+    Object.keys(M.pharms).forEach(function (k) {
+      var p = M.pharms[k]; if (p.link || !p.pay) return;
+      rows.push({ date: p.date, hosp: p.hospDisp, inp: false, h: null, p: p.pay, lv: 'clinic', g: gens(0, p.pay, 'clinic', false), pharmOnly: true });
+    });
+    rows.sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; });
+    var tot = { h: 0, p: 0, g: [0, 0, 0, 0, 0] };
+    rows.forEach(function (r) { tot.h += r.h || 0; tot.p += r.p || 0; r.g.forEach(function (x, i) { tot.g[i] += x; }); });
+    return { rows: rows, tot: tot, from: M.from, base: base, hasCost: (input.basic || []).some(function (r) { return r.pay > 0; }) || ((input.recent && input.recent.rows) || []).some(function (r) { return r.pay > 0; }) };
+  }
+
+  var api = { history: history, claims: claims, level: level, gens: gens };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.Claims = api;
+})(this);
+
+</script>
+<script>
+// 전 상품 판정표: 한 번 분석으로 상품별 고지 질문 결과 계산 (브라우저/Node 공용)
+(function (root) {
+  var A = root.Analyzer || (typeof require !== 'undefined' ? require('./analyzer.js') : null);
+
+  var K_STD5 = ['입원', '수술', '시술', '7일이상', '30일이상'];
+  var K_INS = ['입원', '수술', '시술'];
+  var K_INS7 = ['입원', '수술', '시술', '7일이상'];
+
+  var PRODUCTS = [
+    { id: 'std', title: '표준체 3.3.1.5.5', short: '표준체', run: 'std', lines: ['m3', 'ex1', 'std5', 'm11'] },
+    { id: 's355', title: '간편체 3.5.5', short: '3.5.5', run: 's5', lines: ['m3', 'ins', 'six'] },
+    { id: 's3105', title: '간편체 3.10.5', short: '3.10.5', run: 's10', lines: ['m3', 'ins', 'six'] },
+    { id: 's345', title: '간편체 3.4.5', short: '3.4.5', run: 's4', lines: ['m3', 'ins', 'six'] },
+    { id: 's335', title: '간편체 3.3.5', short: '3.3.5', run: 's3', lines: ['m3', 'ins', 'six'] },
+    { id: 's325', title: '간편체 3.2.5', short: '3.2.5', run: 's2', lines: ['m3', 'ins', 'six'] },
+    { id: 's315', title: '간편체 3.1.5', short: '3.1.5', run: 's1', lines: ['m3', 'ins', 'six'] },
+    { id: 's305', title: '간편체 3.0.5', short: '3.0.5', run: 's0', lines: ['m3', 'six'] },
+    { id: 's311', title: '간편체 3.1.1', short: '3.1.1', run: 's11', lines: ['m3', 'ins', 'six'] },
+    { id: 's31', title: '간편체 3.1', short: '3.1', run: 's10x', lines: ['m3', 'ins'] },
+    { id: 'silStd', title: '표준체 실손의료비', short: '표준체 실손', run: 'std', lines: ['m3', 'ex1', 'std5', 'm11'] },
+    { id: 'silSick', title: '유병자 실손의료비', short: '유병자 실손', run: 'sick', lines: ['m3ins', 'ins7', 'cancer'] },
+    { id: 'silOld', title: '노후 실손의료비', short: '노후 실손', run: 'std', lines: ['m3', 'ex1', 'std5', 'm11'] },
+    { id: 'drvStd', title: '표준체 운전자보험', short: '표준체 운전자', run: 'std', lines: ['m3', 'ex1', 'std5', 'm11'] },
+    { id: 'drvSim', title: '간편체 운전자보험', short: '간편 운전자', run: 's00', lines: ['m3'] }
+  ];
+  var RUNS = {
+    std: { mode: 'std' },
+    s5: { mode: 'simple', N: 5, M: 5 }, s10: { mode: 'simple', N: 10, M: 5 }, s4: { mode: 'simple', N: 4, M: 5 },
+    s3: { mode: 'simple', N: 3, M: 5 }, s2: { mode: 'simple', N: 2, M: 5 }, s1: { mode: 'simple', N: 1, M: 5 },
+    s0: { mode: 'simple', N: 0, M: 5 }, s11: { mode: 'simple', N: 1, M: 1 }, s10x: { mode: 'simple', N: 1, M: 0 },
+    s00: { mode: 'simple', N: 0, M: 0 },
+    sick2: { mode: 'std', years: 2 }
+  };
+
+  function filterInput(input, from) {
+    var f = function (a) { return (a || []).filter(function (r) { return r.date && r.date > from; }); };
+    return { basic: f(input.basic), detail: f(input.detail), rx: f(input.rx), recent: input.recent ? { rows: f(input.recent.rows), period: input.recent.period } : null };
+  }
+  function runCfg(input, key, base) {
+    var c = RUNS[key];
+    if (c.years) {
+      var from = A.fmt(A.addM(A.pd(base), -12 * c.years));
+      var R = A.analyze(filterInput(input, from), { mode: c.mode, baseDate: base });
+      R.windowYears = c.years;
+      return R;
+    }
+    return A.analyze(input, { mode: c.mode, N: c.N, M: c.M, baseDate: base });
+  }
+
+  function hasK(c, ks, lv) { return c.disc.some(function (d) { return ks.indexOf(d.k) >= 0 && (!lv || d.lv === lv); }); }
+  function countK(R, ks) {
+    var all = R.main.concat(R.check);
+    var y = all.filter(function (c) { return hasK(c, ks, 'y'); });
+    var cc = all.filter(function (c) { return !hasK(c, ks, 'y') && hasK(c, ks); });
+    return { y: y.length, c: cc.length };
+  }
+  function isCancer(c) { var n = A.std11(c.code); return /^암|백혈병/.test(n); }
+  function cancerSus(c) { var s = A.majorSuspect(c.code); return /암/.test(s); }
+
+  // 상품 하나의 질문별 결과
+  function lineResult(id, R, ctx, p) {
+    var N = R.N, M = R.M, n;
+    switch (id) {
+      case 'm3': n = R.recent3mCards.length; return { label: '3개월 내 진료·투약', y: n, c: 0 };
+      case 'ex1': n = countK(R, ['정밀']); return { label: '1년 내 추가검사·재검사', y: n.y, c: n.c };
+      case 'std5': n = countK(R, K_STD5); return { label: '5년 내 입원·수술·7일↑ 치료·30일↑ 투약', y: n.y, c: n.c };
+      case 'm11': n = countK(R, ['질병']); return { label: '5년 내 11대 질병', y: n.y, c: n.c };
+      case 'ins': n = countK(R, K_INS); return { label: N + '년 내 입원·수술', y: n.y, c: n.c };
+      case 'six': n = countK(R, ['질병']); return { label: M + '년 내 6대 질병', y: n.y, c: n.c };
+      case 'm3ins': {
+        var d3 = R.from3m;
+        var all = ctx.std.main.concat(ctx.std.check, ctx.std.extra);
+        var y = all.filter(function (c) { return c.visits.some(function (v) { return v.inp && v.date >= d3; }) || c.surg.some(function (s) { return s.date >= d3; }); }).length;
+        var ex = all.filter(function (c) { return c.exams.some(function (e) { return e.date >= d3; }); }).length;
+        var cc = y ? 0 : (ex || ctx.std.recent3mCards.length ? Math.max(ex, ctx.std.recent3mCards.length) : 0);
+        return { label: '3개월 내 입원·수술·추가검사 소견', y: y, c: cc, note: cc ? '최근 3개월 진료가 있습니다. 입원·수술·추가검사 소견이 있었는지 고객에게 확인하세요.' : '' };
+      }
+      case 'ins7': n = countK(ctx.sick2, K_INS7); return { label: '2년 내 입원·수술·7일↑ 치료', y: n.y, c: n.c };
+      case 'cancer': {
+        var al = ctx.std.main.concat(ctx.std.check, ctx.std.extra);
+        return { label: '5년 내 암', y: al.filter(isCancer).length, c: al.filter(function (c) { return !isCancer(c) && cancerSus(c); }).length };
+      }
+    }
+    return { label: id, y: 0, c: 0 };
+  }
+
+  // 상세 보기용: 상품 질문에 해당하는 항목만 남긴 결과
+  function cloneCard(c, ks, extraTest) {
+    var disc = c.disc.filter(function (d) { return ks.indexOf(d.k) >= 0 || (extraTest && extraTest(d, c)); });
+    return Object.assign({}, c, { disc: disc, tier: disc.some(function (d) { return d.lv === 'y'; }) ? 'disc' : disc.length ? 'check' : 'none' });
+  }
+  function regroup(R, cards, extra) {
+    var byLast = function (a, b) { return b.last < a.last ? -1 : 1; };
+    var out = Object.assign({}, R);
+    out.main = cards.filter(function (c) { return c.tier === 'disc'; }).sort(byLast);
+    out.check = cards.filter(function (c) { return c.tier === 'check'; }).sort(byLast);
+    out.extra = cards.filter(function (c) { return c.tier === 'none'; }).concat(extra || []).sort(byLast);
+    out.extra.forEach(function (c) { if (!c.reason) c.reason = '이 상품 질문에 해당하지 않음'; });
+    return out;
+  }
+  function detailR(p, ctx) {
+    var R = ctx[p.run];
+    if (p.id === 'silSick') {
+      var A2 = ctx.sick2;
+      var cards = A2.main.concat(A2.check).map(function (c) { return cloneCard(c, K_INS7); });
+      var seen = {}; cards.forEach(function (c) { seen[c.code] = 1; });
+      ctx.std.main.concat(ctx.std.check, ctx.std.extra).forEach(function (c) {
+        if (seen[c.code] || !(isCancer(c) || cancerSus(c))) return;
+        var cc = cloneCard(c, [], function (d) { return d.k === '질병'; });
+        if (!cc.disc.length) cc = Object.assign({}, cc, { disc: [{ lv: isCancer(c) ? 'y' : 'c', k: '질병', t: isCancer(c) ? '암(5년 이내)' : '암 관련 확인 — ' + A.majorSuspect(c.code), q: c.name + ' 진단 이후 암 확진이나 추적검사를 받으신 적이 있나요?' }] });
+        cc.tier = cc.disc.some(function (d) { return d.lv === 'y'; }) ? 'disc' : 'check';
+        cards.push(cc);
+      });
+      var out = regroup(ctx.std, cards.filter(function (c) { return c.tier !== 'none'; }), cards.filter(function (c) { return c.tier === 'none'; }));
+      out.productNote = '유병자 실손: 3개월 내 입원·수술·추가검사 소견 / 2년 내 입원·수술·계속 7일 이상 치료 / 5년 내 암';
+      out.mode = 'std'; out.sick = true;
+      return out;
+    }
+    if (p.id === 'drvSim') {
+      var all = R.main.concat(R.check).map(function (c) { return cloneCard(c, []); });
+      return regroup(R, [], all);
+    }
+    return R;
+  }
+
+  function evaluate(input, base) {
+    var ctx = {};
+    Object.keys(RUNS).forEach(function (k) { ctx[k] = runCfg(input, k, base); });
+    ctx.sick = ctx.std;
+    var res = PRODUCTS.map(function (p) {
+      var R = ctx[p.run];
+      var lines = p.lines.map(function (l) { return lineResult(l, R, ctx, p); });
+      var st = lines.some(function (l) { return l.y; }) ? 'y' : lines.some(function (l) { return l.c; }) ? 'c' : 'n';
+      return { id: p.id, title: p.title, short: p.short, lines: lines, status: st };
+    });
+    return { ctx: ctx, products: res };
+  }
+  function summaryLine(products) {
+    var free = products.filter(function (p) { return p.status === 'n'; });
+    if (!free.length) return { text: '전 상품 심사 필요', ok: false };
+    return { text: '무심사 가입 가능 : ' + free[0].short + (free.length > 1 ? ' 외 ' + (free.length - 1) + '종' : ''), ok: true };
+  }
+
+  var api = { PRODUCTS: PRODUCTS, evaluate: evaluate, detailR: detailR, summaryLine: summaryLine };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.Products = api;
+})(this);
+
+</script>
+<script>
+// 파일 읽기: PDF(심평원·공단·검진) / 투약이력 엑셀 → 분석 입력 (브라우저/Node 공용)
+(function (root) {
+  function sniff(u) {
+    if (u.length > 8 && u[0] === 0xD0 && u[1] === 0xCF && u[2] === 0x11 && u[3] === 0xE0) return 'sheet';
+    if (u.length > 4 && u[0] === 0x50 && u[1] === 0x4B && (u[2] === 3 || u[2] === 5 || u[2] === 7)) { var hd = new TextDecoder('latin1').decode(u.subarray(0, Math.min(u.length, 4000))); return /\[Content_Types\]\.xml|xl\//.test(hd) ? 'sheet' : 'zip'; }
+    for (var i = 0; i < Math.min(u.length - 4, 1024); i++) if (u[i] === 0x25 && u[i + 1] === 0x50 && u[i + 2] === 0x44 && u[i + 3] === 0x46) return 'pdf';
+    return '';
+  }
+  function pwList(birth) {
+    var b = String(birth || '').replace(/\D/g, '');
+    var out = [];
+    if (b.length === 8) out.push(b, b.slice(2));
+    else if (b.length === 6) { out.push(b); var yy2 = +b.slice(0, 2); out.push((yy2 > 30 ? '19' : '20') + b, (yy2 > 30 ? '20' : '19') + b); }
+    else if (b) out.push(b);
+    return out;
+  }
+  var KIND_LABEL = { basic: '기본진료', detail: '세부진료', rx: '처방조제', summary: '진료요약', recent: '요양급여내역서', checkup: '검진결과통보서', checkupAll: '검진 한눈에', unknown: '인식 불가' };
+
+  async function readPdf(L, data, pws) {
+    var doc = await L.PdfTable.openPdf(L.pdfjsLib, data, pws);
+    var p1 = await doc.getPage(1);
+    var first = (await L.PdfTable.pageText(p1)).join(' ');
+    var t1 = await L.PdfTable.pageTable(L.pdfjsLib, p1);
+    var hdr = (t1.rows.find(function (r) { return r[0] === '순번'; }) || []).join('|').replace(/\s/g, '');
+    var kind = /주상병코드/.test(hdr) ? 'basic' : /코드명/.test(hdr) ? 'detail' : /약품명/.test(hdr) ? 'rx' : /입원\(외래\)일수/.test(hdr) ? 'summary' : /요양급여내역/.test(first) ? 'recent' : /결과통보서/.test(first) ? 'checkup' : /한번에\s*보기/.test(first) ? 'checkupAll' : 'unknown';
+    var rows = t1.rows.slice(), text = [first];
+    for (var i = 2; i <= doc.numPages; i++) {
+      var pg = await doc.getPage(i);
+      rows = rows.concat((await L.PdfTable.pageTable(L.pdfjsLib, pg)).rows);
+      if (kind === 'checkup') text.push((await L.PdfTable.pageText(pg)).join('\n'));
+    }
+    if (kind === 'checkup') text = [(await L.PdfTable.pageText(p1)).join('\n')].concat(text.slice(1));
+    return { kind: kind, rows: rows, text: text.join('\n') };
+  }
+  function parseCheckupAll(rows) {
+    var yr = rows.find(function (r) { return r.some(function (c) { return c === '검진년도'; }); });
+    var dt = rows.find(function (r) { return r.some(function (c) { return c === '검진일자'; }); });
+    if (!yr) return null;
+    var cols = [];
+    yr.forEach(function (c, i) { var m = c.match(/^`?(\d{2})$/); if (m) cols.push({ i: i, y: '20' + m[1] }); });
+    var items = {};
+    rows.forEach(function (r) {
+      var label = r.find(function (c) { return c; }); if (!label) return;
+      var li = r.indexOf(label);
+      if (/검진년도|검진일자|항목|유의사항/.test(label)) return;
+      var vals = {}; var any = false;
+      cols.forEach(function (c) { if (c.i > li && r[c.i]) { vals[c.y] = r[c.i]; any = true; } });
+      if (any) items[label] = { vals: vals, unit: r[r.length - 2] && !/^\d/.test(r[r.length - 2]) ? r[r.length - 2] : '' };
+    });
+    var years = cols.filter(function (c) { return dt && dt[c.i]; }).map(function (c) { return { y: c.y, d: dt[c.i] }; });
+    return { years: years, items: items };
+  }
+  function parseCheckup(text) {
+    var out = { date: '', judge: '', lines: [] };
+    var m = text.match(/검진일\s*([\d.]+)/); if (m) out.date = m[1];
+    var lines = text.split('\n'), res = [];
+    for (var i = 0; i < lines.length; i++) {
+      var l = lines[i].trim();
+      if (/^▷/.test(l)) { var s = l.replace(/^▷\s*/, ''); var j = i + 1; while (j < lines.length && lines[j].trim() && !/^[▷◆※*]/.test(lines[j].trim()) && j < i + 4) { s += ' ' + lines[j].trim(); j++; } res.push(s); }
+    }
+    out.lines = res;
+    var n = text.match(/성명\s*(\S+)/); if (n) out.name = n[1];
+    return out;
+  }
+
+  // files: [{name, data:Uint8Array}] → {input, meta, states, needPw, sheetPw}
+  async function ingest(L, files, birth, onProgress) {
+    var A = L.Analyzer;
+    var input = {}, meta = { checkupAll: null, checkup: null, name: '', kinds: {} }, states = {};
+    var pws = pwList(birth), needPw = false, sheetPw = false;
+    var seen = {};
+    for (var i = 0; i < files.length; i++) {
+      var f = files[i];
+      if (onProgress) onProgress(i, files.length, f.name);
+      if (sniff(f.data) === 'sheet') {
+        try {
+          if (!L.XLSX) throw new Error('엑셀 읽기 모듈을 불러오지 못했습니다');
+          var wb = L.XLSX.read(f.data, { type: 'array' });
+          var trows = []; wb.SheetNames.forEach(function (sn) { trows = trows.concat(L.XLSX.utils.sheet_to_json(wb.Sheets[sn], { header: 1, raw: false, defval: '' })); });
+          var tk = A.buildTuyak(trows);
+          if (tk.length) { input.tuyak = (input.tuyak || []).concat(tk); meta.kinds.tuyak = 1; states[f.name] = { ok: true, kind: '투약이력 ' + tk.length + '건' }; }
+          else states[f.name] = { bad: true, kind: '투약이력 형식 아님' };
+        } catch (e) {
+          var enc = /password|encrypt|암호/i.test(String(e && e.message));
+          states[f.name] = { bad: true, kind: enc ? '암호 해제 필요' : '읽기 실패' };
+          if (enc) sheetPw = true;
+        }
+        continue;
+      }
+      try {
+        var r = await readPdf(L, f.data.slice ? f.data.slice(0) : f.data, pws);
+        states[f.name] = { ok: r.kind !== 'unknown', bad: r.kind === 'unknown', kind: KIND_LABEL[r.kind] };
+        meta.kinds[r.kind] = 1; if (/자동차/.test(f.name) || /자동차/.test(r.text || '')) meta.kinds.car = 1;
+        var dd = function (arr) { return arr.filter(function (x) { var k = r.kind + JSON.stringify(x); if (seen[k]) return false; seen[k] = 1; return true; }); };
+        if (r.kind === 'basic') input.basic = (input.basic || []).concat(dd(A.buildBasic(r.rows)));
+        if (r.kind === 'detail') input.detail = (input.detail || []).concat(dd(A.buildDetail(r.rows)));
+        if (r.kind === 'rx') input.rx = (input.rx || []).concat(dd(A.buildRx(r.rows)));
+        if (r.kind === 'recent') {
+          var rc = A.buildRecent(r.rows);
+          if (!input.recent) input.recent = rc;
+          else { var ks = {}; input.recent.rows.forEach(function (x) { ks[x.date + '|' + x.hosp + '|' + x.code] = 1; }); rc.rows.forEach(function (x) { if (!ks[x.date + '|' + x.hosp + '|' + x.code]) input.recent.rows.push(x); }); if (rc.period > input.recent.period) input.recent.period = rc.period; }
+          var nm = r.rows.find(function (x) { return x.indexOf('성명') >= 0; }); if (nm) meta.name = nm.filter(function (c) { return c; })[1] || meta.name;
+          var rr = r.rows.map(function (x) { return x.join(' '); }).join(' ').match(/\d{6}-([1-8])/); if (rr) meta.sex = /[1357]/.test(rr[1]) ? 'M' : 'F';
+        }
+        if (r.kind === 'checkupAll') meta.checkupAll = parseCheckupAll(r.rows);
+        if (r.kind === 'checkup') { var rr2 = (r.text || '').match(/\d{6}-([1-8])/); if (rr2 && !meta.sex) meta.sex = /[1357]/.test(rr2[1]) ? 'M' : 'F'; meta.checkup = parseCheckup(r.text); if (meta.checkup.name && !meta.name) meta.name = meta.checkup.name; }
+      } catch (e) {
+        states[f.name] = { bad: true, kind: e && e.code === 'PASSWORD' ? '비밀번호 오류' : '읽기 실패' };
+        if (e && e.code === 'PASSWORD') needPw = true;
+      }
+    }
+    if (input.tuyak) input.rx = A.mergeRx(input.rx || [], input.tuyak);
+    return { input: input, meta: meta, states: states, needPw: needPw, sheetPw: sheetPw, ok: !!(input.basic || input.recent || meta.checkupAll || meta.checkup) };
+  }
+
+  var api = { ingest: ingest, sniff: sniff, pwList: pwList, KIND_LABEL: KIND_LABEL };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.Ingest = api;
+})(this);
+
+</script>
+<script>
+// 고객 자료 보관: 이 기기(브라우저) 안 IndexedDB + 잠금 비밀번호로 AES-GCM 암호화. 서버 전송 없음.
+(function (root) {
+  var DB = 'mhs-local-v1', ITER = 250000;
+  var key = null, mem = null, idleT = null, onLock = null, IDLE_MS = 30 * 60 * 1000;
+  var te = new TextEncoder(), td = new TextDecoder();
+
+  function b64(u) { var s = ''; u = new Uint8Array(u); for (var i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); }
+  function ub64(s) { var b = atob(s), u = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
+
+  function openDb() {
+    return new Promise(function (res, rej) {
+      var rq;
+      try { rq = indexedDB.open(DB, 1); } catch (e) { rej(e); return; }
+      rq.onupgradeneeded = function () { var d = rq.result; ['meta', 'idx', 'data'].forEach(function (s) { if (!d.objectStoreNames.contains(s)) d.createObjectStore(s); }); };
+      rq.onsuccess = function () { res(rq.result); };
+      rq.onerror = function () { rej(rq.error); };
+    });
+  }
+  var dbp = null;
+  function db() { if (!dbp) dbp = openDb(); return dbp; }
+  function tx(store, mode, fn) {
+    if (mem) { var o = fn(memStore(store)); return Promise.resolve(o && o.__req ? o.__req.result : o); }
+    return db().then(function (d) {
+      return new Promise(function (res, rej) {
+        var t = d.transaction(store, mode), s = t.objectStore(store), out;
+        Promise.resolve(fn(s)).then(function (v) { out = v; });
+        t.oncomplete = function () { res(out && out.__req ? out.__req.result : out); };
+        t.onerror = function () { rej(t.error); };
+        t.onabort = function () { rej(t.error); };
+      });
+    });
+  }
+  function req(r) { return { __req: r }; }
+  // 저장소를 못 쓰는 화면(미리보기 등): 메모리에만 보관
+  function memStore(name) {
+    var m = mem[name] = mem[name] || {};
+    return {
+      get: function (k) { return { __req: { result: m[k] } }; },
+      put: function (v, k) { m[k] = v; }, delete: function (k) { delete m[k]; },
+      getAll: function () { return { __req: { result: Object.keys(m).map(function (k) { return m[k]; }) } }; },
+      getAllKeys: function () { return { __req: { result: Object.keys(m) } }; }, clear: function () { mem[name] = {}; }
+    };
+  }
+  function get(store, k) { return tx(store, 'readonly', function (s) { return req(s.get(k)); }); }
+  function put(store, k, v) { return tx(store, 'readwrite', function (s) { s.put(v, k); }); }
+  function del(store, k) { return tx(store, 'readwrite', function (s) { s.delete(k); }); }
+  function all(store) { return tx(store, 'readonly', function (s) { return req(s.getAll()); }); }
+  function clear(store) { return tx(store, 'readwrite', function (s) { s.clear(); }); }
+
+  async function derive(pin, salt) {
+    var base = await crypto.subtle.importKey('raw', te.encode(pin), 'PBKDF2', false, ['deriveKey']);
+    return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: salt, iterations: ITER, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+  }
+  async function enc(obj, k) {
+    var iv = crypto.getRandomValues(new Uint8Array(12));
+    var ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, k || key, te.encode(JSON.stringify(obj)));
+    return { iv: b64(iv), ct: b64(ct) };
+  }
+  async function dec(box, k) {
+    var pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: ub64(box.iv) }, k || key, ub64(box.ct));
+    return JSON.parse(td.decode(pt));
+  }
+  function touch() { clearTimeout(idleT); if (key) idleT = setTimeout(function () { lock(); }, IDLE_MS); }
+  function lock() { key = null; clearTimeout(idleT); if (onLock) onLock(); }
+
+  async function status() {
+    if (!root.crypto || !crypto.subtle) return 'nocrypto';
+    try { await db(); } catch (e) { mem = {}; }
+    if (key) return 'open';
+    var v = await get('meta', 'vault');
+    return v ? 'locked' : 'new';
+  }
+  async function setup(pin) {
+    var salt = crypto.getRandomValues(new Uint8Array(16));
+    key = await derive(pin, salt);
+    await put('meta', 'vault', { salt: b64(salt), iter: ITER, check: await enc('ok'), created: Date.now() });
+    touch(); return true;
+  }
+  async function unlock(pin) {
+    var v = await get('meta', 'vault'); if (!v) return false;
+    var k = await derive(pin, ub64(v.salt));
+    try { if ((await dec(v.check, k)) !== 'ok') return false; } catch (e) { return false; }
+    key = k; touch(); return true;
+  }
+  async function wipe() { await clear('idx'); await clear('data'); await clear('meta'); key = null; }
+
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+  async function list() {
+    touch();
+    var rows = await all('idx');
+    var out = [];
+    for (var i = 0; i < rows.length; i++) { try { out.push(await dec(rows[i])); } catch (e) { } }
+    return out.sort(function (a, b) { return (b.updated || 0) - (a.updated || 0); });
+  }
+  async function saveHead(h) { touch(); h.updated = Date.now(); if (!h.id) { h.id = uid(); h.created = h.updated; } await put('idx', h.id, await enc(h)); return h; }
+  async function saveData(id, data) { touch(); await put('data', id, await enc(data)); }
+  async function loadData(id) { touch(); var b = await get('data', id); return b ? dec(b) : null; }
+  async function remove(id) { await del('idx', id); await del('data', id); }
+
+  // 백업: 지금 잠금 비밀번호로 암호화된 그대로 내보냄
+  async function exportBackup() {
+    var v = await get('meta', 'vault');
+    var idx = await tx('idx', 'readonly', function (s) { return req(s.getAll()); });
+    var keys = await tx('idx', 'readonly', function (s) { return req(s.getAllKeys()); });
+    var data = [];
+    for (var i = 0; i < keys.length; i++) data.push(await get('data', keys[i]) || null);
+    return JSON.stringify({ app: 'mhs-local', v: 1, exported: new Date().toISOString(), vault: v, keys: keys, idx: idx, data: data });
+  }
+  async function importBackup(text, pin) {
+    var o = JSON.parse(text);
+    if (o.app !== 'mhs-local' || !o.vault) throw new Error('백업 파일 형식이 아닙니다');
+    var k = await derive(pin, ub64(o.vault.salt));
+    try { if ((await dec(o.vault.check, k)) !== 'ok') throw 0; } catch (e) { var er = new Error('백업 파일 비밀번호가 맞지 않습니다'); er.code = 'PIN'; throw er; }
+    var n = 0;
+    for (var i = 0; i < o.keys.length; i++) {
+      var h = await dec(o.idx[i], k);
+      await put('idx', h.id, await enc(h));
+      if (o.data[i]) await put('data', h.id, await enc(await dec(o.data[i], k)));
+      n++;
+    }
+    return n;
+  }
+
+  ['pointerdown', 'keydown'].forEach(function (ev) { try { root.addEventListener(ev, function () { if (key) touch(); }, { passive: true }); } catch (e) { } });
+
+  root.Store = {
+    status: status, setup: setup, unlock: unlock, lock: lock, wipe: wipe,
+    list: list, saveHead: saveHead, saveData: saveData, loadData: loadData, remove: remove,
+    exportBackup: exportBackup, importBackup: importBackup,
+    isMemory: function () { return !!mem; }, onLock: function (f) { onLock = f; }
+  };
+})(this);
+
+</script>
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function yy(d){ return String(d).slice(2); }
+  function won(n){ return (Math.round(n||0)).toLocaleString('ko-KR') + '원'; }
+  function todayStr(){ var t = new Date(); return new Date(t.getTime() - t.getTimezoneOffset()*60000).toISOString().slice(0,10); }
+  function ymd(){ return todayStr().replace(/-/g,''); }
+  var IC = {
+    search:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>',
+    save:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3h11l3 3v15H5z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg>',
+    warn:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 1 21h22L12 2zm1 15h-2v2h2v-2zm0-7h-2v5h2v-5z"/></svg>',
+    ok:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg>',
+    hosp:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M3 21V7l9-4 9 4v14h-7v-5h-4v5zm8-13v2H9v2h2v2h2v-2h2v-2h-2V8z"/></svg>',
+    lock:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6 10V8a6 6 0 1 1 12 0v2h1v12H5V10zm2 0h8V8a4 4 0 1 0-8 0z"/></svg>',
+    user:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><circle cx="10" cy="8" r="4"/><path d="M2 21c0-4 4-7 8-7s8 3 8 7zM19 8h2v3h3v2h-3v3h-2v-3h-3v-2h3z"/></svg>',
+    clip:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11l-8.5 8.5a5 5 0 0 1-7-7L14 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 7"/></svg>',
+    list:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
+    doc:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h7M9 17h7"/></svg>',
+    won:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l3 10 3-10 3 10 3-10 3 10 3-10M2 11h20M2 14h20"/></svg>',
+    heart:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20s-8-5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 9c0 6-8 11-8 11z"/><path d="M4 12h4l2-3 3 6 2-3h5"/></svg>',
+    shield:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5zm-1 13-4-4 1.4-1.4L11 12.2l4.6-4.6L17 9z"/></svg>'
+  };
+  var L = { pdfjsLib: window.pdfjsLib, XLSX: window.XLSX, PdfTable: window.PdfTable, Analyzer: window.Analyzer };
+
+  // ================= 잠금 =================
+  var memMode = false;
+  async function boot(){
+    var st = await Store.status();
+    memMode = Store.isMemory();
+    drawLock(st);
+  }
+  function drawLock(st){
+    $('shell').hidden = true; $('lock').hidden = false;
+    var h = '<div class="lmark">' + IC.shield + '<span>병력고지 분석기</span></div>';
+    if (st === 'nocrypto') h += '<h1>이 브라우저에서는 열 수 없습니다</h1><p>암호화 기능을 쓸 수 없는 환경입니다. 크롬 또는 엣지 최신 버전에서 열어 주세요.</p>';
+    else if (st === 'new') h += '<h1>잠금 비밀번호 만들기</h1><div class="safe">' + IC.lock + '<span>고객 정보와 분석 결과는 <b>이 기기 안에만</b> 암호화되어 저장되고, 어디로도 전송되지 않습니다. 비밀번호를 잊으면 저장된 자료를 열 수 없으니 꼭 기억해 두세요.</span></div>' +
+      '<input id="pin1" type="password" inputmode="numeric" autocomplete="new-password" placeholder="비밀번호 (4자리 이상)"><input id="pin2" type="password" inputmode="numeric" autocomplete="new-password" placeholder="한 번 더 입력"><div class="ferr" id="lerr"></div><button class="go" id="lgo" type="button">만들고 시작하기</button>';
+    else h += '<h1>잠금 해제</h1><p>이 기기에 저장된 고객 자료를 열려면 잠금 비밀번호를 입력하세요.</p><input id="pin1" type="password" inputmode="numeric" autocomplete="current-password" placeholder="잠금 비밀번호"><div class="ferr" id="lerr"></div><button class="go" id="lgo" type="button">열기</button><button class="lnk" id="lreset" type="button">비밀번호를 잊었어요 (저장 자료 전체 삭제)</button>';
+    if (memMode) h += '<div class="membanner">이 화면에서는 기기 저장소를 쓸 수 없어, 창을 닫으면 자료가 사라집니다.</div>';
+    $('lbox').innerHTML = h;
+    var p1 = $('pin1'); if (p1) setTimeout(function(){ p1.focus(); }, 50);
+    var go = $('lgo'); if (!go) return;
+    var submit = async function(){
+      var a = $('pin1').value, err = $('lerr');
+      if (st === 'new') {
+        if (a.length < 4) { err.textContent = '4자리 이상 입력하세요.'; return; }
+        if (a !== $('pin2').value) { err.textContent = '두 번 입력한 비밀번호가 다릅니다.'; return; }
+        go.disabled = true; go.textContent = '만드는 중…';
+        await Store.setup(a); enterApp();
+      } else {
+        go.disabled = true; go.textContent = '확인 중…';
+        var ok = await Store.unlock(a);
+        if (ok) enterApp(); else { go.disabled = false; go.textContent = '열기'; err.textContent = '비밀번호가 맞지 않습니다.'; $('pin1').select(); }
+      }
+    };
+    go.onclick = submit;
+    $('lbox').querySelectorAll('input').forEach(function(i){ i.addEventListener('keydown', function(e){ if (e.key === 'Enter') submit(); }); });
+    var rs = $('lreset'); if (rs) rs.onclick = async function(){
+      if (!confirm('이 기기에 저장된 고객 자료가 모두 지워집니다. 백업 파일이 있다면 새 비밀번호를 만든 뒤 불러올 수 있습니다(백업 당시 비밀번호 필요).\n\n정말 초기화할까요?')) return;
+      await Store.wipe(); drawLock('new');
+    };
+  }
+  Store.onLock(function(){ S.cur = null; S.data = null; drawLock('locked'); toast('일정 시간 사용하지 않아 잠갔습니다'); });
+
+  // ================= 상태 =================
+  var S = { list: [], cur: null, data: null, E: null, HI: null, CL: null, HP: null, tab: 'prod', pv: null, pvTab: 'sum', hmode: 'code', filter: 'all', q: '' };
+  try { S.hmode = localStorage.getItem('mhs_hmode') || 'code'; } catch(e){}
+  async function enterApp(){
+    $('lock').hidden = true; $('shell').hidden = false;
+    $('memBan').hidden = !memMode;
+    S.list = await Store.list();
+    renderList(); showWelcome();
+  }
+
+  // ================= 고객 목록 =================
+  function ageOf(birth, base){
+    var b = String(birth||'').replace(/\D/g,''); if (b.length !== 8) return '';
+    var d = (base || todayStr()).replace(/-/g,'');
+    var a = +d.slice(0,4) - +b.slice(0,4); if (d.slice(4) < b.slice(4)) a--; return a;
+  }
+  function birthTxt(b){ b = String(b||'').replace(/\D/g,''); return b.length === 8 ? b.slice(0,4)+'. '+b.slice(4,6)+'. '+b.slice(6) : b; }
+  function sexTxt(s){ return s === 'F' ? '여' : s === 'M' ? '남' : ''; }
+  function renderList(){
+    var q = S.q.trim(), L2 = S.list.filter(function(c){ return !q || c.name.indexOf(q) >= 0 || (c.memo||'').indexOf(q) >= 0; });
+    var nDone = S.list.filter(function(c){ return c.status === 'done'; }).length;
+    $('fAll').textContent = '전체 ' + S.list.length; $('fDone').textContent = '완료 ' + nDone; $('fWait').textContent = '대기 ' + (S.list.length - nDone);
+    ['fAll','fDone','fWait'].forEach(function(id){ $(id).setAttribute('aria-pressed', String($(id).dataset.f === S.filter)); });
+    if (S.filter === 'done') L2 = L2.filter(function(c){ return c.status === 'done'; });
+    if (S.filter === 'wait') L2 = L2.filter(function(c){ return c.status !== 'done'; });
+    var now = new Date(todayStr()).getTime(), groups = { '오늘': [], '최근 7일': [], '지난 기록': [] };
+    L2.forEach(function(c){ var d = new Date(new Date(c.updated).getTime() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,10); var t = new Date(d).getTime(); (t >= now ? groups['오늘'] : now - t <= 7*864e5 ? groups['최근 7일'] : groups['지난 기록']).push(c); });
+    var h = '';
+    Object.keys(groups).forEach(function(g){
+      if (!groups[g].length) return;
+      h += '<div class="cgrp">' + g + ' (' + groups[g].length + ')</div>';
+      h += groups[g].map(function(c){
+        var cur = S.cur && S.cur.id === c.id;
+        var r2 = c.status === 'done' ? '<span class="r2 ' + (c.sumOk ? 'ok' : '') + '">' + esc(c.summary || '') + '</span>' : '<span class="r2">파일 첨부 대기</span>';
+        return '<button type="button" class="citem" data-cid="' + c.id + '" aria-current="' + cur + '"><span class="r1"><b>' + esc(c.name) + '</b><small>' + sexTxt(c.sex) + (ageOf(c.birth) !== '' ? '·' + ageOf(c.birth) + '세' : '') + '</small><span class="stt ' + (c.status === 'done' ? '' : 'w') + '">' + (c.status === 'done' ? '✓ 분석완료' : '대기') + '</span></span>' + r2 + '</button>';
+      }).join('');
+    });
+    if (!S.list.length) h = '<div class="cempty">등록된 고객이 없습니다.<br>위의 <b>신규 고객 등록</b>으로 시작하세요.</div>';
+    else if (!h) h = '<div class="cempty">검색 결과가 없습니다.</div>';
+    $('clist').innerHTML = h;
+  }
+  $('q').addEventListener('input', function(){ S.q = this.value; renderList(); });
+  $('sfilt').addEventListener('click', function(e){ var b = e.target.closest('button'); if (!b) return; S.filter = b.dataset.f; renderList(); });
+  $('clist').addEventListener('click', function(e){ var b = e.target.closest('[data-cid]'); if (b) openCustomer(b.dataset.cid); });
+
+  function showWelcome(){
+    S.cur = null; S.data = null; $('shell').classList.remove('has-c');
+    $('main').innerHTML = $('tplWelcome').innerHTML;
+    renderList();
+  }
+
+  // ================= 고객 열기 =================
+  async function openCustomer(id){
+    var c = id === 'sample' ? SAMPLE.head : S.list.find(function(x){ return x.id === id; });
+    if (!c) return;
+    S.cur = c; S.pv = null; S.data = null; S.E = null;
+    if (c.status === 'done') {
+      try { S.data = id === 'sample' ? SAMPLE.data : await Store.loadData(id); } catch(e){ S.data = null; }
+      if (S.data) compute();
+    }
+    $('shell').classList.add('has-c');
+    renderList(); renderCustomer();
+    window.scrollTo(0, 0);
+  }
+  function compute(){
+    var d = S.data, base = d.base;
+    S.E = Products.evaluate(d.input, base);
+    S.HI = Claims.history(d.input, base);
+    S.CL = Claims.claims(d.input, base);
+    S.HP = (d.meta.checkupAll || d.meta.checkup) ? HealthAnalyze(d.meta.checkupAll, d.meta.checkup, S.cur.sex || d.meta.sex) : null;
+  }
+
+  function renderCustomer(){
+    var c = S.cur, d = S.data;
+    var base = d ? d.base : '';
+    var h = '<div class="chead"><button class="btn back" type="button" data-act="back">‹ 목록</button><h2>' + esc(c.name) + '</h2><span class="cmeta">' + sexTxt(c.sex) + (c.birth ? ' / ' + ageOf(c.birth, base) + '세(' + birthTxt(c.birth) + ')' : '') + (base ? ' · 분석 기준일 ' + base : '') + '</span>' +
+      '<div class="cact">' + (d ? '<span class="stbadge">' + IC.ok + '분석완료</span>' : '<span class="stbadge w">파일 첨부 대기</span>') +
+      (c.sample ? '' : '<button class="btn lg pri" type="button" data-act="files">' + IC.clip + (d ? '다시 분석' : '병력파악 (파일 첨부)') + '</button>') +
+      (c.sample ? '' : '<button class="btn lg" type="button" data-act="edit">정보 수정</button><button class="btn lg" type="button" data-act="del">삭제</button>') + '</div></div>';
+    if (memMode) h += '<div class="membanner">이 화면에서는 기기 저장소를 쓸 수 없어, 창을 닫으면 자료가 사라집니다. PC용 파일이나 설치된 앱에서 사용하세요.</div>';
+    if (c.sample) h += '<div class="membanner">예시 고객입니다 · 가상의 자료로 화면 구성을 보여 줍니다.</div>';
+    if (!c.sample) h += '<details class="memo"' + (c.memo ? ' open' : '') + '><summary>고객 메모 <small class="note">(이 기기에만 암호화 저장)</small></summary><textarea id="memoTa" placeholder="상담 내용, 가입 희망 상품 등">' + esc(c.memo || '') + '</textarea></details>';
+    if (d && base !== todayStr() && !c.sample) h += '<div class="rebase">분석 기준일이 오늘(' + todayStr() + ')과 다릅니다. 기간 계산(3개월·N년)을 오늘 기준으로 다시 하려면 <button type="button" data-act="rebase">오늘 기준으로 다시 판정</button></div>';
+    if (!d) {
+      h += '<div class="welcome" style="margin-top:2vh"><h2>파일을 첨부하고 분석을 시작하세요</h2><p>심평원·공단에서 받은 파일을 한 번에 넣으면, 모든 상품의 고지 판정표와 진료이력, 미청구 보험금, 건강 분석을 한 번에 만들어 저장합니다.</p>' +
+        '<div class="steps"><div class="step"><i>1</i><b>심평원 PDF</b><span>기본진료 · 세부진료 · 처방조제 (자동차보험 진료가 있으면 함께)</span></div><div class="step"><i>2</i><b>공단 PDF</b><span>요양급여내역서 (최근 진료) · 건강검진 결과 한눈에 보기</span></div><div class="step"><i>3</i><b>투약이력 엑셀</b><span>내가 먹는 약 한눈에 — 암호를 풀고 저장한 파일</span></div></div>' +
+        '<div><button class="go" type="button" data-act="files" style="padding:0 28px">' + IC.clip + ' 파일 첨부하고 분석 시작</button></div></div>';
+      $('main').innerHTML = h; return;
+    }
+    if (S.pv) { h += renderDetail(S.pv); $('main').innerHTML = h; afterRender(); return; }
+    var nP = S.E.products.filter(function(p){ return p.status !== 'n'; }).length;
+    var TABS = [['prod', IC.list, '고지항목', ''], ['hist', IC.doc, '진료이력', ''], ['claim', IC.won, '미청구 보험금', S.CL.rows.length ? S.CL.rows.length : ''], ['health', IC.heart, '건강 분석', S.HP && S.HP.years.length ? S.HP.years.length + '년' : '']];
+    h += '<nav class="ptabs" role="tablist">' + TABS.map(function(t){ return '<button type="button" role="tab" class="ptab" data-ptab="' + t[0] + '" aria-selected="' + (S.tab === t[0]) + '">' + t[1] + '<span>' + t[2] + '</span>' + (t[3] !== '' ? '<span class="cnt">' + t[3] + '</span>' : '') + '</button>'; }).join('') + '</nav>';
+    h += '<section class="ppane">' + (S.tab === 'prod' ? renderProducts() : S.tab === 'hist' ? renderHistory() : S.tab === 'claim' ? renderClaims() : '<div id="hpPane"></div>') + '</section>';
+    $('main').innerHTML = h;
+    if (S.tab === 'health') renderHealth($('hpPane'));
+    afterRender();
+  }
+  function afterRender(){
+    var ta = $('memoTa');
+    if (ta) ta.addEventListener('change', async function(){ S.cur.memo = this.value; await Store.saveHead(S.cur); S.list = await Store.list(); S.cur = S.list.find(function(x){ return x.id === S.cur.id; }) || S.cur; renderList(); toast('메모를 저장했습니다'); });
+  }
+
+  // ================= 고지항목 판정표 =================
+  function renderProducts(){
+    var E = S.E, sm = Products.summaryLine(E.products);
+    var h = '<div class="psum"><span class="chipx ' + (sm.ok ? 'ok' : 'bad') + '">' + (sm.ok ? IC.ok : IC.warn) + esc(sm.text) + '</span><span class="note">상품 카드의 <b>결과 보기</b>에서 상병별 고지 내용·고지양식·질문지를 확인하세요.</span></div>';
+    h += '<div class="pgrid">' + E.products.map(function(p){
+      var bd = p.status === 'y' ? '<span class="bdg y">심사 필요</span>' : p.status === 'c' ? '<span class="bdg c">확인 필요</span>' : '<span class="bdg n">고지 없음</span>';
+      return '<article class="pc"><div class="pc-h"><h4>' + esc(p.title) + '</h4><div class="pc-a"><button class="pb" type="button" data-pv="' + p.id + '">' + IC.search + '결과 보기</button><button class="pb" type="button" data-ps="' + p.id + '">' + IC.save + '결과 저장</button>' + bd + '</div></div><ul class="pl">' +
+        p.lines.map(function(l){
+          var st = l.y ? 'y' : l.c ? 'c' : 'n';
+          var n = l.y ? l.y + '건' + (l.c ? '<small>+' + l.c + ' 확인</small>' : '') : l.c ? l.c + '건' : '0건';
+          var s = st === 'y' ? IC.warn + '고지필요' : st === 'c' ? IC.warn + '확인필요' : IC.ok + '해당없음';
+          return '<li' + (l.note ? ' title="' + esc(l.note) + '"' : '') + '><span>' + esc(l.label) + '</span><span class="n">' + n + '</span><span class="s ' + st + '">' + s + '</span></li>';
+        }).join('') + '</ul></article>';
+    }).join('') + '</div>';
+    h += '<div class="pfoot">※ \'심사 필요\'는 가입 불가 안내가 아니므로 고지 후 심사를 진행해 보시기 바랍니다.<br>※ \'확인 필요\'는 보험사·상품에 따라 고지 대상이 될 수 있는 항목입니다. 고객에게 확인한 뒤 결정하세요.<br>※ 3개월 이내 입원·수술·검사 여부와 비급여 진료는 심평원 자료로 확인되지 않으니 고객에게 꼭 질문하세요.<br>※ 본 분석 결과는 첨부한 자료를 바탕으로 한 참고용이며, 최종 고지 여부는 원본 서류와 고객 확인 후 판단해야 합니다.</div>';
+    return h;
+  }
+
+  // ================= 진료이력 =================
+  function ck(b, t){ return '<span class="ckm ' + (b ? 'y' : 'n') + '" title="' + t + (b ? ' 있음' : ' 없음') + '">' + (b ? '✓' : '✕') + '</span>'; }
+  var UNK = '진단명 파악 불가 — 고객 또는 병원에 확인하세요.';
+  function renderHistory(){
+    var G = S.HI.groups, day = S.hmode === 'day';
+    var h = '<div class="hbar"><div class="seg" role="group"><button type="button" data-hm="code" aria-pressed="' + !day + '">진단별 요약</button><button type="button" data-hm="day" aria-pressed="' + day + '">일자별 상세</button></div><span class="note">최근 5년 · 병원별 묶음 (같은 날 약국 조제 포함)</span><button class="btn lg pri sp" type="button" data-ptab="claim">' + IC.won + '미청구 보험금 예상액 조회</button></div>';
+    if (!G.length) return h + '<div class="empty">진료 기록이 없습니다.</div>';
+    var cols = day ? ['진단코드','상병명','진료비용','진료과','진료일','일수','진단','투약','입원','수술','검사'] : ['진단코드','상병명','진료과','진료기간','일수','진단','투약','입원','수술','검사'];
+    h += '<div class="tw ht-w"><table class="t ht"><thead><tr>' + cols.map(function(c){ return '<th>' + c + '</th>'; }).join('') + '</tr></thead><tbody>';
+    G.forEach(function(g){
+      h += '<tr class="grp"><td colspan="' + cols.length + '">' + IC.hosp + esc(g.name) + (g.pharmList.length ? ' / ' + esc(g.pharmList.join(', ')) : '') + '</td></tr>';
+      if (!day) g.byCode.forEach(function(r){
+        h += '<tr><td class="n">' + (r.code ? esc(r.code) : '-') + '</td><td' + (r.code ? '' : ' class="unk"') + '>' + (r.code ? esc(r.name) : UNK) + '</td><td>' + (esc(r.deptList.join(', ')) || '-') + '</td><td class="n">' + yy(r.first) + (r.first !== r.last ? ' ~ ' + yy(r.last) : '') + '</td><td class="n">' + r.days + '일</td><td class="c">' + ck(r.dx,'진단') + '</td><td class="c">' + ck(r.rx,'투약') + '</td><td class="c">' + ck(r.inp,'입원') + '</td><td class="c">' + ck(r.surg,'수술') + '</td><td class="c">' + ck(r.exam,'검사') + '</td></tr>';
+      });
+      else g.visits.forEach(function(v){
+        var c0 = v.codes[0], pp = v.pharm.reduce(function(s, p){ return s + p.pay; }, 0);
+        var cost = v.pharmOnly ? '약국 : ' + won(pp) : '병원 : ' + won(v.pay) + (v.pharm.length ? ' / 약국 : ' + won(pp) : '');
+        h += '<tr><td class="n">' + (c0 ? esc(c0.code) : '-') + '</td><td' + (c0 ? '' : ' class="unk"') + '>' + (c0 ? esc(c0.name) + (v.codes.length > 1 ? ' <small class="note">외 ' + (v.codes.length - 1) + '</small>' : '') : UNK) + '</td><td class="n">' + cost + '</td><td>' + (esc(Object.keys(v.depts).filter(Boolean).join(', ')) || '-') + '</td><td class="n">' + yy(v.date) + '</td><td class="n">' + (v.inp ? v.inDays : 1) + '일</td><td class="c">' + ck(!!c0,'진단') + '</td><td class="c">' + ck(v.rx || v.pharm.length,'투약') + '</td><td class="c">' + ck(v.inp,'입원') + '</td><td class="c">' + ck(v.surg.length,'수술') + '</td><td class="c">' + ck(v.exam.length,'검사') + '</td></tr>';
+      });
+    });
+    h += '</tbody></table></div>' + NOTES_HTML;
+    return h;
+  }
+  var NOTES = ['의료비용은 급여 항목(본인부담금)만 산출됩니다.','비급여 진료 비용은 산출에서 제외됩니다.','실손의료비 가입 상품·약관에 따라 금액은 차이가 있을 수 있습니다.','숨은 보험금 찾기 서비스는 고객님과 소통하며 진행하시길 권장합니다.','보험금 청구 소멸시효(3년)에 따라 최근 3년 이내 진료만 산출합니다.','입원·수술에 체크된 경우, 출력된 금액만으로 청구 실익 여부를 부정적으로 판단해서는 안 됩니다.'];
+  var NOTES_HTML = '<ul class="notes">' + NOTES.map(function(n){ return '<li>' + n + '</li>'; }).join('') + '</ul>';
+
+  // ================= 미청구 보험금 =================
+  var GEN = [['1세대','~2009.07'],['2세대','2009.08~2017.03'],['3세대','2017.04~2021.06'],['4세대','2021.07~2026.03'],['5세대','2026.05~']];
+  function claimsRows(CL){
+    return CL.rows.map(function(r){
+      return '<tr><td class="n">' + yy(r.date) + '</td><td>' + esc(r.hosp) + '</td><td class="' + (r.inp ? 'inp' : '') + '">' + (r.inp ? '입원' : '통원') + (r.surg ? ' · 수술' : '') + '</td><td class="r">' + (r.h == null ? '-' : won(r.h)) + '</td><td class="r">' + (r.p == null ? '-' : won(r.p)) + '</td>' + r.g.map(function(x){ return '<td class="r' + (x ? '' : ' z') + '">' + won(x) + '</td>'; }).join('') + '</tr>';
+    }).join('');
+  }
+  function claimsHead(CL){
+    return '<thead><tr><th>진료일</th><th>의료기관</th><th>구분</th><th>병원 진료비용</th><th>약국 조제비용</th>' + GEN.map(function(g){ return '<th>' + g[0] + '</th>'; }).join('') + '</tr></thead>';
+  }
+  function claimsTot(CL){ return '<tr class="tot"><td></td><td>합계</td><td></td><td class="r">' + won(CL.tot.h) + '</td><td class="r">' + won(CL.tot.p) + '</td>' + CL.tot.g.map(function(x){ return '<td class="r g">' + won(x) + '</td>'; }).join('') + '</tr>'; }
+  function renderClaims(){
+    var CL = S.CL;
+    var h = '<div class="hbar"><div><b style="font-size:17px">' + esc(S.cur.name) + ' 고객 · 미청구 보험금 예상액</b><div class="subt">최근 3년 (' + yy(CL.from) + ' ~ ' + yy(CL.base) + ') · 진료 ' + CL.rows.length + '건 · 급여 본인부담 기준 실손 세대별 예상 지급액</div></div><button class="btn lg pri sp" type="button" data-dl="claim">' + IC.save + '미청구 리포트 저장</button></div>';
+    if (!CL.hasCost) return h + '<div class="empty">진료비 금액이 있는 자료가 없습니다. 심평원 <b>기본진료정보</b> PDF(내가 낸 의료비 칸)나 공단 <b>요양급여내역서</b>를 넣고 다시 분석하세요.</div>';
+    h += '<div class="gcards">' + CL.tot.g.map(function(x, i){ return '<div class="gc"><span>' + GEN[i][0] + ' 실손</span><b>' + won(x) + '</b><small>' + GEN[i][1] + ' 가입</small></div>'; }).join('') + '</div>';
+    h += '<div class="tw"><table class="t cl">' + claimsHead(CL) + '<tbody>' + claimsTot(CL) + claimsRows(CL) + '</tbody></table></div>';
+    h += '<ul class="notes">' + NOTES.map(function(n){ return '<li>' + n + '</li>'; }).join('') + '<li>계산 기준(통원): 1세대 병원·약국 각 5천원 공제 / 2세대 1만원(병원급 1.5만·종합 2만) 또는 20% 중 큰 금액, 약국 8천원 또는 20% / 3세대 같은 공제에 10% / 4세대 병원+약국 합산 1만원(종합 2만) 또는 20% / 5세대 합산 1만원(종합 2만) 또는 건보 본인부담률(의원 30%·병원 40%·종합 50%·상급 60%).</li><li>입원은 1세대 전액, 2·3세대 90%, 4·5세대 80%로 단순 계산했습니다. 연간 한도·자기부담 상한·약관별 차이는 반영하지 않았습니다.</li><li>요양기관 종별(의원·병원·종합)은 기관 이름으로 추정합니다.</li></ul>';
+    return h;
+  }
+
+  // ================= 건강 분석 =================
+  function renderHealth(box){
+    if (!S.HP || !S.HP.years.length) { box.innerHTML = '<div class="empty">건강검진 자료가 없습니다. 공단 <b>건강검진 결과 한눈에 보기</b> PDF를 넣고 다시 분석하면 질병예측을 볼 수 있습니다.</div>'; return; }
+    box.innerHTML = '<div class="hbar"><span class="note">공단 건강검진 수치 기반 · 의학적 진단이 아닌 참고 자료</span><button class="btn lg pri sp" type="button" data-dl="health">' + IC.save + '질병예측 리포트 저장</button></div><div id="hpBox" class="hp"></div>';
+    HealthUI($('hpBox'), S.HP);
+  }
+
+  // ================= 상품 상세 (결과 보기) =================
+  var CARD_TEXT = {}, PV = null;
+  var DTABS = [['sum','요약'],['m3','3개월'],['disc','고지 대상'],['chk','확인 필요'],['none','미해당'],['q','질문지']];
+  function prodOf(id){ return Products.PRODUCTS.find(function(p){ return p.id === id; }); }
+  function buildParts(pid){
+    var p = prodOf(pid), R = Products.detailR(p, S.E.ctx), d = S.data, meta = Object.assign({}, d.meta, { name: S.cur.name });
+    var m = { label: p.title, sub: '' };
+    CARD_TEXT = {};
+    var span = R.sick ? '2년 이내' : R.mode === 'std' ? '5년 이내' : (R.N ? R.N + '년 이내' : '');
+    var t5 = R.sick ? '3개월 내 입원·수술·추가검사 소견 · 2년 내 입원·수술·7일↑ 치료 · 5년 내 암' : pid === 'drvSim' ? '3개월 내 진료·투약만 질문' : R.mode === 'std' ? '5년 이내 입원·수술·7일↑ 치료·30일↑ 투약·11대 질병 · 1년 이내 정밀검사' : (R.N ? R.N + '년 이내 입원·수술' : '입원·수술 질문 없음') + (R.M ? ' · ' + R.M + '년 이내 6대 질병' : '');
+    R.span = span; R.headLine = t5;
+    var head = '<header class="rhead"><div class="eyebrow">병력 분석 결과</div><h2>' + esc(S.cur.name) + ' 고객님 <span class="crit">' + esc(p.title) + '</span></h2>' +
+      '<div class="rmeta"><div>분석 기준일<b class="mono">' + R.base + '</b></div><div>3개월<b class="mono">' + R.from3m + ' ~</b></div><div>5년<b class="mono">' + R.from5 + ' ~</b></div>' +
+      (R.dataRange ? '<div>심평원 자료<b class="mono">' + R.dataRange.from + ' ~ ' + R.dataRange.to + '</b></div>' : '') + (R.recentPeriod ? '<div>요양급여<b class="mono">' + esc(R.recentPeriod) + '</b></div>' : '') + '</div></header>';
+    var kpi = '<div class="kpis">' +
+      '<button type="button" class="kpi red ' + (R.main.length ? 'on' : '') + '" data-dt="disc"><span>고지 대상</span><b>' + R.main.length + '</b><small>상병</small></button>' +
+      '<button type="button" class="kpi amber ' + (R.check.length ? 'on' : '') + '" data-dt="chk"><span>확인 필요</span><b>' + R.check.length + '</b><small>상병</small></button>' +
+      '<button type="button" class="kpi blue ' + (R.recent3mCards.length ? 'on' : '') + '" data-dt="m3"><span>3개월 이내</span><b>' + R.recent3mCards.length + '</b><small>진료</small></button>' +
+      '<button type="button" class="kpi" data-dt="q"><span>고객 질문</span><b>' + R.questions.length + '</b><small>개</small></button></div>';
+    // 자료 점검
+    var ck2 = [], kinds = d.meta.kinds || {};
+    var okv = function(b){ return b ? '<span class="ok">있음</span>' : '<span class="no">없음</span>'; };
+    ck2.push(['심평원 기본진료', okv(kinds.basic), R.dataRange ? R.dataRange.from + ' ~ ' + R.dataRange.to : '5년 진료 이력의 기본 자료']);
+    ck2.push(['심평원 세부진료', okv(kinds.detail), kinds.detail ? '수술·시술·검사 판정' : '없으면 수술·정밀검사 판정 불가']);
+    ck2.push(['심평원 처방조제', okv(kinds.rx), kinds.rx ? '투약일수 판정' : '없으면 30일 이상 투약 판정 불가']);
+    ck2.push(['내가 먹는 약(투약이력)', okv(kinds.tuyak), kinds.tuyak ? '최근 1년 처방·조제 반영' : '간편보험이면 권장 — 3개월 이내 약 신규·증량 판단']);
+    ck2.push(['공단 요양급여내역서', okv(kinds.recent), kinds.recent ? (R.recentPeriod || '') : '없으면 최근 2~3개월 진료가 빠질 수 있음']);
+    ck2.push(['자동차보험 진료', kinds.car ? okv(true) : '<span class="no">확인</span>', kinds.car ? '교통사고 치료 포함' : '교통사고 치료가 있었다면 자동차보험 자료도 넣으세요']);
+    var lag = R.dataRange ? Math.round((new Date(R.base) - new Date(R.dataRange.to)) / 864e5) : null;
+    if (lag !== null && lag > 45 && !kinds.recent) ck2.push(['최근 진료 공백', '<span class="no">주의</span>', '심평원 마지막 진료일이 기준일보다 ' + lag + '일 앞섭니다. 요양급여내역서로 확인하세요.']);
+    if (R.mode === 'simple' && R.N > 5) ck2.push([R.N + '년 이내 입원·수술', '<span class="no">자료 부족</span>', '심평원 자료는 5년치만 나옵니다. 5년 이전 입원·수술은 고객 확인 필요.']);
+    ck2.push(['민감상병 표시', '<span class="no">확인</span>', '심평원 조회 때 "민감상병 표시"를 체크해야 정신과 등 상병이 나옵니다.']);
+    ck2.push(['비급여 진료', '<span class="no">자료 없음</span>', '도수치료·비급여 주사 등은 자료에 나오지 않습니다. 고객 질문 필수.']);
+    var ckHtml = '<div class="tw"><table class="t ck"><thead><tr><th>자료 점검</th><th>상태</th><th>내용</th></tr></thead><tbody>' + ck2.map(function(r){ return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td></tr>'; }).join('') + '</tbody></table></div>';
+
+    function brief(c, tab){ return '<button type="button" class="brief" data-dt="' + tab + '"><span class="mono">' + esc(c.code) + '</span><b>' + esc(c.name) + '</b><span class="chips">' + c.disc.map(function(x){ return '<span class="chip' + (x.lv === 'c' ? ' amb' : '') + '">' + esc(x.k === '질병' ? x.t.replace(/\s*—.*$/, '') : x.t.replace(/\s*[—(].*$/, '')) + '</span>'; }).join('') + '</span></button>'; }
+    var sumP = (R.sick || pid === 'drvSim' ? '<div class="pnote">' + esc(t5) + '</div>' : '') + kpi + '<div class="sec-h"><h3>한눈에 보기</h3><span>항목을 누르면 상세로 이동합니다</span></div><div class="briefs">';
+    if (R.recent3mCards.length) sumP += '<div class="bgroup"><div class="bg-t blue">3개월 이내 진료</div>' + R.recent3mCards.map(function(x){ return '<button type="button" class="brief" data-dt="m3"><span class="mono">' + esc(x.code || '?') + '</span><b>' + esc(x.code ? x.name.replace(/ \(.*\)$/, '') : '진단명 확인 필요') + '</b><span class="note">' + esc(x.hosps.join(', ')) + ' · ' + yy(x.last) + '</span></button>'; }).join('') + '</div>';
+    sumP += '<div class="bgroup"><div class="bg-t red">고지 대상</div>' + (R.main.length ? R.main.map(function(c){ return brief(c, 'disc'); }).join('') : '<div class="empty">없음</div>') + '</div>';
+    if (R.check.length) sumP += '<div class="bgroup"><div class="bg-t amber">확인 필요</div>' + R.check.map(function(c){ return brief(c, 'chk'); }).join('') + '</div>';
+    sumP += '</div>' + ckHtml;
+
+    var m3P = '<div class="sec-h"><h3>3개월 이내 진료</h3><span>' + R.from3m + ' ~ ' + R.base + (R.mode === 'std' ? ' · 표준체: 진료·투약 모두 고지' : ' · 간편: 신규·증량 투약 및 추가검사 소견 확인') + '</span></div>';
+    m3P += !R.recent3mCards.length ? '<div class="empty">해당되는 진료 정보가 없습니다.</div>' : '<div class="tw"><table class="t"><thead><tr><th>상병</th><th>의료기관</th><th>기간</th><th>투약</th><th>판단</th></tr></thead><tbody>' +
+      R.recent3mCards.map(function(x){ return '<tr><td>' + (x.code ? '<span class="mono">' + esc(x.code) + '</span> ' + esc(x.name) : '<b>진단명 파악 불가</b> <small class="note">(약국 조제만 확인됨)</small>') + (x.major ? ' <span class="chip">' + esc(x.major) + '</span>' : '') + '</td><td>' + esc(x.hosps.join(', ')) + '</td><td class="n">' + yy(x.first) + (x.first !== x.last ? ' ~ ' + yy(x.last) : '') + '<br><small class="note">' + x.days + '일</small></td><td>' + (x.rx ? '있음' : '-') + '</td><td>' + esc(x.judge) + '<br><small class="note">' + esc(x.src) + '</small></td></tr>'; }).join('') + '</tbody></table></div>';
+    var discP = '<div class="sec-h"><h3>고지 대상</h3><span>' + esc(t5) + ' · ' + R.main.length + '건 · <b class="red">빨강</b> 고지 / <b class="amber">주황</b> 추가 확인</span></div>' + (R.main.length ? R.main.map(function(c, i){ return cardHtml(c, 'm' + i, R); }).join('') : '<div class="empty">고지 대상에 해당하는 진료가 없습니다.</div>');
+    var chkP = '<div class="sec-h"><h3>확인 필요</h3><span>보험사·상품에 따라 고지 대상이 될 수 있는 진료 · ' + R.check.length + '건</span></div>' + (R.check.length ? R.check.map(function(c, i){ return cardHtml(c, 'k' + i, R); }).join('') : '<div class="empty">없음</div>');
+    var noneP = '<div class="sec-h"><h3>미해당 상병</h3><span>고지 기준에 걸리지 않는 진료와 사유 · ' + R.extra.length + '건</span></div>' + (R.extra.length ? '<div class="card">' + R.extra.map(function(c, idx){
+      var key = 'x' + idx; CARD_TEXT[key] = formText(c, R, true);
+      var hs = Object.keys(c.hosps).map(function(k){ return c.hosps[k].name; }).join(', ');
+      return '<div class="extra-row"><div><span class="mono">' + esc(c.code) + '</span><b>' + esc(c.name) + '</b><br><small>' + esc(hs) + ' · ' + yy(c.first) + (c.first !== c.last ? ' ~ ' + yy(c.last) : '') + '</small><br><small class="why">미해당 사유: ' + esc(c.reason || '') + '</small></div><button class="btn" type="button" data-copy="' + key + '" data-title="' + esc(c.name) + ' 요약">요약 복사</button></div>';
+    }).join('') + '</div>' : '<div class="empty">없음</div>');
+    var qs = R.main.concat(R.check).reduce(function(a, c){ c.disc.forEach(function(x){ if (x.q && x.lv === 'c') a.push({ sec: '확인 필요', code: c.code, q: x.q }); }); return a; }, []);
+    var baseQ = R.questions.filter(function(q){ return !q.code; });
+    var QL = R.sick ? baseQ.concat(qs) : pid === 'drvSim' ? baseQ : R.questions;
+    CARD_TEXT['qs'] = QL.map(function(q, i){ return (i + 1) + '. [' + q.sec + '] ' + q.q; }).join('\n');
+    CARD_TEXT['sum'] = buildSummary(R, m, meta, d.input);
+    var qP = '<div class="sec-h"><h3>고객 확인 질문</h3><span>청약 전에 고객에게 그대로 물어보세요 · ' + QL.length + '개</span></div><div class="card"><ol class="qs">' +
+      QL.map(function(q){ return '<li><span class="qtag">' + esc(q.sec) + '</span>' + esc(q.q) + '</li>'; }).join('') + '</ol><div class="acts"><button class="btn pri" type="button" data-copy="qs" data-title="고객 확인 질문지">질문지 복사</button></div></div>';
+    PV = { p: p, R: R, head: head, kpi: kpi, ck: ckHtml, parts: { sum: sumP, m3: m3P, disc: discP, chk: chkP, none: noneP, q: qP }, n: { m3: R.recent3mCards.length, disc: R.main.length, chk: R.check.length, none: R.extra.length, q: QL.length } };
+    return PV;
+  }
+  function renderDetail(pid){
+    var V = buildParts(pid);
+    var h = '<div class="pvh"><button class="btn lg" type="button" data-act="pvback">‹ 판정표로</button><h3>' + esc(V.p.title) + ' 결과</h3><button class="go" type="button" data-copy="sum" data-title="결과 정리 (카톡·메모에 붙여넣기)" style="padding:0 18px">결과 정리 복사</button><button class="btn lg" type="button" data-ps="' + pid + '">' + IC.save + '결과 저장</button></div>';
+    h += V.head;
+    if (!DTABS.some(function(t){ return t[0] === S.pvTab; })) S.pvTab = 'sum';
+    h += '<nav class="tabs" role="tablist">' + DTABS.map(function(t){ var n = V.n[t[0]]; return '<button type="button" role="tab" class="tab tab-' + t[0] + '" data-dt="' + t[0] + '" aria-selected="' + (t[0] === S.pvTab) + '">' + t[1] + (n !== undefined ? '<span class="cnt">' + n + '</span>' : '') + '</button>'; }).join('') + '</nav>';
+    DTABS.forEach(function(t){ h += '<section class="tabp" data-p="' + t[0] + '"' + (t[0] === S.pvTab ? '' : ' hidden') + '>' + V.parts[t[0]] + '</section>'; });
+    return h;
+  }
+  function setDTab(t){
+    S.pvTab = t;
+    document.querySelectorAll('.tabs .tab').forEach(function(b){ b.setAttribute('aria-selected', String(b.dataset.dt === t)); });
+    document.querySelectorAll('.tabp').forEach(function(p){ p.hidden = p.dataset.p !== t; });
+    var nav = document.querySelector('.tabs'); if (nav && nav.getBoundingClientRect().top < 0) nav.scrollIntoView({ block: 'start' });
+  }
+
+  // ---------- 결과 정리 / 고지양식 (기존 형식 유지) ----------
+  function nodot(c){ return String(c || '').replace('.', ''); }
+  function plusDays(d, n){ var t = new Date(d + 'T00:00:00Z'); t.setUTCDate(t.getUTCDate() + Math.max(0, n - 1)); return t.toISOString().slice(0, 10); }
+  function discLabel(d, R){
+    var t = d.t;
+    if (d.k === '질병') { var m = t.match(/\(([^,)]+)/); return (R.sick ? '암' : R.mode === 'std' ? '11대질병' : '6대질병') + (m ? '(' + m[1] + ')' : ''); }
+    if (d.k === '정밀') return '정밀검사(추가검사·재검사 확인)';
+    if (d.k === '7일이상') return '7일이상 치료';
+    if (d.k === '30일이상') return '30일이상 투약';
+    if (d.k === '시술') return '시술(수술 여부 확인)';
+    if (d.k === '만성') return '고혈압·당뇨(상품 기준 확인)';
+    return d.k;
+  }
+  function cardBlock(c, R, input, lv){
+    var Lx = [];
+    var items = c.disc.filter(function(d){ return lv === 'y' ? d.lv === 'y' : true; });
+    var labs = []; items.forEach(function(d){ var l = discLabel(d, R); if (labs.indexOf(l) < 0) labs.push(l); });
+    var span = R.span;
+    Lx.push('📋 ' + (lv === 'c' ? '확인필요' : '고지유형') + (span ? '(' + span + ')' : '') + ' : ' + labs.join(', '));
+    var codes = [c.code].concat(Object.keys(c.siblings || {}));
+    Lx.push('• 진단 : [' + c.code + '] ' + c.name + (c.siblings ? ' / ' + Object.keys(c.siblings).map(function(k){ return '[' + k + '] ' + c.siblings[k]; }).join(' / ') : ''));
+    Lx.push('• 기간 : ' + yy(c.first) + ' ~ ' + yy(c.last));
+    Lx.push('• 통원 : ' + (c.outDays ? c.outDays + '일' : '없음'));
+    Lx.push('• 입원 : ' + (c.inpDays ? c.inpDays + '일' : '없음'));
+    var sn = []; c.surg.forEach(function(s){ var n = s.item.replace(/\s+/g, ''); if (sn.indexOf(n) < 0) sn.push(n); });
+    Lx.push('• 수술 : ' + (sn.length ? sn.join(', ') : '없음'));
+    if (lv === 'c') items.filter(function(d){ return d.lv === 'c'; }).forEach(function(d){ Lx.push('  ※ ' + d.t); });
+    Object.keys(c.hosps).forEach(function(k){ var x = c.hosps[k]; if (x.out) Lx.push('[통원 ' + x.out + '일] ' + x.name + '(' + yy(x.first) + (x.first !== x.last ? ' ~ ' + yy(x.last) : '') + ')'); });
+    var adm = {};
+    (input.basic || []).forEach(function(r){ if (codes.indexOf(r.code) >= 0 && /입원/.test(r.type) && r.date >= R.from5) { var key = r.hosp + '|' + r.date; adm[key] = { hosp: r.hospDisp || r.hosp, date: r.date, days: Math.max((adm[key] || {}).days || 0, r.days || 1) }; } });
+    Object.keys(adm).sort().forEach(function(k){ var a = adm[k]; Lx.push('[입원 ' + a.days + '일] ' + a.hosp + '(' + yy(a.date) + ' ~ ' + yy(plusDays(a.date, a.days)) + ')'); });
+    var su = {}; c.surg.forEach(function(s){ su[s.hosp + '|' + s.date] = s; });
+    Object.keys(su).sort().forEach(function(k){ Lx.push('[수술] ' + su[k].hosp + '(' + su[k].date + ')'); });
+    var long = c.medTotals.filter(function(m){ return m.days >= 30; });
+    if (long.length && !R.sick) { Lx.push(''); Lx.push(Object.keys(c.hosps).map(function(k){ return c.hosps[k].name; })[0] + ':'); long.slice(0, 6).forEach(function(m){ Lx.push('[' + m.days + '일] ' + m.name); }); }
+    return Lx.join('\n');
+  }
+  function buildSummary(R, m, meta, input){
+    var out = [];
+    out.push('성명 ' + (meta.name || ''));
+    out.push('심사기준 ' + m.label + (m.sub ? ' ' + m.sub : '') + ' (분석 기준일 ' + R.base + ')');
+    out.push('');
+    out.push('3개월이내 병원이력');
+    var seen = {}, vis = R.recent3m.filter(function(x){ if (/약국/.test(x.type)) return false; var k = x.hosp + '|' + x.date; if (seen[k]) return false; seen[k] = 1; return true; }).sort(function(a, b){ return a.date < b.date ? -1 : 1; });
+    if (!vis.length) out.push('없음');
+    vis.forEach(function(x){
+      var inp = /입원/.test(x.type);
+      out.push(x.date.replace(/-/g, '.') + ' ' + x.hosp + ' ' + (inp ? '입원' + (x.days || 1) + '일' : '통원1일'));
+      out.push((x.code ? nodot(x.code) + ' ' : '(진단명 확인 필요) ') + String(x.name || '').replace(/ \(.*\)$/, ''));
+      out.push('');
+    });
+    if (R.mode === 'simple' && R.recent3mCards.length) {
+      R.recent3mCards.forEach(function(x){ out.push('📋 고지유형(3개월 이내) : ' + x.judge.replace(/^3개월 이내 /, '') + ' — ' + (x.code ? '[' + x.code + '] ' + x.name.replace(/ \(.*\)$/, '') : '진단명 확인 필요') + ' (' + x.hosps.join(', ') + ')'); });
+      out.push('');
+    }
+    out.push(R.sick ? '2년 이내 입원/수술/7일 이상 치료, 5년 이내 암 진료 정보' : R.mode === 'std' ? '5년 이내 입원/수술, 7일 이상 치료, 30일 이상 투약, 11대 질병 진료 정보' : (R.N ? R.N + '년 이내 입원/수술' : '') + (R.N && R.M ? ', ' : '') + (R.M ? R.M + '년 이내 6대 중증질환 진료 정보' : (R.N ? ' 진료 정보' : '3개월 이내 진료만 질문')));
+    if (!R.main.length) out.push('해당 없음');
+    R.main.forEach(function(c){ out.push(cardBlock(c, R, input, 'y')); out.push(''); });
+    if (R.check.length) {
+      out.push('⚠️ 확인 필요 (고객 확인 후 고지 여부 결정)');
+      R.check.forEach(function(c){ out.push(cardBlock(c, R, input, 'c')); out.push(''); });
+    }
+    var done = {};
+    vis.forEach(function(x){
+      if (!x.code || done[x.code]) return; done[x.code] = 1;
+      var rows = (input.basic || []).concat(((input.recent || {}).rows) || []).filter(function(r){ return r.code === x.code && !/약국/.test(r.hosp) && !/약국/.test(r.type || ''); }).sort(function(a, b){ return a.date < b.date ? -1 : 1; });
+      var f = rows[0]; var nm = String(x.name || '').replace(/ \(.*\)$/, '');
+      if (!f || f.date >= R.from3m) out.push(nodot(x.code) + ' ' + nm + ' 최초진단 (3개월 이내 신규)');
+      else out.push(nodot(x.code) + ' ' + nm + ' 최초진단은 ' + f.date + ' ' + (f.hospDisp || f.hosp));
+    });
+    return out.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  }
+  function uniq(a){ var s = {}; return a.filter(function(x){ if (s[x]) return false; s[x] = 1; return true; }); }
+  function shortDrug(n){ return String(n).replace(/_\(.*$/, ''); }
+  function rangeTxt(c){ return Object.keys(c.hosps).map(function(k){ var x = c.hosps[k]; return x.name + '(' + yy(x.first) + (x.first !== x.last ? ' ~ ' + yy(x.last) : '') + ')'; }).join(', '); }
+  function cardHtml(c, idx, R){
+    var key = 'c' + idx; CARD_TEXT[key] = formText(c, R, false); CARD_TEXT[key + 's'] = formText(c, R, true);
+    var hosps = Object.keys(c.hosps).map(function(k){ var x = c.hosps[k]; return { name: x.name, dept: Object.keys(x.dept).filter(Boolean).join('/'), out: x.out, inp: x.inp, first: x.first, last: x.last }; });
+    var chips = c.disc.map(function(d){ return '<span class="chip' + (d.lv === 'c' ? ' amb' : '') + '">' + (d.lv === 'c' ? '확인 · ' : '') + esc(d.t) + '</span>'; }).join('') + (c.expired || []).map(function(e){ return '<span class="chip gr">' + esc(e) + '</span>'; }).join('');
+    var h = '<article class="card"><div class="card-top"><div class="dx"><span class="code">' + esc(c.code) + (c.src ? ' · ' + c.src : '') + '</span><span class="name">' + esc(c.name) + '</span><span class="sub">진료기간 ' + yy(c.first) + (c.first !== c.last ? ' ~ ' + yy(c.last) : '') + ' · 통원 ' + c.outDays + '일' + (c.inpDays ? ' · 입원 ' + c.inpDays + '일' : '') + (c.rxDays ? ' · 투약 ' + c.rxDays + '일' : '') + '</span></div><div class="chips">' + chips + '</div></div><div class="kv">';
+    if (c.siblings) h += '<div>함께 청구된 상병</div><div>' + Object.keys(c.siblings).map(function(k){ return '<span class="mono">' + esc(k) + '</span> ' + esc(c.siblings[k]); }).join('<br>') + '</div>';
+    var pcs = Object.keys(c.pharmCodes || {}).map(function(k){ return c.pharmCodes[k]; });
+    if (pcs.length) h += '<div>약국 조제 상병</div><div>' + pcs.map(function(p){ return '<span class="mono">' + esc(p.code) + '</span> ' + esc(p.name) + (Analyzer.std11(p.code) ? ' <span class="alert">· 중대 상병, 병원 진단명 확인</span>' : '') + ' <small class="note">' + esc(p.pharm || '') + '</small>'; }).join('<br>') + '</div>';
+    h += '<div>의료기관</div><div>' + hosps.map(function(x){ return esc(x.name) + (x.dept ? ' (' + esc(x.dept) + ')' : '') + '<br><small class="note">' + (x.inp ? '입원 ' + x.inp + '일 · ' : '') + '통원 ' + x.out + '일 · ' + yy(x.first) + (x.first !== x.last ? ' ~ ' + yy(x.last) : '') + '</small>'; }).join('<br>') + '</div>';
+    h += '<div>수술·시술</div><div>' + (c.surg.length || c.proc.length ? c.surg.map(function(s){ return '<span class="pill">수술</span>' + esc(s.item) + ' <small class="note">' + yy(s.date) + ' ' + esc(s.hosp) + '</small>'; }).concat(c.proc.map(function(s){ return '<span class="pill">시술</span>' + esc(s.item) + ' <small class="note">' + yy(s.date) + ' ' + esc(s.hosp) + '</small>'; })).join('<br>') : '없음') + '</div>';
+    h += '<div>정밀검사</div><div>' + (c.exams.length ? uniq(c.exams.map(function(e){ return yy(e.date) + ' ' + e.item; })).map(esc).join('<br>') : '없음') + '</div>';
+    if (c.group) h += '<div>동일원인 합산</div><div>' + c.group.members.map(function(g){ return '<span class="mono">' + esc(g.code) + '</span> ' + esc(g.name) + ' · 통원 ' + g.outDays + '일'; }).join('<br>') + '<br><b>합계 ' + c.group.total + '일</b></div>';
+    h += '<div>투약(누적)</div><div>' + (c.medTotals.length ? c.medTotals.slice(0, 6).map(function(m){ return esc(shortDrug(m.name)) + ' <b class="mono">' + m.days + '일</b>'; }).join('<br>') + (c.medTotals.length > 6 ? '<br><small class="note">외 ' + (c.medTotals.length - 6) + '종</small>' : '') : '없음') + '</div>';
+    var det = Object.keys(c.details).sort().reverse();
+    h += '<div>세부진료</div><div>' + (det.length ? '<details><summary>세부진료내역 ' + det.length + '회 보기</summary><div class="inner">' + det.map(function(k){ return '<b>' + esc(k) + '</b><br>' + uniq(c.details[k]).map(esc).join(', '); }).join('<br>') + '</div></details>' : '없음') + '</div>';
+    if (c.meds.length) h += '<div>처방 내역</div><div><details><summary>처방 ' + c.meds.length + '회 보기</summary><div class="inner">' + c.meds.slice().reverse().map(function(m){ return '<b>' + yy(m.date) + ' ' + esc(m.hosp) + '</b><br>' + m.drugs.map(function(x){ return esc(shortDrug(x.name)) + ' ' + x.days + '일'; }).join(', '); }).join('<br>') + '</div></details></div>';
+    h += '</div><div class="acts"><button class="btn pri" type="button" data-copy="' + key + '" data-title="[상세] 고지양식">상세 고지양식</button><button class="btn" type="button" data-copy="' + key + 's" data-title="[간단] 고지양식">간단 고지양식</button></div></article>';
+    return h;
+  }
+  function formText(c, R, simple){
+    var disc = c.disc.map(function(d){ return (d.lv === 'c' ? '[확인 필요] ' : '') + d.t; });
+    var surg = c.surg.map(function(s){ return yy(s.date) + ' ' + s.hosp + ' : ' + s.item; });
+    var longMed = c.medTotals.filter(function(m){ return m.days >= 30; });
+    if (simple) {
+      return ['[' + c.code + '] ' + c.name, '고지: ' + (disc.length ? disc.join(', ') : '해당없음'),
+        '진료: ' + (c.inpDays ? '입원 ' + c.inpDays + '일, ' : '') + '통원 ' + c.outDays + '일 / ' + rangeTxt(c),
+        '수술: ' + (surg.length ? surg.join('; ') : '없음'),
+        '투약: ' + (c.medTotals.length ? c.medTotals.slice(0, 3).map(function(m){ return shortDrug(m.name) + ' ' + m.days + '일'; }).join(', ') : '없음')].join('\n');
+    }
+    var lines = ['📋 고지유형 : ' + (disc.length ? disc.join(', ') : '(확인필요)'), '• 진단코드 : [' + c.code + '] ' + c.name];
+    Object.keys(c.pharmCodes || {}).forEach(function(k){ var p = c.pharmCodes[k]; lines.push('  (약국조제 상병 [' + p.code + '] ' + p.name + (Analyzer.std11(p.code) ? ' — 중대 상병, 확인 요망' : '') + ')'); });
+    if (c.siblings) Object.keys(c.siblings).forEach(function(k){ lines.push('  (함께 청구 [' + k + '] ' + c.siblings[k] + ')'); });
+    lines.push('• 완치여부 : ', '• 수술내용 : ' + (surg.length ? surg.join('; ') : '없음'), '• 치료내용 : ', '', '🏥통원/입원 진료 정보');
+    Object.keys(c.hosps).forEach(function(k){ var x = c.hosps[k];
+      if (x.inp) lines.push('• 입원 ' + x.inp + '일 : ' + x.name + '(' + yy(x.first) + (x.first !== x.last ? ' ~ ' + yy(x.last) : '') + ')');
+      if (x.out) lines.push('• 통원 ' + x.out + '일 : ' + x.name + '(' + yy(x.first) + (x.first !== x.last ? ' ~ ' + yy(x.last) : '') + ')');
+    });
+    if (R.mode === 'std' && !R.sick) lines.push('', '🩺추가검사/재검사 정보', '• ', '', '💊30일 이상 투약 정보', '• ' + (longMed.length ? '있음 — ' + longMed.slice(0, 4).map(function(m){ return shortDrug(m.name) + ' ' + m.days + '일'; }).join(', ') : '없음'));
+    if (c.group) lines.push('', '*동일원인 진료 정보', c.group.members.filter(function(g){ return g !== c && g.code !== c.code; }).map(function(g){ return '[' + g.code + '] ' + g.name + ' 통원 ' + g.outDays + '일 / ' + rangeTxt(g); }).join('\n'));
+    return lines.join('\n');
+  }
+
+  // ================= 리포트 저장 =================
+  function pageCss(){ var s = Array.prototype.slice.call(document.querySelectorAll('style')).filter(function(x){ return /--accent/.test(x.textContent); }); return s.map(function(x){ return x.textContent; }).join('\n'); }
+  function jsonSafe(o){ return JSON.stringify(o).replace(/</g, '\\u003c'); }
+  var COPY_JS = "(function(){var T=window.__T||{};var M=document.getElementById('modal');document.addEventListener('click',function(e){var b=e.target.closest('[data-copy]');if(b){document.getElementById('mTitle').textContent=b.getAttribute('data-title')||'';document.getElementById('mText').value=T[b.getAttribute('data-copy')]||'';document.getElementById('mMsg').textContent='';M.hidden=false;}});document.getElementById('mClose').onclick=function(){M.hidden=true;};M.addEventListener('click',function(e){if(e.target===M)M.hidden=true;});document.getElementById('mCopy').onclick=function(){var ta=document.getElementById('mText'),msg=document.getElementById('mMsg');var fall=function(){ta.focus();ta.select();msg.textContent='전체 선택됨 — 복사하세요';};try{navigator.clipboard.writeText(ta.value).then(function(){msg.textContent='복사했습니다';},fall);}catch(err){fall();}};})();";
+  function modalHtml(){ return '<div class="modal" id="modal" hidden><div class="mbox" role="dialog" aria-modal="true" aria-labelledby="mTitle"><h4 id="mTitle">고지양식</h4><p>완치여부·치료내용·추가검사 항목은 세부진료 내역을 참고해 고객과 꼭 교차 확인하세요.</p><textarea id="mText" readonly></textarea><div class="mrow"><span id="mMsg" class="note" style="align-self:center;margin-right:auto"></span><button class="btn" id="mClose" type="button">닫기</button><button class="btn pri" id="mCopy" type="button">복사</button></div></div></div>'; }
+  function docShell(title, body, script, extraCss){
+    return '<!doctype html>\n<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(title) + '</title>' +
+      '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">' +
+      '<style>' + pageCss() + '\n.rpt{max-width:1080px}.rpt .tabp{display:flex!important}.rpt .stamp{font-size:12px;color:var(--mute);text-align:right}.prbar{text-align:right}@media print{.btn,.actbar,.acts,.prbar{display:none!important}body{background:#fff}}' + (extraCss || '') + '</style></head><body><div class="wrap rpt">' + body +
+      '<div class="foot">본 리포트는 심평원·공단 자료를 바탕으로 만든 참고 자료입니다. 최종 판단은 원본 서류와 고객 확인을 거쳐 결정하세요.</div></div>' + (script || '') + '</body></html>';
+  }
+  function buildHistoryReport(pid){
+    var V = buildParts(pid);
+    var body = '<div class="prbar"><button class="btn pri" onclick="window.print()">인쇄</button></div>' + V.head + '<div class="stamp">작성일 ' + new Date().toLocaleString('ko-KR') + '</div>' + V.kpi + V.ck +
+      ['m3','disc','chk','none','q'].map(function(k){ return '<section class="tabp sec">' + V.parts[k] + '</section>'; }).join('');
+    var script = modalHtml() + '<script>window.__T=' + jsonSafe(CARD_TEXT) + ';' + COPY_JS + '<\/script>';
+    return docShell(S.cur.name + ' 병력분석 리포트(' + V.p.title + ')', body, script);
+  }
+  function buildHealthReport(){
+    var head = '<div class="prbar"><button class="btn pri" onclick="window.print()">인쇄</button></div><header class="rhead"><div class="eyebrow">질병예측 리포트 · 건강검진</div><h2>' + esc(S.cur.name) + ' 고객님 건강상태 분석</h2><div class="rmeta"><div>작성일<b class="mono">' + todayStr() + '</b></div><div>검진 연도<b class="mono">' + S.HP.years.map(function(y){ return y.y; }).join(', ') + '</b></div></div></header>' +
+      '<div class="note">국민건강보험공단 건강검진 수치를 바탕으로 한 통계적 참고 자료이며, 의학적 진단을 대신하지 않습니다.</div><div id="hp" class="hp"></div>';
+    var script = '<script>var H=' + jsonSafe(S.HP) + ';' + HealthUI.toString() + ';HealthUI(document.getElementById("hp"),H);<\/script>';
+    return docShell(S.cur.name + ' 질병예측 리포트(건강검진)', head, script);
+  }
+  function buildClaimsReport(){
+    var CL = S.CL;
+    var body = '<div class="prbar"><button class="btn pri" onclick="window.print()">인쇄</button></div><h2 style="color:var(--accent)">' + esc(S.cur.name) + ' 고객 · 미청구 보험금 예상액</h2><div class="subt">최근 3년 (' + yy(CL.from) + ' ~ ' + yy(CL.base) + ') · 진료 ' + CL.rows.length + '건 · 급여 본인부담 기준 실손 세대별 예상 지급액 · 작성일 ' + todayStr() + '</div>' +
+      '<div class="gcards">' + CL.tot.g.map(function(x, i){ return '<div class="gc"><span>' + GEN[i][0] + ' 실손</span><b>' + won(x) + '</b><small>' + GEN[i][1] + ' 가입</small></div>'; }).join('') + '</div>' +
+      '<div class="tw"><table class="t cl">' + claimsHead(CL) + '<tbody>' + claimsTot(CL) + claimsRows(CL) + '</tbody></table></div>' + NOTES_HTML;
+    return docShell(S.cur.name + ' 미청구 보험금 예상액', body, '', '@page{size:A4 landscape;margin:12mm}table.cl{min-width:0}thead{display:table-header-group}tr{page-break-inside:avoid}.tw{overflow:visible}');
+  }
+  function toast(t){ var el = $('toast'); el.textContent = t; el.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(function(){ el.hidden = true; }, 2600); }
+  async function saveFile(filename, text){
+    var dl = null;
+    try { if (window.claude && typeof window.claude.use === 'function') dl = await window.claude.use('downloads'); } catch(e){ dl = null; }
+    if (dl) {
+      try { await dl.save({ filename: filename, data: text }); toast('저장했습니다 · ' + filename); }
+      catch(e){ if (e && e.code === 'declined') return; toast('저장하지 못했습니다' + (e && e.code ? ' (' + e.code + ')' : '')); }
+      return;
+    }
+    if (window.claude) { toast('이 화면에서는 저장할 수 없습니다. 설치한 앱이나 PC용 파일에서 저장해 주세요.'); return; }
+    var type = /\.json$/.test(filename) ? 'application/json' : 'text/html;charset=utf-8';
+    var blob = new Blob([text], { type: type });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+    toast('다운로드 폴더에 저장했습니다 · ' + filename);
+  }
+
+  // ================= 클릭 처리 =================
+  document.addEventListener('click', async function(e){
+    var t;
+    if ((t = e.target.closest('[data-copy]'))) { $('mTitle').textContent = t.dataset.title || '고지양식'; $('mText').value = CARD_TEXT[t.dataset.copy] || ''; $('mMsg').textContent = ''; $('modal').hidden = false; return; }
+    if ((t = e.target.closest('[data-ptab]'))) { S.tab = t.dataset.ptab; S.pv = null; renderCustomer(); return; }
+    if ((t = e.target.closest('[data-dt]'))) { setDTab(t.dataset.dt); return; }
+    if ((t = e.target.closest('[data-hm]'))) { S.hmode = t.dataset.hm; try { localStorage.setItem('mhs_hmode', S.hmode); } catch(er){} renderCustomer(); return; }
+    if ((t = e.target.closest('[data-pv]'))) { S.pv = t.dataset.pv; S.pvTab = 'sum'; renderCustomer(); window.scrollTo(0, 0); return; }
+    if ((t = e.target.closest('[data-ps]'))) { var p = prodOf(t.dataset.ps); saveFile(S.cur.name + ' 병력분석 레포트(' + p.title + ')_' + ymd() + '.html', buildHistoryReport(p.id)); if (S.pv) buildParts(S.pv); return; }
+    if ((t = e.target.closest('[data-dl]'))) {
+      if (t.dataset.dl === 'claim') saveFile(S.cur.name + ' 미청구 보험금 예상액_' + ymd() + '.html', buildClaimsReport());
+      if (t.dataset.dl === 'health' && S.HP) saveFile(S.cur.name + ' 질병예측 레포트(건강검진)_' + ymd() + '.html', buildHealthReport());
+      return;
+    }
+    if ((t = e.target.closest('[data-act]'))) {
+      var a = t.dataset.act;
+      if (a === 'back') { showWelcome(); return; }
+      if (a === 'new') { openCustForm(null); return; }
+      if (a === 'sample') { openCustomer('sample'); return; }
+      if (a === 'pvback') { S.pv = null; renderCustomer(); return; }
+      if (a === 'files') { openFiles(); return; }
+      if (a === 'edit') { openCustForm(S.cur); return; }
+      if (a === 'del') {
+        if (!confirm(S.cur.name + ' 고객의 정보와 분석 결과를 이 기기에서 삭제할까요? 되돌릴 수 없습니다.')) return;
+        await Store.remove(S.cur.id); S.list = await Store.list(); showWelcome(); toast('삭제했습니다'); return;
+      }
+      if (a === 'rebase') { S.data.base = todayStr(); await Store.saveData(S.cur.id, S.data); compute(); await updateHeadSummary(); renderCustomer(); toast('오늘 기준으로 다시 판정했습니다'); return; }
+    }
+  });
+  $('newCust').onclick = function(){ openCustForm(null); };
+  $('sample').onclick = function(){ openCustomer('sample'); };
+  $('lockBtn').onclick = function(){ Store.lock(); };
+  $('mClose').onclick = function(){ $('modal').hidden = true; };
+  $('modal').addEventListener('click', function(e){ if (e.target === this) this.hidden = true; });
+  $('mCopy').onclick = function(){
+    var ta = $('mText'), msg = $('mMsg');
+    var fall = function(){ ta.focus(); ta.select(); msg.textContent = '전체 선택됨 — 길게 눌러 복사하세요'; };
+    try { navigator.clipboard.writeText(ta.value).then(function(){ msg.textContent = '복사했습니다'; }, fall); } catch(er){ fall(); }
+  };
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') { $('modal').hidden = true; closeDlg(); } });
+
+  // ================= 백업 =================
+  $('bkOut').onclick = async function(){
+    if (!S.list.length) { toast('내보낼 고객 자료가 없습니다'); return; }
+    var txt = await Store.exportBackup();
+    saveFile('병력분석기_백업_' + ymd() + '.json', txt);
+  };
+  $('bkIn').onclick = function(){ $('bkFile').click(); };
+  $('bkFile').addEventListener('change', async function(){
+    var f = this.files[0]; this.value = ''; if (!f) return;
+    var txt = await f.text();
+    var pin = prompt('백업할 때 쓰던 잠금 비밀번호를 입력하세요.');
+    if (!pin) return;
+    try { var n = await Store.importBackup(txt, pin); S.list = await Store.list(); renderList(); toast(n + '명의 고객 자료를 불러왔습니다'); }
+    catch(er){ alert(er.message || '불러오지 못했습니다'); }
+  });
+
+  // ================= 대화상자 =================
+  function openDlg(html, cls){ $('dlgBox').className = 'mbox ' + (cls || ''); $('dlgBox').innerHTML = html; $('dlg').hidden = false; }
+  function closeDlg(){ $('dlg').hidden = true; $('dlgBox').innerHTML = ''; FILES = []; FSTATE = {}; }
+  $('dlg').addEventListener('click', function(e){ if (e.target === this) closeDlg(); });
+
+  // ---------- 고객 등록/수정 ----------
+  function openCustForm(c){
+    var sex = c ? c.sex : '';
+    var b = c && c.birth ? c.birth.slice(0,4) + '-' + c.birth.slice(4,6) + '-' + c.birth.slice(6) : '';
+    openDlg('<h4>' + IC.user + (c ? ' 고객 정보 수정' : ' 신규 고객 등록') + '</h4><div class="form">' +
+      '<label class="l" for="fName">이름</label><input id="fName" type="text" maxlength="20" placeholder="고객 이름 (필수)" value="' + esc(c ? c.name : '') + '" autocomplete="off">' +
+      '<span class="l">성별</span><div class="sexsel" id="fSex"><button type="button" data-s="M" aria-pressed="' + (sex === 'M') + '">남</button><button type="button" data-s="F" aria-pressed="' + (sex === 'F') + '">여</button></div>' +
+      '<label class="l" for="fBirth">생년월일 <small class="note">(PDF 비밀번호로 자동 사용)</small></label><input id="fBirth" inputmode="numeric" maxlength="10" placeholder="YYYY-MM-DD (예: 19580707)" value="' + b + '" autocomplete="off">' +
+      '<label class="l" for="fMemo">메모 <small class="note">(선택)</small></label><textarea id="fMemo" placeholder="상담 내용 등">' + esc(c ? c.memo || '' : '') + '</textarea>' +
+      '<div class="safe">' + IC.lock + '<span>고객 정보는 이 기기에만 암호화되어 저장되며, 어디로도 전송되지 않습니다. 주민번호·연락처·계좌번호는 입력하지 마세요.</span></div>' +
+      (c ? '' : '<label class="consent"><input type="checkbox" id="fOk"> 고객 개인정보 수집·이용 동의 받음</label>') +
+      '<div class="ferr" id="fErr"></div></div><div class="mrow"><button class="btn lg" type="button" id="fCancel">취소</button><button class="go" type="button" id="fSave">' + (c ? '저장' : '등록') + '</button></div>');
+    var sx = sex;
+    $('fSex').onclick = function(e){ var bt = e.target.closest('button'); if (!bt) return; sx = bt.dataset.s; this.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed', String(x === bt)); }); };
+    $('fBirth').addEventListener('input', function(){ var v = this.value.replace(/\D/g, '').slice(0, 8); this.value = v.length > 6 ? v.slice(0,4) + '-' + v.slice(4,6) + '-' + v.slice(6) : v.length > 4 ? v.slice(0,4) + '-' + v.slice(4) : v; });
+    $('fCancel').onclick = closeDlg;
+    setTimeout(function(){ $('fName').focus(); }, 30);
+    $('fSave').onclick = async function(){
+      var name = $('fName').value.trim(), bd = $('fBirth').value.replace(/\D/g, ''), err = $('fErr');
+      if (!name) { err.textContent = '이름을 입력하세요.'; return; }
+      if (!sx) { err.textContent = '성별을 선택하세요.'; return; }
+      if (bd.length !== 8 || +bd.slice(4,6) < 1 || +bd.slice(4,6) > 12 || +bd.slice(6) < 1 || +bd.slice(6) > 31) { err.textContent = '생년월일 8자리를 확인하세요. (예: 19580707)'; return; }
+      if (!c && !$('fOk').checked) { err.textContent = '개인정보 수집·이용 동의를 받은 뒤 체크하세요.'; return; }
+      var h = c ? Object.assign({}, c) : { status: 'wait' };
+      h.name = name; h.sex = sx; h.birth = bd; h.memo = $('fMemo').value.trim();
+      h = await Store.saveHead(h);
+      S.list = await Store.list();
+      closeDlg();
+      await openCustomer(h.id);
+      if (!c) openFiles();
+    };
+  }
+
+  // ---------- 파일 첨부 (병력파악) ----------
+  var FILES = [], FSTATE = {};
+  function decodeName(bytes){
+    try { return new TextDecoder('utf-8', { fatal: true }).decode(bytes); } catch(e){}
+    try { return new TextDecoder('euc-kr').decode(bytes); } catch(e){ return new TextDecoder().decode(bytes); }
+  }
+  function addFile(name, buf){ var d = buf instanceof Uint8Array ? buf : new Uint8Array(buf); FILES = FILES.filter(function(x){ return x.name !== name; }); FILES.push({ name: name, data: d }); delete FSTATE[name]; }
+  async function takeFiles(list){
+    var arr = Array.prototype.slice.call(list || []), msgs = [];
+    for (var i = 0; i < arr.length; i++) {
+      var f = arr[i], u;
+      try { u = new Uint8Array(await f.arrayBuffer()); } catch(e){ msgs.push(f.name + ': 파일을 읽지 못했습니다.'); continue; }
+      var kind = Ingest.sniff(u);
+      if (kind === 'zip') {
+        if (u[6] & 1) { msgs.push(f.name + ': 암호가 걸린 zip입니다. 암호 없이 다시 압축해 주세요.'); continue; }
+        try {
+          var z = await JSZip.loadAsync(u, { decodeFileName: decodeName });
+          var names = Object.keys(z.files).filter(function(n){ return !z.files[n].dir && !/__MACOSX|\/\._/.test(n); });
+          var got = 0;
+          for (var j = 0; j < names.length; j++) { var inner = await z.files[names[j]].async('uint8array'); var ik = Ingest.sniff(inner); if (ik === 'pdf' || ik === 'sheet') { addFile(names[j].split('/').pop(), inner); got++; } }
+          if (!got) msgs.push(f.name + ': 압축 안에 PDF나 엑셀 파일이 없습니다.');
+        } catch(e){ msgs.push(f.name + ': zip 파일을 열 수 없습니다.'); }
+      } else if (kind === 'pdf' || kind === 'sheet') addFile(f.name, u);
+      else msgs.push(f.name + ': PDF, 엑셀(투약이력), zip 파일이 아닙니다.');
+    }
+    drawFiles(msgs.join('\n'));
+  }
+  function guessKind(n){ return /기본/.test(n) ? 'basic' : /세부/.test(n) ? 'detail' : /처방/.test(n) ? 'rx' : /요양급여/.test(n) ? 'recent' : /투약|\.xlsx?$/.test(n) ? 'tuyak' : /검진/.test(n) ? 'checkup' : ''; }
+  function drawFiles(err){
+    var box = $('flist'); if (!box) return;
+    box.innerHTML = FILES.length ? FILES.map(function(f, i){ var st = FSTATE[f.name] || {}; return '<div class="frow ' + (st.ok ? 'ok' : st.bad ? 'bad' : '') + '"><span>' + esc(f.name) + '</span><i>' + esc(st.kind || '') + '</i><button type="button" data-fx="' + i + '" aria-label="빼기">×</button></div>'; }).join('') : '<div class="note" style="padding:20px;text-align:center">아직 첨부한 파일이 없습니다.</div>';
+    var have = {}; FILES.forEach(function(f){ have[guessKind(f.name)] = 1; });
+    Object.keys(FSTATE).forEach(function(n){ var k = FSTATE[n].kind || ''; if (/기본/.test(k)) have.basic = 1; if (/세부/.test(k)) have.detail = 1; if (/처방/.test(k)) have.rx = 1; if (/요양/.test(k)) have.recent = 1; if (/투약/.test(k)) have.tuyak = 1; if (/검진/.test(k)) have.checkup = 1; });
+    $('fneed').innerHTML = [['basic','심평원 기본'],['detail','심평원 세부'],['rx','심평원 처방'],['recent','요양급여내역서'],['tuyak','투약이력'],['checkup','건강검진']].map(function(k){ return '<span class="' + (have[k[0]] ? 'on' : '') + '">' + (have[k[0]] ? '✓ ' : '') + k[1] + '</span>'; }).join('');
+    if (err !== undefined) $('ffErr').textContent = err || '';
+  }
+  function openFiles(){
+    FILES = []; FSTATE = {};
+    var c = S.cur;
+    openDlg('<h4>' + IC.clip + ' 병력파악 (파일 첨부) — ' + esc(c.name) + '님</h4>' +
+      '<p style="color:var(--ink2)">심평원 진단·세부·처방, 공단 요양급여내역서·건강검진, 투약이력 엑셀을 한 번에 첨부하세요. 비밀번호는 생년월일(' + birthTxt(c.birth) + ')로 자동 입력합니다.</p>' +
+      '<label class="fdrop" id="fdrop" for="fIn"><b>파일을 끌어 놓거나 눌러서 선택</b><small>PDF · 엑셀(투약이력, 암호 해제한 파일) · zip 모두 가능 · 휴대폰은 zip 하나로 묶으면 편합니다</small><input id="fIn" type="file" multiple hidden></label>' +
+      '<div class="fneed" id="fneed"></div><div class="flist" id="flist"></div><div class="prog" id="fprog" hidden><i></i></div>' +
+      (S.data ? '<div class="fwarn">다시 분석하면 이 고객의 이전 분석 결과를 새 자료로 바꿉니다. 필요한 파일을 모두 다시 넣어 주세요.</div>' : '') +
+      '<div class="ferr" id="ffErr"></div><div class="mrow"><button class="btn lg" type="button" id="fClear" style="margin-right:auto">모두 빼기</button><button class="btn lg" type="button" id="fCancel2">닫기</button><button class="go" type="button" id="fGo">분석 시작</button></div>', 'wide fbox');
+    drawFiles('');
+    $('fIn').addEventListener('change', function(){ takeFiles(this.files); this.value = ''; });
+    var dz = $('fdrop');
+    ['dragenter','dragover'].forEach(function(ev){ dz.addEventListener(ev, function(e){ e.preventDefault(); dz.classList.add('on'); }); });
+    ['dragleave','drop'].forEach(function(ev){ dz.addEventListener(ev, function(e){ e.preventDefault(); dz.classList.remove('on'); }); });
+    dz.addEventListener('drop', function(e){ if (e.dataTransfer && e.dataTransfer.files) takeFiles(e.dataTransfer.files); });
+    $('flist').addEventListener('click', function(e){ var b = e.target.closest('[data-fx]'); if (!b) return; var f = FILES[+b.dataset.fx]; FILES.splice(+b.dataset.fx, 1); if (f) delete FSTATE[f.name]; drawFiles(); });
+    $('fClear').onclick = function(){ FILES = []; FSTATE = {}; drawFiles(''); };
+    $('fCancel2').onclick = closeDlg;
+    $('fGo').onclick = runAnalysis;
+  }
+  async function runAnalysis(){
+    var btn = $('fGo'), err = $('ffErr');
+    if (!FILES.length) { err.textContent = '파일을 먼저 첨부하세요.'; return; }
+    btn.disabled = true; btn.textContent = '읽는 중…'; err.textContent = '';
+    var pg = $('fprog'); pg.hidden = false;
+    var R;
+    try {
+      R = await Ingest.ingest(L, FILES, S.cur.birth, function(i, n){ pg.firstChild.style.width = Math.round(i / n * 100) + '%'; });
+    } catch(e){ btn.disabled = false; btn.textContent = '분석 시작'; err.textContent = '파일을 읽는 중 오류가 났습니다: ' + (e && e.message ? e.message : e); return; }
+    pg.firstChild.style.width = '100%';
+    FSTATE = R.states; drawFiles();
+    btn.disabled = false; btn.textContent = '분석 시작';
+    var msgs = [];
+    if (R.needPw) msgs.push('비밀번호가 맞지 않는 PDF가 있습니다. 고객 생년월일(' + birthTxt(S.cur.birth) + ')을 확인하세요.');
+    if (R.sheetPw) msgs.push('투약이력 엑셀에 비밀번호가 걸려 있습니다. 엑셀에서 생년월일로 연 뒤 "다른 이름으로 저장 → 도구 → 일반 옵션"에서 암호를 지우고 저장한 파일을 넣어 주세요.');
+    if (!R.ok) { err.textContent = msgs.concat(['인식된 진료내역 파일이 없습니다. 심평원 기본진료정보 PDF를 포함해 주세요.']).join('\n'); return; }
+    var warn = [];
+    if (R.meta.name && R.meta.name.replace(/\s/g, '') !== S.cur.name.replace(/\s/g, '')) warn.push('파일 속 성명(' + R.meta.name + ')이 고객 이름(' + S.cur.name + ')과 다릅니다.');
+    if (R.meta.sex && S.cur.sex && R.meta.sex !== S.cur.sex) warn.push('파일 속 성별(' + sexTxt(R.meta.sex) + ')이 등록한 성별(' + sexTxt(S.cur.sex) + ')과 다릅니다.');
+    if (warn.length && !confirm(warn.join('\n') + '\n\n다른 고객의 파일이 섞이지 않았는지 확인하세요. 그래도 이 고객으로 분석할까요?')) return;
+    if (msgs.length && !confirm(msgs.join('\n') + '\n\n읽지 못한 파일을 빼고 분석할까요?')) { err.textContent = msgs.join('\n'); return; }
+    var data = { input: R.input, meta: R.meta, base: todayStr(), analyzedAt: Date.now(), files: FILES.map(function(f){ return { name: f.name, kind: (R.states[f.name] || {}).kind || '' }; }) };
+    S.data = data; compute();
+    S.cur.status = 'done';
+    if (!S.cur.sample) { await Store.saveData(S.cur.id, data); await updateHeadSummary(); }
+    closeDlg(); S.tab = 'prod'; S.pv = null;
+    renderList(); renderCustomer();
+    toast('분석을 마쳤습니다 · 전 상품 판정표를 저장했습니다');
+  }
+  async function updateHeadSummary(){
+    if (S.cur.sample) return;
+    var sm = Products.summaryLine(S.E.products);
+    S.cur.summary = sm.text; S.cur.sumOk = sm.ok; S.cur.base = S.data.base;
+    S.cur = await Store.saveHead(S.cur);
+    S.list = await Store.list();
+  }
+
+  // ================= 예시 고객 =================
+  var SAMPLE = (function(){
+    function B(d,h,dept,type,code,name,days,pay){ return {date:d,hosp:h,hospDisp:h,dept:dept,type:type,code:code,src:'양방',name:name,days:days||1,pay:pay||0}; }
+    var basic = [
+      B('2026-09-10','하늘내과의원','내과','외래','I10.9','기타 및 상세불명의 원발성 고혈압',1,4300), B('2026-09-10','하늘약국','일반의','외래','I10.9','기타 및 상세불명의 원발성 고혈압',1,12600),
+      B('2026-03-12','하늘내과의원','내과','외래','I10.9','기타 및 상세불명의 원발성 고혈압',1,4300), B('2026-03-12','하늘약국','일반의','외래','I10.9','기타 및 상세불명의 원발성 고혈압',1,12600),
+      B('2025-09-08','하늘내과의원','내과','외래','I10.9','기타 및 상세불명의 원발성 고혈압',1,4300), B('2025-09-08','하늘약국','일반의','외래','I10.9','기타 및 상세불명의 원발성 고혈압',1,12300),
+      B('2024-06-11','바른정형외과의원','정형외과','외래','M54.56','요통, 요추부',1,9800), B('2024-06-07','바른정형외과의원','정형외과','외래','M54.56','요통, 요추부',1,9800),
+      B('2024-06-04','바른정형외과의원','정형외과','외래','M54.56','요통, 요추부',1,9800), B('2024-06-02','바른정형외과의원','정형외과','외래','M54.56','요통, 요추부',1,24500),
+      B('2024-06-02','바른약국','일반의','외래','M54.56','요통, 요추부',1,3600),
+      B('2024-05-20','푸른한의원','한방내과','외래','M54.57','요통, 요천부',1,5100), B('2024-05-22','푸른한의원','한방내과','외래','M54.57','요통, 요천부',1,5100), B('2024-05-24','푸른한의원','한방내과','외래','M54.57','요통, 요천부',1,5100),
+      B('2023-08-14','서울중앙병원','외과','입원','K80.2','담낭염이 없는 담낭의 결석',4,612000),
+      B('2022-11-03','맑은눈안과의원','안과','외래','H10.1','급성 아토피결막염',1,3900)
+    ];
+    var detail = [
+      {date:'2023-08-14',hosp:'서울중앙병원',cat:'처치및수술/수혈(양방)',item:'복강경하담낭절제술',days:1},
+      {date:'2023-08-14',hosp:'서울중앙병원',cat:'특수장비/CT진단(양방)',item:'전산화단층영상진단-복부',days:1},
+      {date:'2024-06-02',hosp:'바른정형외과의원',cat:'영상진단및방사선치료료/진단(양방)',item:'요추3매',days:1}
+    ];
+    function RX(d,h,k,drug,days){ return {date:d,hosp:h,kind:k,drug:drug,ingr:/암로/.test(drug)?'amlodipine':'loxoprofen',dose:1,times:1,days:days}; }
+    var rx = [
+      RX('2026-09-10','하늘내과의원','외래','노바스크정5밀리그램(암로디핀)_(5mg/1정)',90), RX('2026-09-10','하늘약국','처방조제','노바스크정5밀리그램(암로디핀)_(5mg/1정)',90),
+      RX('2026-03-12','하늘내과의원','외래','노바스크정5밀리그램(암로디핀)_(5mg/1정)',90), RX('2026-03-12','하늘약국','처방조제','노바스크정5밀리그램(암로디핀)_(5mg/1정)',90),
+      RX('2025-09-08','하늘내과의원','외래','노바스크정5밀리그램(암로디핀)_(5mg/1정)',90), RX('2025-09-08','하늘약국','처방조제','노바스크정5밀리그램(암로디핀)_(5mg/1정)',90),
+      RX('2024-06-02','바른정형외과의원','외래','록스펜정(록소프로펜나트륨)_(60mg/1정)',5), RX('2024-06-02','바른약국','처방조제','록스펜정(록소프로펜나트륨)_(60mg/1정)',5)
+    ];
+    var recent = { period:'2026.07.01~2026.10.20', rows:[
+      {date:'2026-09-10',inDays:1,hosp:'하늘내과의원',hospDisp:'하늘내과의원',type:'외래',rxDays:1,name:'기타및상세불명의원발성고혈압',code:'I10.9',pay:4300},
+      {date:'2026-09-10',inDays:1,hosp:'하늘약국',hospDisp:'하늘약국',type:'약국',rxDays:90,name:'',code:'',pay:12600}
+    ]};
+    var ca = { years:[{y:'2022',d:'05/14'},{y:'2024',d:'06/20'},{y:'2026',d:'04/02'}], items:{
+      '혈압(수축기혈압/확장기혈압)':{vals:{'2022':'128/82','2024':'138/88','2026':'132/84'},unit:'mmHg'},
+      '식전혈당':{vals:{'2022':'96.0','2024':'104.0','2026':'99.0'},unit:'mg/dL'},
+      '체질량지수':{vals:{'2022':'24.1','2024':'25.6','2026':'25.2'},unit:'kg/㎡'},
+      'AST(SGOT)':{vals:{'2022':'24.0','2024':'31.0','2026':'28.0'},unit:'U/L'},
+      'ALT(SGPT)':{vals:{'2022':'30.0','2024':'46.0','2026':'38.0'},unit:'U/L'},
+      '신사구체여과율(GFR)':{vals:{'2022':'92.0','2024':'88.0','2026':'85.0'},unit:'mL/min'}
+    }};
+    return { head: { id: 'sample', name: '김예시', sex: 'M', birth: '19700315', status: 'done', sample: true },
+      data: { input: { basic: basic, detail: detail, rx: rx, recent: recent }, meta: { kinds: { basic:1, detail:1, rx:1, recent:1, checkupAll:1 }, checkupAll: ca, checkup: null, sex: 'M' }, base: '2026-10-21' } };
+  })();
+
+  boot();
+})();
+
+</script>
+</body>
+</html>
