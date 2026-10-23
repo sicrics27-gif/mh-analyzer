@@ -2813,11 +2813,12 @@ function HealthUI(root, H) {
       '<label class="l" for="fMemo">메모 <small class="note">(선택)</small></label><textarea id="fMemo" placeholder="상담 내용 등">' + esc(c ? c.memo || '' : '') + '</textarea>' +
       '<div class="safe">' + IC.lock + '<span>고객 정보는 이 기기에만 암호화되어 저장되며, 어디로도 전송되지 않습니다. 주민번호·연락처·계좌번호는 입력하지 마세요.</span></div>' +
       (c ? '' : '<label class="consent"><input type="checkbox" id="fOk"> 고객 개인정보 수집·이용 동의 받음</label>') +
-      '<div class="ferr" id="fErr"></div></div><div class="mrow"><button class="btn lg" type="button" id="fCancel">취소</button><button class="go" type="button" id="fSave">' + (c ? '저장' : '등록') + '</button></div>');
+      '<div class="ferr" id="fErr"></div></div><div class="mrow">' + (c ? '' : '<button class="btn lg" type="button" id="fPaste" style="margin-right:auto">' + IC.doc + ' 메모 붙여넣기로 등록</button>') + '<button class="btn lg" type="button" id="fCancel">취소</button><button class="go" type="button" id="fSave">' + (c ? '저장' : '등록') + '</button></div>');
     var sx = sex;
     $('fSex').onclick = function(e){ var bt = e.target.closest('button'); if (!bt) return; sx = bt.dataset.s; this.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed', String(x === bt)); }); };
     $('fBirth').addEventListener('input', function(){ var v = this.value.replace(/\D/g, '').slice(0, 8); this.value = v.length > 6 ? v.slice(0,4) + '-' + v.slice(4,6) + '-' + v.slice(6) : v.length > 4 ? v.slice(0,4) + '-' + v.slice(4) : v; });
     $('fCancel').onclick = closeDlg;
+    if ($('fPaste')) $('fPaste').onclick = function(){ closeDlg(); openPaste(); };
     setTimeout(function(){ $('fName').focus(); }, 30);
     $('fSave').onclick = async function(){
       var name = $('fName').value.trim(), bd = $('fBirth').value.replace(/\D/g, ''), err = $('fErr');
@@ -2833,6 +2834,65 @@ function HealthUI(root, H) {
       await openCustomer(h.id);
       if (!c) openFiles();
     };
+  }
+
+  // ---------- SMemo 등 메모 붙여넣기로 고객 등록 ----------
+  // 메모에서 이름 + 주민번호 앞 7자리만 읽어 이름·성별·생년월일로 바꿉니다. 주민번호 뒷자리·연락처·주소는 저장하지 않습니다.
+  function parsePeople(text){
+    var lines = String(text || '').split(/\r?\n/).map(function(l){ return l.trim(); });
+    var out = [], seen = {}, cand = '';
+    var nameOf = function(l){
+      var m = l.match(/^(?:성명|이름|고객명?)\s*[:：]?\s*([가-힣]{2,4})(?:\s|$)/); if (m) return m[1];
+      m = l.match(/^([가-힣]{2,4})(?:\s|$|\(|님)/); if (m && !/^(무직|자가용|주소|직업|성별|병력|심사|해당|없음|통원|입원|수술|진단|기간)$/.test(m[1])) return m[1];
+      return '';
+    };
+    lines.forEach(function(l){
+      if (!l) return;
+      var r = l.match(/(?:^|[^\d])(\d{2})(\d{2})(\d{2})\s*-\s*([1-8])(?:\d{6}|[*xX●]{6}|(?!\d))/) || l.match(/(?:^|[^\d])(\d{2})(\d{2})(\d{2})([1-8])\d{6}(?!\d)/);
+      var n = nameOf(l);
+      if (r && +r[2] >= 1 && +r[2] <= 12 && +r[3] >= 1 && +r[3] <= 31) {
+        var g = +r[4], cen = (g === 1 || g === 2 || g === 5 || g === 6) ? '19' : (g === 9 || g === 0) ? '18' : '20';
+        var who = n || cand;
+        if (who) {
+          var birth = cen + r[1] + r[2] + r[3], key = who + birth;
+          if (!seen[key]) { seen[key] = 1; out.push({ name: who, birth: birth, sex: g % 2 ? 'M' : 'F' }); }
+        }
+        cand = '';
+        return;
+      }
+      if (n && l.length <= 20) cand = n;
+    });
+    return out;
+  }
+  function openPaste(){
+    openDlg('<h4>' + IC.user + ' 메모 붙여넣기로 고객 등록</h4><div class="form">' +
+      '<p style="margin:0;color:var(--ink2)">SMemo 고객 메모를 <b>전체 선택(Ctrl+A) → 복사(Ctrl+C)</b>해서 아래에 붙여 넣으세요. 여러 고객 메모를 이어서 붙여 넣어도 됩니다.<br>이름과 주민번호 앞 7자리로 <b>이름·성별·생년월일만</b> 가져옵니다. 주민번호 뒷자리·연락처·주소는 저장하지 않습니다.</p>' +
+      '<textarea id="pTxt" style="min-height:160px" placeholder="여기에 붙여 넣기"></textarea><div id="pPrev"></div><div class="ferr" id="pErr"></div></div>' +
+      '<div class="mrow"><button class="btn lg" type="button" id="pCancel">닫기</button><button class="go" type="button" id="pGo" disabled>등록</button></div>', 'wide');
+    var found = [];
+    var draw = function(){
+      found = parsePeople($('pTxt').value);
+      var have = {}; S.list.forEach(function(c){ have[c.name + c.birth] = c; });
+      if (!found.length) { $('pPrev').innerHTML = $('pTxt').value.trim() ? '<div class="note">이름과 주민번호(예: 580707-1…)를 찾지 못했습니다. 메모 맨 위에 이름, 그 아래에 주민번호가 있는지 확인하세요.</div>' : ''; $('pGo').disabled = true; return; }
+      $('pPrev').innerHTML = '<div class="tw"><table class="t"><thead><tr><th></th><th>이름</th><th>성별</th><th>생년월일</th><th>상태</th></tr></thead><tbody>' + found.map(function(p, i){
+        var ex = have[p.name + p.birth];
+        return '<tr><td><input type="checkbox" data-pi="' + i + '"' + (ex ? ' disabled' : ' checked') + '></td><td>' + esc(p.name) + '</td><td>' + sexTxt(p.sex) + '</td><td class="n">' + birthTxt(p.birth) + '</td><td>' + (ex ? '<span class="note">이미 등록됨</span>' : '<span class="ok">새로 등록</span>') + '</td></tr>';
+      }).join('') + '</tbody></table></div>';
+      $('pGo').disabled = !found.some(function(p){ return !have[p.name + p.birth]; });
+    };
+    $('pTxt').addEventListener('input', draw);
+    $('pCancel').onclick = closeDlg;
+    $('pGo').onclick = async function(){
+      var picks = Array.prototype.slice.call(document.querySelectorAll('[data-pi]:checked')).map(function(el){ return found[+el.dataset.pi]; });
+      if (!picks.length) { $('pErr').textContent = '등록할 고객을 선택하세요.'; return; }
+      this.disabled = true; this.textContent = '등록 중…';
+      var last = null;
+      for (var i = 0; i < picks.length; i++) last = await Store.saveHead({ status: 'wait', name: picks[i].name, sex: picks[i].sex, birth: picks[i].birth, memo: '', from: 'memo' });
+      S.list = await Store.list(); closeDlg(); renderList();
+      toast(picks.length + '명을 등록했습니다');
+      if (picks.length === 1 && last) openCustomer(last.id);
+    };
+    setTimeout(function(){ $('pTxt').focus(); }, 30);
   }
 
   // ---------- 서류 받기 (고객 인증으로 직접 조회) ----------
