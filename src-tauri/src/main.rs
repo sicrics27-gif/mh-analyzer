@@ -62,7 +62,7 @@ fn unlock_excel(data: String, passwords: Vec<String>) -> Result<String, String> 
 fn main() {
     tauri::Builder::default()
         .setup(|app| { clip::start(app.handle().clone()); Ok(()) })
-        .invoke_handler(tauri::generate_handler![unlock_excel, google::google_login, google::google_token, google::google_logout, google::open_url, clip::clip_watch])
+        .invoke_handler(tauri::generate_handler![unlock_excel, google::google_login, google::google_token, google::google_logout, google::open_url, clip::clip_watch, clip::smemo_latest])
         .run(tauri::generate_context!())
         .expect("병력고지 분석기를 실행하지 못했습니다");
 }

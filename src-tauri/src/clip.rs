@@ -43,3 +43,27 @@ pub fn start(app: tauri::AppHandle) {
 
 #[tauri::command]
 pub fn clip_watch(on: bool) { ON.store(on, Ordering::Relaxed); }
+
+/// SMemo 백업: 기본 백업 폴더에서 가장 최근 ZIP을 찾아 그대로 돌려줍니다 (이름 + base64).
+#[tauri::command]
+pub fn smemo_latest() -> Result<(String, String), String> {
+    use base64::Engine;
+    let dirs = [r"C:\SMYSoft\SMemo\system\backup", r"C:\Program Files (x86)\SMYSoft\SMemo\system\backup", r"C:\Program Files\SMYSoft\SMemo\system\backup"];
+    let mut best: Option<(std::time::SystemTime, std::path::PathBuf)> = None;
+    for d in dirs.iter() {
+        if let Ok(rd) = std::fs::read_dir(d) {
+            for e in rd.flatten() {
+                let p = e.path();
+                if p.extension().map(|x| x.eq_ignore_ascii_case("zip")).unwrap_or(false) {
+                    if let Ok(m) = e.metadata().and_then(|m| m.modified()) {
+                        if best.as_ref().map(|b| m > b.0).unwrap_or(true) { best = Some((m, p)); }
+                    }
+                }
+            }
+        }
+    }
+    let (_, p) = best.ok_or("SMemo 백업 파일을 찾지 못했습니다. SMemo에서 먼저 백업하기를 눌러 주세요.")?;
+    let bytes = std::fs::read(&p).map_err(|e| e.to_string())?;
+    let name = p.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default();
+    Ok((name, base64::engine::general_purpose::STANDARD.encode(bytes)))
+}

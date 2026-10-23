@@ -505,6 +505,10 @@ table.cl td.r,table.ht td.n,.gc b,.pl li .n{font-family:var(--f-body);font-varia
 .cc-x{margin-left:auto;border:0;background:none;font-size:20px;line-height:1;cursor:pointer;color:var(--mute)}
 .cc-r{display:flex;gap:6px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:8px}
 .cc-r span{margin-right:auto}
+.smb{display:flex;flex-direction:column;gap:6px;background:var(--accent-soft);border-radius:12px;padding:10px 12px}
+.smb-r{display:flex;gap:8px;flex-wrap:wrap}
+.smb-r .go{height:42px;padding:0 16px;font-size:14.5px}
+.smb-r label.btn{cursor:pointer}
 
 </style>
 </head>
@@ -2825,7 +2829,7 @@ function HealthUI(root, H) {
       '<label class="l" for="fMemo">메모 <small class="note">(선택)</small></label><textarea id="fMemo" placeholder="상담 내용 등">' + esc(c ? c.memo || '' : '') + '</textarea>' +
       '<div class="safe">' + IC.lock + '<span>고객 정보는 이 기기에만 암호화되어 저장되며, 어디로도 전송되지 않습니다. 주민번호·연락처·계좌번호는 입력하지 마세요.</span></div>' +
       (c ? '' : '<label class="consent"><input type="checkbox" id="fOk"> 고객 개인정보 수집·이용 동의 받음</label>') +
-      '<div class="ferr" id="fErr"></div></div><div class="mrow">' + (c ? '' : '<button class="btn lg" type="button" id="fPaste" style="margin-right:auto">' + IC.doc + ' 메모 붙여넣기로 등록</button>') + '<button class="btn lg" type="button" id="fCancel">취소</button><button class="go" type="button" id="fSave">' + (c ? '저장' : '등록') + '</button></div>');
+      '<div class="ferr" id="fErr"></div></div><div class="mrow">' + (c ? '' : '<button class="btn lg" type="button" id="fPaste" style="margin-right:auto">' + IC.doc + ' SMemo에서 가져오기</button>') + '<button class="btn lg" type="button" id="fCancel">취소</button><button class="go" type="button" id="fSave">' + (c ? '저장' : '등록') + '</button></div>');
     var sx = sex;
     $('fSex').onclick = function(e){ var bt = e.target.closest('button'); if (!bt) return; sx = bt.dataset.s; this.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed', String(x === bt)); }); };
     $('fBirth').addEventListener('input', function(){ var v = this.value.replace(/\D/g, '').slice(0, 8); this.value = v.length > 6 ? v.slice(0,4) + '-' + v.slice(4,6) + '-' + v.slice(6) : v.length > 4 ? v.slice(0,4) + '-' + v.slice(4) : v; });
@@ -2855,7 +2859,7 @@ function HealthUI(root, H) {
     var out = [], seen = {}, cand = '';
     var nameOf = function(l){
       var m = l.match(/^(?:성명|이름|고객명?)\s*[:：]?\s*([가-힣]{2,4})(?:\s|$)/); if (m) return m[1];
-      m = l.match(/^([가-힣]{2,4})(?:\s|$|\(|님)/); if (m && !/^(무직|자가용|주소|직업|성별|병력|심사|해당|없음|통원|입원|수술|진단|기간)$/.test(m[1])) return m[1];
+      m = l.match(/^([가-힣]{2,4})(?:\s|$|\(|님)/); if (m && !/^(무직|자가용|주소|직업|성별|병력|심사|해당|없음|통원|입원|수술|진단|기간|주민번호|주민등록|주민|전화|전화번호|연락처|휴대폰|핸드폰|생년월일|생일|나이|이메일|계좌|은행|직장|회사|키|체중|몸무게|차량|가족|배우자|자녀|남편|아내|메모|비고|고객|인적사항|인적양식|본인|피보험자|계약자|수익자)$/.test(m[1]) && !/^(주민|전화|연락|휴대|생년|계좌|주소)/.test(m[1])) return m[1];
       return '';
     };
     lines.forEach(function(l){
@@ -2876,23 +2880,65 @@ function HealthUI(root, H) {
     });
     return out;
   }
+  // SMemo 백업 ZIP → 메모 글(syncmemo_data/*.stf, UTF-16) 목록. 메모 외 데이터(비밀번호 관리 등)는 열지 않습니다.
+  async function smemoTexts(u8){
+    var z = await JSZip.loadAsync(u8);
+    var names = Object.keys(z.files).filter(function(n){ return /^syncmemo_data\/[^\/]+\.stf$/i.test(n); });
+    var out = [];
+    for (var i = 0; i < names.length; i++) {
+      var b = await z.files[names[i]].async('uint8array'), t = '';
+      try {
+        if (b[0] === 0xFE && b[1] === 0xFF) t = new TextDecoder('utf-16be').decode(b.subarray(2));
+        else if (b[0] === 0xFF && b[1] === 0xFE) t = new TextDecoder('utf-16le').decode(b.subarray(2));
+        else t = new TextDecoder('utf-8').decode(b);
+      } catch(e){ t = ''; }
+      if (t) out.push(t);
+    }
+    return out;
+  }
   function openPaste(){
-    openDlg('<h4>' + IC.user + ' 메모 붙여넣기로 고객 등록</h4><div class="form">' +
+    openDlg('<h4>' + IC.user + ' SMemo에서 고객 가져오기</h4><div class="form">' +
+      '<div class="smb"><b>방법 1 · SMemo 백업으로 한 번에</b><span class="note">SMemo 설정 → 백업하기를 누른 뒤 아래 버튼을 누르세요. 메모 속 이름·주민번호를 찾아 고객 목록을 만듭니다.</span><div class="smb-r">' +
+      (IS_DESKTOP ? '<button type="button" class="go" id="smAuto">최신 SMemo 백업 자동 불러오기</button>' : '') +
+      '<label class="btn lg" for="smFile">백업 ZIP 파일 고르기</label><input type="file" id="smFile" accept=".zip" hidden></div></div>' +
+      '<b style="font-size:14px">방법 2 · 메모 붙여넣기</b>' +
       '<p style="margin:0;color:var(--ink2)">SMemo 고객 메모를 <b>전체 선택(Ctrl+A) → 복사(Ctrl+C)</b>해서 아래에 붙여 넣으세요. 여러 고객 메모를 이어서 붙여 넣어도 됩니다.<br>이름과 주민번호 앞 7자리로 <b>이름·성별·생년월일만</b> 가져옵니다. 주민번호 뒷자리·연락처·주소는 저장하지 않습니다.</p>' +
       '<textarea id="pTxt" style="min-height:160px" placeholder="여기에 붙여 넣기"></textarea><div id="pPrev"></div><div class="ferr" id="pErr"></div></div>' +
       '<div class="mrow"><button class="btn lg" type="button" id="pCancel">닫기</button><button class="go" type="button" id="pGo" disabled>등록</button></div>', 'wide');
     var found = [];
     var draw = function(){
-      found = parsePeople($('pTxt').value);
+      if (fromZip) { var seenP = {}; found = []; fromZip.forEach(function(t){ parsePeople(t).forEach(function(p){ var k = p.name + p.birth; if (!seenP[k]) { seenP[k] = 1; found.push(p); } }); }); found.sort(function(a, b){ return a.name < b.name ? -1 : 1; }); }
+      else found = parsePeople($('pTxt').value);
       var have = {}; S.list.forEach(function(c){ have[c.name + c.birth] = c; });
-      if (!found.length) { $('pPrev').innerHTML = $('pTxt').value.trim() ? '<div class="note">이름과 주민번호(예: 580707-1…)를 찾지 못했습니다. 메모 맨 위에 이름, 그 아래에 주민번호가 있는지 확인하세요.</div>' : ''; $('pGo').disabled = true; return; }
-      $('pPrev').innerHTML = '<div class="tw"><table class="t"><thead><tr><th></th><th>이름</th><th>성별</th><th>생년월일</th><th>상태</th></tr></thead><tbody>' + found.map(function(p, i){
+      if (!found.length) { $('pPrev').innerHTML = fromZip ? '<div class="note">백업 메모에서 이름·주민번호를 찾지 못했습니다.</div>' : $('pTxt').value.trim() ? '<div class="note">이름과 주민번호(예: 580707-1…)를 찾지 못했습니다. 메모 맨 위에 이름, 그 아래에 주민번호가 있는지 확인하세요.</div>' : ''; $('pGo').disabled = true; return; }
+      var nNew = found.filter(function(p){ return !have[p.name + p.birth]; }).length;
+      $('pPrev').innerHTML = '<div class="note">찾은 고객 ' + found.length + '명 · 새로 등록 ' + nNew + '명 · 이미 등록 ' + (found.length - nNew) + '명 <button type="button" class="lnk2" id="pAll">새 고객 모두 선택/해제</button></div><div class="tw" style="max-height:300px;overflow:auto"><table class="t"><thead><tr><th></th><th>이름</th><th>성별</th><th>생년월일</th><th>상태</th></tr></thead><tbody>' + found.map(function(p, i){
         var ex = have[p.name + p.birth];
         return '<tr><td><input type="checkbox" data-pi="' + i + '"' + (ex ? ' disabled' : ' checked') + '></td><td>' + esc(p.name) + '</td><td>' + sexTxt(p.sex) + '</td><td class="n">' + birthTxt(p.birth) + '</td><td>' + (ex ? '<span class="note">이미 등록됨</span>' : '<span class="ok">새로 등록</span>') + '</td></tr>';
       }).join('') + '</tbody></table></div>';
       $('pGo').disabled = !found.some(function(p){ return !have[p.name + p.birth]; });
+      if ($('pAll')) $('pAll').onclick = function(){ var bx = Array.prototype.slice.call(document.querySelectorAll('[data-pi]:not([disabled])')); var on = !bx.every(function(x){ return x.checked; }); bx.forEach(function(x){ x.checked = on; }); };
     };
-    $('pTxt').addEventListener('input', draw);
+    $('pTxt').addEventListener('input', function(){ fromZip = null; draw(); });
+    var fromZip = null;
+    var loadZip = async function(u8, label){
+      try {
+        var texts = await smemoTexts(u8);
+        if (!texts.length) { $('pErr').textContent = 'SMemo 백업 파일이 아니거나 메모가 없습니다.'; return; }
+        fromZip = texts; $('pTxt').value = ''; $('pErr').textContent = '';
+        draw(); toast(label + ' · 메모 ' + texts.length + '개에서 고객 ' + found.length + '명을 찾았습니다');
+      } catch(e){ $('pErr').textContent = 'ZIP을 열지 못했습니다: ' + (e && e.message || e); }
+    };
+    $('smFile').addEventListener('change', async function(){ var f = this.files[0]; this.value = ''; if (!f) return; loadZip(new Uint8Array(await f.arrayBuffer()), f.name); });
+    if ($('smAuto')) $('smAuto').onclick = async function(){
+      var b = this; b.disabled = true; b.textContent = '찾는 중…';
+      try {
+        var r = await window.__TAURI__.core.invoke('smemo_latest');
+        var bin = atob(r[1]), u8 = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+        await loadZip(u8, r[0]);
+      } catch(e){ $('pErr').textContent = String(e && e.message || e); }
+      b.disabled = false; b.textContent = '최신 SMemo 백업 자동 불러오기';
+    };
     $('pCancel').onclick = closeDlg;
     $('pGo').onclick = async function(){
       var picks = Array.prototype.slice.call(document.querySelectorAll('[data-pi]:checked')).map(function(el){ return found[+el.dataset.pi]; });
