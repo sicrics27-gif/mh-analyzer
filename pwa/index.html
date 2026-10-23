@@ -2745,7 +2745,7 @@ function HealthUI(root, H) {
 
 </script>
 <script>
-// 사용 권한(초대 코드): 관리자가 발급한 코드가 있는 사람만 프로그램을 씀.
+// 사용 권한(OTP): 관리자가 발급한 코드가 있는 사람만 프로그램을 씀.
 // 허용 목록은 관리자 GitHub 저장소의 access.json (코드·이메일은 알아볼 수 없게 바꾼 값만 저장).
 (function (root) {
   var REPO = 'sicrics27-gif/mh-analyzer', PATH = 'access.json';
@@ -2920,7 +2920,7 @@ function HealthUI(root, H) {
   }
   Store.onLock(function(){ S.cur = null; S.data = null; if (ACC.revoking) return; drawLock('locked'); toast('잠갔습니다'); });
 
-  // ================= 사용 권한 (초대 코드) =================
+  // ================= 사용 권한 (OTP) =================
   var ACC = { lastOk: 0 };
   function gateBox(h){ $('shell').hidden = true; $('lock').hidden = false; $('lbox').innerHTML = '<div class="lmark">' + IC.shield + '<span>병력고지 분석기</span></div>' + h; }
   async function gate(){
@@ -2930,7 +2930,7 @@ function HealthUI(root, H) {
     var ar = Sync.authResult && Sync.authResult(), pend = Access.pend();
     if (ar && ar.purpose === 'activate' && pend) {
       if (!ar.ok) { drawActivate('구글 로그인을 마치지 못했습니다. 다시 시도하세요.', pend); return false; }
-      try { var em = await Sync.userEmail(); if (!(await Access.activate(pend, em))) { drawActivate('이 코드는 ' + '다른 구글 계정용입니다. 코드를 받을 때 알려 준 지메일로 로그인하세요.', pend); return false; } toast('사용 등록을 마쳤습니다'); }
+      try { var em = await Sync.userEmail(); if (!(await Access.activate(pend, em))) { drawActivate('이 OTP는 ' + '다른 구글 계정용입니다. OTP를 받을 때 알려 준 지메일로 로그인하세요.', pend); return false; } toast('사용 등록을 마쳤습니다'); }
       catch(e){ drawActivate('구글 계정을 확인하지 못했습니다: ' + (e.message || e), pend); return false; }
     }
     var r = await Access.check();
@@ -2940,17 +2940,17 @@ function HealthUI(root, H) {
     drawActivate('', null); return false;
   }
   function drawRevoked(){
-    gateBox('<h1>사용 권한이 정지되었습니다</h1><div class="safe">' + IC.lock + '<span>이 기기의 초대 코드가 정지되었거나 삭제되었습니다. 코드를 발급해 준 관리자에게 문의하세요.<br>이 기기에 저장된 고객 자료는 지워지지 않고 암호화된 채 그대로 남아 있습니다.</span></div><button class="go" id="gRetry" type="button">다시 확인</button><button class="lnk" id="gNew" type="button">새 초대 코드 입력</button>');
+    gateBox('<h1>사용 권한이 정지되었습니다</h1><div class="safe">' + IC.lock + '<span>이 기기의 OTP가 정지되었거나 삭제되었습니다. OTP를 발급해 준 관리자에게 문의하세요.<br>이 기기에 저장된 고객 자료는 지워지지 않고 암호화된 채 그대로 남아 있습니다.</span></div><button class="go" id="gRetry" type="button">다시 확인</button><button class="lnk" id="gNew" type="button">새 OTP 입력</button>');
     $('gRetry').onclick = function(){ boot(); };
     $('gNew').onclick = function(){ Access.setLic(null); drawActivate('', null); };
   }
   function drawActivate(msg, pend){
     var step2 = !!pend;
-    gateBox('<h1>초대 코드 입력</h1><p>이 프로그램은 관리자에게 <b>초대 코드</b>를 받은 분만 쓸 수 있습니다. 받은 코드를 넣고, 코드를 받을 때 알려 준 <b>구글(지메일) 계정</b>으로 본인 확인을 해 주세요.</p>' +
-      '<input id="gCode" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="MH-XXXX-XXXX-XXXX-XXXX" style="letter-spacing:.06em;font-size:16px"' + (step2 ? ' disabled value="확인된 코드"' : '') + '>' +
+    gateBox('<h1>OTP 입력</h1><p>이 프로그램은 관리자에게 <b>OTP</b>를 받은 분만 쓸 수 있습니다. 받은 OTP를 넣고, OTP를 받을 때 알려 준 <b>구글(지메일) 계정</b>으로 본인 확인을 해 주세요.</p>' +
+      '<input id="gCode" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="MH-XXXX-XXXX-XXXX-XXXX" style="letter-spacing:.06em;font-size:16px"' + (step2 ? ' disabled value="확인된 OTP"' : '') + '>' +
       '<div class="ferr" id="gErr">' + esc(msg || '') + '</div>' +
-      (step2 ? '<button class="go" id="gMail" type="button">' + IC.cloud + ' 구글 계정으로 본인 확인</button><button class="lnk" id="gBack" type="button">다른 코드 입력</button>' : '<button class="go" id="gOk" type="button">코드 확인</button>') +
-      '<div class="note" style="text-align:center">코드가 없으면 관리자에게 요청하세요.</div>');
+      (step2 ? '<button class="go" id="gMail" type="button">' + IC.cloud + ' 구글 계정으로 본인 확인</button><button class="lnk" id="gBack" type="button">다른 OTP 입력</button>' : '<button class="go" id="gOk" type="button">OTP 확인</button>') +
+      '<div class="note" style="text-align:center">OTP가 없으면 관리자에게 요청하세요.</div>');
     if (step2) {
       $('gBack').onclick = function(){ Access.pend(null); drawActivate('', null); };
       $('gMail').onclick = async function(){
@@ -2958,7 +2958,7 @@ function HealthUI(root, H) {
         try {
           var em = location.protocol === 'file:' ? null : await Sync.loginForEmail();
           if (await Access.activate(pend, em)) { toast('사용 등록을 마쳤습니다'); boot(); }
-          else drawActivate('이 코드는 다른 구글 계정용입니다. 코드를 받을 때 알려 준 지메일로 로그인하세요.', pend);
+          else drawActivate('이 OTP는 다른 구글 계정용입니다. OTP를 받을 때 알려 준 지메일로 로그인하세요.', pend);
         } catch(e){ drawActivate('구글 계정을 확인하지 못했습니다: ' + (e && e.message || e), pend); }
       };
       return;
@@ -2969,9 +2969,9 @@ function HealthUI(root, H) {
       b.disabled = true; b.textContent = '확인 중…';
       try {
         var r = await Access.lookup(inp.value);
-        if (r.error) { b.disabled = false; b.textContent = '코드 확인'; err.textContent = r.error === 'format' ? '코드 형식이 맞지 않습니다. MH-로 시작하는 16자리를 그대로 붙여 넣으세요.' : r.error === 'revoked' ? '정지된 코드입니다. 관리자에게 문의하세요.' : '등록되지 않은 코드입니다. 다시 확인해 주세요.'; return; }
+        if (r.error) { b.disabled = false; b.textContent = 'OTP 확인'; err.textContent = r.error === 'format' ? 'OTP 형식이 맞지 않습니다. MH-로 시작하는 16자리를 그대로 붙여 넣으세요.' : r.error === 'revoked' ? '정지된 OTP입니다. 관리자에게 문의하세요.' : '등록되지 않은 OTP입니다. 다시 확인해 주세요.'; return; }
         Access.pend(r); drawActivate('', r);
-      } catch(e){ b.disabled = false; b.textContent = '코드 확인'; err.textContent = '인터넷 연결을 확인한 뒤 다시 시도하세요.'; }
+      } catch(e){ b.disabled = false; b.textContent = 'OTP 확인'; err.textContent = '인터넷 연결을 확인한 뒤 다시 시도하세요.'; }
     };
     $('gOk').onclick = go; inp.addEventListener('keydown', function(e){ if (e.key === 'Enter') go(); });
   }
@@ -2990,7 +2990,7 @@ function HealthUI(root, H) {
   var ADM = { id: '__admin' };
   async function admLoad(){ try { return (await Store.loadData(ADM.id)) || null; } catch(e){ return null; } }
   async function admSave(d){ await Store.saveHead({ id: ADM.id, hidden: true, name: '__admin', status: 'admin', created: d.created || Date.now() }); await Store.saveData(ADM.id, d); }
-  function invite(u){ return '[병력고지 분석기 사용 안내]\n' + u.name + '님, 병력고지 분석기 초대 코드입니다.\n\n초대 코드: ' + u.code + '\n등록할 구글 계정: ' + u.email + '\n\n① 설치\n· 휴대폰: https://sicrics27-gif.github.io/mh-analyzer/ 를 크롬으로 열고 메뉴(⋮) → "홈 화면에 추가"\n· PC: https://github.com/' + Access.REPO + '/releases/latest 에서 MH-Analyzer-setup.exe 설치\n② 처음 열면 나오는 화면에 코드를 넣고, 위 구글 계정으로 본인 확인\n③ 잠금 비밀번호를 만들고 시작'; }
+  function invite(u){ return '[병력고지 분석기 사용 안내]\n' + u.name + '님, 병력고지 분석기 OTP입니다.\n\nOTP: ' + u.code + '\n등록할 구글 계정: ' + u.email + '\n\n① 설치\n· 휴대폰: https://sicrics27-gif.github.io/mh-analyzer/ 를 크롬으로 열고 메뉴(⋮) → "홈 화면에 추가"\n· PC: https://github.com/' + Access.REPO + '/releases/latest 에서 MH-Analyzer-setup.exe 설치\n② 처음 열면 나오는 화면에 OTP를 넣고, 위 구글 계정으로 본인 확인\n③ 잠금 비밀번호를 만들고 시작'; }
   async function openAdmin(){
     var d = await admLoad();
     if (!d || !d.token) { admSetup(d); return; }
@@ -2999,7 +2999,7 @@ function HealthUI(root, H) {
   }
   function admSetup(d){
     openDlg('<h4>' + IC.user + ' 사용자 관리 — 처음 설정</h4><div class="form" style="font-size:14px;line-height:1.7">' +
-      '<div>초대 코드 목록은 강남혁 님 GitHub 저장소(' + esc(Access.REPO) + ')의 <b>access.json</b>에 저장됩니다. 프로그램이 이 파일을 고칠 수 있도록 <b>GitHub 토큰</b>을 한 번 넣어 주세요.</div>' +
+      '<div>OTP 목록은 강남혁 님 GitHub 저장소(' + esc(Access.REPO) + ')의 <b>access.json</b>에 저장됩니다. 프로그램이 이 파일을 고칠 수 있도록 <b>GitHub 토큰</b>을 한 번 넣어 주세요.</div>' +
       '<div class="safe">' + IC.lock + '<span>토큰은 이 기기의 잠금 비밀번호로 암호화해 저장하고, 구글 동기화를 켜 두면 강남혁 님의 다른 기기에도 함께 옮겨집니다. 관리자가 아닌 분은 이 화면을 닫으세요.</span></div>' +
       '<label class="l">GitHub 토큰 (github_pat_로 시작)</label><input id="admTok" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…">' +
       '<div class="ferr" id="admErr"></div></div><div class="mrow"><button class="btn lg" type="button" id="admX">닫기</button><button class="go" type="button" id="admGo">연결 확인</button></div>');
@@ -3020,11 +3020,11 @@ function HealthUI(root, H) {
         (st === 'del' ? '<span class="tag x">삭제됨</span>' : '<span class="stb"><button type="button" data-au="' + i + '" data-as="1" aria-pressed="' + (st === 'on') + '">사용 중</button><button type="button" data-au="' + i + '" data-as="0" aria-pressed="' + (st === 'off') + '">정지</button></span>') + '</td><td>' +
         (st === 'del' ? '' : '<button type="button" class="pb" data-ac="' + i + '">안내문 복사</button>') + '</td></tr>'; }).join('');
     box.innerHTML = (note ? '<div class="gapban a">' + note + '</div>' : '') +
-      '<div class="admsw"><div><b>초대 코드 사용</b><br><small class="note">' + (list.on ? '켜짐 — 코드를 받은 사람만 프로그램을 열 수 있습니다.' : '꺼짐 — 지금은 누구나 열 수 있습니다. 동료들에게 코드를 다 보낸 뒤 켜세요.') + '</small></div><span class="stb"><button type="button" data-aon="1" aria-pressed="' + !!list.on + '">켜기</button><button type="button" data-aon="0" aria-pressed="' + !list.on + '">끄기</button></span></div>' +
-      (!meOk ? '<div class="gapban r">' + IC.warn + '<span>이 기기에 관리자 본인 코드가 등록되어 있지 않습니다. 코드 사용을 켜기 전에 아래 <b>내 코드로 등록</b>을 먼저 하세요.</span></div>' : '') +
-      '<div class="admadd"><input id="auName" type="text" placeholder="이름 (예: 김오션)"><input id="auMail" type="email" placeholder="구글 계정 (예: ocean@gmail.com)"><button class="go" type="button" id="auGo">코드 발급</button>' + (!meOk ? '<button class="btn lg" type="button" id="auMe">내 코드로 등록</button>' : '') + '</div><div class="ferr" id="auErr"></div>' +
-      '<div class="tw"><table class="t"><thead><tr><th>이름 · 구글 계정</th><th>초대 코드</th><th>발급일</th><th>권한</th><th></th></tr></thead><tbody>' + (rows || '<tr><td colspan="5" class="note" style="text-align:center;padding:16px">아직 발급한 코드가 없습니다.</td></tr>') + '</tbody></table></div>' +
-      '<p class="note">정지는 상대방 프로그램이 열리거나(또는 쓰는 중 30분 안에) 바로 막힙니다. 다시 <b>사용 중</b>으로 바꾸면 같은 코드로 다시 쓸 수 있습니다. 동료의 고객 자료는 각자 기기·구글 계정에만 있어 관리자도 볼 수 없습니다.</p>' +
+      '<div class="admsw"><div><b>OTP 사용</b><br><small class="note">' + (list.on ? '켜짐 — OTP를 받은 사람만 프로그램을 열 수 있습니다.' : '꺼짐 — 지금은 누구나 열 수 있습니다. 동료들에게 OTP를 다 보낸 뒤 켜세요.') + '</small></div><span class="stb"><button type="button" data-aon="1" aria-pressed="' + !!list.on + '">켜기</button><button type="button" data-aon="0" aria-pressed="' + !list.on + '">끄기</button></span></div>' +
+      (!meOk ? '<div class="gapban r">' + IC.warn + '<span>이 기기에 관리자 본인 OTP가 등록되어 있지 않습니다. OTP 사용을 켜기 전에 아래 <b>내 OTP로 등록</b>을 먼저 하세요.</span></div>' : '') +
+      '<div class="admadd"><input id="auName" type="text" placeholder="이름 (예: 김오션)"><input id="auMail" type="email" placeholder="구글 계정 (예: ocean@gmail.com)"><button class="go" type="button" id="auGo">OTP 발급</button>' + (!meOk ? '<button class="btn lg" type="button" id="auMe">내 OTP로 등록</button>' : '') + '</div><div class="ferr" id="auErr"></div>' +
+      '<div class="tw"><table class="t"><thead><tr><th>이름 · 구글 계정</th><th>OTP</th><th>발급일</th><th>권한</th><th></th></tr></thead><tbody>' + (rows || '<tr><td colspan="5" class="note" style="text-align:center;padding:16px">아직 발급한 OTP가 없습니다.</td></tr>') + '</tbody></table></div>' +
+      '<p class="note">정지는 상대방 프로그램이 열리거나(또는 쓰는 중 30분 안에) 바로 막힙니다. 다시 <b>사용 중</b>으로 바꾸면 같은 OTP로 다시 쓸 수 있습니다. 동료의 고객 자료는 각자 기기·구글 계정에만 있어 관리자도 볼 수 없습니다.</p>' +
       '<div class="mrow"><button class="btn lg" type="button" id="admTokRe" style="margin-right:auto">토큰 바꾸기</button><button class="btn lg" type="button" id="admX2">닫기</button></div>';
     var busy = function(on){ box.querySelectorAll('button,input').forEach(function(x){ x.disabled = on; }); };
     var run = async function(fn, msg, after){ busy(true); try { await Access.edit(d.token, fn, msg); if (after) await after(); await admSave(d); admDraw(d); } catch(e){ busy(false); $('auErr').textContent = e.message || String(e); } };
@@ -3033,13 +3033,13 @@ function HealthUI(root, H) {
     var issue = async function(name, mail, self){
       var code = Access.newCode(), ch = await Access.codeHash(code), eh = await Access.mailHash(mail);
       var u = { name: name, email: mail.toLowerCase(), code: code, ch: ch, eh: eh, t: Date.now(), self: !!self };
-      await run(function(L){ L.users[ch] = { s: 1, e: eh, t: new Date().toISOString().slice(0, 10) }; }, '초대 코드 발급', async function(){ d.users.push(u); if (self) Access.setLic({ c: ch, e: eh, at: Date.now() }); });
-      if (!self) { copyText(invite(u), '안내문'); toast(name + '님 코드를 발급하고 안내문을 복사했습니다 · 카톡에 붙여 넣으세요'); }
+      await run(function(L){ L.users[ch] = { s: 1, e: eh, t: new Date().toISOString().slice(0, 10) }; }, 'OTP 발급', async function(){ d.users.push(u); if (self) Access.setLic({ c: ch, e: eh, at: Date.now() }); });
+      if (!self) { copyText(invite(u), '안내문'); toast(name + '님 OTP를 발급하고 안내문을 복사했습니다 · 카톡에 붙여 넣으세요'); }
     };
     $('auGo').onclick = function(){
       var n = $('auName').value.trim(), m = $('auMail').value.trim();
       if (!n || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m)) { $('auErr').textContent = '이름과 구글 계정(이메일)을 정확히 넣으세요.'; return; }
-      if (d.users.some(function(u){ return u.email === m.toLowerCase() && list.users[u.ch]; })) { if (!confirm(m + ' 에게 이미 발급한 코드가 있습니다. 새 코드를 하나 더 발급할까요?')) return; }
+      if (d.users.some(function(u){ return u.email === m.toLowerCase() && list.users[u.ch]; })) { if (!confirm(m + ' 에게 이미 발급한 OTP가 있습니다. 새 OTP를 하나 더 발급할까요?')) return; }
       issue(n, m, false);
     };
     if ($('auMe')) $('auMe').onclick = function(){
@@ -3048,15 +3048,15 @@ function HealthUI(root, H) {
     };
     box.querySelectorAll('[data-as]').forEach(function(b){ b.onclick = function(){
       var u = d.users[+b.dataset.au], s = +b.dataset.as;
-      if (u.self && s === 0 && !confirm('관리자 본인 코드를 정지하면 이 기기도 막힙니다. 계속할까요?')) return;
+      if (u.self && s === 0 && !confirm('관리자 본인 OTP를 정지하면 이 기기도 막힙니다. 계속할까요?')) return;
       run(function(L){ if (L.users[u.ch]) L.users[u.ch].s = s; }, s ? '권한 복구: ' + u.name : '권한 정지: ' + u.name);
     }; });
     box.querySelectorAll('[data-ac]').forEach(function(b){ b.onclick = function(){ copyText(invite(d.users[+b.dataset.ac]), '안내문'); }; });
     box.querySelectorAll('[data-aon]').forEach(function(b){ b.onclick = function(){
       var on = b.dataset.aon === '1';
-      if (on && !meOk) { $('auErr').textContent = '먼저 "내 코드로 등록"을 하세요. 그렇지 않으면 이 기기도 막힙니다.'; return; }
-      if (on && !confirm('초대 코드 사용을 켜면, 코드를 받아 등록하지 않은 사람은 다음에 프로그램을 열 때부터 쓸 수 없습니다. 켤까요?')) return;
-      run(function(L){ L.on = on; }, on ? '초대 코드 사용 켜기' : '초대 코드 사용 끄기');
+      if (on && !meOk) { $('auErr').textContent = '먼저 "내 OTP로 등록"을 하세요. 그렇지 않으면 이 기기도 막힙니다.'; return; }
+      if (on && !confirm('OTP 사용을 켜면, OTP를 받아 등록하지 않은 사람은 다음에 프로그램을 열 때부터 쓸 수 없습니다. 켤까요?')) return;
+      run(function(L){ L.on = on; }, on ? 'OTP 사용 켜기' : 'OTP 사용 끄기');
     }; });
   }
 
