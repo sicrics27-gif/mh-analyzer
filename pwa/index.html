@@ -458,6 +458,27 @@ table.cl td.r,table.ht td.n,.gc b,.pl li .n{font-family:var(--f-body);font-varia
 .ss-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .ss-btns button{height:32px;border-radius:8px;border:1px solid color-mix(in srgb,var(--side-ink) 20%,transparent);background:transparent;color:var(--side-ink);font-size:12.5px;cursor:pointer}
 .ss-btns button:disabled{opacity:.5}
+/* 병력파악 날짜 */
+.dbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.dchip{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 12px;display:flex;flex-direction:column;gap:1px;min-width:0}
+.dchip small{font-size:12px;color:var(--mute)}
+.dchip b{font-size:17px;font-variant-numeric:tabular-nums}
+.dchip em{font-style:normal;font-size:11.5px;color:var(--mute);line-height:1.4}
+.dchip.fr.g{border-color:color-mix(in srgb,var(--green) 45%,var(--line));background:var(--green-soft)}.dchip.fr.g b{color:var(--green)}
+.dchip.fr.a{border-color:color-mix(in srgb,var(--amber) 45%,var(--line));background:var(--amber-soft)}.dchip.fr.a b{color:var(--amber)}
+.dchip.fr.r{border-color:color-mix(in srgb,var(--red) 45%,var(--line));background:var(--red-soft)}.dchip.fr.r b{color:var(--red)}
+.dchip.ap input{height:30px;border:1px solid var(--line);border-radius:6px;padding:0 6px;background:var(--paper);font:inherit;font-size:14px;width:100%}
+.dchip .lnk{border:0;background:none;color:var(--accent);text-decoration:underline;font-size:12px;cursor:pointer;padding:0;align-self:flex-start}
+.gapban{display:flex;gap:8px;align-items:flex-start;border-radius:10px;padding:9px 12px;font-size:13.5px;line-height:1.6}
+.gapban.a{background:var(--amber-soft);color:var(--ink)}.gapban.a svg{color:var(--amber)}
+.gapban.r{background:var(--red-soft);color:var(--ink)}.gapban.r svg{color:var(--red)}
+.gapban svg{margin-top:3px}
+.applybox{background:var(--accent-soft);border-radius:12px;padding:10px 14px;font-size:13.5px;line-height:1.6}
+.applybox ul{margin:6px 0 0;padding-left:18px}
+.citem .r3{display:flex;align-items:center;gap:6px;font-size:12px;opacity:.9}
+.fp{width:8px;height:8px;border-radius:50%;display:inline-block;flex:0 0 auto}
+.fp.g{background:#7EE2A8}.fp.a{background:#FFD27A}.fp.r{background:#FF8A80}
+.prevrec{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px;color:var(--ink2)}
 
 </style>
 </head>
@@ -2263,7 +2284,7 @@ function HealthUI(root, H) {
       h += groups[g].map(function(c){
         var cur = S.cur && S.cur.id === c.id;
         var r2 = c.status === 'done' ? '<span class="r2 ' + (c.sumOk ? 'ok' : '') + '">' + esc(c.summary || '') + '</span>' : '<span class="r2">파일 첨부 대기</span>';
-        return '<button type="button" class="citem" data-cid="' + c.id + '" aria-current="' + cur + '"><span class="r1"><b>' + esc(c.name) + '</b><small>' + sexTxt(c.sex) + (ageOf(c.birth) !== '' ? '·' + ageOf(c.birth) + '세' : '') + '</small><span class="stt ' + (c.status === 'done' ? '' : 'w') + '">' + (c.status === 'done' ? '✓ 분석완료' : '대기') + '</span></span>' + r2 + '</button>';
+        return '<button type="button" class="citem" data-cid="' + c.id + '" aria-current="' + cur + '"><span class="r1"><b>' + esc(c.name) + '</b><small>' + sexTxt(c.sex) + (ageOf(c.birth) !== '' ? '·' + ageOf(c.birth) + '세' : '') + '</small><span class="stt ' + (c.status === 'done' ? '' : 'w') + '">' + (c.status === 'done' ? '✓ 분석완료' : '대기') + '</span></span>' + (c.status === 'done' && c.asOf ? (function(){ var F = freshOf(c.asOf); return '<span class="r3"><i class="fp ' + F.lv + '"></i>자료 ' + dot(c.asOf) + ' · ' + F.txt + (c.applyDate ? ' · 청약 ' + dot(c.applyDate) : '') + '</span>'; })() : '') + r2 + '</button>';
       }).join('');
     });
     if (!S.list.length) h = '<div class="cempty">등록된 고객이 없습니다.<br>위의 <b>신규 고객 등록</b>으로 시작하세요.</div>';
@@ -2288,14 +2309,37 @@ function HealthUI(root, H) {
     if (c.status === 'done') {
       try { S.data = id === 'sample' ? SAMPLE.data : await Store.loadData(id); } catch(e){ S.data = null; }
       if (S.data) compute();
+      if (S.data && !c.sample && !c.asOf && S.DD && S.DD.asOf) { c.asOf = S.DD.asOf; c.lastVisit = S.DD.last; try { S.cur = await Store.saveHead(c); S.list = await Store.list(); } catch(e){} }
     }
     $('shell').classList.add('has-c');
     renderList(); renderCustomer();
     window.scrollTo(0, 0);
   }
+  // ---------- 병력파악 날짜 ----------
+  function ymdOf(s){ var m = String(s || '').match(/(\d{4})[.\-](\d{1,2})[.\-](\d{1,2})/); return m ? m[1] + '-' + ('0' + m[2]).slice(-2) + '-' + ('0' + m[3]).slice(-2) : ''; }
+  function dayDiff(a, b){ return Math.round((new Date(b + 'T00:00:00Z') - new Date(a + 'T00:00:00Z')) / 864e5); }
+  function addDay(a, n){ var t = new Date(a + 'T00:00:00Z'); t.setUTCDate(t.getUTCDate() + n); return t.toISOString().slice(0, 10); }
+  function dot(a){ return a ? a.slice(2).replace(/-/g, '.') : '-'; }
+  function dataDates(d){
+    var inp = d.input || {}, rec = inp.recent, asOf = '', src = '', last = '', hira = '', today = todayStr();
+    if (rec && rec.period) { var parts = String(rec.period).split('~'); var e = ymdOf(parts[1] || ''); if (e) { asOf = e; src = '공단 요양급여내역서 발급기간'; } }
+    (inp.basic || []).forEach(function(r){ if (r.date > hira && r.date <= today) hira = r.date; });
+    [inp.basic, inp.rx, inp.detail, rec && rec.rows].forEach(function(a){ (a || []).forEach(function(r){ if (r.date > last && r.date <= today) last = r.date; }); });
+    if (!asOf) { asOf = last; src = '자료에 있는 마지막 기록일 (실제 조회일은 이후일 수 있음)'; }
+    return { asOf: asOf, src: src, last: last, hira: hira, analyzed: d.analyzedAt ? new Date(d.analyzedAt - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10) : d.base };
+  }
+  function freshOf(asOf){
+    if (!asOf) return { lv: 'r', days: null, txt: '조회일 모름' };
+    var n = dayDiff(asOf, todayStr());
+    return { lv: n <= 7 ? 'g' : n <= 30 ? 'a' : 'r', days: n, txt: n <= 0 ? '오늘 조회' : '조회 ' + n + '일 전' };
+  }
+  function judgeBase(){ return (S.cur && S.cur.applyDate) || S.data.base; }
+
   function compute(){
-    var d = S.data, base = d.base;
+    var d = S.data, base = judgeBase();
+    S.DD = dataDates(d);
     S.E = Products.evaluate(d.input, base);
+    S.E0 = (S.cur && S.cur.applyDate && S.cur.applyDate !== d.base) ? Products.evaluate(d.input, d.base) : null;
     S.HI = Claims.history(d.input, base);
     S.CL = Claims.claims(d.input, base);
     S.HP = (d.meta.checkupAll || d.meta.checkup) ? HealthAnalyze(d.meta.checkupAll, d.meta.checkup, S.cur.sex || d.meta.sex) : null;
@@ -2304,15 +2348,26 @@ function HealthUI(root, H) {
   function renderCustomer(){
     var c = S.cur, d = S.data;
     var base = d ? d.base : '';
-    var h = '<div class="chead"><button class="btn back" type="button" data-act="back">‹ 목록</button><h2>' + esc(c.name) + '</h2><span class="cmeta">' + sexTxt(c.sex) + (c.birth ? ' / ' + ageOf(c.birth, base) + '세(' + birthTxt(c.birth) + ')' : '') + (base ? ' · 분석 기준일 ' + base : '') + '</span>' +
+    var h = '<div class="chead"><button class="btn back" type="button" data-act="back">‹ 목록</button><h2>' + esc(c.name) + '</h2><span class="cmeta">' + sexTxt(c.sex) + (c.birth ? ' / ' + ageOf(c.birth, base) + '세(' + birthTxt(c.birth) + ')' : '') + '</span>' +
       '<div class="cact">' + (d ? '<span class="stbadge">' + IC.ok + '분석완료</span>' : '<span class="stbadge w">파일 첨부 대기</span>') +
       (c.sample ? '' : '<button class="btn lg pri" type="button" data-act="files">' + IC.clip + (d ? '다시 분석' : '병력파악 (파일 첨부)') + '</button>') +
       (c.sample ? '' : '<button class="btn lg" type="button" data-act="edit">정보 수정</button><button class="btn lg" type="button" data-act="del">삭제</button>') + '</div></div>';
+    if (d) {
+      var DD = S.DD, F = freshOf(DD.asOf);
+      h += '<div class="dbar">' +
+        '<div class="dchip"><small>자료 조회일</small><b>' + dot(DD.asOf) + '</b><em>' + esc(DD.src) + '</em></div>' +
+        '<div class="dchip"><small>마지막 진료일</small><b>' + dot(DD.last) + '</b><em>자료상 가장 최근 병원·약국</em></div>' +
+        '<div class="dchip"><small>분석일</small><b>' + dot(DD.analyzed) + '</b><em>판정 기준일 ' + dot(judgeBase()) + '</em></div>' +
+        '<div class="dchip fr ' + F.lv + '"><small>자료 신선도</small><b>' + F.txt + '</b><em>' + (F.lv === 'g' ? '그대로 청약 가능' : F.lv === 'a' ? '그 사이 진료 여부 확인' : '재조회 권장') + '</em></div>' +
+        (c.sample ? '' : '<div class="dchip ap"><small>청약 예정일</small><input type="date" id="applyDate" value="' + esc(c.applyDate || '') + '" min="' + d.base + '" aria-label="청약 예정일">' + (c.applyDate ? '<button type="button" class="lnk" data-act="clearApply">지우기</button>' : '<em>넣으면 그날 기준으로 판정</em>') + '</div>') +
+        '</div>';
+      if (F.lv !== 'g' && DD.asOf) h += '<div class="gapban ' + F.lv + '">' + IC.warn + '<span>자료 조회일(' + dot(DD.asOf) + ') 이후 <b>' + F.days + '일</b>은 자료에 없는 기간입니다. ' + (F.lv === 'r' ? '최근 진료가 빠졌을 수 있으니 <b>심평원·공단 자료를 다시 받아 분석</b>하는 것을 권장합니다.' : '그 사이 병원·약국 방문이나 새로 먹는 약이 있는지 고객에게 확인하세요. (질문지에 자동으로 넣었습니다)') + '</span></div>';
+    }
     if (memMode) h += '<div class="membanner">이 화면에서는 기기 저장소를 쓸 수 없어, 창을 닫으면 자료가 사라집니다. PC용 파일이나 설치된 앱에서 사용하세요.</div>';
     if (d && d.excluded && d.excluded.length) h += '<div class="membanner">' + esc(d.excluded.join(', ')) + '을(를) 빼고 분석한 결과입니다. 잠금 푼 파일로 다시 분석하면 더 정확해집니다.</div>';
     if (c.sample) h += '<div class="membanner">예시 고객입니다 · 가상의 자료로 화면 구성을 보여 줍니다.</div>';
     if (!c.sample) h += '<details class="memo"' + (c.memo ? ' open' : '') + '><summary>고객 메모 <small class="note">(잠금 비밀번호로 암호화 저장)</small></summary><textarea id="memoTa" placeholder="상담 내용, 가입 희망 상품 등">' + esc(c.memo || '') + '</textarea></details>';
-    if (d && base !== todayStr() && !c.sample) h += '<div class="rebase">분석 기준일이 오늘(' + todayStr() + ')과 다릅니다. 기간 계산(3개월·N년)을 오늘 기준으로 다시 하려면 <button type="button" data-act="rebase">오늘 기준으로 다시 판정</button></div>';
+    if (d && base !== todayStr() && !c.sample && !c.applyDate) h += '<div class="rebase">분석 기준일이 오늘(' + todayStr() + ')과 다릅니다. 기간 계산(3개월·N년)을 오늘 기준으로 다시 하려면 <button type="button" data-act="rebase">오늘 기준으로 다시 판정</button></div>';
     if (!d) {
       h += '<div class="welcome" style="margin-top:2vh"><h2>파일을 첨부하고 분석을 시작하세요</h2><p>심평원·공단에서 받은 파일을 한 번에 넣으면, 모든 상품의 고지 판정표와 진료이력, 미청구 보험금, 건강 분석을 한 번에 만들어 저장합니다.</p>' +
         '<div class="steps"><div class="step"><i>1</i><b>심평원 PDF</b><span>기본진료 · 세부진료 · 처방조제 (자동차보험 진료가 있으면 함께)</span></div><div class="step"><i>2</i><b>공단 PDF</b><span>요양급여내역서 (최근 진료) · 건강검진 결과 한눈에 보기</span></div><div class="step"><i>3</i><b>투약이력 엑셀</b><span>내가 먹는 약 한눈에 — 암호를 풀고 저장한 파일</span></div></div>' +
@@ -2329,6 +2384,13 @@ function HealthUI(root, H) {
     afterRender();
   }
   function afterRender(){
+    var ad = $('applyDate');
+    if (ad) ad.addEventListener('change', async function(){
+      var v = this.value || '';
+      if (v && v < S.data.base) { toast('청약 예정일은 분석일 이후로 넣어 주세요'); this.value = S.cur.applyDate || ''; return; }
+      S.cur.applyDate = v; S.cur = await Store.saveHead(S.cur); S.list = await Store.list();
+      compute(); renderList(); renderCustomer(); toast(v ? '청약 예정일 ' + dot(v) + ' 기준으로 다시 판정했습니다' : '분석일 기준으로 돌아왔습니다');
+    });
     var ta = $('memoTa');
     if (ta) ta.addEventListener('change', async function(){ S.cur.memo = this.value; await Store.saveHead(S.cur); S.list = await Store.list(); S.cur = S.list.find(function(x){ return x.id === S.cur.id; }) || S.cur; renderList(); toast('메모를 저장했습니다'); });
   }
@@ -2336,7 +2398,15 @@ function HealthUI(root, H) {
   // ================= 고지항목 판정표 =================
   function renderProducts(){
     var E = S.E, sm = Products.summaryLine(E.products);
-    var h = '<div class="psum"><span class="chipx ' + (sm.ok ? 'ok' : 'bad') + '">' + (sm.ok ? IC.ok : IC.warn) + esc(sm.text) + '</span><span class="note">상품 카드의 <b>결과 보기</b>에서 상병별 고지 내용·고지양식·질문지를 확인하세요.</span></div>';
+    var h = '';
+    if (S.cur.applyDate && S.E0) {
+      var ch = [];
+      E.products.forEach(function(p, i){ var p0 = S.E0.products[i]; p.lines.forEach(function(l, j){ var l0 = p0.lines[j]; if (l.y !== l0.y || l.c !== l0.c) ch.push('<li><b>' + esc(p.short) + '</b> · ' + esc(l.label) + ' : ' + (l0.y + l0.c) + '건 → <b>' + (l.y + l.c) + '건</b></li>'); }); });
+      var gap = S.DD.asOf ? dayDiff(S.DD.asOf, S.cur.applyDate) : null;
+      h += '<div class="applybox"><b>청약 예정일 ' + dot(S.cur.applyDate) + ' 기준으로 판정한 결과입니다.</b>' + (gap > 0 ? ' 자료 조회일부터 청약일까지 <b>' + gap + '일</b>은 자료에 없으니 그 사이 진료를 꼭 확인하세요.' : '') +
+        (ch.length ? '<div class="note" style="margin-top:6px">분석일(' + dot(S.data.base) + ') 기준과 달라지는 항목 — 기간이 지나 빠지거나 새로 들어온 진료</div><ul>' + ch.slice(0, 12).join('') + (ch.length > 12 ? '<li>외 ' + (ch.length - 12) + '건</li>' : '') + '</ul>' : '<div class="note" style="margin-top:6px">분석일 기준과 달라지는 항목은 없습니다.</div>') + '</div>';
+    }
+    h += '<div class="psum"><span class="chipx ' + (sm.ok ? 'ok' : 'bad') + '">' + (sm.ok ? IC.ok : IC.warn) + esc(sm.text) + '</span><span class="note">상품 카드의 <b>결과 보기</b>에서 상병별 고지 내용·고지양식·질문지를 확인하세요.</span></div>';
     h += '<div class="pgrid">' + E.products.map(function(p){
       var bd = p.status === 'y' ? '<span class="bdg y">심사 필요</span>' : p.status === 'c' ? '<span class="bdg c">확인 필요</span>' : '<span class="bdg n">고지 없음</span>';
       return '<article class="pc"><div class="pc-h"><h4>' + esc(p.title) + '</h4><div class="pc-a"><button class="pb" type="button" data-pv="' + p.id + '">' + IC.search + '결과 보기</button><button class="pb" type="button" data-ps="' + p.id + '">' + IC.save + '결과 저장</button>' + bd + '</div></div><ul class="pl">' +
@@ -2461,6 +2531,7 @@ function HealthUI(root, H) {
     var qs = R.main.concat(R.check).reduce(function(a, c){ c.disc.forEach(function(x){ if (x.q && x.lv === 'c') a.push({ sec: '확인 필요', code: c.code, q: x.q }); }); return a; }, []);
     var baseQ = R.questions.filter(function(q){ return !q.code; });
     var QL = R.sick ? baseQ.concat(qs) : pid === 'drvSim' ? baseQ : R.questions;
+    if (S.DD && S.DD.asOf && S.DD.asOf < todayStr()) QL = [{ sec: '자료 공백', q: dot(addDay(S.DD.asOf, 1)) + ' 이후 오늘까지(자료 조회 이후 ' + dayDiff(S.DD.asOf, todayStr()) + '일) 병원·약국에 가셨거나 새로 드시기 시작한 약이 있나요?' }].concat(QL);
     CARD_TEXT['qs'] = QL.map(function(q, i){ return (i + 1) + '. [' + q.sec + '] ' + q.q; }).join('\n');
     CARD_TEXT['sum'] = buildSummary(R, m, meta, d.input);
     var qP = '<div class="sec-h"><h3>고객 확인 질문</h3><span>청약 전에 고객에게 그대로 물어보세요 · ' + QL.length + '개</span></div><div class="card"><ol class="qs">' +
@@ -2524,7 +2595,8 @@ function HealthUI(root, H) {
   function buildSummary(R, m, meta, input){
     var out = [];
     out.push('성명 ' + (meta.name || ''));
-    out.push('심사기준 ' + m.label + (m.sub ? ' ' + m.sub : '') + ' (분석 기준일 ' + R.base + ')');
+    out.push('심사기준 ' + m.label + (m.sub ? ' ' + m.sub : '') + ' (판정 기준일 ' + R.base + (S.cur && S.cur.applyDate ? ' · 청약 예정일' : '') + ')');
+    if (S.DD && S.DD.asOf) out.push('병력파악 기준: ' + dot(S.DD.asOf) + ' 조회 자료 (마지막 진료 ' + dot(S.DD.last) + ') · ' + dot(addDay(S.DD.asOf, 1)) + ' 이후 진료는 고객 확인 필요');
     if (S.data && S.data.excluded && S.data.excluded.length) out.push('※ ' + S.data.excluded.join(', ') + ' 제외하고 분석 — 3개월 이내 약 신규·증량은 고객 확인 필요');
     out.push('');
     out.push('3개월이내 병원이력');
@@ -2668,6 +2740,7 @@ function HealthUI(root, H) {
       var a = t.dataset.act;
       if (a === 'back') { showWelcome(); return; }
       if (a === 'new') { openCustForm(null); return; }
+      if (a === 'clearApply') { S.cur.applyDate = ''; S.cur = await Store.saveHead(S.cur); S.list = await Store.list(); compute(); renderList(); renderCustomer(); toast('분석일 기준으로 돌아왔습니다'); return; }
       if (a === 'sample') { openCustomer('sample'); return; }
       if (a === 'pvback') { S.pv = null; renderCustomer(); return; }
       if (a === 'files') { openFiles(); return; }
@@ -2788,6 +2861,7 @@ function HealthUI(root, H) {
       '<p style="color:var(--ink2)">심평원 진단·세부·처방, 공단 요양급여내역서·건강검진, 투약이력 엑셀을 한 번에 첨부하세요. 비밀번호는 생년월일(' + birthTxt(c.birth) + ')로 자동 입력합니다.' + (IS_DESKTOP ? ' 잠긴 투약이력 엑셀도 이 PC의 엑셀로 자동으로 풉니다.' : '') + '</p>' +
       '<label class="fdrop" id="fdrop" for="fIn"><b>파일을 끌어 놓거나 눌러서 선택</b><small>PDF · 엑셀(투약이력, 암호 해제한 파일) · zip 모두 가능 · 휴대폰은 zip 하나로 묶으면 편합니다</small><input id="fIn" type="file" multiple hidden></label>' +
       '<div class="fneed" id="fneed"></div><div class="flist" id="flist"></div><div class="prog" id="fprog" hidden><i></i></div>' +
+      (S.data && S.DD ? '<div class="prevrec">지난 병력파악 · 자료 조회 <b>' + dot(S.DD.asOf) + '</b> · 마지막 진료 ' + dot(S.DD.last) + ' · 분석 ' + dot(S.DD.analyzed) + '</div>' : '') +
       (S.data ? '<div class="fwarn">다시 분석하면 이 고객의 이전 분석 결과를 새 자료로 바꿉니다. 필요한 파일을 모두 다시 넣어 주세요.</div>' : '') +
       '<div class="ferr" id="ffErr"></div><div class="fchoice" id="fChoice" hidden></div><div class="mrow"><button class="btn lg" type="button" id="fClear" style="margin-right:auto">모두 빼기</button><button class="btn lg" type="button" id="fCancel2">닫기</button><button class="go" type="button" id="fGo">분석 시작</button></div>', 'wide fbox');
     drawFiles('');
@@ -2824,7 +2898,18 @@ function HealthUI(root, H) {
     var badMsg = function(list){ return '- ' + list.map(function(n){ return n + ' (' + R.states[n].kind + ')'; }).join('\n- '); };
     if (otherBad.length) { err.textContent = '읽지 못한 파일이 있어 분석을 멈췄습니다. 빠지는 자료 없이 분석하려면 아래 파일을 고친 뒤 다시 넣어 주세요.\n' + badMsg(badF) + (msgs.length ? '\n\n' + msgs.join('\n') : ''); return; }
     if (!R.ok) { err.textContent = msgs.concat(['인식된 진료내역 파일이 없습니다. 심평원 기본진료정보 PDF를 포함해 주세요.']).join('\n'); return; }
-    var go = async function(excluded){
+    var go = function(excluded){
+      var nd = dataDates({ input: R.input, base: todayStr() });
+      if (S.data && S.DD && S.DD.asOf && nd.asOf && nd.asOf < S.DD.asOf) {
+        showChoice('<b>새로 넣은 자료가 지난번 자료보다 오래되었습니다.</b><br>새 자료 조회일 ' + dot(nd.asOf) + ' / 지난 자료 조회일 ' + dot(S.DD.asOf) + '<br><span class="note">최근 진료가 빠질 수 있습니다. 파일을 잘못 고른 건 아닌지 확인하세요.</span>', [
+          { label: '파일 다시 고르기', fn: hideChoice },
+          { label: '그래도 분석', pri: true, fn: function(){ hideChoice(); go2(excluded); } }
+        ]);
+        return;
+      }
+      go2(excluded);
+    };
+    var go2 = async function(excluded){
       var warn = [];
       if (R.meta.name && R.meta.name.replace(/\s/g, '') !== S.cur.name.replace(/\s/g, '')) warn.push('파일 속 성명(' + R.meta.name + ')이 고객 이름(' + S.cur.name + ')과 다릅니다.');
       if (R.meta.sex && S.cur.sex && R.meta.sex !== S.cur.sex) warn.push('파일 속 성별(' + sexTxt(R.meta.sex) + ')이 등록한 성별(' + sexTxt(S.cur.sex) + ')과 다릅니다.');
@@ -2867,6 +2952,7 @@ function HealthUI(root, H) {
     if (S.cur.sample) return;
     var sm = Products.summaryLine(S.E.products);
     S.cur.summary = sm.text; S.cur.sumOk = sm.ok; S.cur.base = S.data.base;
+    var DDx = dataDates(S.data); S.cur.asOf = DDx.asOf; S.cur.lastVisit = DDx.last;
     S.cur = await Store.saveHead(S.cur);
     S.list = await Store.list();
   }
