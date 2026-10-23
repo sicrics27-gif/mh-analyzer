@@ -2499,13 +2499,14 @@ function HealthUI(root, H) {
     btn.disabled = false; btn.textContent = '분석 시작';
     var msgs = [];
     if (R.needPw) msgs.push('비밀번호가 맞지 않는 PDF가 있습니다. 고객 생년월일(' + birthTxt(S.cur.birth) + ')을 확인하세요.');
-    if (R.sheetPw) msgs.push('투약이력 엑셀에 비밀번호가 걸려 있습니다. 엑셀에서 생년월일로 연 뒤 "다른 이름으로 저장 → 도구 → 일반 옵션"에서 암호를 지우고 저장한 파일을 넣어 주세요.');
+    if (R.sheetPw) msgs.push('투약이력 엑셀에 비밀번호가 걸려 있습니다. PC에서 "투약암호풀기" 아이콘 위로 엑셀 파일을 끌어다 놓으면 암호 없는 파일(_unlocked.xlsx)이 만들어집니다. 그 파일로 바꿔 넣어 주세요. (엑셀에서 직접: 생년월일로 열기 → 다른 이름으로 저장 → 도구 → 일반 옵션 → 암호 지우기)');
+    var badF = Object.keys(R.states).filter(function(n){ return R.states[n].bad; });
+    if (badF.length) { err.textContent = '읽지 못한 파일이 있어 분석을 멈췄습니다. 빠지는 자료 없이 분석하려면 아래 파일을 고친 뒤 다시 넣어 주세요.\n- ' + badF.map(function(n){ return n + ' (' + R.states[n].kind + ')'; }).join('\n- ') + (msgs.length ? '\n\n' + msgs.join('\n') : ''); return; }
     if (!R.ok) { err.textContent = msgs.concat(['인식된 진료내역 파일이 없습니다. 심평원 기본진료정보 PDF를 포함해 주세요.']).join('\n'); return; }
     var warn = [];
     if (R.meta.name && R.meta.name.replace(/\s/g, '') !== S.cur.name.replace(/\s/g, '')) warn.push('파일 속 성명(' + R.meta.name + ')이 고객 이름(' + S.cur.name + ')과 다릅니다.');
     if (R.meta.sex && S.cur.sex && R.meta.sex !== S.cur.sex) warn.push('파일 속 성별(' + sexTxt(R.meta.sex) + ')이 등록한 성별(' + sexTxt(S.cur.sex) + ')과 다릅니다.');
     if (warn.length && !confirm(warn.join('\n') + '\n\n다른 고객의 파일이 섞이지 않았는지 확인하세요. 그래도 이 고객으로 분석할까요?')) return;
-    if (msgs.length && !confirm(msgs.join('\n') + '\n\n읽지 못한 파일을 빼고 분석할까요?')) { err.textContent = msgs.join('\n'); return; }
     var data = { input: R.input, meta: R.meta, base: todayStr(), analyzedAt: Date.now(), files: FILES.map(function(f){ return { name: f.name, kind: (R.states[f.name] || {}).kind || '' }; }) };
     S.data = data; compute();
     S.cur.status = 'done';

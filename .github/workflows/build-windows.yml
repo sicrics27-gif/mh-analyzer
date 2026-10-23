@@ -23,8 +23,8 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force out | Out-Null
-          Copy-Item src-tauri/target/release/medical-history-analyzer.exe "out/병력고지분석기.exe"
-          Copy-Item src-tauri/target/release/bundle/nsis/*.exe out/
+          Copy-Item src-tauri/target/release/medical-history-analyzer.exe out/MH-Analyzer.exe
+          Get-ChildItem src-tauri/target/release/bundle/nsis/*.exe | Select-Object -First 1 | Copy-Item -Destination out/MH-Analyzer-setup.exe
       - uses: actions/upload-artifact@v4
         with:
           name: 병력고지분석기-windows
