@@ -18,6 +18,8 @@ jobs:
         run: cargo install tauri-cli --version "^2" --locked
       - name: exe 빌드
         working-directory: src-tauri
+        env:
+          GOOGLE_DESKTOP_SECRET: ${{ secrets.GOOGLE_DESKTOP_SECRET }}
         run: cargo tauri build
       - name: 실행 파일 모으기
         shell: pwsh

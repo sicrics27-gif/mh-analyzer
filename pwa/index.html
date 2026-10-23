@@ -448,6 +448,17 @@ table.cl td.r,table.ht td.n,.gc b,.pl li .n{font-family:var(--f-body);font-varia
 .fchoice .go{height:42px;padding:0 18px;font-size:15px}
 .mbox{overflow:auto;max-height:calc(100dvh - 32px)}
 
+/* 구글 동기화 */
+.ssync{display:flex;flex-direction:column;gap:6px;border-top:1px solid color-mix(in srgb,var(--side-ink) 15%,transparent);padding-top:10px}
+.ssync small{color:var(--side-mute);font-size:12px;line-height:1.5}
+.ssync .sbtn{height:40px;font-size:13.5px}
+.ss-row{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;font-weight:600}
+.ss-row svg{margin-top:2px;color:#7EE2A8}
+.ss-row b.w{color:#FFD27A}
+.ss-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.ss-btns button{height:32px;border-radius:8px;border:1px solid color-mix(in srgb,var(--side-ink) 20%,transparent);background:transparent;color:var(--side-ink);font-size:12.5px;cursor:pointer}
+.ss-btns button:disabled{opacity:.5}
+
 </style>
 </head>
 <body>
@@ -459,9 +470,10 @@ table.cl td.r,table.ht td.n,.gc b,.pl li .n{font-family:var(--f-body);font-varia
     <div class="sqw"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" class="sq" type="search" placeholder="고객 검색" autocomplete="off"></div>
     <div class="sfilt" id="sfilt"><button id="fAll" type="button" data-f="all">전체</button><button id="fDone" type="button" data-f="done">완료</button><button id="fWait" type="button" data-f="wait">대기</button></div>
     <div class="clist" id="clist"></div>
+    <div class="ssync" id="ssync"></div>
     <div class="sfoot"><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button></div>
     <input type="file" id="bkFile" accept=".json,application/json" hidden>
-    <div class="slock"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6 10V8a6 6 0 1 1 12 0v2h1v12H5V10zm2 0h8V8a4 4 0 1 0-8 0z"/></svg>고객 정보는 이 기기에만 암호화 저장 · 서버 전송 없음</div>
+    <div class="slock"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6 10V8a6 6 0 1 1 12 0v2h1v12H5V10zm2 0h8V8a4 4 0 1 0-8 0z"/></svg>고객 정보는 잠금 비밀번호로 암호화 저장</div>
     <div id="memBan" class="membanner" hidden>저장소를 쓸 수 없는 화면입니다 · 창을 닫으면 사라집니다</div>
   </aside>
   <main class="main" id="main"></main>
@@ -1827,13 +1839,52 @@ function HealthUI(root, H) {
     touch();
     var rows = await all('idx');
     var out = [];
-    for (var i = 0; i < rows.length; i++) { try { out.push(await dec(rows[i])); } catch (e) { } }
+    for (var i = 0; i < rows.length; i++) { try { var h = await dec(rows[i]); if (!h.deleted) out.push(h); } catch (e) { } }
     return out.sort(function (a, b) { return (b.updated || 0) - (a.updated || 0); });
   }
-  async function saveHead(h) { touch(); h.updated = Date.now(); if (!h.id) { h.id = uid(); h.created = h.updated; } await put('idx', h.id, await enc(h)); return h; }
+  var onChange = null;
+  function changed() { if (onChange) try { onChange(); } catch (e) { } }
+  async function saveHead(h) { touch(); h.updated = Date.now(); if (!h.id) { h.id = uid(); h.created = h.updated; } await put('idx', h.id, await enc(h)); changed(); return h; }
   async function saveData(id, data) { touch(); await put('data', id, await enc(data)); }
   async function loadData(id) { touch(); var b = await get('data', id); return b ? dec(b) : null; }
-  async function remove(id) { await del('idx', id); await del('data', id); }
+  // 삭제: 다른 기기에도 삭제가 전달되도록 '삭제 표시'만 남김
+  async function remove(id) { await put('idx', id, await enc({ id: id, deleted: true, updated: Date.now() })); await del('data', id); changed(); }
+
+  // ---- 동기화용: 암호화된 그대로 주고받기 ----
+  async function rawAll() {
+    var keys = await tx('idx', 'readonly', function (s) { return req(s.getAllKeys()); });
+    var out = [];
+    for (var i = 0; i < keys.length; i++) {
+      var hb = await get('idx', keys[i]); if (!hb) continue;
+      var h; try { h = await dec(hb); } catch (e) { continue; }
+      out.push({ id: keys[i], updated: h.updated || 0, deleted: !!h.deleted, head: hb });
+    }
+    return out;
+  }
+  async function rawData(id) { return get('data', id); }
+  async function putRaw(id, headBox, dataBox) {
+    var h = await dec(headBox);   // 같은 열쇠인지 확인 (안 맞으면 오류)
+    await put('idx', id, headBox);
+    if (dataBox) { await dec(dataBox); await put('data', id, dataBox); } else await del('data', id);
+    return h;
+  }
+  async function vault() { return get('meta', 'vault'); }
+  // 다른 기기의 잠금(구글에 있는 것)으로 이 기기를 맞춤: 같은 비밀번호·같은 열쇠
+  async function adoptVault(remote, pin) {
+    var k = await derive(pin, ub64(remote.salt));
+    try { if ((await dec(remote.check, k)) !== 'ok') return false; } catch (e) { return false; }
+    var keys = await tx('idx', 'readonly', function (s) { return req(s.getAllKeys()); });
+    for (var i = 0; i < keys.length; i++) {
+      var hb = await get('idx', keys[i]); var db = await get('data', keys[i]);
+      try {
+        await put('idx', keys[i], await enc(await dec(hb), k));
+        if (db) await put('data', keys[i], await enc(await dec(db), k));
+      } catch (e) { }
+    }
+    await put('meta', 'vault', remote);
+    key = k; touch();
+    return true;
+  }
 
   // 백업: 지금 잠금 비밀번호로 암호화된 그대로 내보냄
   async function exportBackup() {
@@ -1865,7 +1916,168 @@ function HealthUI(root, H) {
     status: status, setup: setup, unlock: unlock, lock: lock, wipe: wipe,
     list: list, saveHead: saveHead, saveData: saveData, loadData: loadData, remove: remove,
     exportBackup: exportBackup, importBackup: importBackup,
+    rawAll: rawAll, rawData: rawData, putRaw: putRaw, vault: vault, adoptVault: adoptVault,
+    onChange: function (f) { onChange = f; }, isOpen: function () { return !!key; },
     isMemory: function () { return !!mem; }, onLock: function (f) { onLock = f; }
+  };
+})(this);
+
+</script>
+<script>
+// 구글 드라이브 동기화: 앱 전용 숨김 폴더(appDataFolder)에 '암호화된 그대로' 고객 자료를 올리고 받습니다.
+// 내용은 잠금 비밀번호로 암호화되어 있어 구글도 읽을 수 없습니다.
+(function (root) {
+  var CFG = { webClientId: '406779183746-5oal4875a7jnvvml7f8c91su68mfrsv0.apps.googleusercontent.com' };
+  var SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
+  var DRIVE = 'https://www.googleapis.com/drive/v3/files', UPLOAD = 'https://www.googleapis.com/upload/drive/v3/files';
+  var IS_DESKTOP = !!(root.__TAURI__ && root.__TAURI__.core && root.__TAURI__.core.invoke);
+  function inv(cmd, args) { return root.__TAURI__.core.invoke(cmd, args || {}); }
+
+  function ls(k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem(k) || 'null'); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; } }
+  var state = ls('mhs_sync') || { on: false, last: 0 };
+  function save() { ls('mhs_sync', state); }
+
+  // ---------- 로그인 / 접근 토큰 ----------
+  var tok = null, tokExp = 0, gisP = null, tc = null;
+  function supported() {
+    if (IS_DESKTOP) return true;
+    if (/^__/.test(CFG.webClientId)) return false;
+    return /^https:$/.test(location.protocol) && !/claude\.ai|claudeusercontent/.test(location.hostname);
+  }
+  function loadGis() {
+    if (gisP) return gisP;
+    gisP = new Promise(function (res, rej) {
+      if (root.google && root.google.accounts && root.google.accounts.oauth2) { res(); return; }
+      var s = document.createElement('script'); s.src = 'https://accounts.google.com/gsi/client'; s.async = true;
+      s.onload = function () { res(); }; s.onerror = function () { gisP = null; rej(new Error('구글 로그인 모듈을 불러오지 못했습니다. 인터넷 연결을 확인하세요.')); };
+      document.head.appendChild(s);
+    });
+    return gisP;
+  }
+  // 웹: 반드시 버튼을 누른 직후에 호출 (팝업 차단 방지)
+  function loginWeb(silent) {
+    return new Promise(function (res, rej) {
+      var run = function () {
+        tc = root.google.accounts.oauth2.initTokenClient({
+          client_id: CFG.webClientId, scope: SCOPE,
+          callback: function (r) { if (r && r.access_token) { tok = r.access_token; tokExp = Date.now() + (r.expires_in - 60) * 1000; res(tok); } else rej(new Error((r && r.error) || '로그인 취소')); },
+          error_callback: function (e) { rej(new Error(e && e.type === 'popup_closed' ? '로그인 창이 닫혔습니다' : (e && e.message) || '로그인 실패')); }
+        });
+        tc.requestAccessToken({ prompt: silent ? '' : 'consent' });
+      };
+      if (root.google && root.google.accounts && root.google.accounts.oauth2) run();
+      else loadGis().then(run, rej);
+    });
+  }
+  async function token() {
+    if (IS_DESKTOP) { try { return await inv('google_token'); } catch (e) { var m = String(e && e.message || e); var er = new Error(/NEED_LOGIN/.test(m) ? 'NEED_LOGIN' : m); if (/NEED_LOGIN/.test(m)) er.code = 'NEED_LOGIN'; throw er; } }
+    if (tok && Date.now() < tokExp) return tok;
+    var e = new Error('NEED_LOGIN'); e.code = 'NEED_LOGIN'; throw e;
+  }
+  async function connect() {
+    if (IS_DESKTOP) { await inv('google_login'); }
+    else { await loginWeb(false); }
+    state.on = true; save();
+  }
+  // 잠금 해제 버튼을 누를 때 함께 호출: 웹은 조용히 토큰 받기
+  function warm() { if (!state.on || IS_DESKTOP || !supported()) return; if (tok && Date.now() < tokExp) return; loginWeb(true).catch(function () { }); }
+  async function disconnect() {
+    if (IS_DESKTOP) { try { await inv('google_logout'); } catch (e) { } }
+    else if (tok && root.google && root.google.accounts) { try { root.google.accounts.oauth2.revoke(tok, function () { }); } catch (e) { } }
+    tok = null; tokExp = 0; state = { on: false, last: 0 }; save();
+  }
+
+  // ---------- 드라이브 ----------
+  async function api(url, opt) {
+    var t = await token();
+    opt = opt || {}; opt.headers = Object.assign({ Authorization: 'Bearer ' + t }, opt.headers || {});
+    var r = await fetch(url, opt);
+    if (r.status === 401) { tok = null; var e = new Error('NEED_LOGIN'); e.code = 'NEED_LOGIN'; throw e; }
+    if (!r.ok) throw new Error('구글 드라이브 오류 ' + r.status);
+    return r;
+  }
+  async function listFiles() {
+    var out = [], page = '';
+    do {
+      var r = await api(DRIVE + '?spaces=appDataFolder&pageSize=1000&fields=nextPageToken,files(id,name,appProperties)' + (page ? '&pageToken=' + encodeURIComponent(page) : ''));
+      var j = await r.json(); out = out.concat(j.files || []); page = j.nextPageToken || '';
+    } while (page);
+    return out;
+  }
+  function multipart(meta, body) {
+    var b = 'mhs' + Math.random().toString(36).slice(2);
+    return { type: 'multipart/related; boundary=' + b, body: '--' + b + '\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n' + JSON.stringify(meta) + '\r\n--' + b + '\r\nContent-Type: application/json\r\n\r\n' + body + '\r\n--' + b + '--' };
+  }
+  async function upload(fileId, name, props, body) {
+    var meta = fileId ? { appProperties: props } : { name: name, parents: ['appDataFolder'], appProperties: props };
+    var m = multipart(meta, body);
+    var r = await api((fileId ? UPLOAD + '/' + fileId : UPLOAD) + '?uploadType=multipart&fields=id', { method: fileId ? 'PATCH' : 'POST', headers: { 'Content-Type': m.type }, body: m.body });
+    return (await r.json()).id;
+  }
+  async function download(fileId) { return (await api(DRIVE + '/' + fileId + '?alt=media')).text(); }
+
+  // ---------- 동기화 ----------
+  var running = null, listeners = [];
+  function emit(s) { listeners.forEach(function (f) { try { f(s); } catch (e) { } }); }
+  // 결과: {status:'ok', up, down} | {status:'needPin', remoteVault} | {status:'needLogin'} | {status:'error', message}
+  async function run(opts) {
+    if (running) return running;
+    running = (async function () {
+      emit({ status: 'running' });
+      try {
+        var files = await listFiles();
+        var byName = {}; files.forEach(function (f) { byName[f.name] = f; });
+        var local = await Store.vault();
+        if (!byName['vault.json']) {
+          await upload(null, 'vault.json', { salt: local.salt }, JSON.stringify(local));
+        } else {
+          var rv = byName['vault.json'];
+          if (!rv.appProperties || rv.appProperties.salt !== local.salt) {
+            var remote = JSON.parse(await download(rv.id));
+            if (remote.salt !== local.salt) {
+              if (opts && opts.pin) { if (!(await Store.adoptVault(remote, opts.pin))) return { status: 'badPin' }; }
+              else return { status: 'needPin' };
+            }
+          }
+        }
+        var mine = await Store.rawAll(), up = 0, down = 0;
+        var mineById = {}; mine.forEach(function (x) { mineById[x.id] = x; });
+        // 받기
+        var changedIds = [];
+        for (var i = 0; i < files.length; i++) {
+          var f = files[i], m = /^c_(.+)\.json$/.exec(f.name); if (!m) continue;
+          var id = m[1], ru = +((f.appProperties || {}).u || 0), lx = mineById[id];
+          if (!lx || ru > lx.updated) {
+            var o = JSON.parse(await download(f.id));
+            try { await Store.putRaw(id, o.h, o.d || null); down++; changedIds.push(id); } catch (e) { }
+          }
+        }
+        // 올리기
+        for (var j = 0; j < mine.length; j++) {
+          var x = mine[j], rf = byName['c_' + x.id + '.json'], rup = rf ? +((rf.appProperties || {}).u || 0) : -1;
+          if (x.updated > rup) {
+            var d = x.deleted ? null : await Store.rawData(x.id);
+            await upload(rf ? rf.id : null, 'c_' + x.id + '.json', { u: String(x.updated) }, JSON.stringify({ h: x.head, d: d || null }));
+            up++;
+          }
+        }
+        state.last = Date.now(); save();
+        var res = { status: 'ok', up: up, down: down, changed: changedIds };
+        emit(res); return res;
+      } catch (e) {
+        var r2 = e && e.code === 'NEED_LOGIN' ? { status: 'needLogin' } : { status: 'error', message: e && e.message || String(e) };
+        emit(r2); return r2;
+      } finally { running = null; }
+    })();
+    return running;
+  }
+  var t = null;
+  function soon() { if (!state.on) return; clearTimeout(t); t = setTimeout(function () { if (Store.isOpen()) run(); }, 2500); }
+
+  root.Sync = {
+    cfg: CFG, supported: supported, isOn: function () { return !!state.on; }, last: function () { return state.last; },
+    isDesktop: IS_DESKTOP, connect: connect, disconnect: disconnect, warm: warm, run: run, soon: soon,
+    loginWeb: loginWeb, on: function (f) { listeners.push(f); }
   };
 })(this);
 
@@ -1891,6 +2103,7 @@ function HealthUI(root, H) {
     doc:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h7M9 17h7"/></svg>',
     won:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l3 10 3-10 3 10 3-10 3 10 3-10M2 11h20M2 14h20"/></svg>',
     heart:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20s-8-5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 9c0 6-8 11-8 11z"/><path d="M4 12h4l2-3 3 6 2-3h5"/></svg>',
+    cloud:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 18h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.6 1.5A3.3 3.3 0 0 0 7 18z"/><path d="M12 11v5M9.5 13.5 12 11l2.5 2.5"/></svg>',
     shield:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5zm-1 13-4-4 1.4-1.4L11 12.2l4.6-4.6L17 9z"/></svg>'
   };
   var L = { pdfjsLib: window.pdfjsLib, XLSX: window.XLSX, PdfTable: window.PdfTable, Analyzer: window.Analyzer };
@@ -1921,6 +2134,7 @@ function HealthUI(root, H) {
     var p1 = $('pin1'); if (p1) setTimeout(function(){ p1.focus(); }, 50);
     var go = $('lgo'); if (!go) return;
     var submit = async function(){
+      try { if (window.Sync && st !== 'new') Sync.warm(); } catch(e){}
       var a = $('pin1').value, err = $('lerr');
       if (st === 'new') {
         if (a.length < 4) { err.textContent = '4자리 이상 입력하세요.'; return; }
@@ -1950,7 +2164,80 @@ function HealthUI(root, H) {
     $('memBan').hidden = !memMode;
     S.list = await Store.list();
     renderList(); showWelcome();
+    drawSync();
+    if (Sync.isOn()) syncNow();
   }
+
+  // ================= 구글 동기화 =================
+  var syncSt = null;
+  function timeTxt(t){ if (!t) return ''; var d = new Date(t); var p = function(n){ return String(n).padStart(2,'0'); }; return (d.toDateString() === new Date().toDateString() ? '' : (d.getMonth()+1) + '/' + d.getDate() + ' ') + p(d.getHours()) + ':' + p(d.getMinutes()); }
+  function drawSync(){
+    var box = $('ssync'); if (!box) return;
+    if (!Sync.supported()) { box.innerHTML = '<small>구글 동기화는 휴대폰 앱과 PC 프로그램에서 쓸 수 있습니다.</small>'; return; }
+    if (!Sync.isOn()) { box.innerHTML = '<button type="button" class="sbtn" data-sync="connect">' + IC.cloud + '구글 계정 연결 (PC·휴대폰 동기화)</button>'; return; }
+    var st = syncSt || {}, line;
+    if (st.status === 'running') line = '동기화 중…';
+    else if (st.status === 'needLogin') line = '<b class="w">구글 로그인이 필요합니다</b>';
+    else if (st.status === 'error') line = '<b class="w">동기화 실패</b> · ' + esc(st.message || '');
+    else line = Sync.last() ? '마지막 동기화 ' + timeTxt(Sync.last()) : '아직 동기화 전';
+    box.innerHTML = '<div class="ss-row">' + IC.cloud + '<span>구글 동기화 켜짐<br><small>' + line + '</small></span></div><div class="ss-btns">' +
+      (st.status === 'needLogin' ? '<button type="button" data-sync="login">로그인</button>' : '<button type="button" data-sync="now"' + (st.status === 'running' ? ' disabled' : '') + '>지금 동기화</button>') +
+      '<button type="button" data-sync="off">연결 해제</button></div>';
+  }
+  async function syncNow(opts){
+    syncSt = { status: 'running' }; drawSync();
+    var r = await Sync.run(opts);
+    syncSt = r; drawSync();
+    if (r.status === 'needPin') { askSyncPin(); return r; }
+    if (r.status === 'badPin') { askSyncPin('비밀번호가 맞지 않습니다. 다른 기기에서 쓰는 잠금 비밀번호를 입력하세요.'); return r; }
+    if (r.status === 'ok' && r.down) {
+      S.list = await Store.list(); renderList();
+      if (S.cur && !S.cur.sample && r.changed.indexOf(S.cur.id) >= 0) {
+        if (S.list.some(function(x){ return x.id === S.cur.id; })) openCustomer(S.cur.id); else showWelcome();
+      }
+      toast('구글에서 고객 ' + r.down + '명의 자료를 받아왔습니다');
+    }
+    return r;
+  }
+  function askSyncPin(msg){
+    openDlg('<h4>' + IC.cloud + ' 다른 기기와 잠금 비밀번호 맞추기</h4><div class="form">' +
+      '<p style="margin:0;color:var(--ink2)">이 구글 계정에는 다른 기기에서 올린 고객 자료가 있습니다. 그 기기에서 쓰는 <b>잠금 비밀번호</b>를 입력하면, 이 기기도 같은 비밀번호로 바뀌고 자료를 합칩니다.<br>이 기기에 있던 고객 자료는 그대로 남아 함께 합쳐집니다.</p>' +
+      '<input id="sPin" type="password" inputmode="numeric" placeholder="다른 기기의 잠금 비밀번호" autocomplete="off"><div class="ferr" id="sErr">' + esc(msg || '') + '</div></div>' +
+      '<div class="mrow"><button class="btn lg" type="button" id="sCancel">나중에</button><button class="go" type="button" id="sOk">맞추고 동기화</button></div>');
+    setTimeout(function(){ $('sPin').focus(); }, 30);
+    $('sCancel').onclick = function(){ closeDlg(); };
+    $('sOk').onclick = async function(){
+      var pin = $('sPin').value; if (!pin) { $('sErr').textContent = '비밀번호를 입력하세요.'; return; }
+      this.disabled = true; this.textContent = '맞추는 중…';
+      closeDlg();
+      var r = await syncNow({ pin: pin });
+      if (r.status === 'ok') { S.list = await Store.list(); renderList(); toast('이제 이 기기도 다른 기기와 같은 잠금 비밀번호를 씁니다'); }
+    };
+  }
+  function openSyncConnect(){
+    openDlg('<h4>' + IC.cloud + ' 구글 계정으로 동기화</h4><div class="form" style="font-size:14px;line-height:1.7">' +
+      '<div>연결하면 고객 등록·분석·메모가 강남혁 님 구글 드라이브의 <b>앱 전용 숨김 공간</b>에 자동으로 올라가고, 같은 구글 계정을 연결한 PC·휴대폰에서 자동으로 받아옵니다.</div>' +
+      '<div class="safe">' + IC.lock + '<span>올리기 전에 <b>잠금 비밀번호로 암호화</b>합니다. 구글을 포함해 누구도 내용을 볼 수 없고, 드라이브 화면에도 보이지 않습니다. 모든 기기는 같은 잠금 비밀번호를 쓰게 됩니다.</span></div>' +
+      '<div class="note">고객 개인정보를 외부 저장소에 보관하는 것에 대한 회사 규정이 있다면 확인 후 사용하세요. 언제든 연결 해제할 수 있습니다.</div>' +
+      '<div class="ferr" id="cErr"></div></div><div class="mrow"><button class="btn lg" type="button" id="cCancel">취소</button><button class="go" type="button" id="cOk">구글 계정 연결</button></div>');
+    $('cCancel').onclick = closeDlg;
+    $('cOk').onclick = function(){
+      var b = this; b.disabled = true; b.textContent = Sync.isDesktop ? '브라우저에서 로그인하세요…' : '연결 중…';
+      Sync.connect().then(function(){ closeDlg(); drawSync(); toast('구글 계정을 연결했습니다'); syncNow(); }, function(e){ b.disabled = false; b.textContent = '구글 계정 연결'; $('cErr').textContent = '연결하지 못했습니다: ' + (e && e.message ? e.message : e); });
+    };
+  }
+  document.addEventListener('click', function(e){
+    var b = e.target.closest('[data-sync]'); if (!b) return;
+    var a = b.dataset.sync;
+    if (a === 'connect') openSyncConnect();
+    else if (a === 'now') syncNow();
+    else if (a === 'login') (Sync.isDesktop ? Sync.connect() : Sync.loginWeb(true)).then(function(){ syncNow(); }, function(er){ toast('로그인하지 못했습니다: ' + (er && er.message || er)); });
+    else if (a === 'off') { if (!confirm('구글 동기화를 끌까요? 이 기기의 고객 자료는 그대로 남고, 구글에 올라간 암호화 자료도 지워지지 않습니다.')) return; Sync.disconnect().then(function(){ syncSt = null; drawSync(); toast('구글 동기화를 껐습니다'); }); }
+  });
+  Store.onChange(function(){ Sync.soon(); });
+  Sync.on(function(st){ if (st.status === 'running' || st.status === 'ok') { syncSt = st; drawSync(); } });
+  setInterval(function(){ if (Sync.isOn() && Store.isOpen() && document.visibilityState === 'visible') syncNow(); }, 5 * 60 * 1000);
+  document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'visible' && Sync.isOn() && Store.isOpen()) Sync.soon(); });
 
   // ================= 고객 목록 =================
   function ageOf(birth, base){
@@ -2024,7 +2311,7 @@ function HealthUI(root, H) {
     if (memMode) h += '<div class="membanner">이 화면에서는 기기 저장소를 쓸 수 없어, 창을 닫으면 자료가 사라집니다. PC용 파일이나 설치된 앱에서 사용하세요.</div>';
     if (d && d.excluded && d.excluded.length) h += '<div class="membanner">' + esc(d.excluded.join(', ')) + '을(를) 빼고 분석한 결과입니다. 잠금 푼 파일로 다시 분석하면 더 정확해집니다.</div>';
     if (c.sample) h += '<div class="membanner">예시 고객입니다 · 가상의 자료로 화면 구성을 보여 줍니다.</div>';
-    if (!c.sample) h += '<details class="memo"' + (c.memo ? ' open' : '') + '><summary>고객 메모 <small class="note">(이 기기에만 암호화 저장)</small></summary><textarea id="memoTa" placeholder="상담 내용, 가입 희망 상품 등">' + esc(c.memo || '') + '</textarea></details>';
+    if (!c.sample) h += '<details class="memo"' + (c.memo ? ' open' : '') + '><summary>고객 메모 <small class="note">(잠금 비밀번호로 암호화 저장)</small></summary><textarea id="memoTa" placeholder="상담 내용, 가입 희망 상품 등">' + esc(c.memo || '') + '</textarea></details>';
     if (d && base !== todayStr() && !c.sample) h += '<div class="rebase">분석 기준일이 오늘(' + todayStr() + ')과 다릅니다. 기간 계산(3개월·N년)을 오늘 기준으로 다시 하려면 <button type="button" data-act="rebase">오늘 기준으로 다시 판정</button></div>';
     if (!d) {
       h += '<div class="welcome" style="margin-top:2vh"><h2>파일을 첨부하고 분석을 시작하세요</h2><p>심평원·공단에서 받은 파일을 한 번에 넣으면, 모든 상품의 고지 판정표와 진료이력, 미청구 보험금, 건강 분석을 한 번에 만들어 저장합니다.</p>' +
