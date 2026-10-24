@@ -1103,6 +1103,28 @@ table.ctt .due{color:var(--red);font-weight:700}
 .gst span{display:flex;flex-direction:column;min-width:0;flex:1}.gst b{font-weight:600;color:var(--side-ink)}.gst small{color:var(--side-mute);font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .gst button{border:1px solid rgba(255,255,255,.14);background:transparent;color:var(--side-ink);border-radius:8px;height:28px;min-width:30px;padding:0 8px;cursor:pointer;font:inherit;font-size:13px}
 .gst.bad button{border-color:#FF8A80;color:#FFB4AB}
+/* ===== 안쪽 화면: AFG 콘크리트 배경 (어두운 화면) ===== */
+:root[data-theme="dark"]{
+  --bg:#17191d; --paper:rgba(22,25,31,.84); --soft:rgba(255,255,255,.045); --line:rgba(255,255,255,.09);
+  --ink:#ECEFF4; --ink2:#B4BBC8; --mute:#838B9A;
+  --accent:#DCE3F0; --accent-soft:rgba(255,255,255,.07); --on-accent:#111318;
+}
+:root[data-theme="dark"] body{background:#17191d url(lib/bg-main.jpg) center/cover fixed no-repeat}
+:root[data-theme="dark"] .shell,:root[data-theme="dark"] .main{background:transparent}
+:root[data-theme="dark"] .ptabs{background:rgba(23,25,29,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+:root[data-theme="dark"] .pc,:root[data-theme="dark"] .dchip,:root[data-theme="dark"] .tw,:root[data-theme="dark"] .step,:root[data-theme="dark"] .memo,:root[data-theme="dark"] .empty,:root[data-theme="dark"] .notes,:root[data-theme="dark"] .kgen,:root[data-theme="dark"] .fcard,:root[data-theme="dark"] .cvc,:root[data-theme="dark"] .lgform,:root[data-theme="dark"] .klog,:root[data-theme="dark"] .kcmp,:root[data-theme="dark"] .gc{backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+:root[data-theme="dark"] .mbox{background:#1b1e24}
+:root[data-theme="dark"] .go,:root[data-theme="dark"] .btn.pri{background:var(--ocean);color:#fff;border-color:var(--ocean)}
+:root[data-theme="dark"] .go:hover{background:#3D78FF}
+:root[data-theme="dark"] .welcome .wbrand{display:none}
+:root[data-theme="dark"] .welcome{margin-top:4vh}
+:root[data-theme="dark"] .chead h2::before{background:rgba(255,255,255,.08);color:var(--ocean2)}
+:root[data-theme="dark"] .cc-stage button[aria-pressed="true"],:root[data-theme="dark"] .gseg button[aria-pressed="true"],:root[data-theme="dark"] .ctf button[aria-pressed="true"]{background:var(--ocean);color:#fff}
+:root[data-theme="dark"] .ctb.call{background:var(--ocean);border-color:var(--ocean);color:#fff}
+:root[data-theme="dark"] table.t th,:root[data-theme="dark"] table.ht thead th,:root[data-theme="dark"] table.cl thead th{background:rgba(255,255,255,.03)}
+:root[data-theme="dark"] .khero,:root[data-theme="dark"] .cvhero{border:1px solid rgba(255,255,255,.08)}
+:root[data-theme="dark"] .toast{background:#ECEFF4;color:#111318}
+:root[data-theme="dark"] .ktxt{background:#1E1B13;color:#F1EBD9}
 
 </style>
 </head>
@@ -1118,7 +1140,7 @@ table.ctt .due{color:var(--red);font-weight:700}
     <div class="clist" id="clist"></div>
     <div class="sclip" id="sclip" hidden></div>
     <div class="ssync" id="ssync"></div>
-    <details class="smenu" id="smenu"><summary><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>도구 · 백업 · 사용자 관리</summary><div class="sfoot"><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button><button type="button" data-sync="signout">구글 계정 바꾸기</button><button id="admBtn" type="button" class="adm">사용자 관리</button></div></details>
+    <details class="smenu" id="smenu"><summary><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>도구 · 백업 · 사용자 관리</summary><div class="sfoot"><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button><button type="button" data-sync="signout">구글 계정 바꾸기</button><button type="button" id="themeBtn">밝은 화면으로</button><button id="admBtn" type="button" class="adm">사용자 관리</button></div></details>
     <input type="file" id="bkFile" accept=".json,application/json" hidden>
     <div class="slock"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6 10V8a6 6 0 1 1 12 0v2h1v12H5V10zm2 0h8V8a4 4 0 1 0-8 0z"/></svg>고객 정보는 잠금 비밀번호로 암호화 저장 <span id="verTag"></span></div>
     <div id="memBan" class="membanner" hidden>저장소를 쓸 수 없는 화면입니다 · 창을 닫으면 사라집니다</div>
@@ -3227,6 +3249,10 @@ function HealthUI(root, H) {
     var b = atob(r), out = new Uint8Array(b.length); for (i = 0; i < b.length; i++) out[i] = b.charCodeAt(i); return out;
   };
 
+  // 화면 테마: 기본은 AFG 콘크리트(어두운 화면), 도구 메뉴에서 밝은 화면으로 바꿀 수 있음
+  var THEME = 'dark'; try { THEME = localStorage.getItem('mhs_theme') || 'dark'; } catch(e){}
+  document.documentElement.setAttribute('data-theme', THEME);
+  function setTheme(t){ THEME = t; try { localStorage.setItem('mhs_theme', t); } catch(e){} document.documentElement.setAttribute('data-theme', t); var b = document.getElementById('themeBtn'); if (b) b.textContent = t === 'dark' ? '밝은 화면으로' : '어두운 화면으로'; }
   var BRAND = '<div class="lmark"><span class="wm"><b>AFG</b><i>OC9</i></span><small>Authentic Financial Group · Ocean Branch 9팀</small></div>';
   // ================= 잠금 =================
   var memMode = false;
@@ -4484,6 +4510,8 @@ function HealthUI(root, H) {
   $('sample').onclick = function(){ openCustomer('sample'); };
   $('lockBtn').onclick = function(){ Store.lock(); };
   $('admBtn').onclick = function(){ openAdmin(); };
+  $('themeBtn').textContent = THEME === 'dark' ? '밝은 화면으로' : '어두운 화면으로';
+  $('themeBtn').onclick = function(){ setTheme(THEME === 'dark' ? 'light' : 'dark'); };
   $('mClose').onclick = function(){ $('modal').hidden = true; };
   $('modal').addEventListener('click', function(e){ if (e.target === this) this.hidden = true; });
   $('mCopy').onclick = function(){
