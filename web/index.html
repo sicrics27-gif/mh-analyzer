@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>병력고지 분석기</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>@font-face{font-family:"Pretendard Variable";font-weight:45 920;font-style:normal;font-display:swap;src:url(lib/PretendardVariable.woff2) format("woff2-variations")}</style><link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
 
@@ -797,6 +797,121 @@ table.cvr td.r{text-align:right;white-space:nowrap;font-weight:600;font-variant-
 .admbox tr.u-off td{opacity:.6}.admbox tr.u-del td{opacity:.4}
 .admbox .mono{font-family:var(--f-mono);font-size:13px;letter-spacing:.03em;white-space:nowrap}
 #admBody{display:flex;flex-direction:column;gap:12px}
+
+/* =====================================================================
+   REFINED — 서류철 같은 단정함: 그림자·그라데이션을 걷어내고 선과 글자로 위계를 만든다
+   ===================================================================== */
+:root{
+  --bg:#F3F4F6; --paper:#FFFFFF; --ink:#111827; --ink2:#4B5563; --mute:#8A919C; --line:#E4E7EB; --soft:#F8F9FA;
+  --accent:#15245A; --accent-soft:#EEF1F8; --on-accent:#FFFFFF;
+  --gold:#A8834A; --gold2:#C9A86E; --gold-soft:#F6F0E4; --gold-ink:#7A5B26;
+  --side:#0E1838; --side2:#1B2756;
+  --sh1:none; --sh2:0 1px 2px rgba(17,24,39,.04); --sh3:0 24px 48px -16px rgba(14,24,56,.35);
+  --hero:#13204F;
+  --f-body:"Pretendard Variable","Pretendard","IBM Plex Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0B0F1A; --paper:#121826; --ink:#E9ECF2; --ink2:#AAB2C0; --mute:#7A8394; --line:#232A3A; --soft:#161D2C;
+  --accent:#B4C3F0; --accent-soft:#1A2444; --on-accent:#0B1230; --gold:#D2B47E; --gold2:#E2C795; --gold-soft:#29220F; --gold-ink:#E2C795;
+  --side:#080C18; --side2:#161F40; --hero:#121B3E; --sh2:none}}
+:root[data-theme="dark"]{
+  --bg:#0B0F1A; --paper:#121826; --ink:#E9ECF2; --ink2:#AAB2C0; --mute:#7A8394; --line:#232A3A; --soft:#161D2C;
+  --accent:#B4C3F0; --accent-soft:#1A2444; --on-accent:#0B1230; --gold:#D2B47E; --gold2:#E2C795; --gold-soft:#29220F; --gold-ink:#E2C795;
+  --side:#080C18; --side2:#161F40; --hero:#121B3E; --sh2:none}
+body{font-family:var(--f-body);font-size:15px;letter-spacing:-.006em;font-variant-numeric:tabular-nums}
+.eyebrow{text-transform:none;letter-spacing:0;font-size:13px;font-weight:500;color:var(--mute)}
+h1,h2,h3,h4{letter-spacing:-.02em}
+
+/* 잠금: 단색 네이비, 장식 없음 */
+.lock{background:var(--side)}
+.lbox{border:0;border-radius:18px;padding:36px 32px}
+.lmark svg{color:var(--gold)}
+.lbox h1{font-size:24px;font-weight:700}
+
+/* 사이드바: 단색, 금색은 '선택됨'에만 */
+.side{background:var(--side);border-right:0}
+.sbrand b svg{filter:none;color:var(--gold2)}
+.sbtn.pri{background:var(--gold2);color:#1A1406;box-shadow:none}
+.sbtn.pri:hover{filter:none;background:#D6B884}
+.cgrp{text-transform:none;letter-spacing:0;font-size:12px;color:#7480A8}
+.citem[aria-current="true"]{background:rgba(255,255,255,.06);box-shadow:inset 2px 0 0 var(--gold2)}
+
+/* 기본 버튼: 그라데이션·광택 제거 */
+.go{background:var(--accent);box-shadow:none;border-radius:10px;font-weight:600;letter-spacing:-.01em}
+.go:hover{filter:none;background:#1C2E6E}
+:root[data-theme="dark"] .go{background:#3550B0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .go{background:#3550B0}}
+.btn{box-shadow:none;border-radius:9px;font-weight:500}
+.btn.lg{height:38px}
+
+/* 카드류: 그림자 대신 얇은 선 */
+.chead,.pc,.step,.gc,.notes,.ditem,.applybox,.dchip,.memo,.empty,.tw,.kgen,.fcard,.kcmp,.klog,.cvc,.psum .chipx{box-shadow:none}
+.chead{border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;padding:6px 0 16px}
+.chead h2{font-size:28px;font-weight:700}
+.chead h2::before{width:40px;height:40px;border-radius:10px;font-size:17px;color:var(--gold2);background:var(--accent);box-shadow:none}
+:root[data-theme="dark"] .chead h2::before{background:#1E2B5C}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .chead h2::before{background:#1E2B5C}}
+.pc:hover{box-shadow:none;border-color:color-mix(in srgb,var(--accent) 30%,var(--line))}
+.dchip{border-radius:12px}
+.dchip small{letter-spacing:0;font-size:12px;font-weight:500}
+.memo{border-radius:12px}
+
+/* 탭: 밑줄형 */
+.ptabs{gap:2px;padding:0;background:var(--bg);backdrop-filter:none;-webkit-backdrop-filter:none}
+.ptab{border-radius:0;height:46px;padding:0 14px;background:transparent;color:var(--mute);font-weight:600;box-shadow:none}
+.ptab:hover{background:transparent;color:var(--ink)}
+.ptab[aria-selected="true"]{background:transparent;color:var(--ink);box-shadow:inset 0 -2px 0 var(--gold)}
+.ptab .cnt,.ptab[aria-selected="true"] .cnt{background:none;color:var(--mute);font:600 12.5px var(--f-body);padding:0}
+.ptab[aria-selected="true"] .cnt{color:var(--gold-ink)}
+.ptab svg{opacity:.75}
+
+/* 표: 머리글은 조용하게 */
+table.t th,table.ht thead th,table.cl thead th{background:var(--paper);color:var(--mute);font-size:12.5px;font-weight:600;letter-spacing:0;border-bottom:1px solid var(--line)}
+table.t tbody tr:hover td{background:var(--soft)}
+table.ht tr.grp td{background:var(--soft);color:var(--ink)}
+table.ht tr.grp td svg{color:var(--gold)}
+.tw{border-radius:12px}
+
+/* 배지·상태: 채도 낮추고 점으로 */
+.bdg{border-radius:6px;font-weight:600}
+.stbadge{border-radius:6px;height:28px}
+.tag{border-radius:6px}
+.gen{border-radius:6px}
+.mt{border-radius:5px}
+
+/* 히어로(미청구·보장): 단색 네이비 + 숫자 하나만 강조 */
+.khero,.cvhero{background:var(--hero);border-radius:16px;box-shadow:none;padding:26px 28px}
+.khero::after,.cvhero::after{display:none}
+.khero .eyebrow,.cvhero .eyebrow{color:#A9B4D8}
+.kh-num{background:none;-webkit-background-clip:initial;background-clip:initial;color:#fff;font-size:46px;font-weight:700;letter-spacing:-.03em;padding-bottom:6px;border-bottom:2px solid var(--gold2);align-self:flex-start}
+.kh-num small{color:#C9D0E8}
+.kh-sub{color:#B9C2E0}
+.kh-side{gap:0}
+.kh-side>div,.cvk>div{background:none;border:0;border-left:1px solid rgba(255,255,255,.14);border-radius:0;padding:4px 20px;min-width:0}
+.kh-side small,.cvk small{letter-spacing:0;color:#9EA9CF}
+.kh-side .warn{background:none;border-color:rgba(255,255,255,.14)}.kh-side .warn b{color:#FFA49B}
+.cvk{gap:0}
+.kh-act .go{background:var(--gold2);color:#1A1406;box-shadow:none}
+.kh-act .go:hover{background:#D6B884}
+:root .kh-act .go{background:var(--gold2);color:#1A1406}
+.btn.ghost{border-color:rgba(255,255,255,.22)}
+
+/* 청구 카드: 왼쪽 금색 막대 대신 상단 정보 정렬 */
+.fcard{border-radius:14px}
+.fcard::before{width:2px;top:16px;bottom:16px}
+.dd.r{animation:none;box-shadow:none}
+.ksec h3{font-size:18px}
+.ksec h3 svg{color:var(--gold)}
+.gc.on{box-shadow:none}
+
+/* 모달 */
+.modal{background:rgba(8,12,26,.5);backdrop-filter:none;-webkit-backdrop-filter:none}
+.mbox{border-radius:16px;border:0}
+.toast{border-radius:10px;background:#111827}
+
+@media (max-width:900px){.chead{padding-top:2px}.kh-side>div{padding:4px 14px}.kh-side>div:first-child,.cvk>div:nth-child(odd){border-left:0;padding-left:0}}
+.mono,table.t td.n,table.ht td.n,.klog time,.admbox .mono,.fc-c .mono{font-family:var(--f-body);font-variant-numeric:tabular-nums;letter-spacing:0}
+.admbox .mono{letter-spacing:.02em;font-weight:600}
 
 </style>
 </head>
