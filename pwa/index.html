@@ -1139,6 +1139,50 @@ table.ctt .due{color:var(--red);font-weight:700}
 .crq-r{display:grid;grid-template-columns:70px 1fr auto;align-items:center;gap:8px}.crq-r small{color:var(--mute)}.crq-r b{font-size:15px}
 .ditem.shx{flex-direction:row;align-items:baseline;gap:8px;cursor:pointer;text-align:left;width:100%;font:inherit;color:var(--ink)}
 .ditem.shx:hover{border-color:var(--ocean)}
+/* ===== NHC 본사 · 보장분석부서 · 오늘의 브리핑 ===== */
+.nxb{display:inline-flex;align-items:center;justify-content:center;height:22px;padding:0 7px;border-radius:6px;background:linear-gradient(135deg,#C9A96A,#8C6A2F);color:#141414;font-weight:800;font-size:11px;letter-spacing:.08em;flex:0 0 auto}
+.nxp{background:var(--paper);border:1px solid color-mix(in srgb,#C9A96A 38%,var(--line));border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;margin:12px 0}
+.nxh{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.nxt{display:flex;flex-direction:column;margin-right:auto;min-width:0}.nxt b{font-size:15.5px}.nxt small{color:var(--mute);font-size:12px}
+.nxst{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--ink2);font-weight:600}
+.nxst i{width:8px;height:8px;border-radius:50%;background:#C9A96A;animation:gpulse 1.2s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.nxst i{animation:none}}
+.nxintro{margin:0}
+.nxr{display:flex;flex-direction:column;gap:8px}
+.nxr h5{margin:8px 0 0;font-size:13.5px;color:var(--ink2)}
+.nxsum{font-size:14.5px;line-height:1.65;white-space:pre-line;background:var(--soft);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}.nxsum small{color:var(--mute);font-size:11.5px}
+.nxo{margin:0;padding-left:20px;font-size:13.5px;line-height:1.75}
+.nxpm{margin:0;font-size:13.5px}.nxpm b{margin-right:6px}
+.lv{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:6px;background:var(--soft)}
+.lv.r{color:var(--red);background:color-mix(in srgb,var(--red) 12%,transparent)}.lv.a{color:var(--amber);background:color-mix(in srgb,var(--amber) 14%,transparent)}.lv.b{color:var(--ocean2,#2F6BFF);background:color-mix(in srgb,#2F6BFF 12%,transparent)}.lv.g{color:var(--green);background:color-mix(in srgb,var(--green) 12%,transparent)}
+.nxtb summary{cursor:pointer;font-weight:600;font-size:13.5px}
+.nxgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;margin-top:8px}
+.nxgrid span{display:flex;flex-direction:column;background:var(--soft);border-radius:8px;padding:6px 9px}.nxgrid small{font-size:11px;color:var(--mute)}.nxgrid b{font-size:14.5px}
+.nxetc{font-size:12.5px;color:var(--ink2);line-height:1.7;margin-top:8px}.nxetc b{display:block;color:var(--ink)}
+.nxk{background:#FFF8D9;color:#2B2410;border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.7}
+:root[data-theme="dark"] .nxk{background:#1E1B13;color:#F1EBD9}
+.nxact{justify-content:flex-end}
+.nxprev{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.nxprev div{background:var(--soft);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column}.nxprev small{color:var(--mute);font-size:11.5px}
+.sfoot .nxm{color:#D9BC86}
+.bmini{display:flex;align-items:center;flex-wrap:wrap;gap:6px 16px;width:100%;text-align:left;background:var(--paper);border:1px solid color-mix(in srgb,#C9A96A 38%,var(--line));border-radius:14px;padding:12px 16px;margin-bottom:14px;cursor:pointer;font:inherit;color:var(--ink)}
+.bmini:hover{border-color:#C9A96A}
+.bm-t{display:flex;flex-direction:column;margin-right:6px}.bm-t b{font-size:15px}.bm-t small{color:var(--mute);font-size:11.5px}
+.bmini span:not(.bm-t){display:flex;flex-direction:column;align-items:center}.bmini span small{color:var(--mute);font-size:11px}.bmini span b{font-size:17px}
+.bmini i{font-style:normal;margin-left:auto;color:var(--ink2);font-size:13px;font-weight:600}
+.bkpi{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:12px 0}
+.bkpi div{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column}.bkpi small{color:var(--mute);font-size:12px}.bkpi b{font-size:22px}
+.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.bsec{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.bsec h5{display:flex;align-items:center;gap:8px;margin:0 0 4px;font-size:14px}.bsec h5>b{color:var(--ocean2,#2F6BFF)}
+.bcamp{border-color:color-mix(in srgb,#C9A96A 38%,var(--line))}
+.brow{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px dashed var(--line)}
+.brow .ctn{flex:1;min-width:0}.brow .ctact{display:flex;gap:4px;flex-wrap:wrap}
+.cpc{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid var(--line)}
+.cph{display:flex;flex-direction:column;gap:2px}.cph b{font-size:14.5px}.cph small{color:var(--ink2);font-size:12.5px}.cpt{font-size:12.5px;color:var(--mute)}.cpt b{color:var(--ink)}
+.sct.sbr{color:#E6CC97}
+.gapban.b{background:var(--soft);border:1px solid var(--line);color:var(--ink)}
+@media (max-width:720px){.bkpi{grid-template-columns:repeat(3,minmax(0,1fr))}.nxprev{grid-template-columns:1fr}.bgrid{grid-template-columns:1fr}}
+.bcamp .cpc,.bcamp .cph{text-align:left;align-items:stretch}
 
 </style>
 </head>
@@ -1150,11 +1194,12 @@ table.ctt .due{color:var(--red);font-weight:700}
     <button class="sbtn pri" id="newCust" type="button"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><circle cx="10" cy="8" r="4"/><path d="M2 21c0-4 4-7 8-7s8 3 8 7zM19 8h2v3h3v2h-3v3h-2v-3h-3v-2h3z"/></svg>신규 고객 등록</button>
     <div class="sqw"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" class="sq" type="search" placeholder="이름 · 전화번호 · 메모 검색" autocomplete="off"></div>
     <div class="sfilt" id="sfilt"><button id="fAll" type="button" data-f="all">전체</button><button id="fTodo" type="button" data-f="todo">할 일</button><select id="fStage" aria-label="고객 단계로 거르기"><option value="">모든 단계</option><option value="lead">가망</option><option value="consult">상담 중</option><option value="contract">계약</option><option value="care">관리</option></select></div>
+    <button type="button" class="sct sbr" data-nx="brief"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17l-6.1 3.4 1.5-6.8L2.2 9l6.9-.7z"/></svg>오늘의 브리핑 · 생일·응당일·청구기한</button>
     <button type="button" class="sct" data-act="contacts"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>연락 현황 · 마지막 통화·문자·카톡</button>
     <div class="clist" id="clist"></div>
     <div class="sclip" id="sclip" hidden></div>
     <div class="ssync" id="ssync"></div>
-    <details class="smenu" id="smenu"><summary><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>도구 · 백업 · 사용자 관리</summary><div class="sfoot"><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button><button type="button" data-sync="signout">구글 계정 바꾸기</button><button type="button" id="themeBtn">밝은 화면으로</button><button id="admBtn" type="button" class="adm">사용자 관리</button></div></details>
+    <details class="smenu" id="smenu"><summary><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>도구 · 백업 · 사용자 관리</summary><div class="sfoot"><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button><button type="button" data-sync="signout">구글 계정 바꾸기</button><button type="button" id="themeBtn">밝은 화면으로</button><button id="admBtn" type="button" class="adm">사용자 관리</button><button type="button" class="adm nxm" data-nx="setup">NHC 본사 연결 · 보장분석부서</button></div></details>
     <input type="file" id="bkFile" accept=".json,application/json" hidden>
     <div class="slock"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6 10V8a6 6 0 1 1 12 0v2h1v12H5V10zm2 0h8V8a4 4 0 1 0-8 0z"/></svg>고객 정보는 잠금 비밀번호로 암호화 저장 <span id="verTag"></span></div>
     <div id="memBan" class="membanner" hidden>저장소를 쓸 수 없는 화면입니다 · 창을 닫으면 사라집니다</div>
@@ -3251,6 +3296,159 @@ function HealthUI(root, H) {
 
 </script>
 <script>
+// NHC(남혁컴퍼니) 보장분석부서 연결 — AFG OC9은 보장분석부서 산하 고객관리 프로그램.
+// 회사로 나가는 것: 익명 의뢰서(성별·나이대·계약/담보), 숫자 통계. 이름·생년월일·연락처·병력은 절대 내보내지 않음.
+(function (root) {
+  var DEF_REPO = 'sicrics27-gif/nhc-company';
+  var te = new TextEncoder(), td = new TextDecoder();
+  var ALPH = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  function b64enc(s) { var u = te.encode(s), bin = ''; for (var i = 0; i < u.length; i += 0x8000) bin += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(bin); }
+  function b64dec(b) { var bin = atob(String(b).replace(/\s/g, '')), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return td.decode(u); }
+  function newId() { var r = crypto.getRandomValues(new Uint8Array(8)), s = ''; for (var i = 0; i < 8; i++) s += ALPH[r[i] % 32]; return 'C-' + s; }
+
+  // ---------- 보장 종류 (캠페인 대상 조건과 같은 이름) ----------
+  var CATS = {
+    cancer: { t: '암 진단', fn: function (n) { return /암/.test(n) && /진단/.test(n) && !(/유사암|소액암|제자리암|경계성/.test(n) && !/유사암\s*제외/.test(n)); } },
+    brain: { t: '뇌혈관 진단', re: /(뇌혈관|뇌졸중|뇌출혈|뇌경색).*진단/ },
+    heart: { t: '심장 진단', re: /(허혈성|심근경색|심장질환|심혈관).*진단/ },
+    surgery: { t: '수술비', re: /수술/ },
+    death: { t: '사망', re: /사망/ },
+    driver: { t: '운전자', re: /(교통사고\s*처리|변호사선임|벌금)/ },
+    care: { t: '간병', re: /간병/ },
+    dementia: { t: '치매', re: /치매/ },
+    fracture: { t: '골절', re: /골절/ }
+  };
+  function live(c, today) { return !c.end || c.end >= today; }
+  function silGen(start) { return root.Coverage && root.Coverage.silsonGen ? root.Coverage.silsonGen(start) : 0; }
+
+  // 고객 카드에 붙여 둘 작은 요약 (기기 안에서만 사용 · 브리핑/캠페인 대상 계산용)
+  function facts(cov, sets, today) {
+    var f = { has: {}, gens: [], ann: [], at: today };
+    if (cov && cov.contracts) {
+      cov.contracts.forEach(function (c) {
+        if (!live(c, today)) return;
+        if (c.silson) { var g = silGen(c.start); if (g && f.gens.indexOf(g) < 0) f.gens.push(g); }
+        if (c.start && /^\d{4}-\d{2}-\d{2}$/.test(c.start)) { var md = c.start.slice(5); if (f.ann.indexOf(md) < 0) f.ann.push(md); }
+        (c.riders || []).forEach(function (r) {
+          if (r.type === '실손') { f.has.silson = 1; return; }
+          Object.keys(CATS).forEach(function (k) { var C = CATS[k]; if (C.fn ? C.fn(r.name) : C.re.test(r.name)) f.has[k] = (f.has[k] || 0) + (r.amount || 0) || 1; });
+        });
+        if (c.silson) f.has.silson = 1;
+      });
+      f.cov = 1;
+    }
+    if (sets) {
+      var open = sets.silOpen.concat(sets.flatOpen);
+      f.claimN = open.length;
+      f.claimAmt = open.reduce(function (s, x) { return s + (x.amt || 0); }, 0);
+      var dl = open.map(function (x) { return x.deadline; }).filter(Boolean).sort();
+      f.claimDue = dl[0] || '';
+    }
+    return f;
+  }
+
+  // ---------- 익명 의뢰서 ----------
+  function ageOf(birth, today) {
+    var b = String(birth || '').replace(/\D/g, ''); if (b.length !== 8) return null;
+    var d = today.replace(/-/g, ''); var a = +d.slice(0, 4) - +b.slice(0, 4); if (d.slice(4) < b.slice(4)) a--; return a;
+  }
+  function deid(head, cov, today, ask) {
+    var age = ageOf(head.birth, today);
+    var clean = function (s, n) { return String(s || '').replace(/01[016789][-.\s]?\d{3,4}[-.\s]?\d{4}/g, '').slice(0, n); };
+    return {
+      v: 1, id: newId(), at: new Date().toISOString(), kind: 'cover', from: 'oc9',
+      sex: head.sex === 'M' || head.sex === 'F' ? head.sex : '',
+      age: age == null ? null : Math.floor(age / 5) * 5,
+      ask: clean(ask, 300),
+      contracts: (cov.contracts || []).filter(function (c) { return live(c, today); }).map(function (c) {
+        return { company: clean(c.company, 30), product: clean(c.product, 80), start: c.start || '', end: c.end || '', premium: c.premium || null, paidUp: !!c.paidUp, silson: !!c.silson, gen: c.silson ? silGen(c.start) || null : null,
+          riders: (c.riders || []).map(function (r) { return { type: clean(r.type, 8), name: clean(r.name, 90), amount: typeof r.amount === 'number' ? r.amount : null, amtText: clean(r.amtText, 30) }; }) };
+      })
+    };
+  }
+
+  // ---------- 캠페인 대상 ----------
+  function matches(t, head, today) {
+    t = t || {}; var f = head.cvx || {}, age = ageOf(head.birth, today);
+    if (t.sex && head.sex !== t.sex) return false;
+    if (t.ageMin && (age == null || age < t.ageMin)) return false;
+    if (t.ageMax && (age == null || age > t.ageMax)) return false;
+    if (t.stage && t.stage.length && t.stage.indexOf(head.stage || 'lead') < 0) return false;
+    var needCov = (t.silson && t.silson.length) || (t.lacks && t.lacks.length) || (t.has && t.has.length);
+    if (needCov && !f.cov) return false; // 보장분석이 없는 고객은 판단 불가 → 제외
+    if (t.silson && t.silson.length && !(f.gens || []).some(function (g) { return t.silson.indexOf(g) >= 0; })) return false;
+    if (t.lacks && t.lacks.length && !t.lacks.some(function (k) { return !(f.has || {})[k]; })) return false;
+    if (t.has && t.has.length && !t.has.every(function (k) { return (f.has || {})[k]; })) return false;
+    return true;
+  }
+  function targetTxt(t) {
+    t = t || {}; var a = [];
+    if (t.silson && t.silson.length) a.push('실손 ' + t.silson.join('·') + '세대');
+    if (t.lacks && t.lacks.length) a.push(t.lacks.map(function (k) { return k === 'silson' ? '실손' : (CATS[k] || { t: k }).t; }).join('·') + ' 없음');
+    if (t.has && t.has.length) a.push(t.has.map(function (k) { return k === 'silson' ? '실손' : (CATS[k] || { t: k }).t; }).join('·') + ' 있음');
+    if (t.ageMin || t.ageMax) a.push((t.ageMin || '') + '~' + (t.ageMax || '') + '세');
+    if (t.sex) a.push(t.sex === 'M' ? '남성' : '여성');
+    if (t.stage && t.stage.length) a.push('단계 ' + t.stage.join('·'));
+    return a.join(' · ') || '전체 고객';
+  }
+
+  // ---------- GitHub (회사 저장소) ----------
+  function gh(cfg, path, opt) {
+    opt = opt || {}; opt.headers = Object.assign({ Authorization: 'Bearer ' + cfg.token, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' }, opt.headers || {});
+    opt.cache = 'no-store';
+    return fetch('https://api.github.com/repos/' + (cfg.repo || DEF_REPO) + path, opt);
+  }
+  async function verify(cfg) {
+    var r; try { r = await gh(cfg, ''); } catch (e) { throw new Error('인터넷에 연결되어 있지 않습니다'); }
+    if (r.status === 401) throw new Error('토큰이 올바르지 않거나 만료되었습니다');
+    if (r.status === 404) throw new Error('저장소를 찾을 수 없습니다 (토큰에 ' + (cfg.repo || DEF_REPO) + ' 접근 권한을 주었는지 확인)');
+    if (!r.ok) throw new Error('회사 저장소에 접근할 수 없습니다 (' + r.status + ')');
+    var j = await r.json(); if (!(j.permissions && j.permissions.push)) throw new Error('이 토큰에는 쓰기 권한(Contents: Read and write)이 없습니다');
+    if (!j.private) throw new Error('회사 저장소가 공개 상태입니다. 비공개(Private)로 바꾼 뒤 연결하세요');
+    return true;
+  }
+  async function getFile(cfg, path) {
+    var r = await gh(cfg, '/contents/' + path + '?ref=main&t=' + Date.now());
+    if (r.status === 404) return null;
+    if (!r.ok) throw new Error('회사 저장소 읽기 실패 (' + r.status + ')');
+    var j = await r.json(); return { sha: j.sha, data: JSON.parse(b64dec(j.content)) };
+  }
+  async function putFile(cfg, path, obj, msg) {
+    for (var t = 0; t < 2; t++) {
+      var cur = null; try { cur = await getFile(cfg, path); } catch (e) {}
+      var body = { message: msg, content: b64enc(JSON.stringify(obj, null, 1) + '\n'), branch: 'main' };
+      if (cur) body.sha = cur.sha;
+      var r = await gh(cfg, '/contents/' + path, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      if (r.ok) return true;
+      if (r.status !== 409 && r.status !== 422) throw new Error('회사로 보내지 못했습니다 (' + r.status + ')');
+    }
+    throw new Error('회사로 보내지 못했습니다. 잠시 후 다시 시도하세요');
+  }
+  async function delFile(cfg, path, sha, msg) {
+    var r = await gh(cfg, '/contents/' + path, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: msg, sha: sha, branch: 'main' }) });
+    return r.ok || r.status === 404;
+  }
+
+  async function send(cfg, req) { await putFile(cfg, 'inbox/cover/' + req.id + '.json', req, '보장분석 의뢰 ' + req.id); return req.id; }
+  // 결과 가져오기: 있으면 받아서 회사 저장소에서는 지움
+  async function fetchResult(cfg, id) {
+    var f = await getFile(cfg, 'outbox/cover/' + id + '.json');
+    if (!f) return null;
+    try { await delFile(cfg, 'outbox/cover/' + id + '.json', f.sha, '보장분석 결과 수령 ' + id); } catch (e) {}
+    return f.data;
+  }
+  async function campaigns(cfg) { var f = await getFile(cfg, 'outbox/crm/campaigns.json'); return f ? f.data : null; }
+  async function stats(cfg, st) { await putFile(cfg, 'inbox/crm/stats.json', st, '고객관리 통계 ' + st.date); }
+
+  var ROWS = { '10': '실손입원', '11': '실손통원', '12': '일반암', '13': '고액암', '14': '유사암', '15': '암통원일당', '16': '암수술', '17': '다빈치', '18': '특정면역항암', '19': '표적항암', '20': '세기조절', '21': '양성자', '22': '정위', '23': '중입자', '24': '항암방사선', '25': '항암약물',
+    '26': '뇌혈관진단', '27': '뇌졸중진단', '28': '뇌출혈진단', '29': '뇌혈관수술', '30': '뇌경색혈전', '31': '허혈성진단', '32': '부정맥/심부전', '33': '급성심근경색', '34': '허혈성수술', '35': '심근경색혈전', '36': '질병수술', '37': '상해수술', '38': '1종수술', '39': '2종수술', '40': '3종수술', '41': '4종수술', '42': '5종수술', '43': '1-7종수술',
+    '44': '질병후유장해', '45': '상해후유장해', '46': '질병입원일당', '47': '상해입원일당', '48': '응급실', '49': '일반사망', '50': '질병사망', '51': '상해/재해사망', '52': '골절', '53': '깁스', '54': '화상', '55': '배상책임', '56': '교통사고처리지원금', '57': '자동차벌금', '58': '변호사선임', '59': '자동차부상치료' };
+  root.NHC = { DEF_REPO: DEF_REPO, ROWS: ROWS, CATS: CATS, facts: facts, deid: deid, matches: matches, targetTxt: targetTxt, ageOf: ageOf, newId: newId,
+    verify: verify, send: send, fetchResult: fetchResult, campaigns: campaigns, stats: stats };
+})(this);
+
+</script>
+<script>
 (function(){
   var $ = function(id){ return document.getElementById(id); };
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -3559,7 +3757,7 @@ function HealthUI(root, H) {
   });
 
   // ================= 연락: 전화·문자·카톡 바로가기와 마지막 연락일 =================
-  var MSG_TPL = [
+  var MSG_TPL0, MSG_TPL = MSG_TPL0 = [
     ['안부', '{이름}님, 안녕하세요. 담당 설계사입니다. 요즘 건강은 어떠신지 안부 여쭙습니다. 보험 관련해서 궁금하신 점 있으면 언제든 편하게 연락 주세요.'],
     ['상담 약속', '{이름}님, 안녕하세요. 지난번 말씀드린 보장 점검 건으로 한번 뵙고 싶은데, 편하신 날짜와 시간 알려 주시면 맞춰서 찾아뵙겠습니다.'],
     ['서류 요청', '{이름}님, 안녕하세요. 보장 분석을 위해 아래 서류가 필요합니다.\n· 심평원 진료내역(기본·세부·처방)\n· 건강보험공단 요양급여내역\n받으시는 방법은 제가 링크로 안내해 드릴게요.'],
@@ -3613,8 +3811,16 @@ function HealthUI(root, H) {
   }
   document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'visible') setTimeout(checkPend, 300); });
   // 메시지 작성: 휴대폰은 문자 앱·카톡 공유로, PC는 QR(휴대폰 문자) 또는 복사(카톡 PC)
-  function openMsg(ch){
+  function preMsg(pre){
+    if (!pre) return null;
+    if (pre === 'nhc' && S.data && S.data.nhc && S.data.nhc.kakao) return ['보장분석 안내', S.data.nhc.kakao, 'NHC 보장분석 안내'];
+    var m = /^tpl:(\d+)$/.exec(pre); if (m && MSG_TPL[+m[1]]) return [MSG_TPL[+m[1]][0], MSG_TPL[+m[1]][1], ''];
+    m = /^camp:(.+)$/.exec(pre); if (m) { var cp = campsGet(), it = cp && (cp.items || []).find(function(x){ return x.id === m[1]; }); if (it) return ['오늘 캠페인', it.msg, '캠페인: ' + it.title]; }
+    return null;
+  }
+  function openMsg(ch, pre){
     var c = S.cur, ph = normPhone(c.phone), kk = ch === 'kakao';
+    var P = preMsg(pre), MSG_TPL = P ? [[P[0], P[1]]].concat(MSG_TPL0) : MSG_TPL0;
     openDlg('<h4>' + (kk ? IC.chat : IC.sms) + ' ' + esc(c.name) + '님께 ' + (kk ? '카톡' : '문자') + ' 보내기</h4>' +
       '<div class="tpl" role="group" aria-label="문구 틀">' + MSG_TPL.map(function(t, i){ return '<button type="button" data-tpl="' + i + '"' + (i === 0 ? ' aria-pressed="true"' : ' aria-pressed="false"') + '>' + t[0] + '</button>'; }).join('') + '</div>' +
       '<textarea id="msgTxt" class="ktxt msgtxt" spellcheck="false">' + esc(fill(MSG_TPL[0][1])) + '</textarea>' +
@@ -3625,7 +3831,7 @@ function HealthUI(root, H) {
     var ta = $('msgTxt');
     $('dlgBox').querySelectorAll('[data-tpl]').forEach(function(b){ b.onclick = function(){ ta.value = fill(MSG_TPL[+b.dataset.tpl][1]); $('dlgBox').querySelectorAll('[data-tpl]').forEach(function(x){ x.setAttribute('aria-pressed', String(x === b)); }); if (!$('msgQr').hidden) drawQr(); ta.focus(); }; });
     $('msgX').onclick = closeDlg;
-    var log = async function(){ await addNote(kk ? 'kakao' : 'sms', ta.value.trim().slice(0, 300) || (kk ? '카톡 보냄' : '문자 보냄')); };
+    var log = async function(){ await addNote(kk ? 'kakao' : 'sms', (P && P[2] ? '[' + P[2] + '] ' : '') + (ta.value.trim().slice(0, 300) || (kk ? '카톡 보냄' : '문자 보냄'))); };
     var drawQr = function(){
       var box = $('msgQr'); box.hidden = false;
       try {
@@ -3658,13 +3864,236 @@ function HealthUI(root, H) {
   document.addEventListener('click', function(e){
     var t;
     if ((t = e.target.closest('[data-pend]'))) { setPend({ cid: S.cur.id, k: 'call', at: Date.now() }); return; }
-    if ((t = e.target.closest('[data-msg]'))) { if (t.dataset.cid) { openCustomer(t.dataset.cid).then(function(){ openMsg(t.dataset.msg); }); return; } openMsg(t.dataset.msg); return; }
+    if ((t = e.target.closest('[data-msg]'))) { var pre = t.dataset.pre || ''; if (t.dataset.cid) { openCustomer(t.dataset.cid).then(function(){ openMsg(t.dataset.msg, pre); }); return; } openMsg(t.dataset.msg, pre); return; }
     if ((t = e.target.closest('[data-act="logCall"]'))) { openLogCall(); return; }
     if ((t = e.target.closest('[data-act="contacts"]'))) { showContacts(); return; }
     if ((t = e.target.closest('[data-ctf]'))) { S.ctf = t.dataset.ctf; showContacts(); return; }
     if ((t = e.target.closest('[data-ctopen]'))) { openCustomer(t.dataset.ctopen); return; }
     if ((t = e.target.closest('[data-ctcall]'))) { setPend({ cid: t.dataset.ctcall, k: 'call', at: Date.now() }); return; }
   });
+
+  // ================= NHC 본사 · 보장분석부서 연결 =================
+  // AFG OC9 = NHC(남혁컴퍼니) 보장분석부서 산하 고객관리 프로그램. 회사로는 익명 의뢰서와 숫자 통계만 나감.
+  var NX = { id: '__nhc', busy: false };
+  async function nhcLoad(){ try { return (await Store.loadData(NX.id)) || null; } catch(e){ return null; } }
+  async function nhcSave(d){ await Store.saveHead({ id: NX.id, hidden: true, name: '__nhc', status: 'admin', created: d.created || Date.now() }); await Store.saveData(NX.id, d); }
+  function nhcOn(){ try { return localStorage.getItem('mhs_nhc') === '1'; } catch(e){ return false; } }
+  function setNhcOn(v){ try { if (v) localStorage.setItem('mhs_nhc', '1'); else localStorage.removeItem('mhs_nhc'); } catch(e){} }
+  async function nhcSetup(after){
+    var d = await nhcLoad() || {};
+    openDlg('<h4>' + IC.shield2 + ' NHC 본사 연결 · 보장분석부서</h4><div class="form nxform">' +
+      '<div>AFG OC9을 <b>NHC(남혁컴퍼니) 보장분석부서</b> 산하 프로그램으로 연결합니다. 연결하면 <b>① 보장분석 자동 의뢰</b> <b>② 뉴스 연계 연락 캠페인</b> <b>③ 아침 고객관리 브리핑(텔레그램)</b>이 켜집니다.</div>' +
+      '<div class="safe">' + IC.lock + '<span>회사로 보내는 것은 <b>성별·나이대(5세 단위)·계약/담보 목록</b>과 <b>이름 없는 숫자 통계</b>뿐입니다. 이름·생년월일·전화번호·병력은 보내지 않고, 어떤 의뢰번호가 어느 고객인지는 이 프로그램 안에만 있습니다. 토큰은 잠금 비밀번호로 암호화해 저장합니다.</span></div>' +
+      '<label class="l">회사 저장소</label><input id="nxRepo" type="text" spellcheck="false" value="' + esc(d.repo || NHC.DEF_REPO) + '">' +
+      '<label class="l">GitHub 토큰 (github_pat_로 시작)</label><input id="nxTok" type="password" autocomplete="off" spellcheck="false" placeholder="' + (d.token ? '연결됨 · 바꿀 때만 넣으세요' : 'github_pat_…') + '">' +
+      '<div class="note">토큰 만들기: <button type="button" class="lnk" id="nxNew">GitHub 토큰 만들기 화면 열기</button> → Repository access <b>Only select repositories</b> → <b>nhc-company</b> → Permissions <b>Contents: Read and write</b> → 만료 1년</div>' +
+      '<div class="ferr" id="nxErr"></div></div><div class="mrow">' + (d.token ? '<button class="btn lg" type="button" id="nxOff" style="margin-right:auto">연결 끊기</button>' : '') + '<button class="btn lg" type="button" id="nxX"' + (d.token ? '' : ' style="margin-left:auto"') + '>닫기</button><button class="go" type="button" id="nxGo">연결 확인</button></div>');
+    $('nxX').onclick = closeDlg;
+    $('nxNew').onclick = function(){ openExt('https://github.com/settings/personal-access-tokens/new'); };
+    if ($('nxOff')) $('nxOff').onclick = async function(){ if (!confirm('NHC 본사 연결을 끊을까요? (고객 자료와 받은 분석 결과는 그대로 남습니다)')) return; d.token = ''; await nhcSave(d); setNhcOn(false); closeDlg(); toast('NHC 연결을 끊었습니다'); };
+    $('nxGo').onclick = async function(){
+      var b = this, tok = $('nxTok').value.trim() || d.token, repo = $('nxRepo').value.trim() || NHC.DEF_REPO;
+      if (!tok) { $('nxErr').textContent = '토큰을 붙여 넣으세요.'; return; }
+      if (!/^[\w.-]+\/[\w.-]+$/.test(repo)) { $('nxErr').textContent = '저장소는 "아이디/이름" 형식입니다.'; return; }
+      b.disabled = true; b.textContent = '확인 중…';
+      try {
+        await NHC.verify({ token: tok, repo: repo });
+        await nhcSave(Object.assign({ created: Date.now() }, d, { token: tok, repo: repo })); setNhcOn(true);
+        closeDlg(); toast('NHC 본사 보장분석부서와 연결했습니다');
+        nhcDaily(true); if (after) after();
+      } catch(e){ b.disabled = false; b.textContent = '연결 확인'; $('nxErr').textContent = e.message || String(e); }
+    };
+  }
+
+  // ---------- 보장분석 의뢰 ----------
+  function nhcPane(){
+    if (!S.cur || S.cur.sample || !S.data || !S.data.coverage) return '';
+    var r = S.data.nhc, q = S.cur.nhcReq;
+    var h = '<section class="nxp"><div class="nxh"><span class="nxb">NHC</span><div class="nxt"><b>보장분석부서</b><small>NHC 본사 · 담보매핑 규칙으로 보장분석표·공백 담보·상담 포인트 작성</small></div>';
+    if (q) h += '<span class="nxst"><i></i>분석 중 · ' + timeTxt(q.at) + ' 의뢰</span><button class="btn" type="button" data-nx="check">결과 확인</button>';
+    else h += '<button class="go" type="button" data-nx="req">' + (r ? '다시 의뢰' : '분석 의뢰') + '</button>';
+    h += '</div>';
+    if (r && r.ok) h += nhcResult(r);
+    else if (r && !r.ok) h += '<div class="gapban r">' + IC.warn + '<span>' + esc(r.error || '분석하지 못했습니다') + '</span></div>';
+    else if (!q) h += '<p class="note nxintro">버튼을 누르면 이름·연락처를 뺀 계약·담보 목록만 회사 보장분석부서로 보내고, 보통 2~5분 뒤 결과가 이 화면에 붙습니다. 텔레그램으로도 알려 드립니다.</p>';
+    return h + '</section>';
+  }
+  function lvCls(l){ return /없음/.test(l) ? 'r' : /부족/.test(l) ? 'a' : /과다/.test(l) ? 'b' : 'g'; }
+  function nhcResult(r){
+    var R = NHC.ROWS, rows = Object.keys(r.table || {}).sort(function(a, b){ return a - b; });
+    var h = '<div class="nxr"><div class="nxsum">' + esc(r.summary || '') + '<small>' + (r.recv ? dot(new Date(r.recv).toISOString().slice(0, 10)) + ' 받음 · ' : '') + esc(r.by || '') + '</small></div>';
+    if ((r.gaps || []).length) h += '<h5>보장 공백 · 부족 담보</h5><div class="tw"><table class="t nxg"><thead><tr><th>담보</th><th>현재</th><th>판단</th><th>참고 기준 · 이유</th></tr></thead><tbody>' +
+      r.gaps.map(function(g){ return '<tr><td><b>' + esc(g.item) + '</b></td><td class="n">' + esc(g.now || '—') + '</td><td><span class="lv ' + lvCls(g.level) + '">' + esc(g.level) + '</span></td><td>' + esc(g.suggest) + (g.why ? '<br><small class="note">' + esc(g.why) + '</small>' : '') + '</td></tr>'; }).join('') + '</tbody></table></div>';
+    if ((r.priorities || []).length) h += '<h5>보완 우선순위</h5><ol class="nxo">' + r.priorities.map(function(p){ return '<li>' + esc(p) + '</li>'; }).join('') + '</ol>';
+    if (r.premium) h += '<p class="nxpm"><b>보험료 구조</b> ' + esc(r.premium) + '</p>';
+    if ((r.talk || []).length) h += '<h5>상담 포인트</h5><ul class="nxo">' + r.talk.map(function(p){ return '<li>' + esc(p) + '</li>'; }).join('') + '</ul>';
+    if (rows.length) h += '<details class="nxtb"><summary>보장분석표(전) 행별 합계 <small class="note">만원 · ' + rows.length + '개 행</small></summary><div class="nxgrid">' + rows.map(function(k){ return '<span><small>' + k + ' ' + esc(R[k] || '') + '</small><b>' + Number(r.table[k]).toLocaleString('ko-KR') + '</b></span>'; }).join('') + '</div>' +
+      ((r.etc || []).length ? '<div class="nxetc"><b>기타 · 주석</b>' + r.etc.map(function(e){ return '<div>' + esc(e) + '</div>'; }).join('') + '</div>' : '') + '<div class="mrow"><button class="btn" type="button" data-nx="copytbl">표 복사 (엑셀 붙여넣기)</button></div></details>';
+    if (r.kakao) h += '<h5>고객 안내 초안</h5><div class="nxk">' + esc(fill(r.kakao)).replace(/\n/g, '<br>') + '</div><div class="mrow nxact"><button class="btn" type="button" data-nx="log">상담 기록에 남기기</button>' + (normPhone(S.cur.phone) ? '<button class="go kakao" type="button" data-msg="kakao" data-pre="nhc">' + IC.chat + '이 내용으로 카톡</button>' : '<button class="btn" type="button" data-nx="copyk">복사</button>') + '</div>';
+    h += '<p class="note">AI 초안입니다. 고객에게 보내기 전 내용을 확인하고, 상품 권유가 들어가면 광고심의를 거치세요.</p></div>';
+    return h;
+  }
+  async function nhcRequest(){
+    var cfg = await nhcLoad(); if (!cfg || !cfg.token) { nhcSetup(nhcRequest); return; }
+    var cov = S.data.coverage, req = NHC.deid(S.cur, cov, todayStr(), '');
+    var nR = req.contracts.reduce(function(s, c){ return s + c.riders.length; }, 0);
+    openDlg('<h4>' + IC.shield2 + ' 보장분석부서에 의뢰</h4><div class="form">' +
+      '<div class="nxprev"><div><small>의뢰번호</small><b class="mono">' + req.id + '</b></div><div><small>성별 · 나이대</small><b>' + (sexTxt(req.sex) || '—') + ' · ' + (req.age == null ? '—' : req.age + '~' + (req.age + 4) + '세') + '</b></div><div><small>계약 · 담보</small><b>' + req.contracts.length + '건 · ' + nR + '개</b></div></div>' +
+      '<div class="safe">' + IC.lock + '<span>이름·생년월일·전화번호·진료기록은 보내지 않습니다. 결과가 오면 이 고객 화면에 자동으로 붙고, 회사 저장소에서는 바로 지웁니다.</span></div>' +
+      '<label class="l">부탁할 점 (선택 · 고객 이름이나 연락처는 쓰지 마세요)</label><textarea id="nxAsk" rows="2" maxlength="300" placeholder="예: 뇌·심장 보강 위주로 봐 주세요 / 보험료 줄이는 방향"></textarea>' +
+      '<div class="ferr" id="nxErr"></div></div><div class="mrow"><button class="btn lg" type="button" id="nxX" style="margin-left:auto">닫기</button><button class="go" type="button" id="nxGo">보내기</button></div>');
+    $('nxX').onclick = closeDlg;
+    $('nxGo').onclick = async function(){
+      var b = this; b.disabled = true; b.textContent = '보내는 중…';
+      req.ask = $('nxAsk').value.trim().replace(new RegExp(S.cur.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '고객').replace(/01[016789][-.\s]?\d{3,4}[-.\s]?\d{4}/g, '').slice(0, 300);
+      try { await NHC.send(cfg, req); }
+      catch(e){ b.disabled = false; b.textContent = '보내기'; $('nxErr').textContent = e.message || String(e); return; }
+      closeDlg(); S.cur.nhcReq = { id: req.id, at: Date.now() };
+      await saveCur('보장분석부서에 의뢰했습니다 · 결과가 오면 알려 드립니다');
+      setTimeout(function(){ nhcPoll(); }, 90 * 1000);
+    };
+  }
+  async function nhcPoll(force){
+    if (NX.busy || !Store.isOpen()) return;
+    var pend = S.list.filter(function(c){ return c.nhcReq && c.nhcReq.id; }); if (!pend.length) { if (force) toast('기다리는 의뢰가 없습니다'); return; }
+    var cfg = await nhcLoad(); if (!cfg || !cfg.token) return;
+    NX.busy = true; var got = [];
+    try {
+      for (var i = 0; i < pend.length; i++) {
+        var c = pend[i], res = null;
+        try { res = await NHC.fetchResult(cfg, c.nhcReq.id); } catch(e){ if (force) toast(e.message || String(e)); break; }
+        if (!res) continue;
+        var d = await Store.loadData(c.id); if (!d) continue;
+        d.nhc = Object.assign({}, res, { recv: Date.now() }); await Store.saveData(c.id, d);
+        var h = Object.assign({}, c); delete h.nhcReq; h.nhcAt = Date.now(); await Store.saveHead(h);
+        got.push(c);
+      }
+    } finally { NX.busy = false; }
+    if (!got.length) { if (force) toast('아직 분석 중입니다 · 잠시 후 다시 확인하세요'); return; }
+    S.list = await Store.list(); renderList();
+    if (S.cur && got.some(function(c){ return c.id === S.cur.id; })) { var y = window.scrollY; S.cur = S.list.find(function(x){ return x.id === S.cur.id; }) || S.cur; S.data = await Store.loadData(S.cur.id); compute(); renderCustomer(); window.scrollTo(0, y); }
+    toast(got.map(function(c){ return c.name; }).join(', ') + '님 보장분석 결과가 도착했습니다');
+  }
+  setInterval(function(){ if (document.visibilityState === 'visible') nhcPoll(); }, 60 * 1000);
+  document.addEventListener('click', async function(e){
+    var t = e.target.closest('[data-nx]'); if (!t) return;
+    var a = t.dataset.nx;
+    if (a === 'req') nhcRequest();
+    else if (a === 'check') nhcPoll(true);
+    else if (a === 'setup') nhcSetup();
+    else if (a === 'copyk') copyText(fill(S.data.nhc.kakao), '안내문');
+    else if (a === 'copytbl') { var r = S.data.nhc; copyText(Object.keys(r.table).sort(function(x, y){ return x - y; }).map(function(k){ return k + '\t' + (NHC.ROWS[k] || '') + '\t' + r.table[k]; }).join('\n'), '보장분석표'); }
+    else if (a === 'log') { var r2 = S.data.nhc; await addNote('note', '[NHC 보장분석] ' + (r2.summary || '') + ((r2.priorities || []).length ? '\n우선순위: ' + r2.priorities.join(' / ') : '')); toast('상담 기록에 남겼습니다'); }
+    else if (a === 'brief') showBrief();
+    else if (a === 'bcalc') briefCalc();
+    else if (a === 'camps') { await nhcDaily(true); showBrief(); }
+  });
+
+  // ---------- 고객 요약(cvx): 브리핑·캠페인 대상 계산용, 기기 안에만 ----------
+  function cvxSame(a, b){ var x = Object.assign({}, a || {}), y = Object.assign({}, b || {}); delete x.at; delete y.at; return JSON.stringify(x) === JSON.stringify(y); }
+  function updateFacts(){
+    var c = S.cur; if (!c || c.sample || !S.data) return;
+    var f; try { f = NHC.facts(S.data.coverage || null, S.BN ? claimSets() : null, todayStr()); } catch(e){ return; }
+    if (cvxSame(f, c.cvx)) return;
+    c.cvx = f; Store.saveHead(c).then(async function(){ S.list = await Store.list(); renderList(); }).catch(function(){});
+  }
+  async function briefCalc(){
+    var todo = S.list.filter(function(c){ return c.status === 'done' && !c.cvx; }); if (!todo.length) return;
+    toast(todo.length + '명 보장 요약을 계산합니다…');
+    var keep = { cur: S.cur, data: S.data, CL: S.CL, BN: S.BN }, n = 0;
+    for (var i = 0; i < todo.length; i++) {
+      try {
+        var c = todo[i], d = await Store.loadData(c.id); if (!d) continue;
+        S.cur = c; S.data = d; var base = d.base || todayStr();
+        S.CL = Claims.claims(d.input || {}, base);
+        S.BN = Benefit.match(d.coverage || null, S.CL, Claims.visits(d.input || {}, base, 3).visits, todayStr());
+        c.cvx = NHC.facts(d.coverage || null, claimSets(), todayStr()); await Store.saveHead(c); n++;
+      } catch(e){}
+    }
+    S.cur = keep.cur; S.data = keep.data; S.CL = keep.CL; S.BN = keep.BN;
+    S.list = await Store.list(); renderList(); showBrief(); toast(n + '명 계산을 마쳤습니다');
+  }
+
+  // ---------- 오늘의 영업 브리핑 ----------
+  function nextOf(md, t){
+    if (!/^\d{2}-\d{2}$/.test(md)) return '';
+    var y = +t.slice(0, 4), mk = function(yy){ var leap = (yy % 4 === 0 && yy % 100 !== 0) || yy % 400 === 0; return yy + '-' + (md === '02-29' && !leap ? '02-28' : md); };
+    var d = mk(y); return d < t ? mk(y + 1) : d;
+  }
+  function briefData(){
+    var t = todayStr(), B = { todo: [], bday: [], ann: [], claim: [], quiet: [], nocvx: 0, pending: 0 };
+    S.list.forEach(function(c){
+      var n = nextDue(c); if (n != null && n <= 1) B.todo.push({ c: c, n: n, txt: (c.next.t || '할 일') + ' · ' + dueTxt(n) });
+      var b = String(c.birth || '').replace(/\D/g, '');
+      if (b.length === 8) { var bd = nextOf(b.slice(4, 6) + '-' + b.slice(6, 8), t), k = dayDiff(t, bd); if (k <= 7) B.bday.push({ c: c, n: k, txt: '생일 ' + (k === 0 ? '오늘' : 'D-' + k) + ' (' + bd.slice(5).replace('-', '.') + ')', tpl: 3 }); }
+      var f = c.cvx;
+      if (f && f.ann) { var best = null; f.ann.forEach(function(md){ var d = nextOf(md, t), k = dayDiff(t, d); if (k <= 14 && (!best || k < best.n)) best = { n: k, d: d }; }); if (best) B.ann.push({ c: c, n: best.n, txt: '계약 응당일 ' + (best.n === 0 ? '오늘' : 'D-' + best.n) + ' (' + best.d.slice(5).replace('-', '.') + ')' }); }
+      if (f && f.claimDue) { var k2 = dayDiff(t, f.claimDue); if (k2 >= 0 && k2 <= 60) B.claim.push({ c: c, n: k2, txt: '청구기한 D-' + k2 + ' · ' + (f.claimN || 0) + '건' + (f.claimAmt ? ' · 약 ' + man(f.claimAmt) : '') }); }
+      var L = lastOf(c), gap = L.any ? dayDiff(L.any, t) : null;
+      if ((gap != null && gap >= 90) || (gap == null && /contract|care/.test(c.stage || '') && Date.now() - (c.created || Date.now()) > 90 * 864e5)) B.quiet.push({ c: c, n: -(gap || 999), txt: gap != null ? '마지막 연락 ' + gap + '일 전' : '연락 기록 없음' });
+      if (c.status === 'done' && !c.cvx) B.nocvx++;
+      if (c.nhcReq) B.pending++;
+    });
+    ['todo', 'bday', 'ann', 'claim', 'quiet'].forEach(function(k){ B[k].sort(function(a, b){ return a.n - b.n; }); });
+    return B;
+  }
+  function campsGet(){ try { return JSON.parse(localStorage.getItem('mhs_camps') || 'null'); } catch(e){ return null; } }
+  function campMatch(cp){ return S.list.filter(function(c){ return NHC.matches(cp.target, c, todayStr()); }); }
+  function bRow(x, pre){
+    var c = x.c, ph = normPhone(c.phone);
+    return '<div class="brow"><button type="button" class="ctn" data-ctopen="' + c.id + '"><b>' + esc(c.name) + '</b><small>' + esc(x.txt) + '</small></button><span class="ctact">' +
+      (ph ? (IS_MOBILE ? '<a class="pb" href="tel:' + ph + '" data-ctcall="' + c.id + '">전화</a>' : '') + '<button type="button" class="pb" data-msg="sms" data-cid="' + c.id + '"' + (pre ? ' data-pre="' + pre + '"' : '') + '>문자</button><button type="button" class="pb" data-msg="kakao" data-cid="' + c.id + '"' + (pre ? ' data-pre="' + pre + '"' : '') + '>카톡</button>' : '<span class="note">번호 없음</span>') + '</span></div>';
+  }
+  function bSec(title, arr, empty, pre, more){
+    return '<section class="bsec"><h5>' + title + ' <b>' + arr.length + '</b></h5>' + (arr.length ? arr.slice(0, 30).map(function(x){ return bRow(x, x.tpl != null ? 'tpl:' + x.tpl : pre); }).join('') + (arr.length > 30 ? '<p class="note">외 ' + (arr.length - 30) + '명</p>' : '') : '<p class="note">' + empty + '</p>') + (more || '') + '</section>';
+  }
+  function showBrief(){
+    S.cur = null; S.data = null; S.view = 'brief';
+    $('shell').classList.add('has-c'); armBack(); renderList();
+    var B = briefData(), cps = campsGet(), t = todayStr();
+    var h = '<div class="chead"><button class="btn back" type="button" data-act="back">‹ 목록</button><h2 data-i="★">오늘의 브리핑</h2><span class="cmeta">' + dot(t) + ' · 연락할 고객을 한 화면에</span></div>' +
+      '<div class="bkpi">' + [['할 일', B.todo.length], ['생일 7일', B.bday.length], ['응당일 14일', B.ann.length], ['청구기한 60일', B.claim.length], ['90일 미연락', B.quiet.length]].map(function(k){ return '<div><small>' + k[0] + '</small><b>' + k[1] + '</b></div>'; }).join('') + '</div>';
+    if (B.nocvx) h += '<div class="gapban a">' + IC.warn + '<span>분석해 둔 고객 ' + B.nocvx + '명은 아직 보장 요약(응당일·청구기한·캠페인 대상)이 계산되지 않았습니다.</span><button class="btn" type="button" data-nx="bcalc">지금 계산</button></div>';
+    // NHC 뉴스 연계 캠페인
+    if (nhcOn()) {
+      var fresh = cps && cps.date && dayDiff(cps.date, t) <= 2;
+      h += '<section class="bsec bcamp"><h5><span class="nxb">NHC</span> 오늘의 연락 캠페인 <small class="note">' + (fresh ? dot(cps.date) + ' 아침 보장분석부서 작성' : '아직 오늘 캠페인이 없습니다') + '</small><button class="pb" type="button" data-nx="camps" style="margin-left:auto">새로 받기</button></h5>' +
+        (fresh && cps.items.length ? cps.items.map(function(cp){ var m = campMatch(cp);
+          return '<div class="cpc"><div class="cph"><b>' + esc(cp.title) + '</b><small>' + esc(cp.why) + (cp.news ? ' · 뉴스: ' + esc(cp.news) : '') + '</small><span class="cpt">대상: ' + esc(NHC.targetTxt(cp.target)) + ' → <b>' + m.length + '명</b></span></div><div class="nxk">' + esc(cp.msg.replace(/\{이름\}/g, "○○○")).replace(/\n/g, '<br>') + '</div>' +
+            (m.length ? m.slice(0, 20).map(function(c){ return bRow({ c: c, txt: stageTxt(c.stage) + (c.cvx && c.cvx.gens && c.cvx.gens.length ? ' · 실손 ' + c.cvx.gens.join('·') + '세대' : '') }, 'camp:' + cp.id); }).join('') + (m.length > 20 ? '<p class="note">외 ' + (m.length - 20) + '명</p>' : '') : '<p class="note">조건에 맞는 고객이 없습니다' + (B.nocvx ? ' (보장 요약 계산 후 다시 보세요)' : '') + '.</p>') + '</div>'; }).join('') : '<p class="note">매일 아침 NHC 보장분석부서가 뉴스를 보고 연락 캠페인을 만듭니다. 대상 고객은 이 기기 안에서만 고릅니다.</p>') + '</section>';
+    } else h += '<div class="gapban b"><span class="nxb">NHC</span><span>NHC 본사 보장분석부서와 연결하면 매일 아침 <b>뉴스 연계 연락 캠페인</b>과 대상 고객이 여기에 나옵니다.</span><button class="btn" type="button" data-nx="setup">연결하기</button></div>';
+    h += '<div class="bgrid">' + bSec('오늘 할 일', B.todo, '오늘·지난 할 일이 없습니다.') + bSec('생일 (7일 안)', B.bday, '7일 안에 생일인 고객이 없습니다.') +
+      bSec('계약 응당일 (14일 안)', B.ann, '14일 안에 응당일인 계약이 없습니다.') + bSec('청구기한 임박 (60일 안)', B.claim, '60일 안에 기한이 끝나는 청구 건이 없습니다.') +
+      bSec('오래 연락 못 한 고객 (90일+)', B.quiet, '90일 넘게 연락이 끊긴 고객이 없습니다.') + '</div>' +
+      '<p class="note">브리핑은 이 기기 안에서 계산합니다.' + (nhcOn() ? ' NHC 아침 보고에는 이름 없이 숫자만 올라갑니다.' : '') + '</p>';
+    $('main').innerHTML = h; window.scrollTo(0, 0);
+    nhcStats(B);
+  }
+  function briefMini(){
+    if (!S.list.length) return '';
+    var B = briefData(), cps = campsGet(), nc = nhcOn() && cps && cps.date && dayDiff(cps.date, todayStr()) <= 2 ? cps.items.length : 0;
+    return '<button type="button" class="bmini" data-nx="brief"><span class="bm-t"><b>오늘의 브리핑</b><small>' + dot(todayStr()) + '</small></span>' +
+      [['할 일', B.todo.length], ['생일', B.bday.length], ['응당일', B.ann.length], ['청구기한', B.claim.length], ['미연락', B.quiet.length]].concat(nc ? [['캠페인', nc]] : []).map(function(k){ return '<span><small>' + k[0] + '</small><b>' + k[1] + '</b></span>'; }).join('') + '<i>열기 ›</i></button>';
+  }
+  // 하루 한 번: 캠페인 받기 · 숫자 통계 올리기
+  async function nhcDaily(force){
+    if (!nhcOn() || !Store.isOpen()) return;
+    var t = todayStr(), cps = campsGet();
+    var NA = 0; try { NA = +localStorage.getItem('mhs_camps_at') || 0; } catch(e){}
+    if (!force && ((cps && cps.date === t) || Date.now() - NA < 60 * 60 * 1000)) { nhcStats(briefData()); return; }
+    var cfg = await nhcLoad(); if (!cfg || !cfg.token) return;
+    try { localStorage.setItem('mhs_camps_at', String(Date.now())); var c = await NHC.campaigns(cfg); if (c) localStorage.setItem('mhs_camps', JSON.stringify(c)); } catch(e){ if (force) toast(e.message || String(e)); }
+    nhcStats(briefData(), true);
+  }
+  async function nhcStats(B, force){
+    if (!nhcOn()) return;
+    var t = todayStr(); try { if (!force && localStorage.getItem('mhs_nstat') === t) return; } catch(e){}
+    var cfg = await nhcLoad(); if (!cfg || !cfg.token) return;
+    var stg = { lead: 0, consult: 0, contract: 0, care: 0 }; S.list.forEach(function(c){ stg[c.stage || 'lead'] = (stg[c.stage || 'lead'] || 0) + 1; });
+    var st = { v: 1, date: t, customers: S.list.length, stage: stg, todo: B.todo.length, overdue: B.todo.filter(function(x){ return x.n < 0; }).length, birthday7: B.bday.length, anniv14: B.ann.length,
+      claimSoon: B.claim.length, claimAmt: B.claim.reduce(function(s, x){ return s + ((x.c.cvx || {}).claimAmt || 0); }, 0), noContact90: B.quiet.length, coverPending: B.pending };
+    try { await NHC.stats(cfg, st); localStorage.setItem('mhs_nstat', t); } catch(e){}
+  }
 
   // ================= 연락 현황 화면 =================
   function showContacts(){
@@ -3863,6 +4292,8 @@ function HealthUI(root, H) {
     if (ar && !ar.ok && ar.purpose !== 'refresh') toast(ar.error === 'access_denied' ? '구글 로그인을 취소했습니다' : '구글 로그인하지 못했습니다 (' + ar.error + ')');
     setTimeout(checkPend, 600);
     setTimeout(takeShared, 400);
+    setTimeout(function(){ nhcDaily().then(function(){ if (!S.cur && !S.view) showWelcome(); }); }, 2500);
+    setTimeout(function(){ nhcPoll(); }, 4000);
     if (Sync.isOn()) { if (Sync.autoRefresh && Sync.autoRefresh()) return; syncNow(); }
   }
 
@@ -4016,7 +4447,7 @@ function HealthUI(root, H) {
 
   function showWelcome(){
     S.cur = null; S.data = null; S.view = ''; $('shell').classList.remove('has-c');
-    $('main').innerHTML = $('tplWelcome').innerHTML;
+    $('main').innerHTML = briefMini() + $('tplWelcome').innerHTML;
     renderList();
   }
 
@@ -4064,6 +4495,7 @@ function HealthUI(root, H) {
     S.CL = Claims.claims(d.input, base);
     S.BN = Benefit.match(d.coverage || null, S.CL, Claims.visits(d.input, base, 3).visits, todayStr());
     S.HP = (d.meta.checkupAll || d.meta.checkup) ? HealthAnalyze(d.meta.checkupAll, d.meta.checkup, S.cur.sex || d.meta.sex) : null;
+    updateFacts();
   }
 
   function renderCustomer(){
@@ -4338,6 +4770,7 @@ function HealthUI(root, H) {
     h += '<section class="cvhero"><div><span class="eyebrow">보유 계약 · ' + esc((cv.kinds || []).map(function(k){ return k === 'kb' ? 'KB 보장분석' : '메리츠 M보장분석'; }).join(' + ')) + (cv.asOf ? ' · ' + dot(cv.asOf) + ' 기준' : '') + '</span><b class="kh-num">' + cs.length + '<small>건</small></b><span class="kh-sub">월 보험료 합계 <b>' + won(prem) + '</b> · 실손 ' + (plan.length ? plan.map(function(p){ return '<i class="gen">' + p.gen + '세대</i> ' + esc(p.company); }).join(', ') : '없음') + '</span></div>' +
       '<div class="cvk">' + kpi.map(function(k){ return '<div><small>' + k[0] + '</small><b>' + (k[1] ? man(k[1]) : '—') + '</b></div>'; }).join('') + '</div>' +
       '<div class="kh-act"><button class="btn lg ghost" type="button" data-act="files">' + IC.clip + '보장분석 다시 넣기</button><button class="btn lg ghost" type="button" data-ptab="claim">' + IC.won + '청구할 만한 건 보기</button></div></section>';
+    h += nhcPane();
     h += '<div class="cvlist">' + cs.map(function(c, i){
       var g = c.silson ? Cv.silsonGen(c.start) : 0, live = !c.end || c.end >= todayStr();
       var groups = {}; c.riders.forEach(function(r){ (groups[r.type] = groups[r.type] || []).push(r); });
