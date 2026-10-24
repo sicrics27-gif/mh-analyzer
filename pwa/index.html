@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>병력고지 분석기</title>
-<meta name="theme-color" content="#1B347F">
+<title>AFG OC9</title>
+<meta name="theme-color" content="#090B10">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -1025,13 +1025,79 @@ table.ctt td.z{color:var(--mute)}
 .stg2.s-consult{background:var(--blue-soft);color:var(--blue)}.stg2.s-contract{background:var(--gold-soft);color:var(--gold-ink)}.stg2.s-care{background:var(--green-soft);color:var(--green)}
 table.ctt .due{color:var(--red);font-weight:700}
 
+/* =====================================================================
+   AFG OC9 — 검은 콘크리트 위 오션 블루 빛
+   ===================================================================== */
+:root{
+  --gold:#2F6BFF; --gold2:#7AB0FF; --gold-soft:#EAF1FF; --gold-ink:#1D4FC4;
+  --side:#0A0C12; --side2:#171B26; --side-ink:#ECF0F8; --side-mute:#8D97AD;
+  --accent:#12204E; --hero:#0A0C12; --ocean:#2F6BFF; --ocean2:#7AB0FF;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--gold:#5B93FF;--gold2:#8DBBFF;--gold-soft:#13224A;--gold-ink:#9FC3FF;--side:#07090E;--hero:#07090E}}
+:root[data-theme="dark"]{--gold:#5B93FF;--gold2:#8DBBFF;--gold-soft:#13224A;--gold-ink:#9FC3FF;--side:#07090E;--hero:#07090E}
+.wm{display:inline-flex;align-items:baseline;gap:.32em;font-weight:800;letter-spacing:.04em;line-height:1}
+.wm b,.wm span{font-weight:800}
+.wm i{font-style:normal;font-weight:800;color:var(--ocean2);letter-spacing:.02em}
+
+/* 잠금·OTP 화면: 배경 그림 + 어두운 유리 카드 */
+.lock{background:#06080C url(lib/bg-ocean.jpg) center 82%/cover no-repeat}
+.lbox{background:rgba(10,13,20,.62);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);border:1px solid rgba(255,255,255,.09);color:#E8EDF7;box-shadow:0 30px 80px -30px rgba(0,0,0,.8)}
+.lbox h1{color:#fff}
+.lbox p,.lbox .note{color:#A7B1C6}
+.lbox b{color:#fff}
+.lbox input{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14);color:#fff}
+.lbox input::placeholder{color:#76809A;letter-spacing:.04em}
+.lbox input:focus{border-color:var(--ocean2);box-shadow:0 0 0 4px rgba(47,107,255,.22)}
+.lbox .go{background:var(--ocean);color:#fff}
+.lbox .go:hover{background:#3D78FF}
+.lbox .safe{background:rgba(47,107,255,.12);color:#C9D6F2}.lbox .safe svg{color:var(--ocean2)}
+.lbox .lnk{color:#8C98B3}
+.lbox .ferr{color:#FF9A90}
+.lmark{flex-direction:column;align-items:flex-start;gap:6px;color:#fff;margin-bottom:6px}
+.lmark .wm{font-size:30px;color:#fff}
+.lmark small{font-size:11.5px;color:#8C98B3;font-weight:500;letter-spacing:.02em}
+
+/* 사이드바: 검은 바탕, 아래로 수평선 빛 */
+.side{background:#0A0C12 url(lib/bg-ocean-sm.jpg) center 104%/250% auto no-repeat}
+.side>.ssync,.side>.sclip,.side>.sfoot,.side>.slock{background:transparent}
+.sbrand{padding:4px 6px 14px}
+.sbrand .wm{font-size:22px;color:#fff}
+.sbrand small{font-size:11px;letter-spacing:.01em;color:#7E89A3;margin-top:4px}
+.sbtn.pri{background:var(--ocean);color:#fff}
+.sbtn.pri:hover{background:#3D78FF}
+.citem[aria-current="true"]{background:rgba(47,107,255,.12);box-shadow:inset 2px 0 0 var(--ocean2)}
+.sct svg{color:var(--ocean2)}
+.sclip .sc-auto input{accent-color:var(--ocean)}
+
+/* 첫 화면 브랜드 띠 */
+.wbrand{border-radius:16px;padding:34px 30px 30px;background:#0A0C12 url(lib/bg-ocean.jpg) center 80%/cover no-repeat;color:#fff;display:flex;flex-direction:column;gap:8px;min-height:180px;justify-content:flex-end}
+.wbrand .wm{font-size:40px}
+.wbrand small{color:#9DA9C4;font-size:13px}
+
+/* 미청구·보장 히어로 */
+.khero,.cvhero{background:#0A0C12 url(lib/bg-ocean.jpg) center 86%/cover no-repeat}
+.kh-act .go,:root .kh-act .go{background:var(--ocean);color:#fff}
+.kh-act .go:hover{background:#3D78FF}
+.kh-num{border-bottom-color:var(--ocean2)}
+.khero .eyebrow,.cvhero .eyebrow{color:#9DB2E0}
+
+/* 머리글 이니셜 */
+.chead h2::before{background:#0A0C12;color:var(--ocean2)}
+.ptab[aria-selected="true"]{box-shadow:inset 0 -2px 0 var(--ocean)}
+.side{background:linear-gradient(rgba(10,12,18,.25),rgba(10,12,18,.25)),#0A0C12 url(lib/bg-ocean-sm.jpg) center calc(100% + 150px)/260% auto no-repeat}
+.wbrand{background-position:center 99%;justify-content:center;padding:30px 30px 46px;min-height:190px}
+.khero,.cvhero{background-position:center 100%}
+.step i{background:var(--ocean);color:#fff}
+.khero,.cvhero,.wbrand{background:#0A0C12 url(lib/bg-hero.jpg) center bottom/cover no-repeat}
+.wbrand{justify-content:center}
+
 </style>
 </head>
 <body>
 <div id="lock" class="lock"><div class="lbox" id="lbox"><p>불러오는 중…</p></div></div>
 <div class="shell" id="shell" hidden>
   <aside class="side" aria-label="고객 목록">
-    <div class="sbrand"><b><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5zm-1 13-4-4 1.4-1.4L11 12.2l4.6-4.6L17 9z"/></svg>병력고지 분석기</b><small>고지 판정 · 진료이력 · 미청구 보험금 · 건강 분석</small></div>
+    <div class="sbrand"><b class="wm"><span>AFG</span><i>OC9</i></b><small>Authentic Financial Group · Ocean Branch 9팀</small></div>
     <button class="sbtn pri" id="newCust" type="button"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><circle cx="10" cy="8" r="4"/><path d="M2 21c0-4 4-7 8-7s8 3 8 7zM19 8h2v3h3v2h-3v3h-2v-3h-3v-2h3z"/></svg>신규 고객 등록</button>
     <div class="sqw"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" class="sq" type="search" placeholder="이름 · 전화번호 · 메모 검색" autocomplete="off"></div>
     <div class="sfilt" id="sfilt"><button id="fAll" type="button" data-f="all">전체</button><button id="fTodo" type="button" data-f="todo">할 일</button><select id="fStage" aria-label="고객 단계로 거르기"><option value="">모든 단계</option><option value="lead">가망</option><option value="consult">상담 중</option><option value="contract">계약</option><option value="care">관리</option></select></div>
@@ -1048,8 +1114,9 @@ table.ctt .due{color:var(--red);font-weight:700}
 </div>
 <template id="tplWelcome">
   <div class="welcome">
+    <div class="wbrand"><span class="wm"><b>AFG</b><i>OC9</i></span><small>Authentic Financial Group · Ocean Branch 9팀 고객관리</small></div>
     <h2>고객을 선택하거나 새로 등록하세요</h2>
-    <p>MH스캐너처럼 고객을 먼저 등록하고 파일을 첨부하면, 모든 상품의 고지 판정표를 한 번에 만들어 이 기기에 저장합니다.</p>
+    <p>고객을 먼저 등록하고 파일을 첨부하면, 모든 상품의 고지 판정표를 한 번에 만들어 이 기기에 저장합니다.</p>
     <div class="steps">
       <div class="step"><i>1</i><b>고객 등록</b><span>이름 · 성별 · 생년월일 (생년월일은 PDF 비밀번호로 자동 사용)</span></div>
       <div class="step"><i>2</i><b>파일 첨부</b><span>심평원 기본·세부·처방, 공단 요양급여·건강검진, 투약이력 엑셀</span></div>
@@ -3104,6 +3171,7 @@ function HealthUI(root, H) {
     var b = atob(r), out = new Uint8Array(b.length); for (i = 0; i < b.length; i++) out[i] = b.charCodeAt(i); return out;
   };
 
+  var BRAND = '<div class="lmark"><span class="wm"><b>AFG</b><i>OC9</i></span><small>Authentic Financial Group · Ocean Branch 9팀</small></div>';
   // ================= 잠금 =================
   var memMode = false;
   async function boot(){
@@ -3115,7 +3183,7 @@ function HealthUI(root, H) {
   }
   function drawLock(st){
     $('shell').hidden = true; $('lock').hidden = false;
-    var h = '<div class="lmark">' + IC.shield + '<span>병력고지 분석기</span></div>';
+    var h = BRAND;
     if (st === 'nocrypto') h += '<h1>이 브라우저에서는 열 수 없습니다</h1><p>암호화 기능을 쓸 수 없는 환경입니다. 크롬 또는 엣지 최신 버전에서 열어 주세요.</p>';
     else if (st === 'new') h += '<h1>잠금 비밀번호 만들기</h1><div class="safe">' + IC.lock + '<span>고객 정보와 분석 결과는 <b>이 기기 안에만</b> 암호화되어 저장되고, 어디로도 전송되지 않습니다. 비밀번호를 잊으면 저장된 자료를 열 수 없으니 꼭 기억해 두세요.</span></div>' +
       '<input id="pin1" type="password" inputmode="numeric" autocomplete="new-password" placeholder="비밀번호 (4자리 이상)"><input id="pin2" type="password" inputmode="numeric" autocomplete="new-password" placeholder="한 번 더 입력"><div class="ferr" id="lerr"></div><button class="go" id="lgo" type="button">만들고 시작하기</button>';
@@ -3149,7 +3217,7 @@ function HealthUI(root, H) {
 
   // ================= 사용 권한 (OTP) =================
   var ACC = { lastOk: 0 };
-  function gateBox(h){ $('shell').hidden = true; $('lock').hidden = false; $('lbox').innerHTML = '<div class="lmark">' + IC.shield + '<span>병력고지 분석기</span></div>' + h; }
+  function gateBox(h){ $('shell').hidden = true; $('lock').hidden = false; $('lbox').innerHTML = BRAND + h; }
   async function gate(){
     if (!window.Access || Access.skip()) return true;
     gateBox('<h1>사용 권한 확인 중…</h1><p>잠시만 기다려 주세요.</p>');
@@ -3217,7 +3285,7 @@ function HealthUI(root, H) {
   var ADM = { id: '__admin' };
   async function admLoad(){ try { return (await Store.loadData(ADM.id)) || null; } catch(e){ return null; } }
   async function admSave(d){ await Store.saveHead({ id: ADM.id, hidden: true, name: '__admin', status: 'admin', created: d.created || Date.now() }); await Store.saveData(ADM.id, d); }
-  function invite(u){ return '[병력고지 분석기 사용 안내]\n' + u.name + '님, 병력고지 분석기 OTP입니다.\n\nOTP: ' + u.code + '\n등록할 구글 계정: ' + u.email + '\n\n① 설치\n· 휴대폰: https://sicrics27-gif.github.io/mh-analyzer/ 를 크롬으로 열고 메뉴(⋮) → "홈 화면에 추가"\n· PC: https://github.com/' + Access.REPO + '/releases/latest 에서 MH-Analyzer-setup.exe 설치\n② 처음 열면 나오는 화면에 OTP를 넣고, 위 구글 계정으로 본인 확인\n③ 잠금 비밀번호를 만들고 시작'; }
+  function invite(u){ return '[AFG OC9 사용 안내]\n' + u.name + '님, AFG OC9 프로그램 OTP입니다.\n\nOTP: ' + u.code + '\n등록할 구글 계정: ' + u.email + '\n\n① 설치\n· 휴대폰: https://sicrics27-gif.github.io/mh-analyzer/ 를 크롬으로 열고 메뉴(⋮) → "홈 화면에 추가"\n· PC: https://github.com/' + Access.REPO + '/releases/latest 에서 MH-Analyzer-setup.exe 설치\n② 처음 열면 나오는 화면에 OTP를 넣고, 위 구글 계정으로 본인 확인\n③ 잠금 비밀번호를 만들고 시작'; }
   async function openAdmin(){
     var d = await admLoad();
     if (!d || !d.token) { admSetup(d); return; }

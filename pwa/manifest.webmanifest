@@ -1,12 +1,13 @@
 {
- "name": "병력고지 분석기",
- "short_name": "병력분석",
+ "name": "AFG OC9",
+ "short_name": "OC9",
+ "description": "어센틱금융그룹 오션지점 9팀 고객관리",
  "lang": "ko",
  "start_url": "./",
  "scope": "./",
  "display": "standalone",
- "background_color": "#1B347F",
- "theme_color": "#1B347F",
+ "background_color": "#090B10",
+ "theme_color": "#090B10",
  "icons": [
   {
    "src": "icon-192.png",

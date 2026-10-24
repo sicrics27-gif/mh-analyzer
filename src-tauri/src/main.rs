@@ -65,5 +65,5 @@ fn main() {
         .setup(|app| { update::cleanup(); clip::start(app.handle().clone()); Ok(()) })
         .invoke_handler(tauri::generate_handler![unlock_excel, google::google_login, google::google_token, google::google_logout, google::open_url, clip::clip_watch, clip::smemo_latest, update::app_build, update::update_now])
         .run(tauri::generate_context!())
-        .expect("병력고지 분석기를 실행하지 못했습니다");
+        .expect("AFG OC9를 실행하지 못했습니다");
 }

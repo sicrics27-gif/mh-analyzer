@@ -89,7 +89,7 @@ fn login_blocking(app: tauri::AppHandle) -> Result<(), String> {
             Err(e) => return Err(e.to_string()),
         }
     };
-    let _ = write!(stream, "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nConnection: close\r\n\r\n<html><body style=\"font-family:sans-serif;text-align:center;padding-top:80px\"><h2>구글 계정 연결 완료</h2><p>이 창은 닫으셔도 됩니다. 병력고지 분석기가 앞으로 나와 자동으로 이어집니다.</p><script>setTimeout(function(){{window.close()}},1500)</script></body></html>");
+    let _ = write!(stream, "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nConnection: close\r\n\r\n<html><body style=\"font-family:sans-serif;text-align:center;padding-top:80px\"><h2>구글 계정 연결 완료</h2><p>이 창은 닫으셔도 됩니다. AFG OC9 프로그램이 앞으로 나와 자동으로 이어집니다.</p><script>setTimeout(function(){{window.close()}},1500)</script></body></html>");
     drop(stream);
     let j = token_request(&[("code", &code), ("client_id", DESKTOP_CLIENT_ID), ("client_secret", DESKTOP_CLIENT_SECRET), ("redirect_uri", &redirect), ("grant_type", "authorization_code"), ("code_verifier", &verifier)])?;
     let access = j["access_token"].as_str().ok_or("토큰을 받지 못했습니다")?.to_string();
