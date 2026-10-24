@@ -1125,6 +1125,16 @@ table.ctt .due{color:var(--red);font-weight:700}
 :root[data-theme="dark"] .khero,:root[data-theme="dark"] .cvhero{border:1px solid rgba(255,255,255,.08)}
 :root[data-theme="dark"] .toast{background:#ECEFF4;color:#111318}
 :root[data-theme="dark"] .ktxt{background:#1E1B13;color:#F1EBD9}
+.crqbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;font-size:13.5px}
+.crq-t{display:inline-flex;align-items:center;gap:6px;font-weight:700;color:var(--ink2)}
+.crq{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}
+.crq i{font-style:normal;font-weight:700;font-size:12px;padding:2px 8px;border-radius:6px;background:var(--soft);border:1px solid var(--line)}
+.crq b.ok{color:var(--green)}.crq b.ag{color:var(--ocean2,#2F6BFF)}.crq b.wt{color:var(--amber)}
+.crq .pb{text-decoration:none}
+.crq-box{display:flex;flex-direction:column;gap:6px;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.crq-r{display:grid;grid-template-columns:70px 1fr auto;align-items:center;gap:8px}.crq-r small{color:var(--mute)}.crq-r b{font-size:15px}
+.ditem.shx{flex-direction:row;align-items:baseline;gap:8px;cursor:pointer;text-align:left;width:100%;font:inherit;color:var(--ink)}
+.ditem.shx:hover{border-color:var(--ocean)}
 
 </style>
 </head>
@@ -3496,7 +3506,7 @@ function HealthUI(root, H) {
         (c.interest ? '<span class="cc-kv"><small>관심</small>' + esc(c.interest) + '</span>' : '') +
       '</div>' +
       '<div class="cc-next' + (n != null && n <= 0 ? ' due' : '') + '">' + (c.next && c.next.d ? '<span><small>다음 할 일</small><b>' + dot(c.next.d) + ' · ' + dueTxt(n) + '</b> ' + esc(c.next.t || '') + '</span><button type="button" class="pb" data-act="nextDone">완료</button>' : '<span class="note">다음 할 일이 없습니다</span>') + '<button type="button" class="pb" data-ptab="log">기록 · 할 일 추가</button></div>' +
-      '</section>' + contactBar();
+      '</section>' + contactBar() + covReqBar();
     return h;
   }
   function timeline(){
@@ -3742,6 +3752,97 @@ function HealthUI(root, H) {
     boot();
   }
 
+  // ================= 보장분석 동의 요청 (메리츠 영업지원 모바일 · KB스마트비서) =================
+  var COVAPP = {
+    meritz: { name: '메리츠화재', app: '영업지원 모바일', pkg: 'kr.co.meritzfire_sag', web: 'https://sales.meritzfire.com' },
+    kb: { name: 'KB손해보험', app: 'KB스마트비서', pkg: 'com.kbinsure.KBSmart', web: '' }
+  };
+  function appLink(k){ var a = COVAPP[k]; return 'intent://#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=' + a.pkg + ';S.browser_fallback_url=' + encodeURIComponent('market://details?id=' + a.pkg) + ';end'; }
+  function covReqBar(){
+    var c = S.cur, r = c.covReq || {}, d = S.data, kinds = (d && d.coverage && d.coverage.kinds) || [];
+    var chip = function(k){
+      var x = r[k] || {}, done = kinds.indexOf(k) >= 0 || x.st === 'done', a = COVAPP[k];
+      var st = done ? '<b class="ok">보장분석 받음</b>' : x.st === 'agreed' ? '<b class="ag">동의 완료 · PDF 대기</b>' : x.st === 'sent' ? '<b class="wt">동의 대기 · ' + dot(x.at) + ' 요청 (' + ago(x.at) + ')</b>' : '<span class="note">요청 전</span>';
+      return '<span class="crq"><i>' + a.name.replace(/화재|손해보험/, '') + '</i>' + st +
+        (!done && x.st === 'sent' ? '<button type="button" class="pb" data-crq="agreed" data-k="' + k + '">동의 완료</button>' : '') +
+        (!done ? '<button type="button" class="pb" data-crq="open" data-k="' + k + '">' + (x.st ? '다시 요청' : '동의 요청') + '</button>' : '') + '</span>';
+    };
+    return '<div class="crqbar"><span class="crq-t">' + IC.shield2 + '보장분석</span>' + chip('meritz') + chip('kb') + '</div>';
+  }
+  function openCovReq(k){
+    var c = S.cur, a = COVAPP[k], ph = normPhone(c.phone), bd = c.birth ? c.birth.slice(0, 4) + '.' + c.birth.slice(4, 6) + '.' + c.birth.slice(6) : '';
+    var row = function(lbl, v, raw){ return v ? '<div class="crq-r"><small>' + lbl + '</small><b>' + esc(v) + '</b><button type="button" class="pb" data-cp="' + esc(raw || v) + '">복사</button></div>' : ''; };
+    openDlg('<h4>' + IC.shield2 + ' ' + esc(c.name) + '님 ' + a.name + ' 보장분석 동의 요청</h4>' +
+      '<p class="note">' + (IS_MOBILE ? '<b>' + a.app + '</b> 앱을 열어 고객 등록 → 동의 URL 보내기를 하세요. 휴대폰 번호는 미리 복사해 둡니다.' : 'PC에서는 휴대폰의 <b>' + a.app + '</b> 앱으로 보내는 게 편합니다. 아래 정보를 복사해 쓰세요.') + '</p>' +
+      '<div class="crq-box">' + row('이름', c.name) + row('생년월일', bd, c.birth) + row('휴대폰', ph ? phoneTxt(ph) : '', ph) + (!ph ? '<div class="note">휴대폰 번호가 없습니다. <button type="button" class="lnk2" data-act="edit">번호 넣기</button></div>' : '') + '</div>' +
+      '<label class="tgl"><input type="checkbox" id="crqNext" checked> 2일 뒤 "동의했는지 확인" 할 일 만들기</label>' +
+      '<div class="mrow"><button class="btn lg" type="button" id="crqX" style="margin-right:auto">닫기</button>' +
+      (!IS_MOBILE && a.web ? '<button class="btn lg" type="button" id="crqWeb">' + a.name + ' 영업포탈 열기</button>' : '') +
+      '<button class="go" type="button" id="crqGo">' + (IS_MOBILE ? a.app + ' 열기' : '요청 보냄으로 기록') + '</button></div>', 'kbox');
+    $('crqX').onclick = closeDlg;
+    $('dlgBox').querySelectorAll('[data-cp]').forEach(function(b){ b.onclick = function(){ copyText(b.dataset.cp, '내용'); }; });
+    var nx = true; $('crqNext').onchange = function(){ nx = this.checked; };
+    var mark = async function(){
+      (S.cur.covReq = S.cur.covReq || {})[k] = { st: 'sent', at: todayStr() };
+      (S.cur.notes = S.cur.notes || []).push({ id: Date.now().toString(36), at: Date.now(), d: todayStr(), k: 'note', t: a.name + ' 보장분석 동의 요청 보냄' });
+      if (nx && !(S.cur.next && S.cur.next.d)) S.cur.next = { d: addDay(todayStr(), 2), t: a.name.replace(/화재|손해보험/, '') + ' 보장분석 동의 확인' };
+      await saveCur(a.name + ' 동의 요청을 기록했습니다');
+    };
+    if ($('crqWeb')) $('crqWeb').onclick = function(){ openExt(a.web); };
+    $('crqGo').onclick = async function(){
+      if (IS_MOBILE) { if (ph) copyText(ph, '휴대폰 번호'); closeDlg(); await mark(); setTimeout(function(){ location.href = appLink(k); }, 250); }
+      else { closeDlg(); await mark(); }
+    };
+  }
+  document.addEventListener('click', async function(e){
+    var t = e.target.closest('[data-crq]'); if (!t) return;
+    var k = t.dataset.k;
+    if (t.dataset.crq === 'open') { openCovReq(k); return; }
+    if (t.dataset.crq === 'agreed') {
+      (S.cur.covReq = S.cur.covReq || {})[k] = Object.assign({}, S.cur.covReq[k], { st: 'agreed', agreedAt: todayStr() });
+      (S.cur.notes = S.cur.notes || []).push({ id: Date.now().toString(36), at: Date.now(), d: todayStr(), k: 'note', t: COVAPP[k].name + ' 보장분석 동의 완료' });
+      if (S.cur.next && /보장분석 동의 확인/.test(S.cur.next.t || '')) S.cur.next = { d: todayStr(), t: COVAPP[k].name.replace(/화재|손해보험/, '') + ' 보장분석 PDF 받아 공유하기' };
+      await saveCur('동의 완료로 표시했습니다 · 앱에서 보장분석 PDF를 만들어 AFG OC9로 공유하세요');
+    }
+  });
+
+  // ================= 공유로 받은 PDF (보장분석 앱 → 공유 → AFG OC9) =================
+  async function takeShared(){
+    if (!('caches' in window)) return;
+    var c, idx; try { c = await caches.open('mhs-share'); var r = await c.match('./__share/index'); if (!r) return; idx = await r.json(); } catch(e){ return; }
+    var files = [];
+    for (var i = 0; i < idx.length; i++) { try { var res = await c.match(idx[i]); if (res) files.push({ name: decodeURIComponent(res.headers.get('x-name') || ('공유' + i + '.pdf')), data: new Uint8Array(await res.arrayBuffer()) }); } catch(e){} }
+    try { await caches.delete('mhs-share'); } catch(e){}
+    try { history.replaceState(null, '', location.pathname); } catch(e){}
+    if (!files.length) return;
+    toast('공유받은 파일을 읽는 중…');
+    var R; try { R = await Ingest.ingest(L, files, '', null); } catch(e){ R = null; }
+    if (R && R.coverage) {
+      var cv = R.coverage, nm = (cv.name || '').replace(/\s/g, ''), re = nm ? new RegExp('^' + nm.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.') + '$') : null;
+      var cands = S.list.filter(function(x){ return (!cv.birth || x.birth === cv.birth) && (!re || re.test(x.name.replace(/\s/g, ''))); });
+      var apply = async function(id){
+        await openCustomer(id);
+        await finishCoverage(cv);
+        cv.kinds.forEach(function(k){ (S.cur.covReq = S.cur.covReq || {})[k] = { st: 'done', at: todayStr() }; });
+        if (S.cur.next && /보장분석/.test(S.cur.next.t || '')) S.cur.next = null;
+        (S.cur.notes = S.cur.notes || []).push({ id: Date.now().toString(36), at: Date.now(), d: todayStr(), k: 'note', t: '보장분석 PDF 공유받아 반영 · 계약 ' + cv.contracts.length + '건' });
+        await saveCur();
+      };
+      if (cands.length === 1) { await apply(cands[0].id); return; }
+      openDlg('<h4>' + IC.shield2 + ' 어느 고객의 보장분석인가요?</h4><p class="note">PDF 속 이름 <b>' + esc(cv.name || '알 수 없음') + '</b>' + (cv.birth ? ' · 생년월일 ' + birthTxt(cv.birth) : '') + ' · 계약 ' + cv.contracts.length + '건</p>' +
+        '<div class="dlist">' + (cands.length ? cands : S.list.slice(0, 30)).map(function(x){ return '<button type="button" class="ditem shx" data-shid="' + x.id + '"><b>' + esc(x.name) + '</b> <span class="note">' + sexTxt(x.sex) + ' · ' + birthTxt(x.birth) + '</span></button>'; }).join('') + '</div>' +
+        '<div class="mrow">' + (cv.birth && cv.name && !/\*/.test(cv.name) ? '<button class="btn lg" type="button" id="shNew" style="margin-right:auto">' + esc(cv.name) + '님 새로 등록</button>' : '') + '<button class="btn lg" type="button" id="shX">닫기</button></div>');
+      $('shX').onclick = closeDlg;
+      $('dlgBox').querySelectorAll('[data-shid]').forEach(function(b){ b.onclick = async function(){ closeDlg(); await apply(b.dataset.shid); }; });
+      if ($('shNew')) $('shNew').onclick = async function(){ closeDlg(); var h = await Store.saveHead({ status: 'wait', name: cv.name, sex: cv.sex || '', birth: cv.birth, memo: '', from: 'share' }); S.list = await Store.list(); await apply(h.id); };
+      return;
+    }
+    // 보장분석이 아니면: 고객을 고른 뒤 파일 첨부 창으로
+    openDlg('<h4>' + IC.clip + ' 공유받은 파일 ' + files.length + '개</h4><p class="note">어느 고객의 자료인가요? 고르면 파일 첨부 창에 넣어 둡니다.</p><div class="dlist">' + S.list.slice(0, 40).map(function(x){ return '<button type="button" class="ditem shx" data-shf="' + x.id + '"><b>' + esc(x.name) + '</b> <span class="note">' + birthTxt(x.birth) + '</span></button>'; }).join('') + '</div><div class="mrow"><button class="btn lg" type="button" id="shX">닫기</button></div>');
+    $('shX').onclick = closeDlg;
+    $('dlgBox').querySelectorAll('[data-shf]').forEach(function(b){ b.onclick = async function(){ closeDlg(); await openCustomer(b.dataset.shf); openFiles(); files.forEach(function(f){ addFile(f.name, f.data); }); drawFiles(''); }; });
+  }
+
   // ================= 상태 =================
   var S = { list: [], cur: null, data: null, E: null, HI: null, CL: null, HP: null, tab: 'prod', pv: null, pvTab: 'sum', hmode: 'code', filter: 'all', q: '' };
   try { S.hmode = localStorage.getItem('mhs_hmode') || 'code'; } catch(e){}
@@ -3757,6 +3858,7 @@ function HealthUI(root, H) {
     if (ar && ar.ok && ar.purpose === 'connect') toast('구글 계정을 연결했습니다');
     if (ar && !ar.ok && ar.purpose !== 'refresh') toast(ar.error === 'access_denied' ? '구글 로그인을 취소했습니다' : '구글 로그인하지 못했습니다 (' + ar.error + ')');
     setTimeout(checkPend, 600);
+    setTimeout(takeShared, 400);
     if (Sync.isOn()) { if (Sync.autoRefresh && Sync.autoRefresh()) return; syncNow(); }
   }
 

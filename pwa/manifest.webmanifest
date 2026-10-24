@@ -2,6 +2,24 @@
  "name": "AFG OC9",
  "short_name": "OC9",
  "description": "어센틱금융그룹 오션지점 9팀 고객관리",
+ "share_target": {
+  "action": "./share-target",
+  "method": "POST",
+  "enctype": "multipart/form-data",
+  "params": {
+   "files": [
+    {
+     "name": "file",
+     "accept": [
+      "application/pdf",
+      ".pdf",
+      "application/zip",
+      ".zip"
+     ]
+    }
+   ]
+  }
+ },
  "lang": "ko",
  "start_url": "./",
  "scope": "./",
