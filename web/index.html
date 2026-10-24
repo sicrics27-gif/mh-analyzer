@@ -1095,6 +1095,14 @@ table.ctt .due{color:var(--red);font-weight:700}
 .wbrand{background:#2a2d31 url(lib/bg-afg-hero.jpg) center/cover no-repeat}
 .khero,.cvhero{background:#24272b url(lib/bg-concrete-side.jpg) center/cover no-repeat}
 .citem[aria-current="true"]{background:rgba(255,255,255,.08)}
+.gst{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.05);font-size:12.5px}
+.gst i{width:8px;height:8px;border-radius:50%;flex:0 0 auto;background:#5ED39A;box-shadow:0 0 0 3px rgba(94,211,154,.18)}
+.gst.run i{background:var(--ocean2);animation:gpulse 1s ease-in-out infinite}.gst.warn i{background:#F5C76B;box-shadow:0 0 0 3px rgba(245,199,107,.18)}.gst.bad i{background:#FF8A80;box-shadow:0 0 0 3px rgba(255,138,128,.2)}
+@keyframes gpulse{50%{opacity:.35}}
+@media (prefers-reduced-motion:reduce){.gst.run i{animation:none}}
+.gst span{display:flex;flex-direction:column;min-width:0;flex:1}.gst b{font-weight:600;color:var(--side-ink)}.gst small{color:var(--side-mute);font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gst button{border:1px solid rgba(255,255,255,.14);background:transparent;color:var(--side-ink);border-radius:8px;height:28px;min-width:30px;padding:0 8px;cursor:pointer;font:inherit;font-size:13px}
+.gst.bad button{border-color:#FF8A80;color:#FFB4AB}
 
 </style>
 </head>
@@ -1110,7 +1118,7 @@ table.ctt .due{color:var(--red);font-weight:700}
     <div class="clist" id="clist"></div>
     <div class="sclip" id="sclip" hidden></div>
     <div class="ssync" id="ssync"></div>
-    <details class="smenu" id="smenu"><summary><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>도구 · 백업 · 사용자 관리</summary><div class="sfoot"><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button><button id="admBtn" type="button" class="adm">사용자 관리</button></div></details>
+    <details class="smenu" id="smenu"><summary><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>도구 · 백업 · 사용자 관리</summary><div class="sfoot"><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button><button type="button" data-sync="signout">구글 계정 바꾸기</button><button id="admBtn" type="button" class="adm">사용자 관리</button></div></details>
     <input type="file" id="bkFile" accept=".json,application/json" hidden>
     <div class="slock"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6 10V8a6 6 0 1 1 12 0v2h1v12H5V10zm2 0h8V8a4 4 0 1 0-8 0z"/></svg>고객 정보는 잠금 비밀번호로 암호화 저장 <span id="verTag"></span></div>
     <div id="memBan" class="membanner" hidden>저장소를 쓸 수 없는 화면입니다 · 창을 닫으면 사라집니다</div>
@@ -2779,6 +2787,26 @@ function HealthUI(root, H) {
     if (dataBox) { await dec(dataBox); await put('data', id, dataBox); } else await del('data', id);
     return h;
   }
+  // 두 기기에서 같은 고객을 고친 경우: 상담 기록·청구 기록은 양쪽 것을 합치고, 나머지는 나중에 고친 쪽
+  function unionBy(a, b, key) { var m = {}, out = []; (a || []).concat(b || []).forEach(function (x) { var k = x && (x[key] != null ? x[key] : JSON.stringify(x)); if (k == null || m[k]) return; m[k] = 1; out.push(x); }); return out; }
+  async function mergeRemote(id, rhBox, rdBox) {
+    var rh = await dec(rhBox), lb = await get('idx', id), lh = lb ? await dec(lb) : null;
+    if (!lh) return putRaw(id, rhBox, rdBox);
+    var newer = (rh.updated || 0) >= (lh.updated || 0) ? 'r' : 'l';
+    if (rh.deleted || lh.deleted) { if (newer === 'r') return putRaw(id, rhBox, rdBox); return lh; }
+    var h = newer === 'r' ? Object.assign({}, lh, rh) : Object.assign({}, rh, lh);
+    h.notes = unionBy(lh.notes, rh.notes, 'id').sort(function (x, y) { return (x.at || 0) - (y.at || 0); });
+    h.updated = Math.max(lh.updated || 0, rh.updated || 0) + 1;
+    var ld = await get('data', id), rd = rdBox ? await dec(rdBox) : null; ld = ld ? await dec(ld) : null;
+    var d = !rd ? ld : !ld ? rd : (newer === 'r' ? Object.assign({}, ld, rd) : Object.assign({}, rd, ld));
+    if (d && ld && rd) {
+      d.claimLog = unionBy(ld.claimLog, rd.claimLog, 'at').sort(function (x, y) { return x.at - y.at; });
+      d.claimMarks = Object.assign({}, newer === 'r' ? ld.claimMarks : rd.claimMarks, newer === 'r' ? rd.claimMarks : ld.claimMarks);
+    }
+    await put('idx', id, await enc(h));
+    if (d) await put('data', id, await enc(d));
+    return h;
+  }
   async function vault() { return get('meta', 'vault'); }
   // 다른 기기의 잠금(구글에 있는 것)으로 이 기기를 맞춤: 같은 비밀번호·같은 열쇠
   async function adoptVault(remote, pin) {
@@ -2827,7 +2855,7 @@ function HealthUI(root, H) {
     status: status, setup: setup, unlock: unlock, lock: lock, wipe: wipe,
     list: list, saveHead: saveHead, saveData: saveData, loadData: loadData, remove: remove,
     exportBackup: exportBackup, importBackup: importBackup,
-    rawAll: rawAll, rawData: rawData, putRaw: putRaw, vault: vault, adoptVault: adoptVault,
+    rawAll: rawAll, rawData: rawData, putRaw: putRaw, mergeRemote: mergeRemote, hasLocal: async function () { var k = await tx('idx', 'readonly', function (st) { return req(st.getAllKeys()); }); return (k || []).filter(function (x) { return x !== '__admin'; }).length; }, vault: vault, adoptVault: adoptVault,
     onChange: function (f) { onChange = f; }, isOpen: function () { return !!key; }, checkIdle: checkIdle,
     isMemory: function () { return !!mem; }, onLock: function (f) { onLock = f; }
   };
@@ -2876,7 +2904,7 @@ function HealthUI(root, H) {
     var pend = ls('mhs_oauth'); ls('mhs_oauth', null);
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { }
     if (!pend || p.state !== pend.st) return;
-    if (p.access_token) { keepTok(p.access_token, p.expires_in); if (pend.purpose === 'connect') { state.on = true; save(); } authResult = { ok: true, purpose: pend.purpose }; }
+    if (p.access_token) { keepTok(p.access_token, p.expires_in); if (pend.purpose === 'connect' || pend.purpose === 'activate') { state.on = true; save(); } authResult = { ok: true, purpose: pend.purpose }; }
     else authResult = { ok: false, purpose: pend.purpose, error: p.error || 'error' };
   })();
   function supported() {
@@ -2933,7 +2961,7 @@ function HealthUI(root, H) {
   async function disconnect() {
     if (IS_DESKTOP) { try { await inv('google_logout'); } catch (e) { } }
     else if (tok && root.google && root.google.accounts) { try { root.google.accounts.oauth2.revoke(tok, function () { }); } catch (e) { } }
-    tok = null; tokExp = 0; ss('mhs_tok', null); state = { on: false, last: 0 }; save();
+    tok = null; tokExp = 0; ss('mhs_tok', null); state = { on: false, last: 0 }; save(); ls('mhs_synced', null);
   }
 
   // ---------- 드라이브 ----------
@@ -2968,7 +2996,13 @@ function HealthUI(root, H) {
   // ---------- 동기화 ----------
   var running = null, listeners = [];
   function emit(s) { listeners.forEach(function (f) { try { f(s); } catch (e) { } }); }
-  // 결과: {status:'ok', up, down} | {status:'needPin', remoteVault} | {status:'needLogin'} | {status:'error', message}
+  // 마지막으로 맞춘 시점(기록별): 양쪽 모두 바뀐 경우를 알아내 합치기 위해
+  function syncedMap(v) { if (v) ls('mhs_synced', v); return ls('mhs_synced') || {}; }
+  async function remoteVault() {
+    var files = await listFiles(), f = files.find(function (x) { return x.name === 'vault.json'; });
+    return f ? JSON.parse(await download(f.id)) : null;
+  }
+  // 결과: {status:'ok', up, down, changed} | {status:'needPin', remoteVault} | {status:'needLogin'} | {status:'offline'} | {status:'error', message}
   async function run(opts) {
     if (running) return running;
     running = (async function () {
@@ -2985,43 +3019,56 @@ function HealthUI(root, H) {
             var remote = JSON.parse(await download(rv.id));
             if (remote.salt !== local.salt) {
               if (opts && opts.pin) { if (!(await Store.adoptVault(remote, opts.pin))) return { status: 'badPin' }; }
-              else return { status: 'needPin' };
+              else return { status: 'needPin', remoteVault: remote };
             }
           }
         }
-        var mine = await Store.rawAll(), up = 0, down = 0;
+        var mine = await Store.rawAll(), up = 0, down = 0, last = syncedMap();
         var mineById = {}; mine.forEach(function (x) { mineById[x.id] = x; });
-        // 받기
-        var changedIds = [];
+        var changedIds = [], handled = {};
+        // 받기 (양쪽 다 바뀌었으면 합치기)
         for (var i = 0; i < files.length; i++) {
           var f = files[i], m = /^c_(.+)\.json$/.exec(f.name); if (!m) continue;
-          var id = m[1], ru = +((f.appProperties || {}).u || 0), lx = mineById[id];
-          if (!lx || ru > lx.updated) {
+          var id = m[1], ru = +((f.appProperties || {}).u || 0), lx = mineById[id], seen = +(last[id] || 0);
+          if (lx && ru === lx.updated) { last[id] = ru; continue; }
+          if (!lx || ru > lx.updated || (lx.updated > seen && ru > seen)) {
             var o = JSON.parse(await download(f.id));
-            try { await Store.putRaw(id, o.h, o.d || null); down++; changedIds.push(id); } catch (e) { }
+            try {
+              if (lx && lx.updated > seen && ru > seen) { await Store.mergeRemote(id, o.h, o.d || null); handled[id] = 'merged'; }
+              else if (!lx || ru > lx.updated) { await Store.putRaw(id, o.h, o.d || null); last[id] = ru; handled[id] = 'down'; }
+              down++; changedIds.push(id);
+            } catch (e) { }
           }
         }
         // 올리기
+        mine = await Store.rawAll();
         for (var j = 0; j < mine.length; j++) {
           var x = mine[j], rf = byName['c_' + x.id + '.json'], rup = rf ? +((rf.appProperties || {}).u || 0) : -1;
+          if (handled[x.id] === 'down') continue;
+          // 지난번 맞춘 뒤 다른 기기가 그 사이 올린 게 있으면 덮어쓰지 말고 먼저 합치기
+          if (rf && x.updated > rup && handled[x.id] !== 'merged' && rup !== +(last[x.id] || 0)) {
+            try { var o2 = JSON.parse(await download(rf.id)); await Store.mergeRemote(x.id, o2.h, o2.d || null); changedIds.push(x.id); down++;
+              x = (await Store.rawAll()).find(function (y) { return y.id === x.id; }) || x; } catch (e) { }
+          }
           if (x.updated > rup) {
             var d = x.deleted ? null : await Store.rawData(x.id);
             await upload(rf ? rf.id : null, 'c_' + x.id + '.json', { u: String(x.updated) }, JSON.stringify({ h: x.head, d: d || null }));
-            up++;
+            last[x.id] = x.updated; up++;
           }
         }
+        syncedMap(last);
         state.last = Date.now(); save();
         var res = { status: 'ok', up: up, down: down, changed: changedIds };
         emit(res); return res;
       } catch (e) {
-        var r2 = e && e.code === 'NEED_LOGIN' ? { status: 'needLogin' } : { status: 'error', message: e && e.message || String(e) };
+        var r2 = e && e.code === 'NEED_LOGIN' ? { status: 'needLogin' } : (e instanceof TypeError || !navigator.onLine) ? { status: 'offline' } : { status: 'error', message: e && e.message || String(e) };
         emit(r2); return r2;
       } finally { running = null; }
     })();
     return running;
   }
   var t = null;
-  function soon() { if (!state.on) return; clearTimeout(t); t = setTimeout(function () { if (Store.isOpen()) run(); }, 2500); }
+  function soon(ms) { if (!state.on) return; clearTimeout(t); t = setTimeout(function () { if (Store.isOpen()) run(); }, ms || 1500); }
 
   // 로그인한 구글 계정 이메일 (사용 권한 본인 확인용)
   async function userEmail() {
@@ -3030,12 +3077,16 @@ function HealthUI(root, H) {
   }
   async function loginForEmail() {
     if (IS_DESKTOP) await inv('google_login'); else await loginWeb(false, 'activate');
-    return userEmail();
+    state.on = true; save();
+    var em = await userEmail(); ls('mhs_acct', em); return em;
   }
+  // 이 기기에 연결된 구글 계정 (이메일)
+  function account(v) { if (v !== undefined) ls('mhs_acct', v); return ls('mhs_acct') || ''; }
+  function hasToken() { return IS_DESKTOP ? state.on : !!(tok && Date.now() < tokExp); }
   root.Sync = { userEmail: userEmail, loginForEmail: loginForEmail,
     cfg: CFG, supported: supported, isOn: function () { return !!state.on; }, last: function () { return state.last; },
     isDesktop: IS_DESKTOP, connect: connect, disconnect: disconnect, warm: warm, run: run, soon: soon,
-    loginWeb: loginWeb, on: function (f) { listeners.push(f); }, autoRefresh: autoRefresh, useRedirect: useRedirect,
+    loginWeb: loginWeb, on: function (f) { listeners.push(f); }, remoteVault: remoteVault, account: account, hasToken: hasToken, autoRefresh: autoRefresh, useRedirect: useRedirect,
     authResult: function () { var r = authResult; return r; }, redirectUri: redirectUri
   };
 })(this);
@@ -3183,6 +3234,18 @@ function HealthUI(root, H) {
     if (!(await gate())) return;
     var st = await Store.status();
     memMode = Store.isMemory();
+    if (useGoogle()) {
+      var ok = await ensureAccount();
+      if (ok === 'wait') return;
+      if (!ok) { drawGoogle(''); return; }
+      if (st !== 'open') {
+        var rv = null;
+        try { rv = await Sync.remoteVault(); }
+        catch(e){ if (e && e.code === 'NEED_LOGIN') { if (!Sync.isDesktop && Sync.autoRefresh && Sync.autoRefresh()) return; drawGoogle('구글 로그인이 만료되었습니다. 다시 로그인해 주세요.'); return; } }
+        var lv = await Store.vault();
+        if (rv && (!lv || lv.salt !== rv.salt)) { drawJoin(rv); return; }
+      }
+    }
     if (st === 'open') { enterApp(); return; }
     drawLock(st);
   }
@@ -3230,7 +3293,7 @@ function HealthUI(root, H) {
     var ar = Sync.authResult && Sync.authResult(), pend = Access.pend();
     if (ar && ar.purpose === 'activate' && pend) {
       if (!ar.ok) { drawActivate('구글 로그인을 마치지 못했습니다. 다시 시도하세요.', pend); return false; }
-      try { var em = await Sync.userEmail(); if (!(await Access.activate(pend, em))) { drawActivate('이 OTP는 ' + '다른 구글 계정용입니다. OTP를 받을 때 알려 준 지메일로 로그인하세요.', pend); return false; } toast('사용 등록을 마쳤습니다'); }
+      try { var em = await Sync.userEmail(); Sync.account(em); if (!(await Access.activate(pend, em))) { drawActivate('이 OTP는 ' + '다른 구글 계정용입니다. OTP를 받을 때 알려 준 지메일로 로그인하세요.', pend); return false; } toast('사용 등록을 마쳤습니다'); }
       catch(e){ drawActivate('구글 계정을 확인하지 못했습니다: ' + (e.message || e), pend); return false; }
     }
     var r = await Access.check();
@@ -3561,6 +3624,73 @@ function HealthUI(root, H) {
     $('main').innerHTML = h; window.scrollTo(0, 0);
   }
 
+  // ================= 구글 계정으로 시작 =================
+  function localOnly(){ try { return localStorage.getItem('mhs_local') === '1'; } catch(e){ return false; } }
+  function useGoogle(){ return !!(window.Sync && Sync.supported() && !memMode && !(window.Access && Access.skip()) && !localOnly()); }
+  async function ensureAccount(){
+    // 로그인은 됐는데 이메일을 아직 모르면 확인 (예전 연결은 이메일 권한이 없어 다시 로그인 필요)
+    if (Sync.isOn() && !Sync.account()) {
+      if (!Sync.isDesktop && !Sync.hasToken()) { if (Sync.autoRefresh && Sync.autoRefresh()) return 'wait'; return false; }
+      try { var em = await Sync.userEmail(); await switchAccount(em); return true; } catch(e){ return false; }
+    }
+    return Sync.isOn() && !!Sync.account();
+  }
+  async function switchAccount(em){
+    var prev = Sync.account();
+    if (prev && prev !== em && (await Store.hasLocal())) {
+      var keep = confirm('이 기기에는 다른 구글 계정(' + prev + ')의 고객 자료가 있습니다.\n\n[확인] 이 자료를 새 계정(' + em + ')으로 합치기\n[취소] 이 기기의 자료를 지우고 새 계정의 자료만 받기');
+      if (!keep) { await Store.wipe(); try { localStorage.removeItem('mhs_synced'); } catch(e){} }
+    }
+    Sync.account(em);
+  }
+  function drawGoogle(msg){
+    gateBox('<h1>구글 계정으로 시작</h1><p>고객 리스트는 <b>구글 계정</b>에 저장되어, 같은 계정으로 로그인한 휴대폰과 PC에서 항상 똑같이 보입니다.</p>' +
+      '<div class="safe">' + IC.lock + '<span>구글 드라이브의 <b>앱 전용 숨김 공간</b>에 잠금 비밀번호로 <b>암호화된 채</b> 저장됩니다. 구글을 포함해 누구도 내용을 볼 수 없고, 드라이브 화면에도 보이지 않습니다.</span></div>' +
+      (Sync.isDesktop ? '<p class="note">크롬 창이 따로 열립니다. 계정을 고르고 허용을 누르면 이 화면으로 돌아옵니다.</p>' : '') +
+      '<div class="ferr" id="gErr">' + esc(msg || '') + '</div><button class="go" id="gGo" type="button">' + IC.cloud + ' 구글 계정으로 로그인</button><button class="lnk" id="gLocal" type="button">로그인이 안 될 때: 이 기기에서만 쓰기 (다른 기기와 맞추지 않음)</button>');
+    $('gLocal').onclick = function(){ if (!confirm('이 기기에서만 고객 자료를 저장합니다. 휴대폰·PC 간에 고객 리스트가 맞춰지지 않습니다.\n나중에 왼쪽 아래 "구글 계정으로 로그인"을 누르면 언제든 바꿀 수 있습니다.')) return; try { localStorage.setItem('mhs_local', '1'); } catch(e){} boot(); };
+    $('gGo').onclick = async function(){
+      var b = this; b.disabled = true; b.textContent = Sync.isDesktop ? '크롬 창에서 계정을 고르세요…' : '구글로 이동 중…';
+      try { await Sync.connect(); var em = await Sync.userEmail(); await switchAccount(em); boot(); }
+      catch(e){ drawGoogle('로그인하지 못했습니다: ' + (e && e.message || e)); }
+    };
+  }
+  // 구글에 있는 잠금(같은 비밀번호)으로 이 기기를 맞춤
+  async function drawJoin(rv){
+    var lv = await Store.vault(), nLocal = lv ? await Store.hasLocal() : 0;
+    var merge = lv && nLocal > 0;
+    gateBox('<h1>' + (merge ? '이 기기 자료와 합치기' : '구글 계정의 고객 자료 열기') + '</h1>' +
+      '<p><b>' + esc(Sync.account()) + '</b> 계정에 저장된 고객 자료가 있습니다. 그 자료를 만들 때 쓴 <b>잠금 비밀번호</b>를 입력하세요. 이제 모든 기기가 이 비밀번호 하나를 씁니다.</p>' +
+      '<input id="pin1" type="password" inputmode="numeric" autocomplete="current-password" placeholder="구글 계정 자료의 잠금 비밀번호">' +
+      (merge ? '<p class="note" style="margin-top:4px">이 기기에도 고객 ' + nLocal + '명의 자료가 따로 있습니다. 함께 합치려면 <b>이 기기에서 쓰던 비밀번호</b>도 넣어 주세요. (같으면 똑같이 입력)</p><input id="pin2" type="password" inputmode="numeric" autocomplete="off" placeholder="이 기기에서 쓰던 비밀번호">' : '') +
+      '<div class="ferr" id="lerr"></div><button class="go" id="lgo" type="button">열기</button>' + (merge ? '<button class="lnk" id="jSkip" type="button">이 기기 자료는 버리고 구글 자료만 받기</button>' : '') + '<button class="lnk" id="jOut" type="button">다른 구글 계정으로 로그인</button>');
+    setTimeout(function(){ $('pin1').focus(); }, 50);
+    var go = async function(dropLocal){
+      var p1 = $('pin1').value, p2 = $('pin2') ? $('pin2').value : '', err = $('lerr'), b = $('lgo');
+      if (!p1) { err.textContent = '비밀번호를 입력하세요.'; return; }
+      b.disabled = true; b.textContent = '확인 중…';
+      try {
+        if (merge && !dropLocal) {
+          if (!p2) { b.disabled = false; b.textContent = '열기'; err.textContent = '이 기기에서 쓰던 비밀번호도 넣거나, 아래 "구글 자료만 받기"를 누르세요.'; return; }
+          if (!(await Store.unlock(p2))) { b.disabled = false; b.textContent = '열기'; err.textContent = '이 기기에서 쓰던 비밀번호가 맞지 않습니다.'; return; }
+        }
+        if (dropLocal) await Store.wipe();
+        if (!(await Store.adoptVault(rv, p1))) { b.disabled = false; b.textContent = '열기'; err.textContent = '구글 계정 자료의 비밀번호가 맞지 않습니다.'; if (merge && !dropLocal) Store.lock(); return; }
+        try { localStorage.removeItem('mhs_synced'); } catch(e){}
+        enterApp();
+      } catch(e){ b.disabled = false; b.textContent = '열기'; err.textContent = '열지 못했습니다: ' + (e && e.message || e); }
+    };
+    $('lgo').onclick = function(){ go(false); };
+    $('lbox').querySelectorAll('input').forEach(function(i){ i.addEventListener('keydown', function(e){ if (e.key === 'Enter') go(false); }); });
+    if ($('jSkip')) $('jSkip').onclick = function(){ if (confirm('이 기기에만 있던 고객 ' + nLocal + '명의 자료가 지워지고, 구글 계정의 자료만 남습니다. 계속할까요?')) go(true); };
+    $('jOut').onclick = function(){ signOut(); };
+  }
+  async function signOut(){
+    try { await Sync.disconnect(); } catch(e){}
+    Sync.account(''); if (Store.isOpen()) { ACC.revoking = true; Store.lock(); ACC.revoking = false; }
+    boot();
+  }
+
   // ================= 상태 =================
   var S = { list: [], cur: null, data: null, E: null, HI: null, CL: null, HP: null, tab: 'prod', pv: null, pvTab: 'sum', hmode: 'code', filter: 'all', q: '' };
   try { S.hmode = localStorage.getItem('mhs_hmode') || 'code'; } catch(e){}
@@ -3603,16 +3733,17 @@ function HealthUI(root, H) {
   function timeTxt(t){ if (!t) return ''; var d = new Date(t); var p = function(n){ return String(n).padStart(2,'0'); }; return (d.toDateString() === new Date().toDateString() ? '' : (d.getMonth()+1) + '/' + d.getDate() + ' ') + p(d.getHours()) + ':' + p(d.getMinutes()); }
   function drawSync(){
     var box = $('ssync'); if (!box) return;
-    if (!Sync.supported()) { box.innerHTML = '<small>구글 동기화는 휴대폰 앱과 PC 프로그램에서 쓸 수 있습니다.</small>'; return; }
-    if (!Sync.isOn()) { box.innerHTML = '<button type="button" class="sbtn" data-sync="connect">' + IC.cloud + '구글 계정 연결 (PC·휴대폰 동기화)</button>'; return; }
-    var st = syncSt || {}, line;
-    if (st.status === 'running') line = '동기화 중…';
-    else if (st.status === 'needLogin') line = '<b class="w">구글 로그인이 필요합니다</b>';
-    else if (st.status === 'error') line = '<b class="w">동기화 실패</b> · ' + esc(st.message || '');
-    else line = Sync.last() ? '마지막 동기화 ' + timeTxt(Sync.last()) : '아직 동기화 전';
-    box.innerHTML = '<div class="ss-row">' + IC.cloud + '<span>구글 동기화 켜짐<br><small>' + line + '</small></span></div><div class="ss-btns">' +
-      (st.status === 'needLogin' ? '<button type="button" data-sync="login">로그인</button>' : '<button type="button" data-sync="now"' + (st.status === 'running' ? ' disabled' : '') + '>지금 동기화</button>') +
-      '<button type="button" data-sync="off">연결 해제</button></div>';
+    if (localOnly() && window.Sync && Sync.supported()) { box.innerHTML = '<div class="gst warn"><i></i><span><b>이 기기에만 저장 중</b><small>다른 기기와 맞추지 않음</small></span><button type="button" data-sync="golive">로그인</button></div>'; return; }
+    if (!useGoogle()) { box.innerHTML = '<small>이 화면에서는 구글 계정 저장을 쓸 수 없습니다 · 휴대폰 앱이나 PC 프로그램을 쓰세요</small>'; return; }
+    if (!Sync.isOn()) { box.innerHTML = '<button type="button" class="sbtn" data-sync="login">' + IC.cloud + '구글 계정으로 로그인</button>'; return; }
+    var st = syncSt || {}, cls = 'ok', line;
+    if (st.status === 'running') { cls = 'run'; line = '저장하는 중…'; }
+    else if (st.status === 'needLogin') { cls = 'bad'; line = '구글 로그인이 필요합니다'; }
+    else if (st.status === 'offline') { cls = 'warn'; line = '인터넷 끊김 · 연결되면 올립니다'; }
+    else if (st.status === 'error') { cls = 'warn'; line = '저장 실패 · 잠시 후 다시 시도'; }
+    else line = Sync.last() ? '구글에 저장됨 · ' + timeTxt(Sync.last()) : '구글과 맞추는 중…';
+    box.innerHTML = '<div class="gst ' + cls + '"><i></i><span><b>' + line + '</b><small>' + esc(Sync.account() || '') + '</small></span>' +
+      (st.status === 'needLogin' ? '<button type="button" data-sync="login">로그인</button>' : '<button type="button" data-sync="now"' + (st.status === 'running' ? ' disabled' : '') + ' title="지금 맞추기">↻</button>') + '</div>';
   }
   async function syncNow(opts){
     syncSt = { status: 'running' }; drawSync();
@@ -3620,13 +3751,6 @@ function HealthUI(root, H) {
     syncSt = r; drawSync();
     if (r.status === 'needPin') { askSyncPin(); return r; }
     if (r.status === 'badPin') { askSyncPin('비밀번호가 맞지 않습니다. 다른 기기에서 쓰는 잠금 비밀번호를 입력하세요.'); return r; }
-    if (r.status === 'ok' && r.down) {
-      S.list = await Store.list(); renderList();
-      if (S.cur && !S.cur.sample && r.changed.indexOf(S.cur.id) >= 0) {
-        if (S.list.some(function(x){ return x.id === S.cur.id; })) openCustomer(S.cur.id); else showWelcome();
-      }
-      toast('구글에서 고객 ' + r.down + '명의 자료를 받아왔습니다');
-    }
     return r;
   }
   function askSyncPin(msg){
@@ -3662,13 +3786,27 @@ function HealthUI(root, H) {
     var a = b.dataset.sync;
     if (a === 'connect') openSyncConnect();
     else if (a === 'now') syncNow();
+    else if (a === 'golive') { try { localStorage.removeItem('mhs_local'); } catch(e){} ACC.revoking = true; Store.lock(); ACC.revoking = false; boot(); }
+    else if (a === 'signout') { if (confirm('구글 계정에서 로그아웃할까요? 고객 자료는 구글 계정에 그대로 남아 있고, 다시 로그인하면 돌아옵니다.')) signOut(); }
     else if (a === 'login') (Sync.isDesktop ? Sync.connect() : Sync.loginWeb(!(Sync.useRedirect && Sync.useRedirect()), 'login')).then(function(){ syncNow(); }, function(er){ toast('로그인하지 못했습니다: ' + (er && er.message || er)); });
     else if (a === 'off') { if (!confirm('구글 동기화를 끌까요? 이 기기의 고객 자료는 그대로 남고, 구글에 올라간 암호화 자료도 지워지지 않습니다.')) return; Sync.disconnect().then(function(){ syncSt = null; drawSync(); toast('구글 동기화를 껐습니다'); }); }
   });
   Store.onChange(function(){ Sync.soon(); });
-  Sync.on(function(st){ if (st.status === 'running' || st.status === 'ok') { syncSt = st; drawSync(); } });
-  setInterval(function(){ if (Sync.isOn() && Store.isOpen() && document.visibilityState === 'visible') syncNow(); }, 5 * 60 * 1000);
-  document.addEventListener('visibilitychange', function(){ if (document.visibilityState !== 'visible') return; if (Store.checkIdle) Store.checkIdle(); if (Sync.isOn() && Store.isOpen()) Sync.soon(); });
+  // 자동 동기화(변경 직후·1분마다)로 받아온 것도 화면에 바로 반영
+  Sync.on(async function(st){
+    syncSt = st; drawSync();
+    if (st.status === 'ok' && st.down && Store.isOpen()) {
+      S.list = await Store.list(); renderList();
+      if (S.cur && !S.cur.sample && st.changed.indexOf(S.cur.id) >= 0 && $('dlg').hidden) {
+        var y = window.scrollY, tab = S.tab;
+        if (S.list.some(function(x){ return x.id === S.cur.id; })) { await openCustomer(S.cur.id); S.tab = tab; renderCustomer(); window.scrollTo(0, y); } else showWelcome();
+      }
+      if (S.view === 'contacts') showContacts();
+    }
+  });
+  setInterval(function(){ if (Sync.isOn() && Store.isOpen() && document.visibilityState === 'visible' && !(syncSt && syncSt.status === 'needLogin')) syncNow(); }, 60 * 1000);
+  window.addEventListener('online', function(){ if (Sync.isOn() && Store.isOpen()) Sync.soon(500); });
+  document.addEventListener('visibilitychange', function(){ if (document.visibilityState !== 'visible') return; if (Store.checkIdle) Store.checkIdle(); if (Sync.isOn() && Store.isOpen()) Sync.soon(300); });
 
   // ================= 고객 목록 =================
   function ageOf(birth, base){
