@@ -990,6 +990,40 @@ table.ht tr.grp td svg{color:var(--gold)}
 .frow2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.frow2>div{display:flex;flex-direction:column;gap:4px}
 .frow2 input{height:44px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--paper);width:100%;font-size:15px}
 @media (max-width:600px){.cc-next{margin-left:0}.tl-e{grid-template-columns:40px 60px minmax(0,1fr) 20px}.frow2{grid-template-columns:1fr}}
+/* ===== 연락 바로가기 · 연락 현황 ===== */
+.ctbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.ctb{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font:inherit;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none}
+.ctb:hover{border-color:color-mix(in srgb,var(--accent) 35%,var(--line))}
+.ctb.call{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.ctb.kakao svg{color:#C9A400}
+.ctlast{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;margin-left:auto;font-size:13.5px;font-variant-numeric:tabular-nums}
+.ctlast small{color:var(--mute);font-size:12px;margin-right:5px}
+.ctlast em{font-style:normal;color:var(--ink2);font-weight:600}
+@media (max-width:600px){.ctlast{margin-left:0;width:100%}.ctb{flex:1 1 0;justify-content:center}}
+.tpl{display:flex;flex-wrap:wrap;gap:6px}
+.tpl button{border:1px solid var(--line);background:var(--paper);border-radius:8px;height:32px;padding:0 12px;font:inherit;font-size:13px;font-weight:600;color:var(--ink2);cursor:pointer}
+.tpl button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.msgtxt{min-height:180px}
+.msgqr{display:flex;gap:16px;align-items:center;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:12px}
+.msgqr svg{width:168px;height:168px;flex:0 0 auto;background:#fff;border-radius:8px}
+.pdtxt{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;font-size:14px;background:var(--paper);color:var(--ink);resize:vertical}
+.sct{display:flex;align-items:center;gap:8px;width:100%;height:34px;padding:0 10px;border:0;border-radius:9px;background:rgba(255,255,255,.05);color:var(--side-ink);font:inherit;font-size:13px;cursor:pointer;text-align:left}
+.sct:hover{background:rgba(255,255,255,.09)}.sct svg{color:var(--gold2)}
+.ctf{display:flex;flex-wrap:wrap;gap:6px}
+.ctf button{border:1px solid var(--line);background:var(--paper);border-radius:999px;height:34px;padding:0 14px;font:inherit;font-size:13px;font-weight:600;color:var(--ink2);cursor:pointer}
+.ctf button b{color:var(--mute);margin-left:4px}
+.ctf button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}.ctf button[aria-pressed="true"] b{color:inherit;opacity:.8}
+table.ctt{min-width:920px}
+table.ctt td{vertical-align:middle}
+table.ctt td.n small{display:block;font-size:11.5px;color:var(--mute)}
+table.ctt td.z{color:var(--mute)}
+.ctn{border:0;background:none;padding:0;text-align:left;cursor:pointer;font:inherit;color:var(--ink);display:flex;flex-direction:column}
+.ctn b{font-size:14.5px}.ctn small{font-size:12px;color:var(--mute)}
+.ctn:hover b{color:var(--accent);text-decoration:underline}
+.ctact{white-space:nowrap}.ctact .pb{margin-right:4px;text-decoration:none}
+.stg2{font-size:12px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--soft);color:var(--ink2);white-space:nowrap}
+.stg2.s-consult{background:var(--blue-soft);color:var(--blue)}.stg2.s-contract{background:var(--gold-soft);color:var(--gold-ink)}.stg2.s-care{background:var(--green-soft);color:var(--green)}
+table.ctt .due{color:var(--red);font-weight:700}
 
 </style>
 </head>
@@ -1001,6 +1035,7 @@ table.ht tr.grp td svg{color:var(--gold)}
     <button class="sbtn pri" id="newCust" type="button"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><circle cx="10" cy="8" r="4"/><path d="M2 21c0-4 4-7 8-7s8 3 8 7zM19 8h2v3h3v2h-3v3h-2v-3h-3v-2h3z"/></svg>신규 고객 등록</button>
     <div class="sqw"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" class="sq" type="search" placeholder="이름 · 전화번호 · 메모 검색" autocomplete="off"></div>
     <div class="sfilt" id="sfilt"><button id="fAll" type="button" data-f="all">전체</button><button id="fTodo" type="button" data-f="todo">할 일</button><select id="fStage" aria-label="고객 단계로 거르기"><option value="">모든 단계</option><option value="lead">가망</option><option value="consult">상담 중</option><option value="contract">계약</option><option value="care">관리</option></select></div>
+    <button type="button" class="sct" data-act="contacts"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>연락 현황 · 마지막 통화·문자·카톡</button>
     <div class="clist" id="clist"></div>
     <div class="sclip" id="sclip" hidden></div>
     <div class="ssync" id="ssync"></div>
@@ -1038,6 +1073,7 @@ table.ht tr.grp td svg{color:var(--gold)}
 <script src="lib/pdf.min.js"></script>
 <script src="lib/jszip.min.js"></script>
 <script src="lib/xlsx.full.min.js"></script>
+<script src="lib/qrcode.js"></script>
 <script>
 // PDF 표 추출 엔진 (브라우저/Node 공용) - pdf.js 3.11
 (function (root) {
@@ -3052,6 +3088,8 @@ function HealthUI(root, H) {
     won:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l3 10 3-10 3 10 3-10 3 10 3-10M2 11h20M2 14h20"/></svg>',
     heart:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20s-8-5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 9c0 6-8 11-8 11z"/><path d="M4 12h4l2-3 3 6 2-3h5"/></svg>',
     cloud:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 18h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.6 1.5A3.3 3.3 0 0 0 7 18z"/><path d="M12 11v5M9.5 13.5 12 11l2.5 2.5"/></svg>',
+    phone:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>',
+    sms:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M7 21l3-3M8 9h8M8 13h5"/></svg>',
     chat:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.5 3 2 6.6 2 11c0 2.8 1.9 5.3 4.7 6.7L5.8 21l4-2.6c.7.1 1.4.2 2.2.2 5.5 0 10-3.6 10-8S17.5 3 12 3z"/></svg>',
     shield2:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 5 6v5c0 4.4 3 8.4 7 10 4-1.6 7-5.6 7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>',
     shield:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5zm-1 13-4-4 1.4-1.4L11 12.2l4.6-4.6L17 9z"/></svg>'
@@ -3251,9 +3289,9 @@ function HealthUI(root, H) {
 
   // ================= 고객 카드 · 상담 기록 =================
   var STAGES = [['lead', '가망'], ['consult', '상담 중'], ['contract', '계약'], ['care', '관리']];
-  var KINDS = [['call', '전화'], ['meet', '만남'], ['msg', '문자·카톡'], ['note', '메모']];
+  var KINDS = [['call', '전화'], ['meet', '만남'], ['sms', '문자'], ['kakao', '카톡'], ['note', '메모']];
   function stageTxt(s){ var f = STAGES.find(function(x){ return x[0] === (s || 'lead'); }); return f ? f[1] : '가망'; }
-  function kindTxt(k){ var f = KINDS.find(function(x){ return x[0] === k; }); return f ? f[1] : '메모'; }
+  function kindTxt(k){ if (k === 'msg') return '문자·카톡'; var f = KINDS.find(function(x){ return x[0] === k; }); return f ? f[1] : '메모'; }
   function phoneTxt(p){ p = String(p || '').replace(/\D/g, ''); return p.length === 11 ? p.slice(0, 3) + '-' + p.slice(3, 7) + '-' + p.slice(7) : p.length === 10 ? p.slice(0, 3) + '-' + p.slice(3, 6) + '-' + p.slice(6) : p; }
   function normPhone(p){ p = String(p || '').replace(/\D/g, ''); return /^01\d{8,9}$/.test(p) ? p : ''; }
   function nextDue(c){ return c && c.next && c.next.d ? dayDiff(todayStr(), c.next.d) : null; }
@@ -3266,17 +3304,17 @@ function HealthUI(root, H) {
     var h = '<section class="ccard">' +
       '<div class="cc-stage" role="group" aria-label="고객 단계">' + STAGES.map(function(s){ return '<button type="button" data-stage="' + s[0] + '" aria-pressed="' + ((c.stage || 'lead') === s[0]) + '">' + s[1] + '</button>'; }).join('') + '</div>' +
       '<div class="cc-info">' +
-        (ph ? '<span class="cc-ph"><b>' + phoneTxt(ph) + '</b>' + (IS_MOBILE ? '<a class="pb" href="tel:' + ph + '">전화</a><a class="pb" href="sms:' + ph + '">문자</a>' : '') + '<button type="button" class="pb" data-copyph="' + ph + '">복사</button></span>' : '<button type="button" class="lnk2" data-act="edit">휴대폰 번호 넣기</button>') +
+        (ph ? '<span class="cc-ph"><b>' + phoneTxt(ph) + '</b>' + '' + '<button type="button" class="pb" data-copyph="' + ph + '">복사</button></span>' : '<button type="button" class="lnk2" data-act="edit">휴대폰 번호 넣기</button>') +
         (c.ref ? '<span class="cc-kv"><small>소개</small>' + esc(c.ref) + '</span>' : '') +
         (c.interest ? '<span class="cc-kv"><small>관심</small>' + esc(c.interest) + '</span>' : '') +
       '</div>' +
       '<div class="cc-next' + (n != null && n <= 0 ? ' due' : '') + '">' + (c.next && c.next.d ? '<span><small>다음 할 일</small><b>' + dot(c.next.d) + ' · ' + dueTxt(n) + '</b> ' + esc(c.next.t || '') + '</span><button type="button" class="pb" data-act="nextDone">완료</button>' : '<span class="note">다음 할 일이 없습니다</span>') + '<button type="button" class="pb" data-ptab="log">기록 · 할 일 추가</button></div>' +
-      '</section>';
+      '</section>' + contactBar();
     return h;
   }
   function timeline(){
     var c = S.cur, d = S.data, ev = [];
-    (c.notes || []).forEach(function(x){ ev.push({ d: x.d, at: x.at, k: x.k, t: x.t, id: x.id, user: true }); });
+    (c.notes || []).forEach(function(x){ ev.push({ d: x.d, at: x.at, k: x.k, t: x.t, id: x.id, ok: x.ok, user: true }); });
     if (c.created) ev.push({ d: new Date(c.created - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10), at: c.created, k: 'sys', t: '고객 등록' + (c.from === 'smemo' || c.from === 'memo' ? ' (SMemo에서 가져옴)' : '') });
     if (d && d.analyzedAt && !d.covOnly) ev.push({ d: new Date(d.analyzedAt - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10), at: d.analyzedAt, k: 'sys', t: '병력파악 분석 · ' + (c.summary || '') });
     if (d && d.coverageAt) ev.push({ d: new Date(d.coverageAt - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10), at: d.coverageAt, k: 'sys', t: '보장분석 반영 · 계약 ' + ((d.coverage && d.coverage.contracts.length) || 0) + '건' });
@@ -3293,7 +3331,7 @@ function HealthUI(root, H) {
     h += '<ol class="tline">' + ev.map(function(e){
       var m = e.d.slice(0, 7), head = '';
       if (m !== month) { month = m; head = '<li class="tl-m">' + m.slice(0, 4) + '년 ' + (+m.slice(5, 7)) + '월</li>'; }
-      return head + '<li class="tl-e k-' + e.k + '"><time>' + (+e.d.slice(5, 7)) + '.' + (+e.d.slice(8, 10)) + '</time><span class="tl-k">' + (e.k === 'sys' ? '자동' : e.k === 'claim' ? '청구' : kindTxt(e.k)) + '</span><p>' + esc(e.t).replace(/\n/g, '<br>') + '</p>' + (e.user ? '<button type="button" class="tl-x" data-ndel="' + e.id + '" aria-label="기록 삭제">×</button>' : '') + '</li>';
+      return head + '<li class="tl-e k-' + e.k + '"><time>' + (+e.d.slice(5, 7)) + '.' + (+e.d.slice(8, 10)) + '</time><span class="tl-k">' + (e.k === 'sys' ? '자동' : e.k === 'claim' ? '청구' : e.k === 'call' && e.ok === false ? '부재중' : kindTxt(e.k)) + '</span><p>' + esc(e.t).replace(/\n/g, '<br>') + '</p>' + (e.user ? '<button type="button" class="tl-x" data-ndel="' + e.id + '" aria-label="기록 삭제">×</button>' : '') + '</li>';
     }).join('') + '</ol>';
     return h;
   }
@@ -3319,6 +3357,137 @@ function HealthUI(root, H) {
     if ((t = e.target.closest('[data-act="nextDone"]'))) { var nx = S.cur.next; (S.cur.notes = S.cur.notes || []).push({ id: Date.now().toString(36), at: Date.now(), d: todayStr(), k: 'note', t: '할 일 완료: ' + (nx && nx.t || dot(nx && nx.d)) }); S.cur.next = null; await saveCur('할 일을 완료했습니다'); return; }
   });
 
+  // ================= 연락: 전화·문자·카톡 바로가기와 마지막 연락일 =================
+  var MSG_TPL = [
+    ['안부', '{이름}님, 안녕하세요. 담당 설계사입니다. 요즘 건강은 어떠신지 안부 여쭙습니다. 보험 관련해서 궁금하신 점 있으면 언제든 편하게 연락 주세요.'],
+    ['상담 약속', '{이름}님, 안녕하세요. 지난번 말씀드린 보장 점검 건으로 한번 뵙고 싶은데, 편하신 날짜와 시간 알려 주시면 맞춰서 찾아뵙겠습니다.'],
+    ['서류 요청', '{이름}님, 안녕하세요. 보장 분석을 위해 아래 서류가 필요합니다.\n· 심평원 진료내역(기본·세부·처방)\n· 건강보험공단 요양급여내역\n받으시는 방법은 제가 링크로 안내해 드릴게요.'],
+    ['생일 축하', '{이름}님, 생신 진심으로 축하드립니다! 늘 건강하시고 행복한 한 해 보내시길 바랍니다. 🎂'],
+    ['빈 메시지', '']
+  ];
+  function fill(t){ return String(t || '').replace(/\{이름\}/g, S.cur ? S.cur.name : ''); }
+  function lastOf(c){
+    var o = { call: '', miss: '', sms: '', kakao: '', meet: '', any: '' };
+    (c.notes || []).forEach(function(n){
+      var k = n.k === 'call' ? (n.ok === false ? 'miss' : 'call') : n.k === 'msg' ? 'sms' : n.k;
+      if (o[k] !== undefined && n.d > o[k]) o[k] = n.d;
+      if (/call|sms|kakao|meet|msg/.test(n.k) && n.ok !== false && n.d > o.any) o.any = n.d;
+    });
+    return o;
+  }
+  function ago(d){ if (!d) return ''; var n = dayDiff(d, todayStr()); return n <= 0 ? '오늘' : n === 1 ? '어제' : n + '일 전'; }
+  async function addNote(k, t, extra){
+    (S.cur.notes = S.cur.notes || []).push(Object.assign({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), at: Date.now(), d: todayStr(), k: k, t: t }, extra || {}));
+    if ((!S.cur.stage || S.cur.stage === 'lead') && k === 'call' && !(extra && extra.ok === false)) S.cur.stage = 'consult';
+    await saveCur();
+  }
+  function contactBar(){
+    var c = S.cur, ph = normPhone(c.phone), L = lastOf(c);
+    var b = '<div class="ctbar">';
+    if (ph) {
+      if (IS_MOBILE) b += '<a class="ctb call" href="tel:' + ph + '" data-pend="call">' + IC.phone + '전화</a><button type="button" class="ctb" data-msg="sms">' + IC.sms + '문자</button><button type="button" class="ctb kakao" data-msg="kakao">' + IC.chat + '카톡</button>';
+      else b += '<button type="button" class="ctb" data-msg="sms">' + IC.sms + '문자 보내기</button><button type="button" class="ctb kakao" data-msg="kakao">' + IC.chat + '카톡 보내기</button><button type="button" class="ctb" data-act="logCall">' + IC.phone + '통화 기록</button>';
+    } else b += '<button type="button" class="lnk2" data-act="edit">휴대폰 번호를 넣으면 전화·문자·카톡 바로가기가 생깁니다</button>';
+    b += '<span class="ctlast"><span><small>통화</small>' + (L.call ? dot(L.call) : '—') + '</span><span><small>문자</small>' + (L.sms ? dot(L.sms) : '—') + '</span><span><small>카톡</small>' + (L.kakao ? dot(L.kakao) : '—') + '</span><span><small>만남</small>' + (L.meet ? dot(L.meet) : '—') + '</span>' + (L.any ? '<em>마지막 연락 ' + ago(L.any) + '</em>' : '<em>연락 기록 없음</em>') + '</span></div>';
+    return b;
+  }
+  // 휴대폰: 전화·문자 앱에 다녀오면 기록 남길지 묻기
+  function setPend(p){ try { if (p) sessionStorage.setItem('mhs_pend', JSON.stringify(p)); else sessionStorage.removeItem('mhs_pend'); } catch(e){} }
+  function getPend(){ try { return JSON.parse(sessionStorage.getItem('mhs_pend') || 'null'); } catch(e){ return null; } }
+  async function checkPend(){
+    var p = getPend(); if (!p || Date.now() - p.at < 2500 || !Store.isOpen()) return;
+    setPend(null);
+    if (!S.cur || S.cur.id !== p.cid) { var c = S.list.find(function(x){ return x.id === p.cid; }); if (!c) return; await openCustomer(c.id); }
+    var call = p.k === 'call';
+    openDlg('<h4>' + (call ? IC.phone : IC.sms) + ' ' + esc(S.cur.name) + '님과 ' + (call ? '통화했나요?' : '문자 보냈나요?') + '</h4>' +
+      '<textarea id="pdTxt" rows="3" class="pdtxt" placeholder="' + (call ? '통화 내용 (선택) — 예: 다음 주 화요일 방문 약속' : '보낸 내용 메모 (선택)') + '">' + esc(p.t || '') + '</textarea>' +
+      '<div class="mrow">' + (call ? '<button class="btn lg" type="button" data-pd="miss">부재중</button>' : '') + '<button class="btn lg" type="button" data-pd="skip" style="margin-right:auto">기록 안 함</button><button class="go" type="button" data-pd="ok">' + (call ? '통화함 · 기록' : '보냄 · 기록') + '</button></div>');
+    $('dlgBox').querySelectorAll('[data-pd]').forEach(function(b){ b.onclick = async function(){
+      var a = b.dataset.pd, t = $('pdTxt').value.trim(); closeDlg();
+      if (a === 'skip') return;
+      if (a === 'miss') await addNote('call', '부재중' + (t ? ' — ' + t : ''), { ok: false });
+      else await addNote(p.k, t || (call ? '통화' : '문자 보냄'));
+      toast(a === 'miss' ? '부재중으로 기록했습니다' : '기록했습니다');
+    }; });
+  }
+  document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'visible') setTimeout(checkPend, 300); });
+  // 메시지 작성: 휴대폰은 문자 앱·카톡 공유로, PC는 QR(휴대폰 문자) 또는 복사(카톡 PC)
+  function openMsg(ch){
+    var c = S.cur, ph = normPhone(c.phone), kk = ch === 'kakao';
+    openDlg('<h4>' + (kk ? IC.chat : IC.sms) + ' ' + esc(c.name) + '님께 ' + (kk ? '카톡' : '문자') + ' 보내기</h4>' +
+      '<div class="tpl" role="group" aria-label="문구 틀">' + MSG_TPL.map(function(t, i){ return '<button type="button" data-tpl="' + i + '"' + (i === 0 ? ' aria-pressed="true"' : ' aria-pressed="false"') + '>' + t[0] + '</button>'; }).join('') + '</div>' +
+      '<textarea id="msgTxt" class="ktxt msgtxt" spellcheck="false">' + esc(fill(MSG_TPL[0][1])) + '</textarea>' +
+      '<div id="msgQr" class="msgqr" hidden></div><div class="note" id="msgNote"></div>' +
+      '<div class="mrow"><button class="btn lg" type="button" id="msgX" style="margin-right:auto">닫기</button>' +
+      (IS_MOBILE ? (kk ? '<button class="go kakao" type="button" id="msgGo">' + IC.chat + '카톡으로 보내기</button>' : '<button class="go" type="button" id="msgGo">' + IC.sms + '문자 앱으로 보내기</button>')
+        : (kk ? '<button class="btn lg" type="button" id="msgCopy">복사</button>' : '<button class="btn lg" type="button" id="msgCopy">복사</button><button class="btn lg" type="button" id="msgQrB">휴대폰으로 보내기 (QR)</button>') + '<button class="go" type="button" id="msgDone">보냈어요 · 기록</button>') + '</div>', 'wide kbox');
+    var ta = $('msgTxt');
+    $('dlgBox').querySelectorAll('[data-tpl]').forEach(function(b){ b.onclick = function(){ ta.value = fill(MSG_TPL[+b.dataset.tpl][1]); $('dlgBox').querySelectorAll('[data-tpl]').forEach(function(x){ x.setAttribute('aria-pressed', String(x === b)); }); if (!$('msgQr').hidden) drawQr(); ta.focus(); }; });
+    $('msgX').onclick = closeDlg;
+    var log = async function(){ await addNote(kk ? 'kakao' : 'sms', ta.value.trim().slice(0, 300) || (kk ? '카톡 보냄' : '문자 보냄')); };
+    var drawQr = function(){
+      var box = $('msgQr'); box.hidden = false;
+      try {
+        if (!window.qrcode) throw 0;
+        window.qrcode.stringToBytes = window.qrcode.stringToBytesFuncs['UTF-8'];
+        var q = window.qrcode(0, 'L'); q.addData('SMSTO:' + ph + ':' + ta.value); q.make();
+        box.innerHTML = q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }) + '<div><b>휴대폰 카메라로 이 QR을 찍으세요</b><br><span class="note">문자 앱이 ' + phoneTxt(ph) + ' 번호와 이 내용으로 열립니다. 보내기만 누르면 됩니다.</span></div>';
+      } catch(e){ box.innerHTML = '<span class="note">QR을 만들지 못했습니다. 내용이 너무 길면 줄여 주세요.</span>'; }
+    };
+    if ($('msgQrB')) $('msgQrB').onclick = drawQr;
+    if ($('msgCopy')) $('msgCopy').onclick = function(){ copyText(ta.value, '메시지'); $('msgNote').textContent = kk ? '복사했습니다 · 카카오톡 PC에서 ' + c.name + '님 대화방을 열고 붙여 넣으세요 (Ctrl+V)' : '복사했습니다'; };
+    if ($('msgDone')) $('msgDone').onclick = async function(){ closeDlg(); await log(); toast((kk ? '카톡' : '문자') + ' 보낸 것으로 기록했습니다'); };
+    if ($('msgGo')) $('msgGo').onclick = async function(){
+      var txt = ta.value;
+      if (kk) {
+        if (navigator.share) { try { await navigator.share({ text: txt }); closeDlg(); await log(); toast('카톡 보낸 것으로 기록했습니다'); } catch(e){ if (e && e.name !== 'AbortError') { copyText(txt, '메시지'); } } }
+        else { copyText(txt, '메시지'); closeDlg(); await log(); }
+        return;
+      }
+      setPend({ cid: c.id, k: 'sms', at: Date.now(), t: txt.slice(0, 300) }); closeDlg();
+      location.href = 'sms:' + ph + (txt ? '?body=' + encodeURIComponent(txt) : '');
+    };
+  }
+  function openLogCall(){
+    openDlg('<h4>' + IC.phone + ' ' + esc(S.cur.name) + '님 통화 기록</h4><textarea id="pdTxt" rows="3" class="pdtxt" placeholder="통화 내용 (선택)"></textarea><div class="mrow"><button class="btn lg" type="button" id="lcX" style="margin-right:auto">닫기</button><button class="btn lg" type="button" id="lcMiss">부재중</button><button class="go" type="button" id="lcOk">통화함 · 기록</button></div>');
+    $('lcX').onclick = closeDlg;
+    $('lcMiss').onclick = async function(){ var t = $('pdTxt').value.trim(); closeDlg(); await addNote('call', '부재중' + (t ? ' — ' + t : ''), { ok: false }); toast('부재중으로 기록했습니다'); };
+    $('lcOk').onclick = async function(){ var t = $('pdTxt').value.trim(); closeDlg(); await addNote('call', t || '통화'); toast('통화를 기록했습니다'); };
+  }
+  document.addEventListener('click', function(e){
+    var t;
+    if ((t = e.target.closest('[data-pend]'))) { setPend({ cid: S.cur.id, k: 'call', at: Date.now() }); return; }
+    if ((t = e.target.closest('[data-msg]'))) { if (t.dataset.cid) { openCustomer(t.dataset.cid).then(function(){ openMsg(t.dataset.msg); }); return; } openMsg(t.dataset.msg); return; }
+    if ((t = e.target.closest('[data-act="logCall"]'))) { openLogCall(); return; }
+    if ((t = e.target.closest('[data-act="contacts"]'))) { showContacts(); return; }
+    if ((t = e.target.closest('[data-ctf]'))) { S.ctf = t.dataset.ctf; showContacts(); return; }
+    if ((t = e.target.closest('[data-ctopen]'))) { openCustomer(t.dataset.ctopen); return; }
+    if ((t = e.target.closest('[data-ctcall]'))) { setPend({ cid: t.dataset.ctcall, k: 'call', at: Date.now() }); return; }
+  });
+
+  // ================= 연락 현황 화면 =================
+  function showContacts(){
+    S.cur = null; S.data = null; S.view = 'contacts';
+    $('shell').classList.add('has-c'); armBack(); renderList();
+    var f = S.ctf || 'all', rows = S.list.map(function(c){ var L = lastOf(c); return { c: c, L: L, gap: L.any ? dayDiff(L.any, todayStr()) : null }; });
+    var cnt = { all: rows.length, d30: rows.filter(function(r){ return r.gap != null && r.gap >= 30; }).length, d90: rows.filter(function(r){ return r.gap != null && r.gap >= 90; }).length, none: rows.filter(function(r){ return r.gap == null; }).length };
+    if (f === 'd30') rows = rows.filter(function(r){ return r.gap != null && r.gap >= 30; });
+    if (f === 'd90') rows = rows.filter(function(r){ return r.gap != null && r.gap >= 90; });
+    if (f === 'none') rows = rows.filter(function(r){ return r.gap == null; });
+    rows.sort(function(a, b){ var x = a.gap == null ? 1e9 : a.gap, y = b.gap == null ? 1e9 : b.gap; return y - x; });
+    var cell = function(d){ return d ? '<td class="n">' + dot(d) + '<small>' + ago(d) + '</small></td>' : '<td class="n z">—</td>'; };
+    var h = '<div class="chead"><button class="btn back" type="button" data-act="back">‹ 목록</button><h2 data-i="☎">연락 현황</h2><span class="cmeta">고객별 마지막 통화·문자·카톡·만남 날짜</span></div>' +
+      '<div class="ctf" role="group" aria-label="거르기">' + [['all', '전체'], ['d30', '30일 넘게 연락 없음'], ['d90', '90일 넘게'], ['none', '연락 기록 없음']].map(function(x){ return '<button type="button" data-ctf="' + x[0] + '" aria-pressed="' + (f === x[0]) + '">' + x[1] + ' <b>' + cnt[x[0]] + '</b></button>'; }).join('') + '</div>' +
+      '<div class="tw"><table class="t ctt"><thead><tr><th>고객</th><th>단계</th><th>마지막 통화</th><th>마지막 문자</th><th>마지막 카톡</th><th>마지막 만남</th><th>다음 할 일</th><th></th></tr></thead><tbody>' +
+      (rows.length ? rows.map(function(r){ var c = r.c, ph = normPhone(c.phone), n = nextDue(c);
+        return '<tr><td><button type="button" class="ctn" data-ctopen="' + c.id + '"><b>' + esc(c.name) + '</b><small>' + (ph ? phoneTxt(ph) : '번호 없음') + '</small></button></td><td><span class="stg2 s-' + (c.stage || 'lead') + '">' + stageTxt(c.stage) + '</span></td>' +
+          cell(r.L.call) + cell(r.L.sms) + cell(r.L.kakao) + cell(r.L.meet) +
+          '<td>' + (c.next && c.next.d ? '<span class="' + (n <= 0 ? 'due' : '') + '">' + dot(c.next.d) + '</span> <small class="note">' + esc(c.next.t || '') + '</small>' : '<span class="note">—</span>') + '</td>' +
+          '<td class="ctact">' + (ph ? (IS_MOBILE ? '<a class="pb" href="tel:' + ph + '" data-ctcall="' + c.id + '">전화</a>' : '') + '<button type="button" class="pb" data-msg="sms" data-cid="' + c.id + '">문자</button><button type="button" class="pb" data-msg="kakao" data-cid="' + c.id + '">카톡</button>' : '') + '</td></tr>'; }).join('') : '<tr><td colspan="8" class="note" style="text-align:center;padding:20px">해당하는 고객이 없습니다.</td></tr>') +
+      '</tbody></table></div><p class="note">통화·문자·카톡 바로가기를 쓰거나 상담 기록에 남긴 날짜로 계산합니다. 부재중은 마지막 통화에 넣지 않습니다.</p>';
+    $('main').innerHTML = h; window.scrollTo(0, 0);
+  }
+
   // ================= 상태 =================
   var S = { list: [], cur: null, data: null, E: null, HI: null, CL: null, HP: null, tab: 'prod', pv: null, pvTab: 'sum', hmode: 'code', filter: 'all', q: '' };
   try { S.hmode = localStorage.getItem('mhs_hmode') || 'code'; } catch(e){}
@@ -3333,6 +3502,7 @@ function HealthUI(root, H) {
     var ar = Sync.authResult && Sync.authResult();
     if (ar && ar.ok && ar.purpose === 'connect') toast('구글 계정을 연결했습니다');
     if (ar && !ar.ok && ar.purpose !== 'refresh') toast(ar.error === 'access_denied' ? '구글 로그인을 취소했습니다' : '구글 로그인하지 못했습니다 (' + ar.error + ')');
+    setTimeout(checkPend, 600);
     if (Sync.isOn()) { if (Sync.autoRefresh && Sync.autoRefresh()) return; syncNow(); }
   }
 
@@ -3344,7 +3514,7 @@ function HealthUI(root, H) {
     if (!$('modal').hidden) { $('modal').hidden = true; return true; }
     if (!$('dlg').hidden) { closeDlg(); return true; }
     if (S.pv) { S.pv = null; renderCustomer(); return true; }
-    if ($('shell').classList.contains('has-c') || S.cur) { showWelcome(); return true; }
+    if ($('shell').classList.contains('has-c') || S.cur || S.view) { showWelcome(); return true; }
     return false;
   }
   window.addEventListener('popstate', function(){
@@ -3467,7 +3637,7 @@ function HealthUI(root, H) {
   $('clist').addEventListener('click', function(e){ var b = e.target.closest('[data-cid]'); if (b) openCustomer(b.dataset.cid); });
 
   function showWelcome(){
-    S.cur = null; S.data = null; $('shell').classList.remove('has-c');
+    S.cur = null; S.data = null; S.view = ''; $('shell').classList.remove('has-c');
     $('main').innerHTML = $('tplWelcome').innerHTML;
     renderList();
   }
