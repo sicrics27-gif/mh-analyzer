@@ -913,6 +913,9 @@ table.ht tr.grp td svg{color:var(--gold)}
 .mono,table.t td.n,table.ht td.n,.klog time,.admbox .mono,.fc-c .mono{font-family:var(--f-body);font-variant-numeric:tabular-nums;letter-spacing:0}
 .admbox .mono{letter-spacing:.02em;font-weight:600}
 
+.sclip .sc-auto{color:var(--side-mute);font-size:12.5px;padding:6px 10px 0}
+.sclip .sc-auto input{accent-color:var(--gold2)}
+
 </style>
 </head>
 <body>
@@ -4119,8 +4122,41 @@ function HealthUI(root, H) {
     var box = $('sclip'); if (!box) return;
     if (!IS_DESKTOP) { box.hidden = true; return; }
     box.hidden = false;
-    box.innerHTML = '<button type="button" id="clipTg" aria-pressed="' + clipOn + '">' + IC.doc + '<span>SMemo 복사 감지 <b>' + (clipOn ? '켜짐' : '꺼짐') + '</b><br><small>고객 메모를 복사하면 자동으로 찾거나 등록</small></span></button>';
+    box.innerHTML = '<button type="button" id="clipTg" aria-pressed="' + clipOn + '">' + IC.doc + '<span>SMemo 복사 감지 <b>' + (clipOn ? '켜짐' : '꺼짐') + '</b><br><small>고객 메모를 복사하면 찾거나 등록</small></span></button>' +
+      (clipOn ? '<label class="tgl sc-auto"><input type="checkbox" id="clipAuto"' + (clipAuto ? ' checked' : '') + '> 묻지 않고 바로 등록</label>' : '');
+    var ca = $('clipAuto'); if (ca) ca.onchange = function(){ clipAuto = this.checked; try { localStorage.setItem('mhs_clipauto', clipAuto ? '1' : '0'); } catch(e){} toast(clipAuto ? '복사하면 바로 등록합니다' : '복사하면 등록할지 먼저 묻습니다'); };
     $('clipTg').onclick = function(){ clipOn = !clipOn; try { localStorage.setItem('mhs_clip', clipOn ? '1' : '0'); } catch(e){} window.__TAURI__.core.invoke('clip_watch', { on: clipOn }).catch(function(){}); drawClipToggle(); toast(clipOn ? 'SMemo 복사 감지를 켰습니다' : 'SMemo 복사 감지를 껐습니다'); };
+  }
+  var clipAuto = true; try { clipAuto = localStorage.getItem('mhs_clipauto') !== '0'; } catch(e){}
+  // 묻지 않고 바로 등록: 이미 있는 고객(이름+생년월일)은 건너뛰고, 한 명이면 바로 그 고객 화면으로
+  async function autoRegister(people){
+    var have = {}; S.list.forEach(function(c){ have[c.name + c.birth] = c; });
+    var added = [], found = [];
+    for (var i = 0; i < people.length && i < 10; i++) {
+      var p = people[i], ex = have[p.name + p.birth];
+      if (ex) { found.push(ex); continue; }
+      var h = await Store.saveHead({ status: 'wait', name: p.name, sex: p.sex, birth: p.birth, memo: '', from: 'smemo' });
+      have[p.name + p.birth] = h; added.push(h);
+    }
+    S.list = await Store.list(); renderList();
+    var busy = !$('dlg').hidden || !$('modal').hidden;
+    var target = added.length + found.length === 1 ? (added[0] || found[0]) : null;
+    if (target && !busy && !(S.cur && S.cur.id === target.id)) await openCustomer(target.id);
+    var old = $('clipCard'); if (old) old.remove();
+    var el = document.createElement('div'); el.id = 'clipCard'; el.className = 'clipcard'; el.setAttribute('role', 'status');
+    var names = added.map(function(h){ return h.name; }).join(', ');
+    el.innerHTML = '<div class="cc-h">' + IC.ok + '<b>' + (added.length ? esc(names) + ' 고객을 등록했습니다' : esc(found.map(function(h){ return h.name; }).join(', ')) + ' 고객은 이미 등록되어 있습니다') + '</b><button type="button" class="cc-x" aria-label="닫기">×</button></div>' +
+      '<div class="cc-r"><span class="note">SMemo에서 이름·성별·생년월일만 가져왔습니다</span>' + (added.length ? '<button type="button" class="btn" id="ccUndo">되돌리기</button>' : '') + (target ? '<button type="button" class="btn pri" id="ccFiles">' + (target.status === 'done' ? '다시 분석' : '파일 첨부') + '</button>' : '') + '</div>';
+    document.body.appendChild(el);
+    var close = function(){ el.remove(); };
+    el.querySelector('.cc-x').onclick = close;
+    clearTimeout(showClipCard._t); showClipCard._t = setTimeout(close, 12000);
+    if ($('ccUndo')) $('ccUndo').onclick = async function(){
+      for (var j = 0; j < added.length; j++) await Store.remove(added[j].id);
+      S.list = await Store.list(); if (S.cur && added.some(function(h){ return h.id === S.cur.id; })) showWelcome(); else renderList();
+      close(); toast('등록을 취소했습니다');
+    };
+    if ($('ccFiles')) $('ccFiles').onclick = async function(){ close(); if (!S.cur || S.cur.id !== target.id) await openCustomer(target.id); openFiles(); };
   }
   function showClipCard(people){
     var old = $('clipCard'); if (old) old.remove();
@@ -4150,7 +4186,8 @@ function HealthUI(root, H) {
     window.__TAURI__.event.listen('memo-copied', function(ev){
       if (!clipOn || !Store.isOpen() || $('shell').hidden) return;
       var people = parsePeople(ev.payload || '');
-      if (people.length) showClipCard(people);
+      if (!people.length) return;
+      if (clipAuto) autoRegister(people); else showClipCard(people);
     });
   }
 
