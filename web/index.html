@@ -915,6 +915,31 @@ table.ht tr.grp td svg{color:var(--gold)}
 
 .sclip .sc-auto{color:var(--side-mute);font-size:12.5px;padding:6px 10px 0}
 .sclip .sc-auto input{accent-color:var(--gold2)}
+/* 사이드바: 고객 목록만 스크롤, 아래 메뉴는 겹치지 않게 고정 */
+.side{overflow:hidden}
+.side>*{flex:0 0 auto}
+.side>.clist{flex:1 1 0;min-height:140px;overflow-y:auto;overscroll-behavior:contain;margin:0 -6px;padding:0 6px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent}
+.side>.clist::-webkit-scrollbar{width:6px}.side>.clist::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:3px}
+.side>.ssync,.side>.sclip,.side>.sfoot,.side>.slock{position:relative;z-index:1;background:var(--side)}
+@media (max-height:640px){.side{overflow:auto}.side>.clist{flex:0 0 auto;max-height:none;overflow:visible}}
+@media (max-width:900px){.side{overflow:visible}.side>.clist{flex:0 0 auto;overflow:visible;min-height:0}}
+/* 사이드바 아래쪽을 한 줄짜리 접이식 메뉴로 */
+.smenu{border-top:1px solid rgba(255,255,255,.08);padding-top:8px}
+.smenu summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--side-mute);padding:6px 4px;border-radius:8px}
+.smenu summary::-webkit-details-marker{display:none}
+.smenu summary::after{content:"";margin-left:auto;width:7px;height:7px;border-right:1.5px solid currentColor;border-top:1.5px solid currentColor;transform:rotate(-45deg);transition:transform .15s}
+.smenu[open] summary::after{transform:rotate(135deg)}
+.smenu summary:hover{color:var(--side-ink);background:rgba(255,255,255,.04)}
+.smenu .sfoot{margin-top:6px}
+.sclip button{padding:7px 10px}.sclip button small{display:none}
+.sclip .sc-auto{padding:4px 10px 0}
+.ssync{gap:6px;padding-top:8px}.ssync small{font-size:11.5px}
+.slock{font-size:11px;padding-top:2px}
+.smenu summary::after{transform:rotate(135deg)}
+.smenu[open] summary::after{transform:rotate(-45deg)}
+.citem{padding:8px 12px;gap:1px}
+.citem .r2{font-size:12px}
+.cgrp{padding:10px 8px 2px}
 
 </style>
 </head>
@@ -929,7 +954,7 @@ table.ht tr.grp td svg{color:var(--gold)}
     <div class="clist" id="clist"></div>
     <div class="sclip" id="sclip" hidden></div>
     <div class="ssync" id="ssync"></div>
-    <div class="sfoot"><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button><button id="admBtn" type="button" class="adm">사용자 관리</button></div>
+    <details class="smenu" id="smenu"><summary><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>도구 · 백업 · 사용자 관리</summary><div class="sfoot"><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button><button id="admBtn" type="button" class="adm">사용자 관리</button></div></details>
     <input type="file" id="bkFile" accept=".json,application/json" hidden>
     <div class="slock"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6 10V8a6 6 0 1 1 12 0v2h1v12H5V10zm2 0h8V8a4 4 0 1 0-8 0z"/></svg>고객 정보는 잠금 비밀번호로 암호화 저장 <span id="verTag"></span></div>
     <div id="memBan" class="membanner" hidden>저장소를 쓸 수 없는 화면입니다 · 창을 닫으면 사라집니다</div>
