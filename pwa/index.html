@@ -1090,6 +1090,15 @@ table.ctt .due{color:var(--red);font-weight:700}
 .step i{background:var(--ocean);color:#fff}
 .khero,.cvhero,.wbrand{background:#0A0C12 url(lib/bg-hero.jpg) center bottom/cover no-repeat}
 .wbrand{justify-content:center}
+/* AFG 콘크리트 배경 (파란 그림 대체) */
+.lock{background:#2a2d31 url(lib/bg-afg.jpg) center/cover no-repeat;justify-content:flex-end;padding-right:max(24px,8vw)}
+@media (max-width:1000px),(orientation:portrait){.lock{background-image:url(lib/bg-afg-tall.jpg);background-position:center top;justify-content:center;align-items:flex-end;padding:30vh 16px 6vh}}
+.lbox{background:rgba(16,18,22,.72);border-color:rgba(255,255,255,.07)}
+.side{background:#1d1f23 url(lib/bg-concrete-side.jpg) center/cover no-repeat}
+.side::before{content:none}
+.wbrand{background:#2a2d31 url(lib/bg-afg-hero.jpg) center/cover no-repeat}
+.khero,.cvhero{background:#24272b url(lib/bg-concrete-side.jpg) center/cover no-repeat}
+.citem[aria-current="true"]{background:rgba(255,255,255,.08)}
 
 </style>
 </head>
