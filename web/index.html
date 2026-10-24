@@ -3299,6 +3299,7 @@ function HealthUI(root, H) {
     if (S.filter === 'wait') L2 = L2.filter(function(c){ return c.status !== 'done'; });
     var now = new Date(todayStr()).getTime(), groups = { '오늘': [], '최근 7일': [], '지난 기록': [] };
     L2.forEach(function(c){ var d = new Date(new Date(c.updated).getTime() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,10); var t = new Date(d).getTime(); (t >= now ? groups['오늘'] : now - t <= 7*864e5 ? groups['최근 7일'] : groups['지난 기록']).push(c); });
+    var dupName = {}; S.list.forEach(function(c){ dupName[c.name] = (dupName[c.name] || 0) + 1; });
     var h = '';
     Object.keys(groups).forEach(function(g){
       if (!groups[g].length) return;
@@ -3306,7 +3307,7 @@ function HealthUI(root, H) {
       h += groups[g].map(function(c){
         var cur = S.cur && S.cur.id === c.id;
         var r2 = c.status === 'done' ? '<span class="r2 ' + (c.sumOk ? 'ok' : '') + '">' + esc(c.summary || '') + '</span>' : '<span class="r2">파일 첨부 대기</span>';
-        return '<button type="button" class="citem" data-cid="' + c.id + '" aria-current="' + cur + '"><span class="r1"><b>' + esc(c.name) + '</b><small>' + sexTxt(c.sex) + (ageOf(c.birth) !== '' ? '·' + ageOf(c.birth) + '세' : '') + '</small><span class="stt ' + (c.status === 'done' && !/^보장분석만/.test(c.summary || '') ? '' : 'w') + '">' + (c.status !== 'done' ? '대기' : /^보장분석만/.test(c.summary || '') ? '보장만' : '✓ 분석완료') + '</span></span>' + (c.status === 'done' && c.asOf ? (function(){ var F = freshOf(c.asOf); return '<span class="r3"><i class="fp ' + F.lv + '"></i>자료 ' + dot(c.asOf) + ' · ' + F.txt + (c.applyDate ? ' · 청약 ' + dot(c.applyDate) : '') + '</span>'; })() : '') + r2 + '</button>';
+        return '<button type="button" class="citem" data-cid="' + c.id + '" aria-current="' + cur + '"><span class="r1"><b>' + esc(c.name) + '</b><small>' + sexTxt(c.sex) + (ageOf(c.birth) !== '' ? '·' + ageOf(c.birth) + '세' : '') + (dupName[c.name] > 1 && c.birth ? ' · ' + String(c.birth).slice(2, 4) + '.' + String(c.birth).slice(4, 6) + '.' + String(c.birth).slice(6, 8) + '생' : '') + '</small><span class="stt ' + (c.status === 'done' && !/^보장분석만/.test(c.summary || '') ? '' : 'w') + '">' + (c.status !== 'done' ? '대기' : /^보장분석만/.test(c.summary || '') ? '보장만' : '✓ 분석완료') + '</span></span>' + (c.status === 'done' && c.asOf ? (function(){ var F = freshOf(c.asOf); return '<span class="r3"><i class="fp ' + F.lv + '"></i>자료 ' + dot(c.asOf) + ' · ' + F.txt + (c.applyDate ? ' · 청약 ' + dot(c.applyDate) : '') + '</span>'; })() : '') + r2 + '</button>';
       }).join('');
     });
     if (!S.list.length) h = '<div class="cempty">등록된 고객이 없습니다.<br>위의 <b>신규 고객 등록</b>으로 시작하세요.</div>';
