@@ -1367,7 +1367,6 @@ table.ctt .due{color:var(--red);font-weight:700}
   <aside class="side" aria-label="고객 목록">
     <nav class="srail" aria-label="접힌 메뉴">
       <button type="button" class="rl-brand" data-rail="open" title="메뉴 펼치기"><b>OC9</b></button>
-      <button type="button" class="rl lvr" data-gm="open" title="내 성장"><b id="rlLv">1</b></button>
       <button type="button" class="rl pri" data-rail="new" title="신규 고객 등록"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><circle cx="10" cy="8" r="4"/><path d="M2 21c0-4 4-7 8-7s8 3 8 7zM19 8h2v3h3v2h-3v3h-2v-3h-3v-2h3z"/></svg></button>
       <button type="button" class="rl" data-rail="search" title="고객 검색"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button>
       <button type="button" class="rl" data-rail="list" title="고객 목록"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><i class="rlb" id="rlCnt"></i></button>
@@ -1385,7 +1384,6 @@ table.ctt .due{color:var(--red);font-weight:700}
     <div class="sqw"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" class="sq" type="search" placeholder="이름 · 전화번호 · 메모 검색" autocomplete="off"></div>
     <div class="sfilt" id="sfilt"><button id="fAll" type="button" data-f="all">전체</button><button id="fTodo" type="button" data-f="todo">할 일</button><button id="fSel" type="button" title="여러 명 골라서 채널·단계·할 일을 한 번에">선택</button><select id="fStage" aria-label="고객 단계로 거르기"><option value="">모든 단계</option><option value="lead">가망</option><option value="consult">상담 중</option><option value="contract">계약</option><option value="care">관리</option></select></div>
     <div class="schan" id="schan" role="group" aria-label="영업 채널"></div>
-    <button type="button" class="sct sgm" data-gm="open"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M7 6h10a5 5 0 0 1 4.9 6l-1 5a2.5 2.5 0 0 1-4.3 1.2L14.4 16H9.6l-2.2 2.2A2.5 2.5 0 0 1 3.1 17l-1-5A5 5 0 0 1 7 6zm1 3v2H6v2h2v2h2v-2h2v-2h-2V9zm8.5 1a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4zm2 2.5a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4z"/></svg>게임 모드 · 오션 영업점</button>
     <button type="button" class="sct scm" data-cm="open"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.5a3 3 0 0 1 0 6M18 14c2 .7 3.5 2.8 3.5 5.5"/></svg>고객관리 · 영업 채널별 보기</button>
     <button type="button" class="sct sbr" data-nx="brief"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17l-6.1 3.4 1.5-6.8L2.2 9l6.9-.7z"/></svg>오늘의 브리핑 · 생일·응당일·청구기한</button>
     <button type="button" class="sct" data-act="contacts"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>연락 현황 · 마지막 통화·문자·카톡</button>
@@ -4563,6 +4561,7 @@ function HealthUI(root, H) {
   })();
 
   // ================= 영업 RPG: 레벨 · 퀘스트 · 배지 =================
+  var GAME_ON = false; // 게임 기능(레벨·퀘스트·리그·게임 모드) 잠시 꺼 둠 — 기록은 계속 쌓여 나중에 켜면 그대로 이어짐
   var GM = { id: '__game', d: null, last: null };
   function gameMark(c, k, d){ c.game = c.game || {}; var a = c.game[k] = c.game[k] || []; d = d || todayStr(); if (a.indexOf(d) >= 0) return false; a.push(d); if (a.length > 300) a.splice(0, a.length - 300); return true; }
   function stageMark(c, st){ if (/^(consult|contract|care)$/.test(st)) gameMark(c, st); }
@@ -4572,7 +4571,7 @@ function HealthUI(root, H) {
   // 저장할 때마다: 퀘스트 완료 보너스 기록, +XP 알림, 레벨 업 축하
   var gameBusy = false;
   async function gameTick(quiet){
-    if (gameBusy || !Store.isOpen()) return; gameBusy = true;
+    if (!GAME_ON || gameBusy || !Store.isOpen()) return; gameBusy = true;
     try {
       await gameLoad();
       var G = gameNow(), t = todayStr(), log = GM.d.qlog[t] = GM.d.qlog[t] || [], got = [];
@@ -4601,6 +4600,7 @@ function HealthUI(root, H) {
     var rl = $('rlLv'); if (rl) rl.textContent = G.lv;
   }
   function gameStrip(G){
+    if (!GAME_ON) return '';
     G = G || GM.last; if (!G) return '';
     var done = G.quests.filter(function(q){ return q.ok; }).length;
     return '<button type="button" class="gstrip" data-gm="open"><span class="lv-ring"><b>' + G.lv + '</b></span><span class="gs-m"><b>' + esc(G.title) + '</b><span class="gs-bar"><em style="width:' + Math.round(G.cur / G.need * 100) + '%"></em></span><small>' + G.cur + ' / ' + G.need + ' XP · 오늘 +' + G.today + '</small></span>' +
@@ -4610,6 +4610,7 @@ function HealthUI(root, H) {
     return '<div class="qgrid">' + G.quests.map(function(q){ return '<div class="qcard' + (q.ok ? ' ok' : '') + '"><div class="qc-h"><b>' + esc(q.t) + '</b><span class="qc-x">+' + q.xp + ' XP</span></div><div class="qc-bar"><em style="width:' + Math.round(q.done / q.goal * 100) + '%"></em></div><small>' + (q.ok ? '완료!' : q.done + ' / ' + q.goal + ' · ' + esc(q.hint)) + '</small></div>'; }).join('') + '</div>';
   }
   async function showGame(){
+    if (!GAME_ON) return;
     await gameLoad(); S.cur = null; S.data = null; S.view = 'game';
     $('shell').classList.add('has-c'); armBack(); renderList();
     var G = gameNow(); GM.last = G; drawGameChip(G);
@@ -5149,7 +5150,7 @@ function HealthUI(root, H) {
     $('shell').classList.add('has-c'); armBack(); renderList();
     var B = briefData(), cps = campsGet(), t = todayStr();
     var h = '<div class="chead"><button class="btn back" type="button" data-act="back">‹ 목록</button><h2 data-i="★">오늘의 브리핑</h2><span class="cmeta">' + dot(t) + ' · 연락할 고객을 한 화면에</span></div>' +
-      gameStrip() + (GM.last ? '<h5 class="gsec">오늘의 퀘스트</h5>' + questCards(GM.last) : '') +
+      gameStrip() + (GAME_ON && GM.last ? '<h5 class="gsec">오늘의 퀘스트</h5>' + questCards(GM.last) : '') +
       '<div class="bkpi">' + [['할 일', B.todo.length], ['생일 7일', B.bday.length], ['응당일 14일', B.ann.length], ['청구기한 60일', B.claim.length], ['90일 미연락', B.quiet.length]].map(function(k){ return '<div><small>' + k[0] + '</small><b>' + k[1] + '</b></div>'; }).join('') + '</div>';
     if (B.nocvx) h += '<div class="gapban a">' + IC.warn + '<span>분석해 둔 고객 ' + B.nocvx + '명은 아직 보장 요약(응당일·청구기한·캠페인 대상)이 계산되지 않았습니다.</span><button class="btn" type="button" data-nx="bcalc">지금 계산</button></div>';
     // NHC 뉴스 연계 캠페인
