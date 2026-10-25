@@ -1594,6 +1594,69 @@ html.narrow .pcd{min-height:74px}html.narrow .pd{width:20px;height:20px;font-siz
 .citem .r1 .qmore{position:absolute;right:6px;top:7px}
 html.narrow .citem .r1{padding-right:70px}html.narrow .citem .r1 .stt{font-size:11.5px;right:26px}
 @media (hover:none){.citem .r1 .stt{margin-right:0!important}}
+/* 안드로이드 앱 */
+.apkbar{position:fixed;left:12px;right:12px;top:calc(10px + env(safe-area-inset-top));z-index:80;display:flex;align-items:center;gap:10px;padding:10px 12px 10px 16px;border-radius:14px;background:#2f5fe0;color:#fff;font-weight:700;font-size:14px;box-shadow:0 10px 24px -8px rgba(0,0,0,.5)}
+.apkbar span{flex:1}.apkbar a{color:#2f5fe0;background:#fff;border-radius:10px;padding:7px 14px;text-decoration:none}
+.apkbar button{border:0;background:transparent;color:#fff;font-size:20px;cursor:pointer;padding:0 4px}
+.apkrow{display:flex;gap:16px;align-items:flex-start}.apkqr{flex:none;width:150px;text-align:center;background:#fff;border-radius:12px;padding:8px;color:#111}.apkqr svg{width:100%;height:auto;display:block}.apkqr small{font-size:11px}
+
+/* ===================== 디자인 정리 v3 — 색·글씨·간격·버튼·카드 한 규칙으로 ===================== */
+:root[data-theme="dark"]{--paper:rgba(24,27,33,.8);--soft:rgba(255,255,255,.045);--line:rgba(255,255,255,.085);--ink:#EEF1F6;--ink2:#B9C0CC;--mute:#858D9C}
+body{font-feature-settings:"tnum" 1}
+/* 페이지 머리 */
+.chead{gap:10px 14px;padding-bottom:14px;margin-bottom:6px}
+.chead h2{font-size:26px;font-weight:800;letter-spacing:-.025em;display:flex;align-items:center;gap:12px}
+:root[data-theme="dark"] .chead h2::before{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,rgba(79,125,255,.30),rgba(79,125,255,.08));border:1px solid rgba(124,156,255,.28);color:#C7D5FF;font-size:17px;font-weight:800;box-shadow:none}
+.chead .cmeta{color:var(--mute);font-size:13px}
+/* 카드 (공통 유리 카드) */
+:root[data-theme="dark"] :is(.pc,.dchip,.tw,.step,.memo,.empty,.notes,.kgen,.fcard,.cvc,.lgform,.klog,.kcmp,.gc,.acfp){
+  border:1px solid var(--line);border-radius:16px;background:var(--paper);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 16px 36px -24px rgba(0,0,0,.75)}
+:root[data-theme="dark"] .pc:hover{border-color:rgba(255,255,255,.16)}
+/* 버튼 */
+:root[data-theme="dark"] .btn{background:var(--soft);border:1px solid var(--line);border-radius:10px;color:var(--ink);font-weight:600;box-shadow:none}
+:root[data-theme="dark"] .btn:hover{background:rgba(255,255,255,.075);border-color:rgba(255,255,255,.2);color:#fff}
+:root[data-theme="dark"] :is(.go,.btn.pri,.sbtn.pri){background:linear-gradient(135deg,#4f7dff,#2f5fe0);border:0;border-radius:11px;color:#fff;font-weight:700;box-shadow:0 10px 22px -12px rgba(47,95,224,.9),inset 0 1px 0 rgba(255,255,255,.14)}
+:root[data-theme="dark"] :is(.go,.btn.pri,.sbtn.pri):hover{filter:brightness(1.08);background:linear-gradient(135deg,#5a86ff,#3567ea)}
+:root[data-theme="dark"] .pb{border-radius:9px;background:var(--soft);border-color:var(--line);color:var(--ink2)}
+:root[data-theme="dark"] .pb:hover{color:#fff;border-color:rgba(255,255,255,.22)}
+/* 단계·상태 선택 버튼 묶음 */
+:root[data-theme="dark"] :is(.cc-stage,.gseg,.ctf){background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:3px}
+:root[data-theme="dark"] :is(.cc-stage,.gseg,.ctf) button[aria-pressed="true"]{background:linear-gradient(135deg,#4f7dff,#2f5fe0);color:#fff;border-radius:9px;box-shadow:0 6px 14px -8px rgba(47,95,224,.9)}
+/* 탭 */
+:root[data-theme="dark"] .ptabs{background:rgba(20,22,27,.82);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+:root[data-theme="dark"] .ptab{color:var(--mute)}
+:root[data-theme="dark"] .ptab[aria-selected="true"]{color:#fff}
+/* 표 */
+:root[data-theme="dark"] :is(table.t th,table.ht thead th,table.cl thead th){background:rgba(255,255,255,.025);color:var(--mute);font-size:12px;font-weight:700;letter-spacing:.02em}
+:root[data-theme="dark"] table.t tbody tr:hover td{background:rgba(255,255,255,.035)}
+/* 입력칸 */
+:root[data-theme="dark"] :is(.form input[type=text],.form input[type=tel],.form input[type=number],.form input[type=date],.form input[type=search],.form input:not([type]),.form select,.form textarea){background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:12px;color:var(--ink)}
+:root[data-theme="dark"] :is(.form input,.form select,.form textarea,.sq):focus{outline:none;border-color:#4f7dff;box-shadow:0 0 0 3px rgba(79,125,255,.22)}
+:root[data-theme="dark"] .sq{border-radius:12px}
+/* 창(대화상자) */
+:root[data-theme="dark"] .mbox{background:rgba(26,29,35,.97);border:1px solid rgba(255,255,255,.09);border-radius:20px;box-shadow:0 30px 70px -20px rgba(0,0,0,.8)}
+:root[data-theme="dark"] .mbox h4{font-size:18px;font-weight:800;letter-spacing:-.02em}
+/* 알림(토스트): 어두운 유리 */
+:root[data-theme="dark"] .toast{background:rgba(32,35,43,.96);color:#fff;border:1px solid rgba(255,255,255,.1);border-radius:14px;box-shadow:0 18px 40px -16px rgba(0,0,0,.8);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+/* 목록 그룹 제목 */
+.cgrp{font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--mute)}
+/* 고객 목록 단계 표시를 이름표 색과 맞춤 */
+.citem .stg{border-radius:6px;padding:1px 7px}
+.citem .stg.s-lead{background:rgba(155,163,178,.14);color:#C4CAD4}
+.citem .stg.s-consult{background:rgba(79,125,255,.16);color:#A9C3FF}
+.citem .stg.s-contract{background:rgba(226,194,126,.16);color:#E8C77A}
+.citem .stg.s-care{background:rgba(62,207,142,.15);color:#8FE0B4}
+:root[data-theme="dark"] .citem[aria-current="true"]{background:linear-gradient(135deg,rgba(79,125,255,.35),rgba(47,95,224,.22));box-shadow:inset 0 0 0 1px rgba(124,156,255,.35)}
+/* 사이드 메뉴 타일 · 큰 버튼 */
+.snav .sct{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.06);border-radius:12px}
+.snav .sct:hover{background:rgba(255,255,255,.08)}
+:root[data-theme="dark"] #newCust{border-radius:12px;height:46px;font-size:15px}
+/* 숫자 강조 */
+:is(.kh-num,.ac-goal,.ac-f b,.gl-xp,.bkpi b){letter-spacing:-.02em}
+:root[data-theme="dark"] .dchip.fr.g{border-color:rgba(62,207,142,.45);background:linear-gradient(135deg,rgba(62,207,142,.16),rgba(62,207,142,.05))}
+:root[data-theme="dark"] .dchip.fr.a{border-color:rgba(255,190,90,.45);background:linear-gradient(135deg,rgba(255,190,90,.16),rgba(255,190,90,.05))}
+:root[data-theme="dark"] .dchip.fr.r{border-color:rgba(255,107,97,.45);background:linear-gradient(135deg,rgba(255,107,97,.16),rgba(255,107,97,.05))}
+:root[data-theme="dark"] .mbox :is(.sexsel,.form) button[aria-pressed="true"]{background:linear-gradient(135deg,#4f7dff,#2f5fe0);color:#fff;border-color:transparent}
 
 </style>
 </head>
@@ -1631,7 +1694,7 @@ html.narrow .citem .r1{padding-right:70px}html.narrow .citem .r1 .stt{font-size:
     <div class="clist" id="clist"></div>
     <div class="sclip" id="sclip" hidden></div>
     <div class="ssync" id="ssync"></div>
-    <details class="smenu" id="smenu"><summary><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>도구 · 백업 · 사용자 관리</summary><div class="sfoot"><button type="button" class="dbm" data-act="dbImport">회사 DB 고객 가져오기</button><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button><button type="button" data-sync="signout">구글 계정 바꾸기</button><button type="button" id="themeBtn">밝은 화면으로</button><button id="admBtn" type="button" class="adm">사용자 관리</button><button type="button" class="adm nxm" data-nx="setup">NHC 본사 연결 · 보장분석부서</button></div></details>
+    <details class="smenu" id="smenu"><summary><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>도구 · 백업 · 사용자 관리</summary><div class="sfoot"><button type="button" class="dbm" data-act="dbImport">회사 DB 고객 가져오기</button><button id="apkBtn" type="button">안드로이드 앱 (APK)</button><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button><button type="button" data-sync="signout">구글 계정 바꾸기</button><button type="button" id="themeBtn">밝은 화면으로</button><button id="admBtn" type="button" class="adm">사용자 관리</button><button type="button" class="adm nxm" data-nx="setup">NHC 본사 연결 · 보장분석부서</button></div></details>
     <input type="file" id="bkFile" accept=".json,application/json" hidden>
     <div class="slock"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6 10V8a6 6 0 1 1 12 0v2h1v12H5V10zm2 0h8V8a4 4 0 1 0-8 0z"/></svg>고객 정보는 잠금 비밀번호로 암호화 저장 <span id="verTag"></span></div>
     <div id="memBan" class="membanner" hidden>저장소를 쓸 수 없는 화면입니다 · 창을 닫으면 사라집니다</div>
@@ -5845,6 +5908,7 @@ function HealthUI(root, H) {
     if (ar && ar.ok && ar.purpose === 'cal') { toast('구글 캘린더를 연결했습니다 · 싯플랜을 맞추는 중…'); setTimeout(function(){ gcAll().catch(function(){}); }, 3000); }
     if (ar && !ar.ok && ar.purpose !== 'refresh' && ar.error !== 'cal_unchecked') toast(ar.error === 'access_denied' ? '구글 로그인을 취소했습니다' : '구글 로그인하지 못했습니다 (' + ar.error + ')');
     setTimeout(checkPend, 600);
+    setTimeout(apkCheck, 5000);
     setTimeout(takeShared, 400);
     setTimeout(function(){ nhcDaily().then(function(){ if (!S.cur && !S.view) showWelcome(); }); }, 2500);
     setTimeout(function(){ nhcPoll(); }, 4000);
@@ -6090,11 +6154,38 @@ function HealthUI(root, H) {
   $('tbMore').onclick = function(){
     var it = [['.scm', '👥', '고객관리', '영업 채널별로 보기'], ['#gchip', '⭐', '내 성장', '레벨 · 퀘스트 · 배지'], ['[data-act="dbImport"]', '📥', 'DB 고객 가져오기', '회사 DB 사이트'], ['[data-nx="setup"]', '🏢', 'NHC 본사 연결', '보장분석부서'],
       ['#bkOut', '💾', '백업 내보내기', ''], ['#bkIn', '📂', '백업 불러오기', ''], ['#sample', '🧪', '예시 고객 보기', ''], ['#themeBtn', '🌗', $('themeBtn').textContent, ''], ['[data-sync="signout"]', '🔄', '구글 계정 바꾸기', ''], ['#admBtn', '🛡️', '사용자 관리', ''], ['#lockBtn', '🔒', '잠그기', '']];
+    it.splice(2, 0, ['#apkBtn', '📱', inApk() ? '앱 정보' : '안드로이드 앱 받기', inApk() ? '자동 업데이트 중' : 'APK로 설치']);
     openDlg('<h4>더보기</h4><div class="msheet">' + it.filter(function(x){ var el = document.querySelector(x[0]); return el && !(el.hidden || getComputedStyle(el).display === 'none' && x[0] !== '#gchip' && x[0] !== '.scm'); }).map(function(x){ return '<button type="button" data-px=\'' + x[0] + '\'><i>' + x[1] + '</i><b>' + esc(x[2]) + '</b>' + (x[3] ? '<small>' + esc(x[3]) + '</small>' : '') + '</button>'; }).join('') + '</div><div class="mrow"><button class="btn lg" type="button" id="msX" style="margin-left:auto">닫기</button></div>');
     $('msX').onclick = closeDlg;
     $('dlgBox').querySelectorAll('[data-px]').forEach(function(b){ b.onclick = function(){ var el = document.querySelector(b.dataset.px); closeDlg(); if (el) { if (el.hidden && el.id === 'gchip') { showGame && showGame(); return; } el.click(); } }; });
   };
 
+  // ================= 안드로이드 앱(APK) =================
+  // 앱(껍데기)은 처음 한 번만 설치 · 화면과 기능은 열 때마다 최신으로 자동 업데이트. 껍데기가 바뀐 경우에만 '새 앱' 안내
+  var APK_URL = 'https://github.com/sicrics27-gif/mh-analyzer/releases/download/apk-latest/AFG-OC9.apk', APK_PAGE = 'https://sicrics27-gif.github.io/mh-analyzer/app.html';
+  (function(){ var m = /[?&]app=apk(?:&v=(\d+))?/.exec(location.search); if (m) { try { sessionStorage.setItem('mhs_apk', m[1] || '1'); history.replaceState(null, '', location.pathname + location.hash); } catch(e){} } })();
+  function apkCode(){ try { return +sessionStorage.getItem('mhs_apk') || 0; } catch(e){ return 0; } }
+  function inApk(){ return apkCode() > 0; }
+  async function apkCheck(){
+    if (!inApk()) return;
+    try { if (sessionStorage.getItem('mhs_apkchk')) return; sessionStorage.setItem('mhs_apkchk', '1'); } catch(e){}
+    try {
+      var r = await fetch('https://api.github.com/repos/sicrics27-gif/mh-analyzer/releases/tags/apk-latest'); if (!r.ok) return;
+      var j = await r.json(), n = +((/빌드 (\d+)/.exec(j.body || '') || [])[1] || 0);
+      if (n > apkCode()) { var b = document.createElement('div'); b.className = 'apkbar'; b.innerHTML = '<span>새 앱 버전이 있습니다</span><a href="' + APK_URL + '">받기</a><button type="button" aria-label="닫기">×</button>'; b.querySelector('button').onclick = function(){ b.remove(); }; document.body.appendChild(b); }
+    } catch(e){}
+  }
+  function openApk(){
+    var qr = ''; try { window.qrcode.stringToBytes = window.qrcode.stringToBytesFuncs['UTF-8']; var q = window.qrcode(0, 'M'); q.addData(APK_PAGE); q.make(); qr = q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); } catch(e){}
+    openDlg('<h4>📱 안드로이드 앱 (AFG OC9)</h4><div class="form apkdlg">' + (inApk() ? '<p class="note">지금 앱으로 쓰고 계십니다 (앱 버전 ' + apkCode() + '). 화면과 기능은 열 때마다 자동으로 최신이 됩니다.</p>' : '') +
+      '<div class="apkrow">' + (qr && !IS_MOBILE ? '<div class="apkqr">' + qr + '<small>휴대폰 카메라로 찍기</small></div>' : '') +
+      '<ol class="kkg"><li>휴대폰에서 <b>앱 받기</b>를 누릅니다 (AFG-OC9.apk 저장).</li><li>다운로드 알림이나 <b>내 파일 → 다운로드</b>에서 파일을 누릅니다.</li><li>“출처를 알 수 없는 앱” 안내가 나오면 <b>설정 → 이 출처 허용</b>을 켜고 뒤로 와서 <b>설치</b>.</li><li>홈 화면의 <b>AFG OC9</b> 아이콘으로 엽니다. 크롬에서 쓰던 자료는 그대로 이어서 보입니다.</li></ol></div>' +
+      '<p class="note">앱은 처음 한 번만 설치하면 됩니다. 기능이 바뀌어도 다시 설치할 필요 없이 열 때마다 최신으로 바뀝니다.</p></div>' +
+      '<div class="mrow"><button class="btn lg" type="button" id="apkX">닫기</button><a class="go" id="apkGo" href="' + APK_URL + '" style="margin-left:auto;display:inline-flex;align-items:center;text-decoration:none">앱 받기 (APK)</a></div>');
+    $('apkX').onclick = closeDlg;
+  }
+
+  $('apkBtn').onclick = openApk;
   function showWelcome(){
     S.cur = null; S.data = null; S.view = ''; $('shell').classList.remove('has-c');
     $('main').innerHTML = gameStrip() + briefMini() + $('tplWelcome').innerHTML;
