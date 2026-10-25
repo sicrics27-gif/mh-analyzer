@@ -1235,6 +1235,28 @@ table.ctt .due{color:var(--red);font-weight:700}
 .dbform textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--paper);color:var(--ink);font:13px/1.5 var(--f-body);resize:vertical}
 .sfoot .dbm{grid-column:1/-1;color:#F2B880}
 @media (max-width:720px){.dbhow{grid-template-columns:1fr}.mt-act{margin-left:0}}
+/* ===== 영업 채널 ===== */
+.chn{font-style:normal;font-weight:600;font-size:12px;color:#F2B880;margin-left:4px}
+.schan{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}.schan::-webkit-scrollbar{display:none}
+.schan button{flex:0 0 auto;height:28px;padding:0 10px;border-radius:999px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--side-mute);font:inherit;font-size:12.5px;cursor:pointer;white-space:nowrap}
+.schan button b{color:var(--side-ink);font-weight:700;margin-left:2px}
+.schan button[aria-pressed="true"]{background:#C9A96A;border-color:#C9A96A;color:#141414}.schan button[aria-pressed="true"] b{color:#141414}
+.sct.scm{color:#E9D2A6}
+.chtabs{display:flex;gap:6px;overflow-x:auto;margin:12px 0 4px;padding-bottom:4px}
+.chtabs button{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--paper);color:var(--ink2);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.chtabs button b{font-size:12px;padding:1px 7px;border-radius:999px;background:var(--soft);color:var(--ink)}
+.chtabs button[aria-selected="true"]{background:var(--ocean,#2F6BFF);border-color:var(--ocean,#2F6BFF);color:#fff}.chtabs button[aria-selected="true"] b{background:rgba(255,255,255,.22);color:#fff}
+.bkpi.chk{grid-template-columns:repeat(8,minmax(0,1fr))}
+.chsel{height:32px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font:inherit;font-size:13px;padding:0 6px}
+.cc-kv .chsel{height:28px}
+.dbbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:var(--paper);border:1px solid color-mix(in srgb,#F2B880 40%,var(--line));border-radius:14px;padding:12px 14px;margin:10px 0}
+.dbbar>div{flex:1;min-width:220px;display:flex;flex-direction:column}.dbbar small{color:var(--mute);font-size:12.5px}
+.dbbtns{display:flex;gap:6px;flex-wrap:wrap}
+.hstep{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px dashed var(--line)}
+.hstep i{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--ocean,#2F6BFF);color:#fff;font-style:normal;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:13px}
+.hstep div{display:flex;flex-direction:column;gap:2px;font-size:14px;line-height:1.65}.hstep span{color:var(--ink2)}
+.sexsel.ch7{flex-wrap:wrap}
+@media (max-width:900px){.bkpi.chk{grid-template-columns:repeat(4,minmax(0,1fr))}}
 
 </style>
 </head>
@@ -1248,6 +1270,7 @@ table.ctt .due{color:var(--red);font-weight:700}
       <button type="button" class="rl" data-rail="search" title="고객 검색"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button>
       <button type="button" class="rl" data-rail="list" title="고객 목록"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><i class="rlb" id="rlCnt"></i></button>
       <button type="button" class="rl gold" data-nx="brief" title="오늘의 브리핑"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17l-6.1 3.4 1.5-6.8L2.2 9l6.9-.7z"/></svg><i class="rlb" id="rlTodo"></i></button>
+      <button type="button" class="rl" data-cm="open" title="고객관리 (영업 채널별)"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.5a3 3 0 0 1 0 6M18 14c2 .7 3.5 2.8 3.5 5.5"/></svg></button>
       <button type="button" class="rl" data-act="contacts" title="연락 현황"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg></button>
       <span class="rl-sp"></span>
       <button type="button" class="rl" data-sync="now" title="구글 동기화 지금 맞추기"><i class="rl-dot" id="rlDot"></i></button>
@@ -1257,7 +1280,9 @@ table.ctt .due{color:var(--red);font-weight:700}
     <div class="sbrand"><b class="wm"><span>AFG</span><i>OC9</i></b><small>Authentic Financial Group · Ocean Branch 9팀</small><button type="button" class="sfold" data-rail="close" title="메뉴 접기 (왼쪽으로 끌어도 됩니다)">«</button></div>
     <button class="sbtn pri" id="newCust" type="button"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><circle cx="10" cy="8" r="4"/><path d="M2 21c0-4 4-7 8-7s8 3 8 7zM19 8h2v3h3v2h-3v3h-2v-3h-3v-2h3z"/></svg>신규 고객 등록</button>
     <div class="sqw"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" class="sq" type="search" placeholder="이름 · 전화번호 · 메모 검색" autocomplete="off"></div>
-    <div class="sfilt" id="sfilt"><button id="fAll" type="button" data-f="all">전체</button><button id="fTodo" type="button" data-f="todo">할 일</button><select id="fStage" aria-label="고객 단계로 거르기"><option value="">모든 단계</option><option value="db">DB 첫대면</option><option value="lead">가망</option><option value="consult">상담 중</option><option value="contract">계약</option><option value="care">관리</option></select></div>
+    <div class="sfilt" id="sfilt"><button id="fAll" type="button" data-f="all">전체</button><button id="fTodo" type="button" data-f="todo">할 일</button><select id="fStage" aria-label="고객 단계로 거르기"><option value="">모든 단계</option><option value="lead">가망</option><option value="consult">상담 중</option><option value="contract">계약</option><option value="care">관리</option></select></div>
+    <div class="schan" id="schan" role="group" aria-label="영업 채널"></div>
+    <button type="button" class="sct scm" data-cm="open"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.5a3 3 0 0 1 0 6M18 14c2 .7 3.5 2.8 3.5 5.5"/></svg>고객관리 · 영업 채널별 보기</button>
     <button type="button" class="sct sbr" data-nx="brief"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17l-6.1 3.4 1.5-6.8L2.2 9l6.9-.7z"/></svg>오늘의 브리핑 · 생일·응당일·청구기한</button>
     <button type="button" class="sct" data-act="contacts"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>연락 현황 · 마지막 통화·문자·카톡</button>
     <div class="clist" id="clist"></div>
@@ -3411,6 +3436,8 @@ function HealthUI(root, H) {
         if (c.silson) f.has.silson = 1;
       });
       f.cov = 1;
+      var lv = cov.contracts.filter(function (c) { return live(c, today); });
+      f.nC = lv.length; f.prem = lv.reduce(function (s, c) { return s + (c.paidUp ? 0 : (c.premium || 0)); }, 0);
     }
     if (sets) {
       var open = sets.silOpen.concat(sets.flatOpen);
@@ -3890,7 +3917,7 @@ function HealthUI(root, H) {
   }
 
   // ================= 고객 카드 · 상담 기록 =================
-  var STAGES = [['db', 'DB 첫대면'], ['lead', '가망'], ['consult', '상담 중'], ['contract', '계약'], ['care', '관리']];
+  var STAGES = [['lead', '가망'], ['consult', '상담 중'], ['contract', '계약'], ['care', '관리']];
   var KINDS = [['call', '전화'], ['meet', '만남'], ['sms', '문자'], ['kakao', '카톡'], ['note', '메모']];
   function stageTxt(s){ var f = STAGES.find(function(x){ return x[0] === (s || 'lead'); }); return f ? f[1] : '가망'; }
   function kindTxt(k){ if (k === 'msg') return '문자·카톡'; var f = KINDS.find(function(x){ return x[0] === k; }); return f ? f[1] : '메모'; }
@@ -3904,9 +3931,10 @@ function HealthUI(root, H) {
   function renderCard(){
     var c = S.cur, n = nextDue(c), ph = normPhone(c.phone);
     var h = '<section class="ccard">' +
-      '<div class="cc-stage" role="group" aria-label="고객 단계">' + STAGES.map(function(s){ return '<button type="button" data-stage="' + s[0] + '" aria-pressed="' + ((c.stage || 'lead') === s[0]) + '">' + s[1] + '</button>'; }).join('') + '</div>' +
+      '<div class="cc-stage" role="group" aria-label="고객 단계">' + STAGES.map(function(s){ return '<button type="button" data-stage="' + s[0] + '" aria-pressed="' + ((c.stage === 'db' ? 'lead' : c.stage || 'lead') === s[0]) + '">' + s[1] + '</button>'; }).join('') + '</div>' +
       '<div class="cc-info">' +
         (ph ? '<span class="cc-ph"><b>' + phoneTxt(ph) + '</b>' + '' + '<button type="button" class="pb" data-copyph="' + ph + '">복사</button></span>' : '<button type="button" class="lnk2" data-act="edit">휴대폰 번호 넣기</button>') +
+        '<span class="cc-kv"><small>영업 채널</small>' + (c.sample ? '—' : chSelect(c, 'cur')) + '</span>' +
         (c.ref ? '<span class="cc-kv"><small>소개</small>' + esc(c.ref) + '</span>' : '') +
         (c.interest ? '<span class="cc-kv"><small>관심</small>' + esc(c.interest) + '</span>' : '') +
       '</div>' +
@@ -4104,7 +4132,7 @@ function HealthUI(root, H) {
   var DB_BM = "javascript:(function(){var L=[];document.querySelectorAll('input,textarea,select').forEach(function(e){var t=(e.type||'').toLowerCase();if(/hidden|file|button|submit|password|search/.test(t))return;var v;if(t==='checkbox'||t==='radio'){if(!e.checked)return;var lb=(e.labels&&e.labels[0]&&e.labels[0].innerText)||(e.parentElement&&e.parentElement.innerText)||e.value||'';v='[선택] '+lb.trim().split('\\n')[0];}else if(e.tagName==='SELECT'){v=e.selectedIndex>=0?e.options[e.selectedIndex].text:'';}else v=e.value;v=String(v||'').trim();if(!v)return;var lab='';for(var p=e.parentElement,i=0;p&&i<4&&!lab;p=p.parentElement,i++){var tx=(p.innerText||'').split('\\n')[0].trim();if(tx&&tx!==v&&tx.length<16&&!/^\\[/.test(tx))lab=tx;}L.push(/^\\[선택\\]/.test(v)?v:(lab?lab+': ':'')+v);});var blk='[AFG-DB]\\n'+L.join('\\n')+'\\n[PAGE]\\n'+document.body.innerText.slice(0,3000);var K='oc9_db_bag',bag;try{bag=JSON.parse(localStorage.getItem(K)||'null');}catch(e){bag=null;}if(!bag||Date.now()-bag.t>12*3600e3)bag={t:Date.now(),b:[]};else if(bag.b.length&&Date.now()-bag.t>30*60e3&&!confirm('전에 모아 둔 고객 '+bag.b.length+'명이 있습니다.\\n이어서 모을까요?\\n(취소를 누르면 비우고 새로 시작)'))bag={t:Date.now(),b:[]};var key=L.slice(0,3).join('|');var dup=bag.b.some(function(x){return x.k===key;});if(!dup)bag.b.push({k:key,v:blk});bag.t=Date.now();try{localStorage.setItem(K,JSON.stringify(bag));}catch(e){}var out=bag.b.map(function(x){return x.v;}).join('\\n[END]\\n');var msg=(dup?'이미 담은 고객입니다.\\n':'담았습니다.\\n')+'지금까지 '+bag.b.length+'명 모임 · 클립보드에 '+bag.b.length+'명 전부 복사됨\\n\\n다 모았으면 OC9 → 회사 DB 고객 가져오기 → 붙여넣기';var ok=function(){alert(msg);};if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(out).then(ok,function(){prompt('아래 글을 전체 복사하세요',out);});else prompt('아래 글을 전체 복사하세요',out);})();";
   function openDbImport(){
     openDlg('<h4>' + IC.user + ' 회사 DB 고객 가져오기</h4><div class="form dbform">' +
-      '<div class="dbhow"><div><b>① 한 명씩 (전체 정보)</b><span>DB 사이트에서 고객 상세 화면을 연 뒤 <b>"OC9로 복사"</b> 북마크를 누르기. 여러 명을 차례로 눌러 모은 뒤 한 번에 붙여 넣어도 됩니다. 이름·전체 번호·생년월일·성별·지역·특이사항·인수상태·AS 마감까지 들어갑니다.</span><button type="button" class="pb" id="dbBm">북마크 만드는 법</button></div>' +
+      '<div class="dbhow"><div><b>① 한 명씩 (전체 정보)</b><span>DB 사이트에서 고객 상세 화면을 연 뒤 <b>"OC9로 복사"</b> 북마크를 누르기. 여러 명을 차례로 눌러 모은 뒤 한 번에 붙여 넣어도 됩니다. 이름·전체 번호·생년월일·성별·지역·특이사항·인수상태·AS 마감까지 들어갑니다.</span><span class="dbbtns"><button type="button" class="pb gold" id="dbPage">북마크 만들기 페이지 열기</button><button type="button" class="pb" id="dbHow">사용법</button></span></div>' +
       '<div><b>② 목록 한꺼번에</b><span>DB 목록 화면에서 표시 개수를 크게 하고, 표를 길게 눌러(PC는 드래그) <b>전체 선택 → 복사</b>해서 붙여 넣기. 목록에는 번호가 가려져 있어, 번호는 ①로 한 번 더 넣으면 채워집니다.</span></div></div>' +
       '<textarea id="dbTxt" rows="7" placeholder="여기에 붙여 넣으세요"></textarea>' +
       '<div class="safe">' + IC.lock + '<span>대표님이 보고 있는 화면을 옮겨 적는 방식입니다. DB 사이트에 자동으로 접속하지 않습니다. 가져온 정보는 잠금 비밀번호로 암호화해 저장합니다.</span></div>' +
@@ -4121,15 +4149,17 @@ function HealthUI(root, H) {
     };
     $('dbTxt').addEventListener('input', preview);
     $('dbX').onclick = closeDlg;
-    $('dbBm').onclick = function(){ openDbBookmark(); };
+    $('dbPage').onclick = function(){ openExt('https://sicrics27-gif.github.io/mh-analyzer/bookmark.html'); };
+    $('dbHow').onclick = function(){ openDbHow(); };
     $('dbPaste').onclick = async function(){ try { $('dbTxt').value = await navigator.clipboard.readText(); preview(); } catch(e){ $('dbTxt').focus(); toast('붙여넣기 권한이 없어 직접 길게 눌러 붙여 넣어 주세요'); } };
     $('dbGo').onclick = async function(){
       var pick = parsed.filter(function(p, i){ var cb = $('dbPrev').querySelector('[data-dbi="' + i + '"]'); return cb && cb.checked; });
       var nNew = 0, nUp = 0;
       for (var i = 0; i < pick.length; i++) {
-        var p = pick[i], c = p._ex ? Object.assign({}, S.list.find(function(x){ return x.id === p._ex; })) : { status: 'wait', name: p.name, stage: 'db', from: 'afgdb' };
+        var p = pick[i], c = p._ex ? Object.assign({}, S.list.find(function(x){ return x.id === p._ex; })) : { status: 'wait', name: p.name, stage: 'lead', ch: 'db', from: 'afgdb' };
         if (!p._ex) nNew++; else nUp++;
         if (p.phone && !normPhone(c.phone)) c.phone = p.phone;
+        if (!c.ch) c.ch = 'db'; if (c.stage === 'db') c.stage = 'lead';
         if (p.birth && !c.birth) c.birth = p.birth;
         if (p.sex && !c.sex) c.sex = p.sex;
         c.db = Object.assign({}, c.db || {}, { status: p.status || (c.db && c.db.status) || '', dist: p.distAt || (c.db && c.db.dist) || '', reg: p.regAt || (c.db && c.db.reg) || '', asDue: p.asDue || (c.db && c.db.asDue) || '', mask: p.phoneMask || (c.db && c.db.mask) || '', married: p.married || (c.db && c.db.married) || '', at: Date.now() });
@@ -4156,6 +4186,73 @@ function HealthUI(root, H) {
     $('bmBack').onclick = function(){ openDbImport(); };
   }
   document.addEventListener('click', function(e){ if (e.target.closest('[data-act="dbImport"]')) openDbImport(); });
+
+  // ================= 영업 채널: 보유고객 · DB · 돌방 · 인하우스 · 지인 · 소개 =================
+  var CH = [['db', 'DB'], ['door', '돌방'], ['inhouse', '인하우스'], ['friend', '지인'], ['ref', '소개'], ['etc', '기타']];
+  var CH_DESC = { mine: '계약을 마친 내 고객 — 유지·관리·추가 보장', db: '회사 DB로 배분받은 고객 — 첫 대면·AS 마감 관리', door: '돌입 방문(개척)으로 만난 고객', inhouse: '인하우스(사내·단체) 영업 고객', friend: '지인 영업 고객', ref: '기존 고객이 소개해 준 고객', etc: '그 밖의 경로', none: '아직 영업 채널을 정하지 않은 고객' };
+  function chOf(c){ return c.ch || (c.db || c.stage === 'db' ? 'db' : ''); }
+  function chTxt(k){ var f = CH.find(function(x){ return x[0] === k; }); return f ? f[1] : ''; }
+  function isMine(c){ return /^(contract|care)$/.test(c.stage || ''); }
+  function chMatch(c, k){ return !k || k === 'all' ? true : k === 'mine' ? isMine(c) : k === 'none' ? !chOf(c) : chOf(c) === k; }
+  function chTabs(){ return [['all', '전체 고객'], ['mine', '보유고객']].concat(CH).concat([['none', '미분류']]); }
+  function chCount(k){ return S.list.filter(function(c){ return chMatch(c, k); }).length; }
+  function drawChips(){
+    var box = $('schan'); if (!box) return;
+    box.innerHTML = chTabs().map(function(t){ var n = chCount(t[0]); if (t[0] === 'none' && !n) return ''; return '<button type="button" data-chf="' + t[0] + '" aria-pressed="' + ((S.ch || 'all') === t[0]) + '">' + (t[0] === 'all' ? '전체' : t[1]) + ' <b>' + n + '</b></button>'; }).join('');
+  }
+  document.addEventListener('click', function(e){
+    var t = e.target.closest('[data-chf]'); if (t) { S.ch = t.dataset.chf === 'all' ? '' : t.dataset.chf; renderList(); if (S.view === 'chan') showChan(S.ch || 'all'); return; }
+    t = e.target.closest('[data-cm]'); if (t) { var a = t.dataset.cm; if (a === 'open') showChan(S.ch || 'all'); else if (a === 'tab') { S.ch = t.dataset.k === 'all' ? '' : t.dataset.k; renderList(); showChan(t.dataset.k); } else if (a === 'db') openDbImport(); else if (a === 'bm') openExt('https://sicrics27-gif.github.io/mh-analyzer/bookmark.html'); else if (a === 'how') openDbHow(); return; }
+  });
+  document.addEventListener('change', async function(e){
+    var t = e.target.closest('[data-chsel]'); if (!t) return;
+    var id = t.dataset.chsel, c = id === 'cur' ? S.cur : S.list.find(function(x){ return x.id === id; }); if (!c) return;
+    var h = id === 'cur' ? c : Object.assign({}, c); h.ch = t.value; if (h.stage === 'db') h.stage = 'lead';
+    if (id === 'cur') { await saveCur(c.name + '님 영업 채널: ' + (chTxt(t.value) || '미분류')); return; }
+    await Store.saveHead(h); S.list = await Store.list(); renderList(); toast(h.name + '님 → ' + (chTxt(t.value) || '미분류'));
+    if (S.view === 'chan') { var y = window.scrollY; showChan(S.chTab || 'all'); window.scrollTo(0, y); }
+  });
+  function chSelect(c, id){ return '<select class="chsel" data-chsel="' + id + '" aria-label="영업 채널"><option value="">미분류</option>' + CH.map(function(x){ return '<option value="' + x[0] + '"' + (chOf(c) === x[0] ? ' selected' : '') + '>' + x[1] + '</option>'; }).join('') + '</select>'; }
+  function showChan(k){
+    k = k || 'all'; S.chTab = k; S.cur = null; S.data = null; S.view = 'chan';
+    $('shell').classList.add('has-c'); armBack(); renderList();
+    var rows = S.list.filter(function(c){ return chMatch(c, k); }), t = todayStr();
+    var stg = {}; STAGES.forEach(function(s){ stg[s[0]] = 0; }); rows.forEach(function(c){ var s = c.stage === 'db' ? 'lead' : (c.stage || 'lead'); stg[s] = (stg[s] || 0) + 1; });
+    var month = t.slice(0, 7), nNew = rows.filter(function(c){ return c.created && new Date(c.created - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 7) === month; }).length;
+    var nTodo = rows.filter(function(c){ var n = nextDue(c); return n != null && n <= 0; }).length;
+    var nQuiet = rows.filter(function(c){ var L = lastOf(c); return !L.any || dayDiff(L.any, t) >= 30; }).length;
+    var title = k === 'all' ? '전체 고객관리' : k === 'mine' ? '보유고객 (My Client)' : k === 'none' ? '미분류 고객' : chTxt(k) + ' 고객';
+    var h = '<div class="chead"><button class="btn back" type="button" data-act="back">‹ 목록</button><h2 data-i="◎">' + esc(title) + '</h2><span class="cmeta">' + esc(k === 'all' ? '모든 영업 채널을 한 화면에서' : CH_DESC[k] || '') + '</span></div>' +
+      '<div class="chtabs" role="tablist">' + chTabs().map(function(x){ var n = chCount(x[0]); if (x[0] === 'none' && !n) return ''; return '<button type="button" role="tab" data-cm="tab" data-k="' + x[0] + '" aria-selected="' + (k === x[0]) + '">' + x[1] + '<b>' + n + '</b></button>'; }).join('') + '</div>' +
+      '<div class="bkpi chk">' + [['고객', rows.length], ['가망', stg.lead || 0], ['상담 중', stg.consult || 0], ['계약', stg.contract || 0], ['관리', stg.care || 0], ['이번 달 신규', nNew], ['할 일', nTodo], ['30일+ 미연락', nQuiet]].map(function(x){ return '<div><small>' + x[0] + '</small><b>' + x[1] + '</b></div>'; }).join('') + '</div>';
+    if (k === 'db') h += '<div class="dbbar"><div><b>회사 DB 고객 가져오기</b><small>DB 사이트 상세 화면에서 "OC9로 복사" 북마크를 차례로 누른 뒤, 여기서 한 번에 가져옵니다.</small></div><button class="go" type="button" data-cm="db">DB 고객 가져오기</button><button class="btn" type="button" data-cm="bm">북마크 만들기 페이지</button><button class="btn" type="button" data-cm="how">사용법</button></div>';
+    if (k === 'none' && rows.length) h += '<div class="gapban a">' + IC.warn + '<span>오른쪽 <b>영업 채널</b> 칸에서 고르면 바로 그 채널로 옮겨집니다. 계약을 마친 고객은 고객 단계를 <b>계약</b>이나 <b>관리</b>로 두면 자동으로 보유고객에 들어갑니다.</span></div>';
+    var extraHead = k === 'db' ? '<th>인수상태</th><th>배분일</th><th>AS 마감</th>' : k === 'mine' ? '<th>보유 계약</th><th>월 보험료</th><th>응당일</th>' : '<th>지역</th><th>만남</th>';
+    var extra = function(c){
+      if (k === 'db') { var d = c.db || {}, left = d.asDue ? dayDiff(t, d.asDue) : null; return '<td>' + esc(d.status || '—') + '</td><td class="n">' + (d.dist ? dot(d.dist) : '—') + '</td><td class="n' + (left != null && left >= 0 && left <= 7 && /가입불가|AS재신청/.test(d.status || '') ? ' due' : '') + '">' + (d.asDue ? dot(d.asDue) + (left != null && left >= 0 ? '<small>D-' + left + '</small>' : '') : '—') + '</td>'; }
+      if (k === 'mine') { var f = c.cvx || {}, ann = (f.ann || []).map(function(md){ var d = nextOf(md, t); return { d: d, n: dayDiff(t, d) }; }).sort(function(a, b){ return a.n - b.n; })[0]; return '<td class="n">' + (f.nC != null ? f.nC + '건' : '—') + '</td><td class="n">' + (f.prem ? won(f.prem) : '—') + '</td><td class="n">' + (ann ? dot(ann.d) + '<small>' + (ann.n === 0 ? '오늘' : 'D-' + ann.n) + '</small>' : '—') + '</td>'; }
+      var m = meetOf(c); return '<td>' + esc(m.area || '—') + '</td><td><small>' + esc(meetTxt(m) || '—') + '</small></td>';
+    };
+    rows.sort(function(a, b){ var x = nextDue(a), y = nextDue(b); x = x == null ? 1e9 : x; y = y == null ? 1e9 : y; return x - y || (b.updated || 0) - (a.updated || 0); });
+    h += '<div class="tw"><table class="t ctt chtt"><thead><tr><th>고객</th><th>단계</th>' + extraHead + '<th>마지막 연락</th><th>다음 할 일</th><th>영업 채널</th><th></th></tr></thead><tbody>' +
+      (rows.length ? rows.map(function(c){ var ph = normPhone(c.phone), n = nextDue(c), L = lastOf(c);
+        return '<tr><td><button type="button" class="ctn" data-ctopen="' + c.id + '"><b>' + esc(c.name) + (chOf(c) ? ' <em class="chn">(' + chTxt(chOf(c)) + ')</em>' : '') + '</b><small>' + (ph ? phoneTxt(ph) : (c.db && c.db.mask) || '번호 없음') + '</small></button></td><td><span class="stg2 s-' + (c.stage === 'db' ? 'lead' : c.stage || 'lead') + '">' + stageTxt(c.stage) + '</span></td>' + extra(c) +
+          '<td class="n">' + (L.any ? dot(L.any) + '<small>' + ago(L.any) + '</small>' : '<span class="note">—</span>') + '</td>' +
+          '<td>' + (c.next && c.next.d ? '<span class="' + (n <= 0 ? 'due' : '') + '">' + dot(c.next.d) + '</span> <small class="note">' + esc(c.next.t || '') + '</small>' : '<span class="note">—</span>') + '</td>' +
+          '<td>' + chSelect(c, c.id) + '</td><td class="ctact">' + (ph ? (IS_MOBILE ? '<a class="pb" href="tel:' + ph + '" data-ctcall="' + c.id + '">전화</a>' : '') + '<button type="button" class="pb" data-msg="kakao" data-cid="' + c.id + '">카톡</button>' : '') + '</td></tr>'; }).join('')
+        : '<tr><td colspan="9" class="note" style="text-align:center;padding:20px">' + (k === 'db' ? '아직 DB 고객이 없습니다. 위의 <b>DB 고객 가져오기</b>로 시작하세요.' : '해당하는 고객이 없습니다.') + '</td></tr>') + '</tbody></table></div>';
+    $('main').innerHTML = h; window.scrollTo(0, 0);
+  }
+  function openDbHow(){
+    openDlg('<h4>' + IC.user + ' 회사 DB 고객 가져오기 · 사용법</h4><div class="form dbhow2">' +
+      '<div class="hstep"><i>1</i><div><b>북마크 만들기 (처음 한 번만, PC 크롬)</b><span>아래 <b>북마크 만들기 페이지 열기</b> → 크롬에서 <b>Ctrl + Shift + B</b>로 북마크바를 켜고 → 페이지의 파란 <b>"OC9로 복사"</b> 버튼을 북마크바로 <b>끌어다 놓기</b>.</span></div></div>' +
+      '<div class="hstep"><i>2</i><div><b>DB 사이트에서 모으기</b><span>link.afg.kr 에서 고객 <b>상세 화면</b>을 열고(번호가 가려져 있으면 번호 보기 먼저) 북마크 <b>"OC9로 복사"</b>를 누르기. 여러 명이면 고객마다 차례로 누르면 계속 모입니다. ("지금까지 N명")</span></div></div>' +
+      '<div class="hstep"><i>3</i><div><b>OC9에서 한 번에 가져오기</b><span>OC9 → <b>DB 고객 가져오기</b> → <b>붙여넣기</b> → 미리보기 확인 → <b>가져오기</b>. 새 고객은 <b>DB</b> 채널로 등록되고, 이미 있는 고객은 정보만 채워집니다.</span></div></div>' +
+      '<div class="hstep"><i>4</i><div><b>다음 번에 모을 때</b><span>30분 넘게 지나 북마크를 다시 누르면 "이어서 모을까요?"라고 묻습니다. 이미 가져온 사람들이면 <b>취소</b>(새로 시작)를 누르세요.</span></div></div>' +
+      '<p class="note">목록 화면의 표를 통째로 복사해 붙여 넣어도 여러 명이 들어갑니다(번호는 가려진 채로). 이 기능은 대표님이 보고 있는 화면 글만 옮기며, DB 사이트에 자동으로 접속하지 않습니다.</p></div>' +
+      '<div class="mrow"><button class="btn lg" type="button" id="dhX" style="margin-right:auto">닫기</button><button class="btn lg" type="button" id="dhBm">북마크 만들기 페이지 열기</button><button class="go" type="button" id="dhGo">DB 고객 가져오기</button></div>', 'wide');
+    $('dhX').onclick = closeDlg; $('dhBm').onclick = function(){ openExt('https://sicrics27-gif.github.io/mh-analyzer/bookmark.html'); }; $('dhGo').onclick = function(){ openDbImport(); };
+  }
 
   // ================= 연락: 전화·문자·카톡 바로가기와 마지막 연락일 =================
   var MSG_TPL0, MSG_TPL = MSG_TPL0 = [
@@ -4876,6 +4973,7 @@ function HealthUI(root, H) {
         if (S.list.some(function(x){ return x.id === S.cur.id; })) { await openCustomer(S.cur.id); S.tab = tab; renderCustomer(); window.scrollTo(0, y); } else showWelcome();
       }
       if (S.view === 'contacts') showContacts();
+      else if (S.view === 'chan' && $('dlg').hidden) { var yc = window.scrollY; showChan(S.chTab); window.scrollTo(0, yc); }
       else if (S.view === 'brief' && $('dlg').hidden) { var yb = window.scrollY; showBrief(); window.scrollTo(0, yb); }
       else if (!S.cur && !S.view) showWelcome();
     }
@@ -4901,7 +4999,9 @@ function HealthUI(root, H) {
     $('fAll').textContent = '전체 ' + S.list.length; $('fTodo').textContent = '할 일 ' + nTodo;
     ['fAll','fTodo'].forEach(function(id){ $(id).setAttribute('aria-pressed', String($(id).dataset.f === S.filter)); });
     if (S.filter === 'todo') L2 = L2.filter(function(c){ var n = nextDue(c); return n != null && n <= 0; });
-    if (S.stage) L2 = L2.filter(function(c){ return (c.stage || 'lead') === S.stage; });
+    if (S.stage) L2 = L2.filter(function(c){ return (c.stage === 'db' ? 'lead' : c.stage || 'lead') === S.stage; });
+    if (S.ch) L2 = L2.filter(function(c){ return chMatch(c, S.ch); });
+    drawChips();
     var now = new Date(todayStr()).getTime(), groups = { '오늘': [], '최근 7일': [], '지난 기록': [] };
     L2.forEach(function(c){ var d = new Date(new Date(c.updated).getTime() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,10); var t = new Date(d).getTime(); (t >= now ? groups['오늘'] : now - t <= 7*864e5 ? groups['최근 7일'] : groups['지난 기록']).push(c); });
     var dupName = {}; S.list.forEach(function(c){ dupName[c.name] = (dupName[c.name] || 0) + 1; });
@@ -4913,7 +5013,7 @@ function HealthUI(root, H) {
         var cur = S.cur && S.cur.id === c.id;
         var nd = nextDue(c), r4 = nd != null ? '<span class="r4' + (nd <= 0 ? ' due' : '') + '">할 일 ' + dueTxt(nd) + (c.next.t ? ' · ' + esc(c.next.t) : '') + '</span>' : '';
         var r2 = c.status === 'done' ? '<span class="r2 ' + (c.sumOk ? 'ok' : '') + '">' + esc(c.summary || '') + '</span>' : '<span class="r2">파일 첨부 대기</span>';
-        return '<button type="button" class="citem" data-cid="' + c.id + '" aria-current="' + cur + '"><span class="r1"><b>' + esc(c.name) + '</b><small>' + sexTxt(c.sex) + (ageOf(c.birth) !== '' ? '·' + ageOf(c.birth) + '세' : '') + (dupName[c.name] > 1 && c.birth ? ' · ' + String(c.birth).slice(2, 4) + '.' + String(c.birth).slice(4, 6) + '.' + String(c.birth).slice(6, 8) + '생' : '') + '</small><i class="stg s-' + (c.stage || 'lead') + '">' + stageTxt(c.stage) + '</i><span class="stt ' + (c.status === 'done' && !/^보장분석만/.test(c.summary || '') ? '' : 'w') + '">' + (c.status !== 'done' ? '대기' : /^보장분석만/.test(c.summary || '') ? '보장만' : '✓ 분석완료') + '</span></span>' + (c.status === 'done' && c.asOf ? (function(){ var F = freshOf(c.asOf); return '<span class="r3"><i class="fp ' + F.lv + '"></i>자료 ' + dot(c.asOf) + ' · ' + F.txt + (c.applyDate ? ' · 청약 ' + dot(c.applyDate) : '') + '</span>'; })() : '') + r2 + r4 + '</button>';
+        return '<button type="button" class="citem" data-cid="' + c.id + '" aria-current="' + cur + '"><span class="r1"><b>' + esc(c.name) + (chOf(c) ? '<em class="chn">(' + chTxt(chOf(c)) + ')</em>' : '') + '</b><small>' + sexTxt(c.sex) + (ageOf(c.birth) !== '' ? '·' + ageOf(c.birth) + '세' : '') + (dupName[c.name] > 1 && c.birth ? ' · ' + String(c.birth).slice(2, 4) + '.' + String(c.birth).slice(4, 6) + '.' + String(c.birth).slice(6, 8) + '생' : '') + '</small><i class="stg s-' + (c.stage || 'lead') + '">' + stageTxt(c.stage) + '</i><span class="stt ' + (c.status === 'done' && !/^보장분석만/.test(c.summary || '') ? '' : 'w') + '">' + (c.status !== 'done' ? '대기' : /^보장분석만/.test(c.summary || '') ? '보장만' : '✓ 분석완료') + '</span></span>' + (c.status === 'done' && c.asOf ? (function(){ var F = freshOf(c.asOf); return '<span class="r3"><i class="fp ' + F.lv + '"></i>자료 ' + dot(c.asOf) + ' · ' + F.txt + (c.applyDate ? ' · 청약 ' + dot(c.applyDate) : '') + '</span>'; })() : '') + r2 + r4 + '</button>';
       }).join('');
     });
     if (!S.list.length) h = '<div class="cempty">등록된 고객이 없습니다.<br>위의 <b>신규 고객 등록</b>으로 시작하세요.</div>';
@@ -5606,12 +5706,14 @@ function HealthUI(root, H) {
       '<label class="l" for="fBirth">생년월일 <small class="note">(PDF 비밀번호로 자동 사용)</small></label><input id="fBirth" inputmode="numeric" maxlength="10" placeholder="YYYY-MM-DD (예: 19580707)" value="' + b + '" autocomplete="off">' +
       '<label class="l" for="fPhone">휴대폰 번호 <small class="note">(선택 · 문자·전화용)</small></label><input id="fPhone" inputmode="tel" maxlength="13" placeholder="010-0000-0000" value="' + esc(c && c.phone ? phoneTxt(c.phone) : '') + '" autocomplete="off">' +
       '<span class="l">고객 단계</span><div class="sexsel st4" id="fStg">' + STAGES.map(function(x){ return '<button type="button" data-v="' + x[0] + '" aria-pressed="' + (((c && c.stage) || 'lead') === x[0]) + '">' + x[1] + '</button>'; }).join('') + '</div>' +
+      '<span class="l">영업 채널</span><div class="sexsel st4 ch7" id="fCh">' + CH.map(function(x){ return '<button type="button" data-v="' + x[0] + '" aria-pressed="' + ((c ? chOf(c) : (S.ch && S.ch !== 'mine' && S.ch !== 'none' ? S.ch : '')) === x[0]) + '">' + x[1] + '</button>'; }).join('') + '</div>' +
       '<div class="frow2"><div><label class="l" for="fRef">소개자 <small class="note">(선택)</small></label><input id="fRef" type="text" maxlength="20" value="' + esc(c && c.ref || '') + '" placeholder="예: 김OO 고객 소개"></div><div><label class="l" for="fInt">관심 상품 <small class="note">(선택)</small></label><input id="fInt" type="text" maxlength="30" value="' + esc(c && c.interest || '') + '" placeholder="예: 간편 3.5.5, 실손"></div></div>' +
       '<label class="l" for="fMemo">메모 <small class="note">(선택)</small></label><textarea id="fMemo" placeholder="상담 내용 등">' + esc(c ? c.memo || '' : '') + '</textarea>' +
       '<div class="safe">' + IC.lock + '<span>고객 정보는 잠금 비밀번호로 암호화되어 이 기기(와 동기화를 켠 내 구글 드라이브)에만 저장됩니다. 주민번호 뒷자리·계좌번호는 입력하지 마세요.</span></div>' +
       (c ? '' : '<label class="consent"><input type="checkbox" id="fOk"> 고객 개인정보 수집·이용 동의 받음</label>') +
       '<div class="ferr" id="fErr"></div></div><div class="mrow">' + (c ? '' : '<button class="btn lg" type="button" id="fPaste" style="margin-right:auto">' + IC.doc + ' SMemo에서 가져오기</button>') + '<button class="btn lg" type="button" id="fCancel">취소</button><button class="go" type="button" id="fSave">' + (c ? '저장' : '등록') + '</button></div>');
-    var sx = sex, stg = (c && c.stage) || 'lead';
+    var sx = sex, stg = (c && c.stage && c.stage !== 'db' ? c.stage : 'lead'), chv = c ? chOf(c) : (S.ch && S.ch !== 'mine' && S.ch !== 'none' ? S.ch : '');
+    $('fCh').onclick = function(e){ var bt = e.target.closest('button'); if (!bt) return; chv = bt.getAttribute('aria-pressed') === 'true' ? '' : bt.dataset.v; this.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed', String(x.dataset.v === chv)); }); };
     $('fStg').onclick = function(e){ var bt = e.target.closest('button'); if (!bt) return; stg = bt.dataset.v; this.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed', String(x === bt)); }); };
     $('fPhone').addEventListener('input', function(){ var v = this.value.replace(/\D/g, '').slice(0, 11); this.value = v.length > 7 ? v.slice(0, 3) + '-' + v.slice(3, v.length - 4) + '-' + v.slice(-4) : v.length > 3 ? v.slice(0, 3) + '-' + v.slice(3) : v; });
     $('fSex').onclick = function(e){ var bt = e.target.closest('button'); if (!bt) return; sx = bt.dataset.s; this.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed', String(x === bt)); }); };
@@ -5629,7 +5731,7 @@ function HealthUI(root, H) {
       var ph = $('fPhone').value.replace(/\D/g, '');
       if (ph && !normPhone(ph)) { err.textContent = '휴대폰 번호를 확인하세요. (예: 010-1234-5678)'; return; }
       h.name = name; h.sex = sx; h.birth = bd; h.memo = $('fMemo').value.trim();
-      h.phone = ph; h.stage = stg; h.ref = $('fRef').value.trim(); h.interest = $('fInt').value.trim();
+      h.phone = ph; h.stage = stg; h.ch = chv; h.ref = $('fRef').value.trim(); h.interest = $('fInt').value.trim();
       h = await Store.saveHead(h);
       S.list = await Store.list();
       closeDlg();
