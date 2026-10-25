@@ -1257,6 +1257,49 @@ table.ctt .due{color:var(--red);font-weight:700}
 .hstep div{display:flex;flex-direction:column;gap:2px;font-size:14px;line-height:1.65}.hstep span{color:var(--ink2)}
 .sexsel.ch7{flex-wrap:wrap}
 @media (max-width:900px){.bkpi.chk{grid-template-columns:repeat(4,minmax(0,1fr))}}
+/* ===== 목록 빠른 수정 ===== */
+.citem{position:relative}
+.citem .stg[data-q],.citem .chn[data-q]{cursor:pointer;border-radius:6px;transition:background .12s,box-shadow .12s}
+.citem .stg[data-q]:hover,.citem .chn[data-q]:hover{box-shadow:0 0 0 1px rgba(255,255,255,.28);background:rgba(255,255,255,.08)}
+.chn.add{opacity:0;color:var(--side-mute);font-weight:600;padding:0 4px}
+.citem:hover .chn.add,.citem:focus-visible .chn.add{opacity:.85}
+.qmore{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;line-height:1;color:var(--side-mute);opacity:0;transition:opacity .12s,background .12s}
+.citem:hover .qmore{opacity:1}.qmore:hover{background:rgba(255,255,255,.12);color:var(--side-ink)}
+.citem:hover .r1 .stt{visibility:hidden}
+@media (hover:none){.qmore{opacity:.55}.chn.add{opacity:.5}.citem .r1 .stt{visibility:visible!important;margin-right:26px}}
+.qpop{position:fixed;z-index:120;min-width:200px;max-width:min(440px,calc(100vw - 16px));max-height:min(70vh,560px);overflow:auto;background:#1c1f26;color:#ECEFF4;border:1px solid rgba(255,255,255,.1);border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.45),0 2px 8px rgba(0,0,0,.25);padding:6px;animation:qin .12s ease-out}
+:root:not([data-theme="dark"]) .qpop{background:#fff;color:#172033;border-color:#dce2ee;box-shadow:0 18px 50px rgba(20,30,60,.18)}
+@keyframes qin{from{opacity:0;transform:translateY(-4px) scale(.98)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.qpop{animation:none}}
+.qh{font-size:11.5px;font-weight:700;letter-spacing:.02em;color:#8E97A8;padding:8px 10px 4px}
+.qi{display:flex;align-items:center;gap:9px;width:100%;min-height:36px;padding:0 10px;border:0;border-radius:9px;background:transparent;color:inherit;font:inherit;font-size:14px;text-align:left;cursor:pointer}
+.qi:hover,.qi:focus-visible{background:rgba(127,140,170,.16);outline:none}
+.qi small{margin-left:auto;color:#8E97A8;font-size:12px}.qi i{font-style:normal;color:#6F9BFF;font-weight:800;margin-left:6px}.qi small+i{margin-left:6px}
+.qi.on{font-weight:700}.qi svg{width:16px;height:16px;opacity:.8}
+.qd{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.qcols{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.qtitle{display:flex;align-items:baseline;gap:8px;padding:8px 10px 6px}.qtitle b{font-size:15px}.qtitle small{color:#8E97A8;font-size:12px}
+.qrow{display:flex;gap:6px;padding:2px 6px 6px}
+.qa{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:38px;border-radius:10px;border:1px solid rgba(127,140,170,.25);background:rgba(127,140,170,.08);color:inherit;font:inherit;font-size:13.5px;font-weight:600;text-decoration:none;cursor:pointer}
+.qa:hover{background:rgba(127,140,170,.18)}.qa svg{width:16px;height:16px}
+.qsep{height:1px;background:rgba(127,140,170,.2);margin:6px 4px}
+.qdate{display:flex;gap:6px;padding:4px 10px 6px}.qdate input{flex:1;height:34px;border-radius:8px;border:1px solid rgba(127,140,170,.3);background:transparent;color:inherit;font:inherit;padding:0 8px;color-scheme:dark}
+:root:not([data-theme="dark"]) .qdate input{color-scheme:light}
+.qck{width:18px;height:18px;border-radius:6px;border:1.5px solid rgba(255,255,255,.35);flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center}
+.qck.on{background:var(--ocean,#2F6BFF);border-color:var(--ocean,#2F6BFF)}.qck.on::after{content:'';width:9px;height:5px;border:2px solid #fff;border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+.selm .citem .qmore{display:none}
+#fSel[aria-pressed="true"]{background:var(--ocean,#2F6BFF);color:#fff}
+.selbar{position:sticky;bottom:0;z-index:5;margin:0 -4px;background:#20242c;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:8px;box-shadow:0 -8px 24px rgba(0,0,0,.3)}
+.selbar[hidden]{display:none}
+.sb-t{display:flex;align-items:center;justify-content:space-between;color:var(--side-ink)}.sb-t .lnk{color:#9DB8FF;font-size:12.5px}
+.sb-a{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.sb-a button{height:34px;border-radius:9px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--side-ink);font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.sb-a button:disabled{opacity:.4;cursor:default}.sb-a .x{background:var(--ocean,#2F6BFF);border-color:var(--ocean,#2F6BFF);color:#fff}
+.sfilt{flex-wrap:nowrap}
+.sfilt #fSel{flex:0 0 auto;width:auto;padding:0 10px;min-width:0}
+.sfilt select{min-width:0;flex:1 1 auto}
+.sfilt{display:grid!important;grid-template-columns:auto auto auto minmax(0,1fr)}
+.sfilt button{padding:0 10px}
 
 </style>
 </head>
@@ -1280,7 +1323,7 @@ table.ctt .due{color:var(--red);font-weight:700}
     <div class="sbrand"><b class="wm"><span>AFG</span><i>OC9</i></b><small>Authentic Financial Group · Ocean Branch 9팀</small><button type="button" class="sfold" data-rail="close" title="메뉴 접기 (왼쪽으로 끌어도 됩니다)">«</button></div>
     <button class="sbtn pri" id="newCust" type="button"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><circle cx="10" cy="8" r="4"/><path d="M2 21c0-4 4-7 8-7s8 3 8 7zM19 8h2v3h3v2h-3v3h-2v-3h-3v-2h3z"/></svg>신규 고객 등록</button>
     <div class="sqw"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" class="sq" type="search" placeholder="이름 · 전화번호 · 메모 검색" autocomplete="off"></div>
-    <div class="sfilt" id="sfilt"><button id="fAll" type="button" data-f="all">전체</button><button id="fTodo" type="button" data-f="todo">할 일</button><select id="fStage" aria-label="고객 단계로 거르기"><option value="">모든 단계</option><option value="lead">가망</option><option value="consult">상담 중</option><option value="contract">계약</option><option value="care">관리</option></select></div>
+    <div class="sfilt" id="sfilt"><button id="fAll" type="button" data-f="all">전체</button><button id="fTodo" type="button" data-f="todo">할 일</button><button id="fSel" type="button" title="여러 명 골라서 채널·단계·할 일을 한 번에">선택</button><select id="fStage" aria-label="고객 단계로 거르기"><option value="">모든 단계</option><option value="lead">가망</option><option value="consult">상담 중</option><option value="contract">계약</option><option value="care">관리</option></select></div>
     <div class="schan" id="schan" role="group" aria-label="영업 채널"></div>
     <button type="button" class="sct scm" data-cm="open"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.5a3 3 0 0 1 0 6M18 14c2 .7 3.5 2.8 3.5 5.5"/></svg>고객관리 · 영업 채널별 보기</button>
     <button type="button" class="sct sbr" data-nx="brief"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17l-6.1 3.4 1.5-6.8L2.2 9l6.9-.7z"/></svg>오늘의 브리핑 · 생일·응당일·청구기한</button>
@@ -4254,6 +4297,104 @@ function HealthUI(root, H) {
     $('dhX').onclick = closeDlg; $('dhBm').onclick = function(){ openExt('https://sicrics27-gif.github.io/mh-analyzer/bookmark.html'); }; $('dhGo').onclick = function(){ openDbImport(); };
   }
 
+  // ================= 목록에서 바로 수정: 빠른 메뉴 · 여러 명 선택 =================
+  var QS = { sel: null };
+  function qpop(anchor, html, onPick){
+    qclose();
+    var p = document.createElement('div'); p.id = 'qpop'; p.className = 'qpop'; p.setAttribute('role', 'menu'); p.innerHTML = html;
+    document.body.appendChild(p);
+    var r = anchor.getBoundingClientRect(), w = p.offsetWidth, h = p.offsetHeight, vw = window.innerWidth, vh = window.innerHeight;
+    var x = Math.min(Math.max(8, r.left), vw - w - 8), y = r.bottom + 6; if (y + h > vh - 8) y = Math.max(8, r.top - h - 6);
+    p.style.left = x + 'px'; p.style.top = y + 'px';
+    p.addEventListener('click', function(e){ var b = e.target.closest('[data-qv]'); if (!b) return; e.stopPropagation(); onPick(b.dataset.qv, b); });
+    setTimeout(function(){ document.addEventListener('click', qOut, true); }, 0);
+    var f = p.querySelector('[data-qv]'); if (f) f.focus();
+  }
+  function qOut(e){ var p = $('qpop'); if (p && !p.contains(e.target)) { qclose(); if (e.target.closest('.citem')) { e.stopPropagation(); e.preventDefault(); } } }
+  function qclose(){ var p = $('qpop'); if (p) p.remove(); document.removeEventListener('click', qOut, true); }
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') { if ($('qpop')) qclose(); else if (QS.sel) selMode(false); } });
+  window.addEventListener('resize', qclose); document.addEventListener('scroll', function(e){ if ($('qpop') && !$('qpop').contains(e.target)) qclose(); }, true);
+  function qItem(v, label, on, sub){ return '<button type="button" class="qi' + (on ? ' on' : '') + '" data-qv="' + esc(v) + '" role="menuitem">' + label + (sub ? '<small>' + sub + '</small>' : '') + (on ? '<i>✓</i>' : '') + '</button>'; }
+  var STG_DOT = { lead: '#9AA6BF', consult: '#6F9BFF', contract: '#D9BC86', care: '#5ED39A' };
+  function stageMenu(cur){ return '<div class="qh">고객 단계</div>' + STAGES.map(function(s){ return qItem('stage:' + s[0], '<span class="qd" style="background:' + STG_DOT[s[0]] + '"></span>' + s[1], cur === s[0], s[0] === 'contract' || s[0] === 'care' ? '보유고객' : ''); }).join(''); }
+  function chMenu(cur){ return '<div class="qh">영업 채널</div>' + CH.map(function(x){ return qItem('ch:' + x[0], x[1], cur === x[0]); }).join('') + qItem('ch:', '<span class="note">미분류로</span>', !cur); }
+  function todoMenu(){ var t = todayStr(), nm = function(){ var d = new Date(t + 'T12:00:00'), k = (8 - d.getDay()) % 7 || 7; return addDay(t, k); };
+    return '<div class="qh">할 일 잡기 (연락하기)</div>' + [['todo:' + t, '오늘'], ['todo:' + addDay(t, 1), '내일'], ['todo:' + addDay(t, 3), '3일 뒤'], ['todo:' + nm(), '다음 주 월요일'], ['todo:' + addDay(t, 14), '2주 뒤']].map(function(x){ return qItem(x[0], x[1], false, dot(x[0].slice(5))); }).join('') + '<div class="qdate"><input type="date" id="qDate" min="' + t + '"><button type="button" class="pb" data-qv="todo:pick">지정</button></div>' + qItem('todo:clear', '<span class="note">할 일 지우기</span>'); }
+  async function qApply(ids, v){
+    var n = 0, t = todayStr(), label = '';
+    if (v === 'todo:pick') { var d0 = $('qDate') && $('qDate').value; if (!d0) { toast('날짜를 고르세요'); return false; } v = 'todo:' + d0; }
+    for (var i = 0; i < ids.length; i++) {
+      var c = S.list.find(function(x){ return x.id === ids[i]; }); if (!c || c.sample) continue;
+      var h = Object.assign({}, c), m = /^(stage|ch|todo):(.*)$/.exec(v); if (!m) continue;
+      if (m[1] === 'stage') { h.stage = m[2]; label = stageTxt(m[2]) + ' 단계로'; }
+      else if (m[1] === 'ch') { h.ch = m[2]; if (h.stage === 'db') h.stage = 'lead'; label = (chTxt(m[2]) || '미분류') + ' 채널로'; }
+      else if (m[1] === 'todo') { if (m[2] === 'clear') { h.next = null; label = '할 일 지움'; } else { h.next = { d: m[2], t: (c.next && c.next.t) || '연락하기' }; label = '할 일 ' + dot(m[2]) + (m[2] === t ? ' (오늘)' : ''); } }
+      await Store.saveHead(h); n++;
+      if (S.cur && S.cur.id === h.id) S.cur = h;
+    }
+    S.list = await Store.list(); renderList();
+    if (S.cur && ids.indexOf(S.cur.id) >= 0 && !S.view) { var y = window.scrollY; S.cur = S.list.find(function(x){ return x.id === S.cur.id; }) || S.cur; renderCustomer(); window.scrollTo(0, y); }
+    if (S.view === 'chan') showChan(S.chTab); else if (S.view === 'brief') showBrief(); else if (S.view === 'contacts') showContacts(); else if (!S.cur && !S.view) showWelcome();
+    toast((n > 1 ? n + '명 ' : (S.list.find(function(x){ return x.id === ids[0]; }) || {}).name + '님 ') + label);
+    return true;
+  }
+  function moreMenu(c){
+    var ph = normPhone(c.phone);
+    return '<div class="qtitle"><b>' + esc(c.name) + '</b><small>' + stageTxt(c.stage) + (chOf(c) ? ' · ' + chTxt(chOf(c)) : '') + '</small></div>' +
+      '<div class="qrow">' + (ph ? (IS_MOBILE ? '<a class="qa" href="tel:' + ph + '" data-qv="call">' + IC.phone + '전화</a>' : '') + '<button type="button" class="qa" data-qv="sms">' + IC.sms + '문자</button><button type="button" class="qa" data-qv="kakao">' + IC.chat + '카톡</button>' : '<span class="note" style="padding:4px 6px">번호가 없습니다</span>') + '</div>' +
+      '<div class="qcols"><div>' + stageMenu(c.stage === 'db' ? 'lead' : c.stage || 'lead') + '</div><div>' + chMenu(chOf(c)) + '</div></div>' +
+      '<div class="qsep"></div>' + qItem('sub:todo', IC.cal + '할 일 잡기', false, c.next && c.next.d ? dot(c.next.d) + ' ' + esc(c.next.t || '') : '') + qItem('sub:meet', IC.cup + '만남 정보 · 근처 카페') + qItem('sub:edit', IC.user + '정보 수정') + qItem('sub:sel', '☑ 여러 명 선택해서 한 번에 바꾸기');
+  }
+  function openQuick(id, anchor, kind){
+    var c = S.list.find(function(x){ return x.id === id; }); if (!c) return;
+    var html = kind === 'stage' ? stageMenu(c.stage === 'db' ? 'lead' : c.stage || 'lead') : kind === 'ch' ? chMenu(chOf(c)) : kind === 'todo' ? todoMenu() : moreMenu(c);
+    qpop(anchor, html, async function(v){
+      if (/^(stage|ch|todo):/.test(v)) { if (await qApply([id], v) !== false) qclose(); return; }
+      qclose();
+      if (v === 'sub:todo') { openQuick(id, anchor, 'todo'); return; }
+      if (v === 'sub:sel') { selMode(true); toggleSel(id); return; }
+      if (v === 'call') { setPend({ cid: id, k: 'call', at: Date.now() }); return; }
+      await openCustomer(id);
+      if (v === 'sms' || v === 'kakao') openMsg(v);
+      else if (v === 'sub:meet') openMeet();
+      else if (v === 'sub:edit') openCustForm(S.cur);
+    });
+  }
+  // 여러 명 선택
+  function selMode(on){
+    QS.sel = on ? (QS.sel || {}) : null; $('shell').classList.toggle('selm', !!on); renderList(); drawSelBar();
+  }
+  function toggleSel(id){ if (!QS.sel) return; if (QS.sel[id]) delete QS.sel[id]; else QS.sel[id] = 1; renderList(); drawSelBar(); }
+  function drawSelBar(){
+    var bar = $('selbar'); if (!bar) { bar = document.createElement('div'); bar.id = 'selbar'; bar.className = 'selbar'; document.querySelector('.side').appendChild(bar); }
+    if (!QS.sel) { bar.hidden = true; return; }
+    var n = Object.keys(QS.sel).length; bar.hidden = false;
+    bar.innerHTML = '<div class="sb-t"><b>' + n + '명 선택</b><button type="button" class="lnk" data-sb="all">보이는 고객 모두</button></div><div class="sb-a"><button type="button" data-sb="ch"' + (n ? '' : ' disabled') + '>채널</button><button type="button" data-sb="stage"' + (n ? '' : ' disabled') + '>단계</button><button type="button" data-sb="todo"' + (n ? '' : ' disabled') + '>할 일</button><button type="button" class="x" data-sb="off">완료</button></div>';
+  }
+  document.addEventListener('click', function(e){
+    var b = e.target.closest('[data-sb]'); if (!b) return;
+    var a = b.dataset.sb;
+    if (a === 'off') { selMode(false); return; }
+    if (a === 'all') { document.querySelectorAll('#clist .citem[data-cid]').forEach(function(x){ QS.sel[x.dataset.cid] = 1; }); renderList(); drawSelBar(); return; }
+    var ids = Object.keys(QS.sel || {}); if (!ids.length) return;
+    qpop(b, a === 'stage' ? stageMenu('') : a === 'ch' ? chMenu('-') : todoMenu(), async function(v){ if (await qApply(ids, v) !== false) { qclose(); QS.sel = {}; drawSelBar(); renderList(); } });
+  });
+  // 목록 클릭: 빠른 메뉴 / 선택 / 열기
+  $('clist').addEventListener('click', function(e){
+    var q = e.target.closest('[data-q]'), it = e.target.closest('[data-cid]'); if (!it) return;
+    e.stopImmediatePropagation();
+    if (QS.sel) { toggleSel(it.dataset.cid); return; }
+    if (q) { openQuick(it.dataset.cid, q, q.dataset.q); return; }
+    openCustomer(it.dataset.cid);
+  }, true);
+  $('clist').addEventListener('contextmenu', function(e){ var it = e.target.closest('[data-cid]'); if (!it || QS.sel) return; e.preventDefault(); openQuick(it.dataset.cid, { getBoundingClientRect: function(){ return { left: e.clientX, right: e.clientX, top: e.clientY, bottom: e.clientY }; } }, 'more'); });
+  (function(){ // 휴대폰: 길게 누르면 빠른 메뉴
+    var tm = null, sx = 0, sy = 0, fired = false;
+    $('clist').addEventListener('touchstart', function(e){ var it = e.target.closest('[data-cid]'); if (!it || QS.sel || e.touches.length !== 1) return; fired = false; sx = e.touches[0].clientX; sy = e.touches[0].clientY; tm = setTimeout(function(){ fired = true; if (navigator.vibrate) try { navigator.vibrate(12); } catch(er){} openQuick(it.dataset.cid, it, 'more'); }, 480); }, { passive: true });
+    $('clist').addEventListener('touchmove', function(e){ if (tm && (Math.abs(e.touches[0].clientX - sx) > 8 || Math.abs(e.touches[0].clientY - sy) > 8)) { clearTimeout(tm); tm = null; } }, { passive: true });
+    $('clist').addEventListener('touchend', function(e){ if (tm) { clearTimeout(tm); tm = null; } if (fired) { e.preventDefault(); fired = false; } });
+  })();
+
   // ================= 연락: 전화·문자·카톡 바로가기와 마지막 연락일 =================
   var MSG_TPL0, MSG_TPL = MSG_TPL0 = [
     ['안부', '{이름}님, 안녕하세요. 담당 설계사입니다. 요즘 건강은 어떠신지 안부 여쭙습니다. 보험 관련해서 궁금하신 점 있으면 언제든 편하게 연락 주세요.'],
@@ -4998,6 +5139,7 @@ function HealthUI(root, H) {
     var nTodo = S.list.filter(function(c){ var n = nextDue(c); return n != null && n <= 0; }).length;
     $('fAll').textContent = '전체 ' + S.list.length; $('fTodo').textContent = '할 일 ' + nTodo;
     ['fAll','fTodo'].forEach(function(id){ $(id).setAttribute('aria-pressed', String($(id).dataset.f === S.filter)); });
+    if ($('fSel')) $('fSel').setAttribute('aria-pressed', String(!!QS.sel));
     if (S.filter === 'todo') L2 = L2.filter(function(c){ var n = nextDue(c); return n != null && n <= 0; });
     if (S.stage) L2 = L2.filter(function(c){ return (c.stage === 'db' ? 'lead' : c.stage || 'lead') === S.stage; });
     if (S.ch) L2 = L2.filter(function(c){ return chMatch(c, S.ch); });
@@ -5013,7 +5155,7 @@ function HealthUI(root, H) {
         var cur = S.cur && S.cur.id === c.id;
         var nd = nextDue(c), r4 = nd != null ? '<span class="r4' + (nd <= 0 ? ' due' : '') + '">할 일 ' + dueTxt(nd) + (c.next.t ? ' · ' + esc(c.next.t) : '') + '</span>' : '';
         var r2 = c.status === 'done' ? '<span class="r2 ' + (c.sumOk ? 'ok' : '') + '">' + esc(c.summary || '') + '</span>' : '<span class="r2">파일 첨부 대기</span>';
-        return '<button type="button" class="citem" data-cid="' + c.id + '" aria-current="' + cur + '"><span class="r1"><b>' + esc(c.name) + (chOf(c) ? '<em class="chn">(' + chTxt(chOf(c)) + ')</em>' : '') + '</b><small>' + sexTxt(c.sex) + (ageOf(c.birth) !== '' ? '·' + ageOf(c.birth) + '세' : '') + (dupName[c.name] > 1 && c.birth ? ' · ' + String(c.birth).slice(2, 4) + '.' + String(c.birth).slice(4, 6) + '.' + String(c.birth).slice(6, 8) + '생' : '') + '</small><i class="stg s-' + (c.stage || 'lead') + '">' + stageTxt(c.stage) + '</i><span class="stt ' + (c.status === 'done' && !/^보장분석만/.test(c.summary || '') ? '' : 'w') + '">' + (c.status !== 'done' ? '대기' : /^보장분석만/.test(c.summary || '') ? '보장만' : '✓ 분석완료') + '</span></span>' + (c.status === 'done' && c.asOf ? (function(){ var F = freshOf(c.asOf); return '<span class="r3"><i class="fp ' + F.lv + '"></i>자료 ' + dot(c.asOf) + ' · ' + F.txt + (c.applyDate ? ' · 청약 ' + dot(c.applyDate) : '') + '</span>'; })() : '') + r2 + r4 + '</button>';
+        return '<button type="button" class="citem" data-cid="' + c.id + '" aria-current="' + cur + '"><span class="r1">' + (QS.sel ? '<span class="qck' + (QS.sel[c.id] ? ' on' : '') + '" aria-hidden="true"></span>' : '') + '<b>' + esc(c.name) + (chOf(c) ? '<em class="chn" data-q="ch" title="영업 채널 바꾸기">(' + chTxt(chOf(c)) + ')</em>' : '<em class="chn add" data-q="ch" title="영업 채널 정하기">+채널</em>') + '</b><small>' + sexTxt(c.sex) + (ageOf(c.birth) !== '' ? '·' + ageOf(c.birth) + '세' : '') + (dupName[c.name] > 1 && c.birth ? ' · ' + String(c.birth).slice(2, 4) + '.' + String(c.birth).slice(4, 6) + '.' + String(c.birth).slice(6, 8) + '생' : '') + '</small><i class="stg s-' + (c.stage === 'db' ? 'lead' : c.stage || 'lead') + '" data-q="stage" title="단계 바꾸기">' + stageTxt(c.stage) + '</i><span class="stt ' + (c.status === 'done' && !/^보장분석만/.test(c.summary || '') ? '' : 'w') + '">' + (c.status !== 'done' ? '대기' : /^보장분석만/.test(c.summary || '') ? '보장만' : '✓ 분석완료') + '</span><span class="qmore" data-q="more" title="빠른 메뉴 (오른쪽 클릭·길게 누르기)">⋯</span></span>' + (c.status === 'done' && c.asOf ? (function(){ var F = freshOf(c.asOf); return '<span class="r3"><i class="fp ' + F.lv + '"></i>자료 ' + dot(c.asOf) + ' · ' + F.txt + (c.applyDate ? ' · 청약 ' + dot(c.applyDate) : '') + '</span>'; })() : '') + r2 + r4 + '</button>';
       }).join('');
     });
     if (!S.list.length) h = '<div class="cempty">등록된 고객이 없습니다.<br>위의 <b>신규 고객 등록</b>으로 시작하세요.</div>';
@@ -5021,7 +5163,7 @@ function HealthUI(root, H) {
     $('clist').innerHTML = h;
   }
   $('q').addEventListener('input', function(){ S.q = this.value; renderList(); });
-  $('sfilt').addEventListener('click', function(e){ var b = e.target.closest('button'); if (!b) return; S.filter = b.dataset.f; renderList(); });
+  $('sfilt').addEventListener('click', function(e){ var b = e.target.closest('button'); if (!b) return; if (b.id === 'fSel') { selMode(!QS.sel); return; } S.filter = b.dataset.f; renderList(); });
   $('fStage').addEventListener('change', function(){ S.stage = this.value; renderList(); });
   $('clist').addEventListener('click', function(e){ var b = e.target.closest('[data-cid]'); if (b) openCustomer(b.dataset.cid); });
 
