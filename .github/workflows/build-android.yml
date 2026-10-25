@@ -37,9 +37,10 @@ jobs:
           APP_CODE: ${{ github.run_number }}
         run: |
           chmod +x gradlew
-          ./gradlew --no-daemon assembleRelease
+          ./gradlew --no-daemon assembleRelease bundleRelease
           mkdir -p ../out
           cp app/build/outputs/apk/release/app-release.apk ../out/AFG-OC9.apk
+          cp app/build/outputs/bundle/release/app-release.aab ../out/AFG-OC9-playstore.aab
           echo "{\"code\":${APP_CODE}}" > ../out/apk.json
           rm -f oc9.keystore
       - if: steps.key.outputs.ok == '1'
@@ -53,6 +54,6 @@ jobs:
         with:
           tag_name: apk-latest
           name: AFG OC9 안드로이드 앱
-          body: "AFG OC9 안드로이드 앱 (빌드 ${{ github.run_number }}). 휴대폰에서 AFG-OC9.apk 를 눌러 설치하세요."
+          body: "AFG OC9 안드로이드 앱 (빌드 ${{ github.run_number }}). 휴대폰에서 AFG-OC9.apk 를 눌러 설치하세요. AFG-OC9-playstore.aab 는 구글 플레이 콘솔에 올리는 파일입니다."
           files: out/*
           make_latest: false

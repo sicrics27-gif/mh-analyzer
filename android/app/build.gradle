@@ -58,7 +58,7 @@ android {
     defaultConfig {
         applicationId "io.github.sicrics27gif.oc9"
         minSdkVersion 21
-        targetSdkVersion 35
+        targetSdkVersion 36
         versionCode appCode
         versionName "1." + appCode
 
