@@ -4146,7 +4146,8 @@ function HealthUI(root, H) {
       '<p><b>PC 크롬</b></p><ol class="kkg"><li>아래 <b>코드 복사</b>를 누릅니다.</li><li>크롬 위쪽 북마크바에서 오른쪽 클릭 → <b>페이지 추가</b> (북마크바가 안 보이면 Ctrl+Shift+B)</li><li>이름: <b>OC9로 복사</b>, URL 칸에 붙여넣기 → 저장</li><li>DB 사이트에서 고객 상세 화면을 열고(번호 보기를 눌러 둔 상태) 북마크를 누르면 복사 완료</li></ol>' +
       '<p><b>휴대폰 크롬</b></p><ol class="kkg"><li>아무 페이지나 별표(☆)로 북마크한 뒤, 북마크 수정에서 이름을 <b>OC9로 복사</b>, URL을 코드로 바꿔 저장</li><li>DB 고객 상세 화면에서 주소창에 <b>OC9로 복사</b>를 입력하고, 아래 나오는 북마크(★)를 누르기</li></ol>' +
       '<p class="note">삼성 인터넷에서는 이 방식이 안 될 수 있습니다. DB 사이트는 크롬으로 열어 주세요.</p></div>' +
-      '<div class="mrow"><button class="btn lg" type="button" id="bmBack" style="margin-right:auto">돌아가기</button><button class="go" type="button" id="bmCopy">코드 복사</button></div>');
+      '<div class="mrow"><button class="btn lg" type="button" id="bmBack" style="margin-right:auto">돌아가기</button><button class="btn lg" type="button" id="bmPage">끌어다 놓는 페이지 열기</button><button class="go" type="button" id="bmCopy">코드 복사</button></div>');
+    $('bmPage').onclick = function(){ openExt('https://sicrics27-gif.github.io/mh-analyzer/bookmark.html'); };
     $('bmCopy').onclick = function(){ copyText(DB_BM, '북마크 코드'); };
     $('bmBack').onclick = function(){ openDbImport(); };
   }
