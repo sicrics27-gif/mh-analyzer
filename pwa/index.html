@@ -1210,6 +1210,31 @@ table.ctt .due{color:var(--red);font-weight:700}
   .rl-dot.run{background:var(--ocean2,#6F9BFF);animation:gpulse 1s ease-in-out infinite}.rl-dot.bad{background:#FF8A80}.rl-dot.off{background:#777;box-shadow:none}
 }
 @media (max-width:900px){.sfold{display:none}}
+/* ===== 만남 정보 · 카페 · DB 가져오기 ===== */
+.citem .stg.s-db{color:#F2B880}.stg2.s-db{background:rgba(242,184,128,.16);color:#D98A3D}
+.mtbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;font-size:13.5px;padding:2px 0}
+.mt-i{display:inline-flex;align-items:baseline;gap:6px}.mt-i small{color:var(--mute);font-size:12px}.mt-i em{font-style:normal;color:var(--mute);font-size:12px}
+.mt-act{display:inline-flex;gap:6px;margin-left:auto}
+.pb.gold{border-color:color-mix(in srgb,#C9A96A 50%,var(--line));color:#C9A96A}
+.pb svg{width:15px;height:15px}
+.seg2{display:flex;flex-wrap:wrap;gap:6px}.seg2 button{height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font:inherit;font-size:14px;cursor:pointer}
+.seg2 button[aria-pressed="true"]{background:var(--ocean,#2F6BFF);border-color:var(--ocean,#2F6BFF);color:#fff}
+.seg2.sm button{height:32px;min-width:38px;padding:0 10px}
+.mtform input[type=text],.cafeform input,.mtrow input{height:42px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--paper);color:var(--ink);font:inherit;font-size:14px;width:100%}
+.mtrow{display:flex;gap:8px}
+.cfq{display:flex;gap:8px}.cfq input{flex:1}
+.cfopt{display:flex;gap:8px;flex-wrap:wrap}
+.cflist{display:flex;flex-direction:column;gap:2px;max-height:46vh;overflow:auto}
+.cfi{display:flex;align-items:center;gap:10px;padding:9px 2px;border-top:1px dashed var(--line)}
+.cfi div{flex:1;min-width:0;display:flex;flex-direction:column}.cfi b{font-size:14.5px}.cfi small{color:var(--mute);font-size:12px}
+.cfi span{display:flex;gap:4px}
+.kkg{margin:0;padding-left:20px}
+.dbhow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dbhow>div{background:var(--soft);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;font-size:13px;line-height:1.6}
+.dbhow .pb{align-self:flex-start}
+.dbform textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--paper);color:var(--ink);font:13px/1.5 var(--f-body);resize:vertical}
+.sfoot .dbm{grid-column:1/-1;color:#F2B880}
+@media (max-width:720px){.dbhow{grid-template-columns:1fr}.mt-act{margin-left:0}}
 
 </style>
 </head>
@@ -1232,13 +1257,13 @@ table.ctt .due{color:var(--red);font-weight:700}
     <div class="sbrand"><b class="wm"><span>AFG</span><i>OC9</i></b><small>Authentic Financial Group · Ocean Branch 9팀</small><button type="button" class="sfold" data-rail="close" title="메뉴 접기 (왼쪽으로 끌어도 됩니다)">«</button></div>
     <button class="sbtn pri" id="newCust" type="button"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><circle cx="10" cy="8" r="4"/><path d="M2 21c0-4 4-7 8-7s8 3 8 7zM19 8h2v3h3v2h-3v3h-2v-3h-3v-2h3z"/></svg>신규 고객 등록</button>
     <div class="sqw"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" class="sq" type="search" placeholder="이름 · 전화번호 · 메모 검색" autocomplete="off"></div>
-    <div class="sfilt" id="sfilt"><button id="fAll" type="button" data-f="all">전체</button><button id="fTodo" type="button" data-f="todo">할 일</button><select id="fStage" aria-label="고객 단계로 거르기"><option value="">모든 단계</option><option value="lead">가망</option><option value="consult">상담 중</option><option value="contract">계약</option><option value="care">관리</option></select></div>
+    <div class="sfilt" id="sfilt"><button id="fAll" type="button" data-f="all">전체</button><button id="fTodo" type="button" data-f="todo">할 일</button><select id="fStage" aria-label="고객 단계로 거르기"><option value="">모든 단계</option><option value="db">DB 첫대면</option><option value="lead">가망</option><option value="consult">상담 중</option><option value="contract">계약</option><option value="care">관리</option></select></div>
     <button type="button" class="sct sbr" data-nx="brief"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17l-6.1 3.4 1.5-6.8L2.2 9l6.9-.7z"/></svg>오늘의 브리핑 · 생일·응당일·청구기한</button>
     <button type="button" class="sct" data-act="contacts"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>연락 현황 · 마지막 통화·문자·카톡</button>
     <div class="clist" id="clist"></div>
     <div class="sclip" id="sclip" hidden></div>
     <div class="ssync" id="ssync"></div>
-    <details class="smenu" id="smenu"><summary><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>도구 · 백업 · 사용자 관리</summary><div class="sfoot"><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button><button type="button" data-sync="signout">구글 계정 바꾸기</button><button type="button" id="themeBtn">밝은 화면으로</button><button id="admBtn" type="button" class="adm">사용자 관리</button><button type="button" class="adm nxm" data-nx="setup">NHC 본사 연결 · 보장분석부서</button></div></details>
+    <details class="smenu" id="smenu"><summary><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>도구 · 백업 · 사용자 관리</summary><div class="sfoot"><button type="button" class="dbm" data-act="dbImport">회사 DB 고객 가져오기</button><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button><button type="button" data-sync="signout">구글 계정 바꾸기</button><button type="button" id="themeBtn">밝은 화면으로</button><button id="admBtn" type="button" class="adm">사용자 관리</button><button type="button" class="adm nxm" data-nx="setup">NHC 본사 연결 · 보장분석부서</button></div></details>
     <input type="file" id="bkFile" accept=".json,application/json" hidden>
     <div class="slock"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6 10V8a6 6 0 1 1 12 0v2h1v12H5V10zm2 0h8V8a4 4 0 1 0-8 0z"/></svg>고객 정보는 잠금 비밀번호로 암호화 저장 <span id="verTag"></span></div>
     <div id="memBan" class="membanner" hidden>저장소를 쓸 수 없는 화면입니다 · 창을 닫으면 사라집니다</div>
@@ -3499,6 +3524,127 @@ function HealthUI(root, H) {
 
 </script>
 <script>
+// 회사 DB 사이트(link.afg.kr) 화면에서 복사한 글을 고객 정보로 나누기 (브라우저/Node 공용)
+// 대표님이 직접 보고 있는 화면을 복사한 것만 다룸 — 사이트에 자동 접속하지 않음.
+(function (root) {
+  var SIDO = '서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|전북|전남|경북|경남|제주';
+  var SIDO_RE = new RegExp('^(' + SIDO + ')(특별시|광역시|특별자치시|특별자치도|도)?$');
+  var STATUS = ['부재', 'TA거절', '상담중', '가입불가(AS신청)', 'AS재신청', 'AS승인', '상담완료', '청약완료', '전산완료'];
+  var PH_FULL = /01[016789]-?\d{3,4}-?\d{4}/;
+  var PH_ANY = /^01[016789][-*\d]{7,11}$/;
+  function digits(s) { return String(s || '').replace(/\D/g, ''); }
+  function last4(s) { var d = String(s || '').replace(/[^\d]/g, ''); return d.length >= 4 ? d.slice(-4) : ''; }
+  function sexOf(s) { return /^여/.test(s) ? 'F' : /^남/.test(s) ? 'M' : ''; }
+  function isName(s) { return /^[가-힣]{2,5}$/.test(s) && !/^(남자|여자|기혼|미혼|부재|상담중|강남혁|담당자|고객명|연락처)$/.test(s); }
+  // 특이사항에서 지역(시·구·동)과 근처 장소만 뽑기 (번지수는 버림)
+  function areaFrom(text) {
+    var t = String(text || '');
+    var m = new RegExp('(' + SIDO + ')\\S*\\s+(\\S+[구군시])(?:\\s+(\\S+[동읍면리가]))?').exec(t);
+    var area = m ? [m[1], m[2], m[3]].filter(Boolean).join(' ') : '';
+    var near = '';
+    var n = /([가-힣A-Za-z0-9]+(?:학교|역|병원|시장|아파트|마트|공원|타워|빌딩|센터|사거리|교회|성당))\s*(근처|부근|앞|옆|인근)?/.exec(t);
+    if (n) near = n[1] + (n[2] ? ' ' + n[2] : ' 근처');
+    return { area: area, near: near };
+  }
+
+  // [AFG-DB] 버튼(북마크)으로 복사한 상세 화면
+  function parseDetail(text) {
+    var head = text.split('[PAGE]')[0], page = text.split('[PAGE]')[1] || '';
+    var lines = head.split('\n').map(function (x) { return x.trim(); }).filter(Boolean).slice(1);
+    var kv = lines.map(function (l) { var i = l.indexOf(': '); return i > 0 && i < 20 ? { k: l.slice(0, i), v: l.slice(i + 2).trim() } : { k: '', v: l }; });
+    var p = { src: 'detail' };
+    var pick = function (re) { var f = kv.find(function (x) { return re.test(x.k); }); return f ? f.v : ''; };
+    p.name = pick(/고객명|성명|이름/); if (!isName(p.name)) p.name = (kv.find(function (x) { return isName(x.v); }) || {}).v || '';
+    var ph = kv.map(function (x) { return x.v; }).find(function (v) { return PH_FULL.test(v) && !/\*/.test(v); });
+    if (ph) p.phone = digits(ph.match(PH_FULL)[0]);
+    var mk = (page.match(/01[016789]-?\*{3,4}-?\d{4}/) || [])[0]; if (mk) p.phoneMask = mk;
+    var bd = kv.map(function (x) { return x.v; }).find(function (v) { return /^(19|20)\d{2}-\d{2}-\d{2}$/.test(v); });
+    if (bd) p.birth = bd.replace(/-/g, '');
+    var age = pick(/나이/); if (/^\d{1,3}$/.test(age)) p.age = +age; else { var ag = kv.find(function (x) { return /^\d{2}$/.test(x.v); }); if (ag) p.age = +ag.v; }
+    kv.forEach(function (x) {
+      var m = /^\[선택\]\s*(.+)$/.exec(x.v); if (!m) return; var s = m[1].trim();
+      if (/^(남자?|여자?)$/.test(s)) p.sex = sexOf(s);
+      else if (/^(기혼|미혼)$/.test(s)) p.married = s;
+      else if (STATUS.indexOf(s) >= 0) p.status = s;
+    });
+    var memo = pick(/특이사항|메모/) || kv.map(function (x) { return x.v; }).filter(function (v) { return v.length > 15 && !/^\[선택\]|^https?:/.test(v) && !PH_FULL.test(v); }).sort(function (a, b) { return b.length - a.length; })[0] || '';
+    if (memo) p.memo = memo;
+    var vals = kv.map(function (x) { return x.v; }), si = vals.findIndex(function (v) { return SIDO_RE.test(v); });
+    var A = areaFrom(memo);
+    p.area = si >= 0 ? [vals[si].replace(/(특별시|광역시|특별자치시|특별자치도|도)$/, ''), /[구군시]$/.test(vals[si + 1] || '') ? vals[si + 1] : ''].filter(Boolean).join(' ') : '';
+    if (A.area && (!p.area || A.area.indexOf(p.area) === 0)) p.area = A.area;
+    if (A.near) p.near = A.near;
+    var g = function (re) { var m = re.exec(page); return m ? m[1] : ''; };
+    p.distAt = g(/배분일시\s*(\d{4}-\d{2}-\d{2})/); p.regAt = g(/등록일시\s*(\d{4}-\d{2}-\d{2})/);
+    p.asDue = g(/AS\s*신청\s*:\s*마감\s*(\d{4}-\d{2}-\d{2})/);
+    if (!p.status) { var st = g(/인수상태\s*(?:\n\s*)?([^\n]+)/); if (STATUS.indexOf(st.trim()) >= 0) p.status = st.trim(); }
+    return p.name ? [p] : [];
+  }
+
+  // 목록 표를 복사한 글 (PC는 칸이 탭, 휴대폰은 칸마다 줄바꿈)
+  function parseList(text) {
+    var out = [], seen = {};
+    var rows = text.split('\n');
+    var tabbed = rows.filter(function (r) { return r.split('\t').length >= 5; }).length >= 1;
+    var groups = tabbed ? rows.map(function (r) { return r.split('\t').map(function (x) { return x.trim(); }).filter(Boolean); }) : [rows.map(function (x) { return x.trim(); }).filter(Boolean)];
+    groups.forEach(function (tk) {
+      for (var i = 0; i < tk.length; i++) {
+        if (!PH_ANY.test(tk[i].replace(/\s/g, ''))) continue;
+        var name = isName(tk[i - 1]) ? tk[i - 1] : '';
+        if (!name) continue;
+        var p = { src: 'list', name: name };
+        var ph = tk[i].replace(/\s/g, '');
+        if (/\*/.test(ph)) p.phoneMask = ph; else p.phone = digits(ph);
+        var j = i + 1;
+        if (/^\d{1,3}$/.test(tk[j] || '')) { p.age = +tk[j]; j++; }
+        if (/^(남자?|여자?)$/.test(tk[j] || '')) { p.sex = sexOf(tk[j]); j++; }
+        if (/^(기혼|미혼)$/.test(tk[j] || '')) { p.married = tk[j]; j++; }
+        // 같은 줄(또는 바로 앞 몇 칸)의 등록일·인수상태·지역
+        for (var k = i - 2; k >= Math.max(0, i - 14); k--) {
+          var t = tk[k];
+          if (PH_ANY.test(t.replace(/\s/g, '')) && k < i - 1) break;
+          if (!p.regAt && /^\d{4}-\d{2}-\d{2}( \d{2}:\d{2}(:\d{2})?)?$/.test(t)) p.regAt = t.slice(0, 10);
+          else if (STATUS.indexOf(t) >= 0) p.status = t; // 가장 왼쪽(인수상태 칸)이 남도록
+          else if (!p.area && new RegExp('^(' + SIDO + ')\\s+\\S+[구군시]$').test(t)) p.area = t;
+        }
+        var key = name + '|' + last4(p.phone || p.phoneMask);
+        if (seen[key]) { Object.keys(p).forEach(function (x) { if (!seen[key][x]) seen[key][x] = p[x]; }); continue; }
+        seen[key] = p; out.push(p);
+      }
+    });
+    return out;
+  }
+
+  function parse(text) {
+    text = String(text || '').replace(/\r/g, '');
+    if (/^\s*\[AFG-DB\]/.test(text)) return { kind: 'detail', people: parseDetail(text) };
+    return { kind: 'list', people: parseList(text) };
+  }
+
+  // 기존 고객과 같은 사람인지
+  function sameAs(p, c) {
+    if (!c || c.name !== p.name) return false;
+    if (p.birth && c.birth) return p.birth === c.birth;
+    var a = last4(p.phone || p.phoneMask), b = last4(c.phone || (c.db && c.db.mask));
+    if (a && b) return a === b;
+    return !!(c.db) || !c.birth;
+  }
+
+  // 메모 글에서 만남 선호 짐작 (예: "주말오후방문", "평일 18시 이후")
+  function meetFrom(text) {
+    var t = String(text || ''), m = {};
+    if (/주말/.test(t) && !/평일/.test(t)) m.days = 'we'; else if (/평일/.test(t) && !/주말/.test(t)) m.days = 'wk';
+    var sl = []; if (/오전/.test(t)) sl.push('am'); if (/점심/.test(t)) sl.push('noon'); if (/오후/.test(t)) sl.push('pm'); if (/저녁|퇴근/.test(t)) sl.push('eve');
+    if (sl.length) m.slots = sl;
+    var h = /(\d{1,2})\s*시\s*(이후|부터|넘어|쯤|에만|만)?/.exec(t); if (h) m.time = h[0].replace(/\s+/g, ' ').trim();
+    return m;
+  }
+  var api = { parse: parse, meetFrom: meetFrom, areaFrom: areaFrom, sameAs: sameAs, last4: last4, STATUS: STATUS };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.AfgDb = api;
+})(this);
+
+</script>
+<script>
 (function(){
   var $ = function(id){ return document.getElementById(id); };
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -3507,6 +3653,9 @@ function HealthUI(root, H) {
   function todayStr(){ var t = new Date(); return new Date(t.getTime() - t.getTimezoneOffset()*60000).toISOString().slice(0,10); }
   function ymd(){ return todayStr().replace(/-/g,''); }
   var IC = {
+    cup:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h13v5a6 6 0 0 1-6 6H10a6 6 0 0 1-6-6zM17 9h1.5a2.5 2.5 0 0 1 0 5H17M8 2v3M12 2v3"/></svg>',
+    cal:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+    pin:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>',
     search:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>',
     save:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3h11l3 3v15H5z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg>',
     warn:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 1 21h22L12 2zm1 15h-2v2h2v-2zm0-7h-2v5h2v-5z"/></svg>',
@@ -3737,7 +3886,7 @@ function HealthUI(root, H) {
   }
 
   // ================= 고객 카드 · 상담 기록 =================
-  var STAGES = [['lead', '가망'], ['consult', '상담 중'], ['contract', '계약'], ['care', '관리']];
+  var STAGES = [['db', 'DB 첫대면'], ['lead', '가망'], ['consult', '상담 중'], ['contract', '계약'], ['care', '관리']];
   var KINDS = [['call', '전화'], ['meet', '만남'], ['sms', '문자'], ['kakao', '카톡'], ['note', '메모']];
   function stageTxt(s){ var f = STAGES.find(function(x){ return x[0] === (s || 'lead'); }); return f ? f[1] : '가망'; }
   function kindTxt(k){ if (k === 'msg') return '문자·카톡'; var f = KINDS.find(function(x){ return x[0] === k; }); return f ? f[1] : '메모'; }
@@ -3758,12 +3907,12 @@ function HealthUI(root, H) {
         (c.interest ? '<span class="cc-kv"><small>관심</small>' + esc(c.interest) + '</span>' : '') +
       '</div>' +
       '<div class="cc-next' + (n != null && n <= 0 ? ' due' : '') + '">' + (c.next && c.next.d ? '<span><small>다음 할 일</small><b>' + dot(c.next.d) + ' · ' + dueTxt(n) + '</b> ' + esc(c.next.t || '') + '</span><button type="button" class="pb" data-act="nextDone">완료</button>' : '<span class="note">다음 할 일이 없습니다</span>') + '<button type="button" class="pb" data-ptab="log">기록 · 할 일 추가</button></div>' +
-      '</section>' + contactBar() + covReqBar();
+      '</section>' + contactBar() + meetBar() + covReqBar();
     return h;
   }
   function timeline(){
     var c = S.cur, d = S.data, ev = [];
-    (c.notes || []).forEach(function(x){ ev.push({ d: x.d, at: x.at, k: x.k, t: x.t, id: x.id, ok: x.ok, user: true }); });
+    (c.notes || []).forEach(function(x){ ev.push({ d: x.d, at: x.at, k: x.k, t: x.t + (x.place ? '\n📍 ' + x.place : ''), id: x.id, ok: x.ok, user: true }); });
     if (c.created) ev.push({ d: new Date(c.created - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10), at: c.created, k: 'sys', t: '고객 등록' + (c.from === 'smemo' || c.from === 'memo' ? ' (SMemo에서 가져옴)' : '') });
     if (d && d.analyzedAt && !d.covOnly) ev.push({ d: new Date(d.analyzedAt - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10), at: d.analyzedAt, k: 'sys', t: '병력파악 분석 · ' + (c.summary || '') });
     if (d && d.coverageAt) ev.push({ d: new Date(d.coverageAt - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10), at: d.coverageAt, k: 'sys', t: '보장분석 반영 · 계약 ' + ((d.coverage && d.coverage.contracts.length) || 0) + '건' });
@@ -3774,6 +3923,7 @@ function HealthUI(root, H) {
     var c = S.cur, ev = timeline();
     var h = '<section class="lgform"><div class="lg-k" role="group" aria-label="기록 종류">' + KINDS.map(function(k, i){ return '<button type="button" data-lk="' + k[0] + '" aria-pressed="' + (i === 0) + '">' + k[1] + '</button>'; }).join('') + '</div>' +
       '<div class="lg-row"><input type="date" id="lgDate" value="' + todayStr() + '" aria-label="날짜"><textarea id="lgText" rows="2" placeholder="상담 내용 (예: 갱신 보험료 문의, 다음 주 미팅 약속)"></textarea></div>' +
+      '<div class="lg-row" id="lgPlaceRow" hidden><span class="note">만난 장소</span><input type="text" id="lgPlace" placeholder="예: 문현동 스타벅스 (다음에 근처 카페 찾을 때 씁니다)" value="' + esc(c.next && c.next.place || (lastPlace(c) || {}).place || '') + '"></div>' +
       '<div class="lg-row lg-next"><span class="note">다음 할 일</span><input type="date" id="lgNd" aria-label="다음 할 일 날짜"' + (c.next && c.next.d ? ' value="' + esc(c.next.d) + '"' : '') + '><input type="text" id="lgNt" placeholder="예: 서류 받으러 방문" value="' + esc(c.next && c.next.t || '') + '"><button class="go" type="button" id="lgAdd">기록 저장</button></div></section>';
     if (!ev.length) return h + '<div class="empty sm">아직 기록이 없습니다.</div>';
     var month = '';
@@ -3787,14 +3937,15 @@ function HealthUI(root, H) {
   function afterLog(){
     var box = document.querySelector('.lgform'); if (!box) return;
     var kind = 'call';
-    box.querySelectorAll('[data-lk]').forEach(function(b){ b.onclick = function(){ kind = b.dataset.lk; box.querySelectorAll('[data-lk]').forEach(function(x){ x.setAttribute('aria-pressed', String(x === b)); }); }; });
+    box.querySelectorAll('[data-lk]').forEach(function(b){ b.onclick = function(){ kind = b.dataset.lk; box.querySelectorAll('[data-lk]').forEach(function(x){ x.setAttribute('aria-pressed', String(x === b)); }); $('lgPlaceRow').hidden = kind !== 'meet'; }; });
     $('lgAdd').onclick = async function(){
       var t = $('lgText').value.trim(), d = $('lgDate').value || todayStr(), nd = $('lgNd').value, nt = $('lgNt').value.trim();
-      if (!t && !nd) { $('lgText').focus(); toast('상담 내용이나 다음 할 일을 넣으세요'); return; }
+      if (!t && !nd && !(kind === 'meet' && $('lgPlace').value.trim())) { $('lgText').focus(); toast('상담 내용이나 다음 할 일을 넣으세요'); return; }
       var c = S.cur;
-      if (t) (c.notes = c.notes || []).push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), at: Date.now(), d: d, k: kind, t: t });
+      var pl = kind === 'meet' ? $('lgPlace').value.trim() : '';
+      if (t || pl) (c.notes = c.notes || []).push(Object.assign({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), at: Date.now(), d: d, k: kind, t: t || '만남' }, pl ? { place: pl } : {}));
       if (nd) c.next = { d: nd, t: nt }; else if (!nt && c.next && !$('lgNd').value) c.next = null;
-      if ((!c.stage || c.stage === 'lead') && t && (kind === 'meet' || kind === 'call')) c.stage = 'consult';
+      if ((!c.stage || c.stage === 'lead' || c.stage === 'db') && (t || pl) && (kind === 'meet' || kind === 'call')) c.stage = 'consult';
       await saveCur('기록을 저장했습니다');
     };
   }
@@ -3805,6 +3956,201 @@ function HealthUI(root, H) {
     if ((t = e.target.closest('[data-ndel]'))) { if (!confirm('이 기록을 지울까요?')) return; S.cur.notes = (S.cur.notes || []).filter(function(x){ return x.id !== t.dataset.ndel; }); await saveCur('기록을 지웠습니다'); return; }
     if ((t = e.target.closest('[data-act="nextDone"]'))) { var nx = S.cur.next; (S.cur.notes = S.cur.notes || []).push({ id: Date.now().toString(36), at: Date.now(), d: todayStr(), k: 'note', t: '할 일 완료: ' + (nx && nx.t || dot(nx && nx.d)) }); S.cur.next = null; await saveCur('할 일을 완료했습니다'); return; }
   });
+
+  // ================= 만남 정보 · 근처 카페 · 회사 DB 가져오기 =================
+  var DAYS = [['wk', '평일'], ['we', '주말'], ['any', '무관']];
+  var SLOTS = [['am', '오전'], ['noon', '점심'], ['pm', '오후'], ['eve', '저녁']];
+  var WD = ['일', '월', '화', '수', '목', '금', '토'];
+  function meetOf(c){ return (c && c.meet) || {}; }
+  function lastPlace(c){ var n = (c.notes || []).filter(function(x){ return x.k === 'meet' && x.place; }).sort(function(a, b){ return a.d < b.d ? 1 : -1; })[0]; return n ? { place: n.place, d: n.d } : null; }
+  function meetTxt(m){
+    var a = [];
+    if (m.days) a.push(m.days === 'custom' && (m.wd || []).length ? m.wd.map(function(i){ return WD[i]; }).join('·') + '요일' : (DAYS.find(function(x){ return x[0] === m.days; }) || ['', ''])[1]);
+    if ((m.slots || []).length) a.push(m.slots.map(function(s){ return (SLOTS.find(function(x){ return x[0] === s; }) || ['', s])[1]; }).join('·'));
+    if (m.time) a.push(m.time);
+    return a.join(' · ');
+  }
+  function placeQuery(c){ var m = meetOf(c); return [m.area, (m.near || '').replace(/\s*(근처|부근|앞|옆|인근)$/, '')].filter(Boolean).join(' '); }
+  function meetBar(){
+    var c = S.cur; if (!c || c.sample) return '';
+    var m = meetOf(c), lp = lastPlace(c), t = meetTxt(m), has = t || m.area || m.near || m.work || lp;
+    return '<div class="mtbar">' + (has ?
+      (t ? '<span class="mt-i"><small>만남</small><b>' + esc(t) + '</b></span>' : '') +
+      (m.area || m.near ? '<span class="mt-i"><small>지역</small><b>' + esc([m.area, m.near].filter(Boolean).join(' · ')) + '</b></span>' : '') +
+      (m.work ? '<span class="mt-i"><small>직장</small><b>' + esc(m.work) + '</b></span>' : '') +
+      (lp ? '<span class="mt-i"><small>마지막 약속</small><b>' + esc(lp.place) + '</b><em>' + dot(lp.d) + '</em></span>' : '')
+      : '<span class="note">편한 요일·시간, 지역을 넣어 두면 브리핑에서 "오늘 만날 수 있는 고객"으로 골라 드립니다</span>') +
+      '<span class="mt-act"><button type="button" class="pb" data-mt="edit">만남 정보</button>' + (placeQuery(c) || lp ? '<button type="button" class="pb gold" data-mt="cafe">' + IC.cup + '근처 카페</button>' : '') + '</span></div>';
+  }
+  function canMeetToday(c, d){
+    var m = meetOf(c); if (!m.days && !(m.slots || []).length && !m.time) return false;
+    var wd = (d || new Date()).getDay(), we = wd === 0 || wd === 6;
+    if (m.days === 'wk' && we) return false; if (m.days === 'we' && !we) return false;
+    if (m.days === 'custom' && (m.wd || []).length && m.wd.indexOf(wd) < 0) return false;
+    return true;
+  }
+  function openMeet(){
+    var c = S.cur, m = Object.assign({ slots: [], wd: [] }, meetOf(c));
+    openDlg('<h4>' + IC.cal + ' ' + esc(c.name) + '님 만남 정보</h4><div class="form mtform">' +
+      '<label class="l">편한 요일</label><div class="seg2" id="mtDays">' + DAYS.concat([['custom', '요일 지정']]).map(function(x){ return '<button type="button" data-v="' + x[0] + '" aria-pressed="' + (m.days === x[0]) + '">' + x[1] + '</button>'; }).join('') + '</div>' +
+      '<div class="seg2 sm" id="mtWd"' + (m.days === 'custom' ? '' : ' hidden') + '>' + WD.map(function(w, i){ return '<button type="button" data-v="' + i + '" aria-pressed="' + (m.wd.indexOf(i) >= 0) + '">' + w + '</button>'; }).join('') + '</div>' +
+      '<label class="l">편한 시간대 (여러 개 고를 수 있음)</label><div class="seg2" id="mtSl">' + SLOTS.map(function(x){ return '<button type="button" data-v="' + x[0] + '" aria-pressed="' + (m.slots.indexOf(x[0]) >= 0) + '">' + x[1] + '</button>'; }).join('') + '</div>' +
+      '<input id="mtTime" type="text" placeholder="시간 메모 (예: 18시 이후만, 점심 12~13시)" value="' + esc(m.time || '') + '">' +
+      '<label class="l">지역 (시·구·동)</label><input id="mtArea" type="text" placeholder="예: 부산 남구 문현동" value="' + esc(m.area || '') + '">' +
+      '<label class="l">집 근처 · 기준 장소</label><input id="mtNear" type="text" placeholder="예: 대양고등학교 근처 (번지수는 넣지 않아도 됩니다)" value="' + esc(m.near || '') + '">' +
+      '<label class="l">직장 근처</label><input id="mtWork" type="text" placeholder="예: 서면 롯데백화점 근처" value="' + esc(m.work || '') + '">' +
+      '</div><div class="mrow"><button class="btn lg" type="button" id="mtX" style="margin-left:auto">닫기</button><button class="go" type="button" id="mtGo">저장</button></div>');
+    var tog = function(box, multi){ $(box).querySelectorAll('button').forEach(function(b){ b.onclick = function(){ if (multi) b.setAttribute('aria-pressed', String(b.getAttribute('aria-pressed') !== 'true')); else $(box).querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed', String(x === b && x.getAttribute('aria-pressed') !== 'true')); }); if (box === 'mtDays') $('mtWd').hidden = !$('mtDays').querySelector('[data-v=custom][aria-pressed=true]'); }; }); };
+    tog('mtDays'); tog('mtWd', true); tog('mtSl', true);
+    $('mtX').onclick = closeDlg;
+    $('mtGo').onclick = async function(){
+      var on = function(box){ return Array.prototype.map.call($(box).querySelectorAll('[aria-pressed=true]'), function(b){ return b.dataset.v; }); };
+      var nm = { days: on('mtDays')[0] || '', wd: on('mtWd').map(Number), slots: on('mtSl'), time: $('mtTime').value.trim(), area: $('mtArea').value.trim(), near: $('mtNear').value.trim(), work: $('mtWork').value.trim() };
+      if (nm.days !== 'custom') nm.wd = [];
+      Object.keys(nm).forEach(function(k){ if (!nm[k] || (Array.isArray(nm[k]) && !nm[k].length)) delete nm[k]; });
+      S.cur.meet = nm; closeDlg(); await saveCur('만남 정보를 저장했습니다');
+    };
+  }
+
+  // ---------- 근처 카페 ----------
+  var KK = { id: '__kakao' };
+  async function kakaoKey(){ try { var d = await Store.loadData(KK.id); return d && d.key || ''; } catch(e){ return ''; } }
+  async function kakaoSave(key){ await Store.saveHead({ id: KK.id, hidden: true, name: '__kakao', status: 'admin', created: Date.now() }); await Store.saveData(KK.id, { key: key }); }
+  async function kget(key, path, q){
+    var r = await fetch('https://dapi.kakao.com/v2/local/search/' + path + '.json?' + new URLSearchParams(q).toString(), { headers: { Authorization: 'KakaoAK ' + key } });
+    if (r.status === 401 || r.status === 403) throw new Error('카카오 키가 맞지 않거나 "카카오맵" 사용 설정이 꺼져 있습니다');
+    if (!r.ok) throw new Error('카카오 검색 실패 (' + r.status + ')');
+    return (await r.json()).documents || [];
+  }
+  function mapUrl(q){ return 'https://map.kakao.com/?q=' + encodeURIComponent(q); }
+  async function openCafe(){
+    var c = S.cur, lp = lastPlace(c), base = placeQuery(c) || (lp && lp.place) || '';
+    var key = await kakaoKey();
+    openDlg('<h4>' + IC.cup + ' ' + esc(c.name) + '님 만날 카페</h4><div class="form cafeform">' +
+      '<div class="cfq"><input id="cfQ" type="text" value="' + esc(base) + '" placeholder="동네·건물 이름 (예: 문현동 대양고등학교)"><button class="go" type="button" id="cfGo">' + (key ? '근처 카페 찾기' : '카카오맵에서 보기') + '</button></div>' +
+      (key ? '<div class="cfopt"><button class="btn" type="button" id="cfMid">' + IC.pin + '내 위치와 중간 지점 카페</button>' + (lp ? '<button class="btn" type="button" id="cfLast">지난번 장소 (' + esc(lp.place) + ')</button>' : '') + '</div>'
+        : '<div class="safe">' + IC.pin + '<span>카카오 지도 키(무료)를 넣으면 이 화면 안에 가까운 카페가 거리순으로 나오고, <b>내 위치와 고객 동네의 중간 카페</b>도 찾아 드립니다. <button type="button" class="lnk" id="cfKey">카카오 키 넣기</button></span></div>' +
+          '<div class="cfopt"><button class="btn" type="button" id="cfNaver">네이버 지도에서 보기</button></div>') +
+      '<div id="cfList" class="cflist"></div><div class="ferr" id="cfErr"></div></div><div class="mrow">' + (key ? '<button class="btn" type="button" id="cfKey" style="margin-right:auto">카카오 키 바꾸기</button>' : '') + '<button class="btn lg" type="button" id="cfX"' + (key ? '' : ' style="margin-left:auto"') + '>닫기</button></div>', 'wide');
+    $('cfX').onclick = closeDlg;
+    if ($('cfKey')) $('cfKey').onclick = function(){ openKakaoKey(); };
+    if ($('cfNaver')) $('cfNaver').onclick = function(){ openExt('https://map.naver.com/p/search/' + encodeURIComponent(($('cfQ').value || '') + ' 카페')); };
+    var show = function(list, note){
+      if (!list.length) { $('cfList').innerHTML = '<p class="note">근처에서 카페를 찾지 못했습니다. 장소 이름을 바꿔 보세요.</p>'; return; }
+      $('cfList').innerHTML = (note ? '<p class="note">' + esc(note) + '</p>' : '') + list.map(function(p, i){ return '<div class="cfi"><div><b>' + esc(p.place_name) + '</b><small>' + esc(p.road_address_name || p.address_name) + (p.distance ? ' · ' + (p.distance >= 1000 ? (p.distance / 1000).toFixed(1) + 'km' : p.distance + 'm') : '') + '</small></div><span><button class="pb" type="button" data-cfmap="' + i + '">지도</button><button class="pb gold" type="button" data-cfpick="' + i + '">약속 장소로</button></span></div>'; }).join('');
+      $('cfList').querySelectorAll('[data-cfmap]').forEach(function(b){ b.onclick = function(){ openExt(list[+b.dataset.cfmap].place_url); }; });
+      $('cfList').querySelectorAll('[data-cfpick]').forEach(function(b){ b.onclick = function(){ pickPlace(list[+b.dataset.cfpick]); }; });
+    };
+    var near = async function(q, x, y, radius, note){
+      $('cfErr').textContent = ''; $('cfList').innerHTML = '<p class="note">찾는 중…</p>';
+      try {
+        if (x == null) { var c0 = (await kget(key, 'keyword', { query: q, size: 1 }))[0] || (await kget(key, 'address', { query: q, size: 1 }))[0]; if (!c0) { $('cfList').innerHTML = '<p class="note">"' + esc(q) + '" 위치를 찾지 못했습니다. 동 이름이나 큰 건물 이름으로 바꿔 보세요.</p>'; return; } x = c0.x; y = c0.y; note = note || (c0.place_name || c0.address_name) + ' 기준 가까운 순'; }
+        show(await kget(key, 'category', { category_group_code: 'CE7', x: x, y: y, radius: radius || 700, sort: 'distance', size: 10 }), note);
+      } catch(e){ $('cfList').innerHTML = ''; $('cfErr').textContent = e.message || String(e); }
+    };
+    $('cfGo').onclick = function(){ var q = $('cfQ').value.trim(); if (!q) { $('cfQ').focus(); return; } if (!key) { openExt(mapUrl(q + ' 카페')); return; } near(q); };
+    if ($('cfLast')) $('cfLast').onclick = function(){ near(lp.place, null, null, 400); };
+    if ($('cfMid')) $('cfMid').onclick = function(){
+      var q = $('cfQ').value.trim(); if (!q) { $('cfQ').focus(); return; }
+      if (!navigator.geolocation) { $('cfErr').textContent = '이 기기에서는 내 위치를 쓸 수 없습니다'; return; }
+      $('cfList').innerHTML = '<p class="note">내 위치 확인 중…</p>';
+      navigator.geolocation.getCurrentPosition(async function(pos){
+        try {
+          var c0 = (await kget(key, 'keyword', { query: q, size: 1 }))[0]; if (!c0) { $('cfList').innerHTML = '<p class="note">고객 쪽 위치를 찾지 못했습니다.</p>'; return; }
+          var mx = (pos.coords.longitude + +c0.x) / 2, my = (pos.coords.latitude + +c0.y) / 2;
+          near('', mx, my, 1500, '내 위치와 ' + (c0.place_name || q) + ' 중간 지점 기준');
+        } catch(e){ $('cfErr').textContent = e.message || String(e); }
+      }, function(){ $('cfList').innerHTML = ''; $('cfErr').textContent = '위치 권한이 없어 내 위치를 쓸 수 없습니다'; }, { timeout: 10000, maximumAge: 300000 });
+    };
+    if (key && base) near(base);
+  }
+  function openKakaoKey(){
+    openDlg('<h4>' + IC.pin + ' 카카오 지도 키 넣기 (무료)</h4><div class="form" style="font-size:14px;line-height:1.75">' +
+      '<ol class="kkg"><li><button type="button" class="lnk" id="kkOpen">developers.kakao.com</button> 에 카카오 계정으로 로그인</li><li>위쪽 <b>내 애플리케이션</b> → <b>애플리케이션 추가하기</b> (앱 이름: OC9, 회사명: 아무거나)</li><li>만든 앱 → 왼쪽 <b>제품 설정 → 카카오맵</b> → 사용 설정 <b>ON</b></li><li>왼쪽 <b>앱 키</b>(또는 플랫폼 키)에서 <b>REST API 키</b>를 복사</li><li>아래에 붙여 넣고 저장</li></ol>' +
+      '<div class="safe">' + IC.lock + '<span>키는 잠금 비밀번호로 암호화해 저장하고, 구글 동기화로 다른 기기에도 옮겨집니다. 하루 수만 건까지 무료라 비용이 들지 않습니다.</span></div>' +
+      '<label class="l">REST API 키</label><input id="kkKey" type="password" autocomplete="off" spellcheck="false" placeholder="32자리 영문·숫자"><div class="ferr" id="kkErr"></div></div>' +
+      '<div class="mrow"><button class="btn lg" type="button" id="kkX" style="margin-left:auto">닫기</button><button class="go" type="button" id="kkGo">확인 · 저장</button></div>');
+    $('kkOpen').onclick = function(){ openExt('https://developers.kakao.com/console/app'); };
+    $('kkX').onclick = closeDlg;
+    $('kkGo').onclick = async function(){
+      var k = $('kkKey').value.trim(), b = this; if (!/^[0-9a-f]{32}$/i.test(k)) { $('kkErr').textContent = 'REST API 키는 영문·숫자 32자리입니다.'; return; }
+      b.disabled = true; b.textContent = '확인 중…';
+      try { await kget(k, 'keyword', { query: '부산역', size: 1 }); await kakaoSave(k); closeDlg(); toast('카카오 지도 키를 저장했습니다'); if (S.cur) openCafe(); }
+      catch(e){ b.disabled = false; b.textContent = '확인 · 저장'; $('kkErr').textContent = e.message || String(e); }
+    };
+  }
+  function pickPlace(p){
+    var c = S.cur, place = p.place_name, addr = p.road_address_name || p.address_name;
+    openDlg('<h4>' + IC.cal + ' ' + esc(place) + '에서 약속</h4><div class="form"><div class="mtrow"><input type="date" id="ppD" value="' + esc(c.next && c.next.d || addDay(todayStr(), 1)) + '"><input type="time" id="ppT" value="' + (/18/.test(meetOf(c).time || '') ? '18:00' : '14:00') + '"></div>' +
+      (meetOf(c).days || meetOf(c).time ? '<p class="note">' + esc(c.name) + '님 편한 때: ' + esc(meetTxt(meetOf(c))) + '</p>' : '') + '<p class="ferr" id="ppW"></p></div>' +
+      '<div class="mrow"><button class="btn lg" type="button" id="ppX" style="margin-right:auto">닫기</button><button class="btn lg" type="button" id="ppMsg">약속 안내 카톡</button><button class="go" type="button" id="ppGo">할 일로 저장</button></div>');
+    var warn = function(){ var d = $('ppD').value; if (!d) return; var w = new Date(d + 'T12:00:00'); $('ppW').textContent = canMeetToday(c, w) || !meetOf(c).days ? '' : '이 날은 ' + c.name + '님이 덜 편한 요일입니다 (' + meetTxt(meetOf(c)) + ')'; };
+    $('ppD').onchange = warn; warn();
+    var text = function(){ var d = $('ppD').value, t = $('ppT').value, w = d ? WD[new Date(d + 'T12:00:00').getDay()] : ''; return '{이름}님, 안녕하세요. ' + (d ? (+d.slice(5, 7)) + '월 ' + (+d.slice(8, 10)) + '일(' + w + ') ' : '') + (t ? (+t.slice(0, 2) > 12 ? '오후 ' + (+t.slice(0, 2) - 12) : (+t.slice(0, 2) === 12 ? '오후 12' : '오전 ' + (+t.slice(0, 2)))) + '시' + (t.slice(3) !== '00' ? ' ' + (+t.slice(3)) + '분' : '') + '에 ' : '') + place + '에서 뵙겠습니다.\n주소: ' + addr + '\n도착하시면 편하게 연락 주세요.'; };
+    $('ppX').onclick = closeDlg;
+    $('ppGo').onclick = async function(){ var d = $('ppD').value; if (!d) return; c.next = { d: d, t: ($('ppT').value ? $('ppT').value + ' ' : '') + '만남 · ' + place, place: place }; closeDlg(); await saveCur('할 일에 약속을 넣었습니다 · 만난 뒤 상담 기록에서 "만남"으로 남기면 장소가 기억됩니다'); };
+    $('ppMsg').onclick = async function(){ var d = $('ppD').value; if (d) { c.next = { d: d, t: ($('ppT').value ? $('ppT').value + ' ' : '') + '만남 · ' + place, place: place }; await saveCur(); } S.preTxt = text(); closeDlg(); openMsg('kakao', 'raw'); };
+  }
+  document.addEventListener('click', function(e){
+    var t = e.target.closest('[data-mt]'); if (!t) return;
+    if (t.dataset.mt === 'edit') openMeet(); else if (t.dataset.mt === 'cafe') openCafe();
+  });
+
+  // ---------- 회사 DB(link.afg.kr) 고객 가져오기 ----------
+  var DB_BM = "javascript:(function(){var L=[];document.querySelectorAll('input,textarea,select').forEach(function(e){var t=(e.type||'').toLowerCase();if(/hidden|file|button|submit|password|search/.test(t))return;var v;if(t==='checkbox'||t==='radio'){if(!e.checked)return;var lb=(e.labels&&e.labels[0]&&e.labels[0].innerText)||(e.parentElement&&e.parentElement.innerText)||e.value||'';v='[선택] '+lb.trim().split('\\n')[0];}else if(e.tagName==='SELECT'){v=e.selectedIndex>=0?e.options[e.selectedIndex].text:'';}else v=e.value;v=String(v||'').trim();if(!v)return;var lab='';for(var p=e.parentElement,i=0;p&&i<4&&!lab;p=p.parentElement,i++){var tx=(p.innerText||'').split('\\n')[0].trim();if(tx&&tx!==v&&tx.length<16&&!/^\\[/.test(tx))lab=tx;}L.push(/^\\[선택\\]/.test(v)?v:(lab?lab+': ':'')+v);});var out='[AFG-DB]\\n'+L.join('\\n')+'\\n[PAGE]\\n'+document.body.innerText.slice(0,8000);var ok=function(){alert('OC9용으로 복사했습니다.\\nOC9 → 도구 → 회사 DB 고객 가져오기에 붙여 넣으세요.');};if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(out).then(ok,function(){prompt('아래 글을 전체 복사하세요',out);});else prompt('아래 글을 전체 복사하세요',out);})();";
+  function openDbImport(){
+    openDlg('<h4>' + IC.user + ' 회사 DB 고객 가져오기</h4><div class="form dbform">' +
+      '<div class="dbhow"><div><b>① 한 명씩 (전체 정보)</b><span>DB 사이트에서 고객 상세 화면을 연 뒤 <b>"OC9로 복사"</b> 북마크를 누르고, 아래에 붙여 넣기. 이름·전체 번호·생년월일·성별·지역·특이사항·인수상태·AS 마감까지 들어갑니다.</span><button type="button" class="pb" id="dbBm">북마크 만드는 법</button></div>' +
+      '<div><b>② 목록 한꺼번에</b><span>DB 목록 화면에서 표시 개수를 크게 하고, 표를 길게 눌러(PC는 드래그) <b>전체 선택 → 복사</b>해서 붙여 넣기. 목록에는 번호가 가려져 있어, 번호는 ①로 한 번 더 넣으면 채워집니다.</span></div></div>' +
+      '<textarea id="dbTxt" rows="7" placeholder="여기에 붙여 넣으세요"></textarea>' +
+      '<div class="safe">' + IC.lock + '<span>대표님이 보고 있는 화면을 옮겨 적는 방식입니다. DB 사이트에 자동으로 접속하지 않습니다. 가져온 정보는 잠금 비밀번호로 암호화해 저장합니다.</span></div>' +
+      '<div id="dbPrev"></div><div class="ferr" id="dbErr"></div></div><div class="mrow"><button class="btn lg" type="button" id="dbX" style="margin-right:auto">닫기</button><button class="btn lg" type="button" id="dbPaste">붙여넣기</button><button class="go" type="button" id="dbGo" disabled>가져오기</button></div>', 'wide');
+    var parsed = [];
+    var preview = function(){
+      var r = AfgDb.parse($('dbTxt').value); parsed = r.people;
+      if (!parsed.length) { $('dbPrev').innerHTML = $('dbTxt').value.trim() ? '<p class="note">고객을 찾지 못했습니다. 고객명·연락처가 함께 복사됐는지 확인하세요.</p>' : ''; $('dbGo').disabled = true; return; }
+      $('dbPrev').innerHTML = '<p class="note">' + parsed.length + '명을 찾았습니다' + (r.kind === 'list' ? ' (목록)' : ' (상세)') + '</p><div class="tw"><table class="t dbt"><thead><tr><th></th><th>고객</th><th>연락처</th><th>지역</th><th>인수상태</th><th>처리</th></tr></thead><tbody>' + parsed.map(function(p, i){
+        var ex = S.list.find(function(c){ return AfgDb.sameAs(p, c); });
+        p._ex = ex ? ex.id : '';
+        return '<tr><td><input type="checkbox" data-dbi="' + i + '" checked></td><td><b>' + esc(p.name) + '</b><small class="note"> ' + (p.sex ? sexTxt(p.sex) : '') + (p.birth ? ' ' + birthTxt(p.birth) : p.age ? ' ' + p.age + '세' : '') + '</small></td><td class="mono">' + esc(p.phone ? phoneTxt(p.phone) : p.phoneMask || '') + '</td><td>' + esc(p.area || '') + '</td><td>' + esc(p.status || '') + (p.asDue ? '<br><small class="note">AS 마감 ' + dot(p.asDue) + '</small>' : '') + '</td><td>' + (ex ? '<span class="tag">기존 고객에 합치기</span>' : '<span class="tag sil">새로 등록</span>') + '</td></tr>'; }).join('') + '</tbody></table></div>';
+      $('dbGo').disabled = false;
+    };
+    $('dbTxt').addEventListener('input', preview);
+    $('dbX').onclick = closeDlg;
+    $('dbBm').onclick = function(){ openDbBookmark(); };
+    $('dbPaste').onclick = async function(){ try { $('dbTxt').value = await navigator.clipboard.readText(); preview(); } catch(e){ $('dbTxt').focus(); toast('붙여넣기 권한이 없어 직접 길게 눌러 붙여 넣어 주세요'); } };
+    $('dbGo').onclick = async function(){
+      var pick = parsed.filter(function(p, i){ var cb = $('dbPrev').querySelector('[data-dbi="' + i + '"]'); return cb && cb.checked; });
+      var nNew = 0, nUp = 0;
+      for (var i = 0; i < pick.length; i++) {
+        var p = pick[i], c = p._ex ? Object.assign({}, S.list.find(function(x){ return x.id === p._ex; })) : { status: 'wait', name: p.name, stage: 'db', from: 'afgdb' };
+        if (!p._ex) nNew++; else nUp++;
+        if (p.phone && !normPhone(c.phone)) c.phone = p.phone;
+        if (p.birth && !c.birth) c.birth = p.birth;
+        if (p.sex && !c.sex) c.sex = p.sex;
+        c.db = Object.assign({}, c.db || {}, { status: p.status || (c.db && c.db.status) || '', dist: p.distAt || (c.db && c.db.dist) || '', reg: p.regAt || (c.db && c.db.reg) || '', asDue: p.asDue || (c.db && c.db.asDue) || '', mask: p.phoneMask || (c.db && c.db.mask) || '', married: p.married || (c.db && c.db.married) || '', at: Date.now() });
+        var m = Object.assign({}, c.meet || {});
+        if (p.area && (!m.area || (p.area.indexOf(m.area) === 0 && p.area.length > m.area.length))) m.area = p.area;
+        if (p.near && !m.near) m.near = p.near;
+        if (p.memo) { var mf = AfgDb.meetFrom(p.memo); Object.keys(mf).forEach(function(k){ if (!m[k]) m[k] = mf[k]; }); if ((c.memo || '').indexOf(p.memo) < 0) c.memo = ((c.memo ? c.memo + '\n' : '') + '[DB 특이사항] ' + p.memo).trim(); }
+        if (Object.keys(m).length) c.meet = m;
+        if (!p._ex && !c.ref) c.ref = '회사 DB' + (c.db.dist ? ' (' + dot(c.db.dist) + ' 배분)' : '');
+        await Store.saveHead(c);
+      }
+      S.list = await Store.list(); renderList(); closeDlg();
+      toast('새 고객 ' + nNew + '명 등록 · ' + nUp + '명 정보 보강');
+    };
+  }
+  function openDbBookmark(){
+    openDlg('<h4>"OC9로 복사" 북마크 만들기 (한 번만)</h4><div class="form" style="font-size:14px;line-height:1.75">' +
+      '<p><b>PC 크롬</b></p><ol class="kkg"><li>아래 <b>코드 복사</b>를 누릅니다.</li><li>크롬 위쪽 북마크바에서 오른쪽 클릭 → <b>페이지 추가</b> (북마크바가 안 보이면 Ctrl+Shift+B)</li><li>이름: <b>OC9로 복사</b>, URL 칸에 붙여넣기 → 저장</li><li>DB 사이트에서 고객 상세 화면을 열고(번호 보기를 눌러 둔 상태) 북마크를 누르면 복사 완료</li></ol>' +
+      '<p><b>휴대폰 크롬</b></p><ol class="kkg"><li>아무 페이지나 별표(☆)로 북마크한 뒤, 북마크 수정에서 이름을 <b>OC9로 복사</b>, URL을 코드로 바꿔 저장</li><li>DB 고객 상세 화면에서 주소창에 <b>OC9로 복사</b>를 입력하고, 아래 나오는 북마크(★)를 누르기</li></ol>' +
+      '<p class="note">삼성 인터넷에서는 이 방식이 안 될 수 있습니다. DB 사이트는 크롬으로 열어 주세요.</p></div>' +
+      '<div class="mrow"><button class="btn lg" type="button" id="bmBack" style="margin-right:auto">돌아가기</button><button class="go" type="button" id="bmCopy">코드 복사</button></div>');
+    $('bmCopy').onclick = function(){ copyText(DB_BM, '북마크 코드'); };
+    $('bmBack').onclick = function(){ openDbImport(); };
+  }
+  document.addEventListener('click', function(e){ if (e.target.closest('[data-act="dbImport"]')) openDbImport(); });
 
   // ================= 연락: 전화·문자·카톡 바로가기와 마지막 연락일 =================
   var MSG_TPL0, MSG_TPL = MSG_TPL0 = [
@@ -3863,6 +4209,7 @@ function HealthUI(root, H) {
   // 메시지 작성: 휴대폰은 문자 앱·카톡 공유로, PC는 QR(휴대폰 문자) 또는 복사(카톡 PC)
   function preMsg(pre){
     if (!pre) return null;
+    if (pre === 'raw' && S.preTxt) return ['약속 안내', S.preTxt, '약속 안내'];
     if (pre === 'nhc' && S.data && S.data.nhc && S.data.nhc.kakao) return ['보장분석 안내', S.data.nhc.kakao, 'NHC 보장분석 안내'];
     var m = /^tpl:(\d+)$/.exec(pre); if (m && MSG_TPL[+m[1]]) return [MSG_TPL[+m[1]][0], MSG_TPL[+m[1]][1], ''];
     m = /^camp:(.+)$/.exec(pre); if (m) { var cp = campsGet(), it = cp && (cp.items || []).find(function(x){ return x.id === m[1]; }); if (it) return ['오늘 캠페인', it.msg, '캠페인: ' + it.title]; }
@@ -4071,7 +4418,7 @@ function HealthUI(root, H) {
     var d = mk(y); return d < t ? mk(y + 1) : d;
   }
   function briefData(){
-    var t = todayStr(), B = { todo: [], bday: [], ann: [], claim: [], quiet: [], nocvx: 0, pending: 0 };
+    var t = todayStr(), B = { todo: [], bday: [], ann: [], claim: [], quiet: [], meetToday: [], asDue: [], nocvx: 0, pending: 0 };
     S.list.forEach(function(c){
       var n = nextDue(c); if (n != null && n <= 1) B.todo.push({ c: c, n: n, txt: (c.next.t || '할 일') + ' · ' + dueTxt(n) });
       var b = String(c.birth || '').replace(/\D/g, '');
@@ -4083,8 +4430,10 @@ function HealthUI(root, H) {
       if ((gap != null && gap >= 90) || (gap == null && /contract|care/.test(c.stage || '') && Date.now() - (c.created || Date.now()) > 90 * 864e5)) B.quiet.push({ c: c, n: -(gap || 999), txt: gap != null ? '마지막 연락 ' + gap + '일 전' : '연락 기록 없음' });
       if (c.status === 'done' && !c.cvx) B.nocvx++;
       if (c.nhcReq) B.pending++;
+      if (canMeetToday(c) && (c.stage || 'lead') !== 'care') B.meetToday.push({ c: c, n: 0, txt: [meetTxt(meetOf(c)), meetOf(c).area].filter(Boolean).join(' · ') });
+      if (c.db && c.db.asDue && /가입불가|AS재신청/.test(c.db.status || '')) { var k3 = dayDiff(t, c.db.asDue); if (k3 >= 0 && k3 <= 7) B.asDue.push({ c: c, n: k3, txt: 'AS 신청 마감 D-' + k3 + ' · ' + c.db.status }); }
     });
-    ['todo', 'bday', 'ann', 'claim', 'quiet'].forEach(function(k){ B[k].sort(function(a, b){ return a.n - b.n; }); });
+    ['todo', 'bday', 'ann', 'claim', 'quiet', 'asDue'].forEach(function(k){ B[k].sort(function(a, b){ return a.n - b.n; }); });
     return B;
   }
   function campsGet(){ try { return JSON.parse(localStorage.getItem('mhs_camps') || 'null'); } catch(e){ return null; } }
@@ -4114,7 +4463,9 @@ function HealthUI(root, H) {
     } else h += '<div class="gapban b"><span class="nxb">NHC</span><span>NHC 본사 보장분석부서와 연결하면 매일 아침 <b>뉴스 연계 연락 캠페인</b>과 대상 고객이 여기에 나옵니다.</span><button class="btn" type="button" data-nx="setup">연결하기</button></div>';
     h += '<div class="bgrid">' + bSec('오늘 할 일', B.todo, '오늘·지난 할 일이 없습니다.') + bSec('생일 (7일 안)', B.bday, '7일 안에 생일인 고객이 없습니다.') +
       bSec('계약 응당일 (14일 안)', B.ann, '14일 안에 응당일인 계약이 없습니다.') + bSec('청구기한 임박 (60일 안)', B.claim, '60일 안에 기한이 끝나는 청구 건이 없습니다.') +
-      bSec('오래 연락 못 한 고객 (90일+)', B.quiet, '90일 넘게 연락이 끊긴 고객이 없습니다.') + '</div>' +
+      bSec('오래 연락 못 한 고객 (90일+)', B.quiet, '90일 넘게 연락이 끊긴 고객이 없습니다.') +
+      bSec('오늘 만날 수 있는 고객', B.meetToday, '만남 정보(편한 요일·시간)를 넣어 둔 고객 중 오늘 편한 고객이 여기 나옵니다.') +
+      (B.asDue.length ? bSec('DB AS 신청 마감 (7일 안)', B.asDue, '') : '') + '</div>' +
       '<p class="note">브리핑은 이 기기 안에서 계산합니다.' + (nhcOn() ? ' NHC 아침 보고에는 이름 없이 숫자만 올라갑니다.' : '') + '</p>';
     $('main').innerHTML = h; window.scrollTo(0, 0);
     nhcStats(B);
@@ -4539,7 +4890,7 @@ function HealthUI(root, H) {
   function sexTxt(s){ return s === 'F' ? '여' : s === 'M' ? '남' : ''; }
   function renderList(){
     setTimeout(drawRail, 0);
-    var q = S.q.trim(), qd = q.replace(/\D/g, ''), L2 = S.list.filter(function(c){ return !q || c.name.indexOf(q) >= 0 || (c.memo||'').indexOf(q) >= 0 || (qd.length >= 4 && String(c.phone || '').indexOf(qd) >= 0) || (c.ref || '').indexOf(q) >= 0 || (c.interest || '').indexOf(q) >= 0; });
+    var q = S.q.trim(), qd = q.replace(/\D/g, ''), L2 = S.list.filter(function(c){ return !q || c.name.indexOf(q) >= 0 || (c.memo||'').indexOf(q) >= 0 || (qd.length >= 4 && String(c.phone || '').indexOf(qd) >= 0) || (c.ref || '').indexOf(q) >= 0 || (c.interest || '').indexOf(q) >= 0 || [meetOf(c).area, meetOf(c).near, meetOf(c).work].join(' ').indexOf(q) >= 0; });
     var nDone = S.list.filter(function(c){ return c.status === 'done'; }).length;
     var nTodo = S.list.filter(function(c){ var n = nextDue(c); return n != null && n <= 0; }).length;
     $('fAll').textContent = '전체 ' + S.list.length; $('fTodo').textContent = '할 일 ' + nTodo;
