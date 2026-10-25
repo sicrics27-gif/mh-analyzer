@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "AFG OC9",
+  "productName": "AOB",
   "version": "1.0.0",
   "identifier": "kr.oceanbranch.mhanalyzer",
   "build": {
@@ -9,7 +9,7 @@
   "app": {
     "windows": [
       {
-        "title": "AFG OC9",
+        "title": "AOB · 어센틱 오션브랜치 9팀",
         "width": 1440,
         "height": 920,
         "minWidth": 960,

@@ -1,4 +1,4 @@
-// AFG OC9 · 9팀 리그전 서버 (구글 Apps Script) — 관리자(강남혁) 구글 계정에서 한 번 배포
+// AOB · 9팀 리그전 서버 (구글 Apps Script) — 관리자(강남혁) 구글 계정에서 한 번 배포
 // 저장하는 것: 별명, 주간 경험치·통화·만남·연락 수, 레벨. 고객 정보는 받지 않습니다.
 // OTP가 '사용 중'인 사람만 점수를 올릴 수 있습니다 (access.json 확인).
 const ACCESS = 'https://raw.githubusercontent.com/sicrics27-gif/mh-analyzer/main/access.json';

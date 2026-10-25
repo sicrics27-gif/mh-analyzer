@@ -1,4 +1,4 @@
-name: 안드로이드 앱(APK) 만들기
+name: 안드로이드 앱(APK) 만들기 — AOB
 on:
   push:
     branches: [main]
@@ -39,21 +39,21 @@ jobs:
           chmod +x gradlew
           ./gradlew --no-daemon assembleRelease bundleRelease
           mkdir -p ../out
-          cp app/build/outputs/apk/release/app-release.apk ../out/AFG-OC9.apk
-          cp app/build/outputs/bundle/release/app-release.aab ../out/AFG-OC9-playstore.aab
+          cp app/build/outputs/apk/release/app-release.apk ../out/AOB.apk
+          cp app/build/outputs/bundle/release/app-release.aab ../out/AOB-playstore.aab
           echo "{\"code\":${APP_CODE}}" > ../out/apk.json
           rm -f oc9.keystore
       - if: steps.key.outputs.ok == '1'
         uses: actions/upload-artifact@v4
         with:
-          name: AFG-OC9-android
+          name: AOB-android
           path: out/*
       - name: 다운로드 주소에 올리기 (항상 같은 주소)
         if: steps.key.outputs.ok == '1'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: apk-latest
-          name: AFG OC9 안드로이드 앱
-          body: "AFG OC9 안드로이드 앱 (빌드 ${{ github.run_number }}). 휴대폰에서 AFG-OC9.apk 를 눌러 설치하세요. AFG-OC9-playstore.aab 는 구글 플레이 콘솔에 올리는 파일입니다."
+          name: AOB 안드로이드 앱
+          body: "AOB(어센틱 오션브랜치 9팀) 안드로이드 앱 (빌드 ${{ github.run_number }}). 휴대폰에서 AOB.apk 를 눌러 설치하세요. AOB-playstore.aab 는 구글 플레이 콘솔에 올리는 파일입니다."
           files: out/*
           make_latest: false

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>AFG OC9</title>
+<title>AOB · 어센틱 오션브랜치 9팀</title>
 <meta name="theme-color" content="#090B10">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
@@ -1661,6 +1661,9 @@ body{font-feature-settings:"tnum" 1}
 :root[data-theme="dark"] .dchip.fr.a{border-color:rgba(255,190,90,.45);background:linear-gradient(135deg,rgba(255,190,90,.16),rgba(255,190,90,.05))}
 :root[data-theme="dark"] .dchip.fr.r{border-color:rgba(255,107,97,.45);background:linear-gradient(135deg,rgba(255,107,97,.16),rgba(255,107,97,.05))}
 :root[data-theme="dark"] .mbox :is(.sexsel,.form) button[aria-pressed="true"]{background:linear-gradient(135deg,#4f7dff,#2f5fe0);color:#fff;border-color:transparent}
+.ptool .pgoal[aria-pressed="true"]{background:rgba(79,125,255,.2);border-color:rgba(124,156,255,.55);color:#fff}
+.ptool .pgoal svg{width:15px;height:15px}
+.wm{gap:0;letter-spacing:.02em}.wm i{letter-spacing:.02em}
 
 </style>
 </head>
@@ -1669,7 +1672,7 @@ body{font-feature-settings:"tnum" 1}
 <div class="shell" id="shell" hidden>
   <aside class="side" aria-label="고객 목록">
     <nav class="srail" aria-label="접힌 메뉴">
-      <button type="button" class="rl-brand" data-rail="open" title="메뉴 펼치기"><b>OC9</b></button>
+      <button type="button" class="rl-brand" data-rail="open" title="메뉴 펼치기"><b>AOB</b></button>
       <button type="button" class="rl lvr" data-gm="open" title="내 성장 · 레벨과 퀘스트"><b id="rlLv">1</b></button>
       <button type="button" class="rl pri" data-rail="new" title="신규 고객 등록"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><circle cx="10" cy="8" r="4"/><path d="M2 21c0-4 4-7 8-7s8 3 8 7zM19 8h2v3h3v2h-3v3h-2v-3h-3v-2h3z"/></svg></button>
       <button type="button" class="rl" data-rail="search" title="고객 검색"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button>
@@ -1683,7 +1686,7 @@ body{font-feature-settings:"tnum" 1}
       <button type="button" class="rl" data-rail="lock" title="잠그기"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6 10V8a6 6 0 1 1 12 0v2h1v12H5V10zm2 0h8V8a4 4 0 1 0-8 0z"/></svg></button>
       <button type="button" class="rl" data-rail="open" title="메뉴 펼치기 (오른쪽으로 끌어도 됩니다)">»</button>
     </nav>
-    <div class="sbrand"><b class="wm"><span>AFG</span><i>OC9</i></b><small>Authentic Financial Group · Ocean Branch 9팀</small><button type="button" class="sfold" data-rail="close" title="메뉴 접기 (왼쪽으로 끌어도 됩니다)">«</button></div>
+    <div class="sbrand"><b class="wm"><span>AO</span><i>B</i></b><small>어센틱 오션브랜치 9팀 · Authentic Ocean Branch</small><button type="button" class="sfold" data-rail="close" title="메뉴 접기 (왼쪽으로 끌어도 됩니다)">«</button></div>
     <button type="button" class="gchip" id="gchip" data-gm="open" hidden title="내 성장 · 레벨과 퀘스트"></button>
     <button class="sbtn pri" id="newCust" type="button"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><circle cx="10" cy="8" r="4"/><path d="M2 21c0-4 4-7 8-7s8 3 8 7zM19 8h2v3h3v2h-3v3h-2v-3h-3v-2h3z"/></svg>신규 고객 등록</button>
     <div class="sqw"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" class="sq" type="search" placeholder="이름 · 전화번호 · 메모 검색" autocomplete="off"></div>
@@ -1709,7 +1712,7 @@ body{font-feature-settings:"tnum" 1}
 </div>
 <template id="tplWelcome">
   <div class="welcome">
-    <div class="wbrand"><span class="wm"><b>AFG</b><i>OC9</i></span><small>Authentic Financial Group · Ocean Branch 9팀 고객관리</small></div>
+    <div class="wbrand"><span class="wm"><b>AO</b><i>B</i></span><small>어센틱 오션브랜치 9팀 고객관리</small></div>
     <h2>고객을 선택하거나 새로 등록하세요</h2>
     <p>고객을 먼저 등록하고 파일을 첨부하면, 모든 상품의 고지 판정표를 한 번에 만들어 이 기기에 저장합니다.</p>
     <div class="steps">
@@ -3822,7 +3825,7 @@ function HealthUI(root, H) {
 
 </script>
 <script>
-// NHC(남혁컴퍼니) 보장분석부서 연결 — AFG OC9은 보장분석부서 산하 고객관리 프로그램.
+// NHC(남혁컴퍼니) 보장분석부서 연결 — AOB(어센틱 오션브랜치 9팀, 구 AFG OC9)는 보장분석부서 산하 고객관리 프로그램.
 // 회사로 나가는 것: 익명 의뢰서(성별·나이대·계약/담보), 숫자 통계. 이름·생년월일·연락처·병력은 절대 내보내지 않음.
 (function (root) {
   var DEF_REPO = 'sicrics27-gif/nhc-company';
@@ -4108,7 +4111,7 @@ function HealthUI(root, H) {
   // 같은 고객·같은 날·같은 종류는 한 번만 (기록을 여러 번 눌러 점수 부풀리기 방지)
   var XP = { call: 10, miss: 3, sms: 8, kakao: 8, meet: 30, note: 2, add: 5, analyze: 20, coverage: 15, nhc: 20, claim: 40, consult: 15, contract: 80, care: 20 };
   var XP_TXT = { call: '통화', miss: '부재중 통화', sms: '문자', kakao: '카톡', meet: '만남', note: '메모', add: '고객 등록', analyze: '병력 분석', coverage: '보장분석 반영', nhc: '보장분석부서 의뢰', claim: '청구 안내', consult: '상담 시작', contract: '계약', care: '관리 고객 전환', quest: '퀘스트 완료' };
-  var TITLES = [[1, '신입 플래너'], [3, '루키 플래너'], [5, '오션 레인저'], [8, '케어 스페셜리스트'], [12, '보장 마스터'], [16, '오션 레전드'], [20, 'AFG 그랜드마스터']];
+  var TITLES = [[1, '신입 플래너'], [3, '루키 플래너'], [5, '오션 레인저'], [8, '케어 스페셜리스트'], [12, '보장 마스터'], [16, '오션 레전드'], [20, 'AOB 그랜드마스터']];
   function need(lv) { return 100 + (lv - 1) * 60; }           // 레벨 lv → lv+1 에 필요한 XP
   function levelOf(xp) { var lv = 1, rest = xp; while (rest >= need(lv)) { rest -= need(lv); lv++; } return { lv: lv, cur: rest, need: need(lv) }; }
   function titleOf(lv) { var t = TITLES[0][1]; TITLES.forEach(function (x) { if (lv >= x[0]) t = x[1]; }); return t; }
@@ -4248,11 +4251,11 @@ function HealthUI(root, H) {
     var b = atob(r), out = new Uint8Array(b.length); for (i = 0; i < b.length; i++) out[i] = b.charCodeAt(i); return out;
   };
 
-  // 화면 테마: 기본은 AFG 콘크리트(어두운 화면), 도구 메뉴에서 밝은 화면으로 바꿀 수 있음
+  // 화면 테마: 기본은 콘크리트(어두운 화면), 도구 메뉴에서 밝은 화면으로 바꿀 수 있음
   var THEME = 'dark'; try { THEME = localStorage.getItem('mhs_theme') || 'dark'; } catch(e){}
   document.documentElement.setAttribute('data-theme', THEME);
   function setTheme(t){ THEME = t; try { localStorage.setItem('mhs_theme', t); } catch(e){} document.documentElement.setAttribute('data-theme', t); var b = document.getElementById('themeBtn'); if (b) b.textContent = t === 'dark' ? '밝은 화면으로' : '어두운 화면으로'; }
-  var BRAND = '<div class="lmark"><span class="wm"><b>AFG</b><i>OC9</i></span><small>Authentic Financial Group · Ocean Branch 9팀</small></div>';
+  var BRAND = '<div class="lmark"><span class="wm"><b>AO</b><i>B</i></span><small>어센틱 오션브랜치 9팀 · Authentic Ocean Branch</small></div>';
   // ================= 잠금 =================
   var memMode = false;
   async function boot(){
@@ -4378,7 +4381,7 @@ function HealthUI(root, H) {
   var ADM = { id: '__admin' };
   async function admLoad(){ try { return (await Store.loadData(ADM.id)) || null; } catch(e){ return null; } }
   async function admSave(d){ await Store.saveHead({ id: ADM.id, hidden: true, name: '__admin', status: 'admin', created: d.created || Date.now() }); await Store.saveData(ADM.id, d); }
-  function invite(u){ return '[AFG OC9 사용 안내]\n' + u.name + '님, AFG OC9 프로그램 OTP입니다.\n\nOTP: ' + u.code + '\n등록할 구글 계정: ' + u.email + '\n\n① 설치\n· 휴대폰: https://sicrics27-gif.github.io/mh-analyzer/ 를 크롬으로 열고 메뉴(⋮) → "홈 화면에 추가"\n· PC: https://github.com/' + Access.REPO + '/releases/latest 에서 MH-Analyzer-setup.exe 설치\n② 처음 열면 나오는 화면에 OTP를 넣고, 위 구글 계정으로 본인 확인\n③ 잠금 비밀번호를 만들고 시작'; }
+  function invite(u){ return '[AOB 사용 안내]\n' + u.name + '님, AOB(어센틱 오션브랜치 9팀) 프로그램 OTP입니다.\n\nOTP: ' + u.code + '\n등록할 구글 계정: ' + u.email + '\n\n① 설치\n· 휴대폰: https://sicrics27-gif.github.io/mh-analyzer/ 를 크롬으로 열고 메뉴(⋮) → "홈 화면에 추가"\n· PC: https://github.com/' + Access.REPO + '/releases/latest 에서 MH-Analyzer-setup.exe 설치\n② 처음 열면 나오는 화면에 OTP를 넣고, 위 구글 계정으로 본인 확인\n③ 잠금 비밀번호를 만들고 시작'; }
   async function openAdmin(){
     var d = await admLoad();
     if (!d || !d.token) { admSetup(d); return; }
@@ -4661,10 +4664,10 @@ function HealthUI(root, H) {
   });
 
   // ---------- 회사 DB(link.afg.kr) 고객 가져오기 ----------
-  var DB_BM = "javascript:(function(){var L=[];document.querySelectorAll('input,textarea,select').forEach(function(e){var t=(e.type||'').toLowerCase();if(/hidden|file|button|submit|password|search/.test(t))return;var v;if(t==='checkbox'||t==='radio'){if(!e.checked)return;var lb=(e.labels&&e.labels[0]&&e.labels[0].innerText)||(e.parentElement&&e.parentElement.innerText)||e.value||'';v='[선택] '+lb.trim().split('\\n')[0];}else if(e.tagName==='SELECT'){v=e.selectedIndex>=0?e.options[e.selectedIndex].text:'';}else v=e.value;v=String(v||'').trim();if(!v)return;var lab='';for(var p=e.parentElement,i=0;p&&i<4&&!lab;p=p.parentElement,i++){var tx=(p.innerText||'').split('\\n')[0].trim();if(tx&&tx!==v&&tx.length<16&&!/^\\[/.test(tx))lab=tx;}L.push(/^\\[선택\\]/.test(v)?v:(lab?lab+': ':'')+v);});var blk='[AFG-DB]\\n'+L.join('\\n')+'\\n[PAGE]\\n'+document.body.innerText.slice(0,3000);var K='oc9_db_bag',bag;try{bag=JSON.parse(localStorage.getItem(K)||'null');}catch(e){bag=null;}if(!bag||Date.now()-bag.t>12*3600e3)bag={t:Date.now(),b:[]};else if(bag.b.length&&Date.now()-bag.t>30*60e3&&!confirm('전에 모아 둔 고객 '+bag.b.length+'명이 있습니다.\\n이어서 모을까요?\\n(취소를 누르면 비우고 새로 시작)'))bag={t:Date.now(),b:[]};var key=L.slice(0,3).join('|');var dup=bag.b.some(function(x){return x.k===key;});if(!dup)bag.b.push({k:key,v:blk});bag.t=Date.now();try{localStorage.setItem(K,JSON.stringify(bag));}catch(e){}var out=bag.b.map(function(x){return x.v;}).join('\\n[END]\\n');var msg=(dup?'이미 담은 고객입니다.\\n':'담았습니다.\\n')+'지금까지 '+bag.b.length+'명 모임 · 클립보드에 '+bag.b.length+'명 전부 복사됨\\n\\n다 모았으면 OC9 → 회사 DB 고객 가져오기 → 붙여넣기';var ok=function(){alert(msg);};if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(out).then(ok,function(){prompt('아래 글을 전체 복사하세요',out);});else prompt('아래 글을 전체 복사하세요',out);})();";
+  var DB_BM = "javascript:(function(){var L=[];document.querySelectorAll('input,textarea,select').forEach(function(e){var t=(e.type||'').toLowerCase();if(/hidden|file|button|submit|password|search/.test(t))return;var v;if(t==='checkbox'||t==='radio'){if(!e.checked)return;var lb=(e.labels&&e.labels[0]&&e.labels[0].innerText)||(e.parentElement&&e.parentElement.innerText)||e.value||'';v='[선택] '+lb.trim().split('\\n')[0];}else if(e.tagName==='SELECT'){v=e.selectedIndex>=0?e.options[e.selectedIndex].text:'';}else v=e.value;v=String(v||'').trim();if(!v)return;var lab='';for(var p=e.parentElement,i=0;p&&i<4&&!lab;p=p.parentElement,i++){var tx=(p.innerText||'').split('\\n')[0].trim();if(tx&&tx!==v&&tx.length<16&&!/^\\[/.test(tx))lab=tx;}L.push(/^\\[선택\\]/.test(v)?v:(lab?lab+': ':'')+v);});var blk='[AFG-DB]\\n'+L.join('\\n')+'\\n[PAGE]\\n'+document.body.innerText.slice(0,3000);var K='oc9_db_bag',bag;try{bag=JSON.parse(localStorage.getItem(K)||'null');}catch(e){bag=null;}if(!bag||Date.now()-bag.t>12*3600e3)bag={t:Date.now(),b:[]};else if(bag.b.length&&Date.now()-bag.t>30*60e3&&!confirm('전에 모아 둔 고객 '+bag.b.length+'명이 있습니다.\\n이어서 모을까요?\\n(취소를 누르면 비우고 새로 시작)'))bag={t:Date.now(),b:[]};var key=L.slice(0,3).join('|');var dup=bag.b.some(function(x){return x.k===key;});if(!dup)bag.b.push({k:key,v:blk});bag.t=Date.now();try{localStorage.setItem(K,JSON.stringify(bag));}catch(e){}var out=bag.b.map(function(x){return x.v;}).join('\\n[END]\\n');var msg=(dup?'이미 담은 고객입니다.\\n':'담았습니다.\\n')+'지금까지 '+bag.b.length+'명 모임 · 클립보드에 '+bag.b.length+'명 전부 복사됨\\n\\n다 모았으면 AOB → 회사 DB 고객 가져오기 → 붙여넣기';var ok=function(){alert(msg);};if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(out).then(ok,function(){prompt('아래 글을 전체 복사하세요',out);});else prompt('아래 글을 전체 복사하세요',out);})();";
   function openDbImport(){
     openDlg('<h4>' + IC.user + ' 회사 DB 고객 가져오기</h4><div class="form dbform">' +
-      '<div class="dbhow"><div><b>① 한 명씩 (전체 정보)</b><span>DB 사이트에서 고객 상세 화면을 연 뒤 <b>"OC9로 복사"</b> 북마크를 누르기. 여러 명을 차례로 눌러 모은 뒤 한 번에 붙여 넣어도 됩니다. 이름·전체 번호·생년월일·성별·지역·특이사항·인수상태·AS 마감까지 들어갑니다.</span><span class="dbbtns"><button type="button" class="pb gold" id="dbPage">북마크 만들기 페이지 열기</button><button type="button" class="pb" id="dbHow">사용법</button></span></div>' +
+      '<div class="dbhow"><div><b>① 한 명씩 (전체 정보)</b><span>DB 사이트에서 고객 상세 화면을 연 뒤 <b>"AOB로 복사"</b> 북마크를 누르기. 여러 명을 차례로 눌러 모은 뒤 한 번에 붙여 넣어도 됩니다. 이름·전체 번호·생년월일·성별·지역·특이사항·인수상태·AS 마감까지 들어갑니다.</span><span class="dbbtns"><button type="button" class="pb gold" id="dbPage">북마크 만들기 페이지 열기</button><button type="button" class="pb" id="dbHow">사용법</button></span></div>' +
       '<div><b>② 목록 한꺼번에</b><span>DB 목록 화면에서 표시 개수를 크게 하고, 표를 길게 눌러(PC는 드래그) <b>전체 선택 → 복사</b>해서 붙여 넣기. 목록에는 번호가 가려져 있어, 번호는 ①로 한 번 더 넣으면 채워집니다.</span></div></div>' +
       '<textarea id="dbTxt" rows="7" placeholder="여기에 붙여 넣으세요"></textarea>' +
       '<div class="safe">' + IC.lock + '<span>대표님이 보고 있는 화면을 옮겨 적는 방식입니다. DB 사이트에 자동으로 접속하지 않습니다. 가져온 정보는 잠금 비밀번호로 암호화해 저장합니다.</span></div>' +
@@ -4708,9 +4711,9 @@ function HealthUI(root, H) {
     };
   }
   function openDbBookmark(){
-    openDlg('<h4>"OC9로 복사" 북마크 만들기 (한 번만)</h4><div class="form" style="font-size:14px;line-height:1.75">' +
-      '<p><b>PC 크롬</b></p><ol class="kkg"><li>아래 <b>코드 복사</b>를 누릅니다.</li><li>크롬 위쪽 북마크바에서 오른쪽 클릭 → <b>페이지 추가</b> (북마크바가 안 보이면 Ctrl+Shift+B)</li><li>이름: <b>OC9로 복사</b>, URL 칸에 붙여넣기 → 저장</li><li>DB 사이트에서 고객 상세 화면을 열고(번호 보기를 눌러 둔 상태) 북마크를 누르면 복사 완료</li></ol>' +
-      '<p><b>휴대폰 크롬</b></p><ol class="kkg"><li>아무 페이지나 별표(☆)로 북마크한 뒤, 북마크 수정에서 이름을 <b>OC9로 복사</b>, URL을 코드로 바꿔 저장</li><li>DB 고객 상세 화면에서 주소창에 <b>OC9로 복사</b>를 입력하고, 아래 나오는 북마크(★)를 누르기</li></ol>' +
+    openDlg('<h4>"AOB로 복사" 북마크 만들기 (한 번만)</h4><div class="form" style="font-size:14px;line-height:1.75">' +
+      '<p><b>PC 크롬</b></p><ol class="kkg"><li>아래 <b>코드 복사</b>를 누릅니다.</li><li>크롬 위쪽 북마크바에서 오른쪽 클릭 → <b>페이지 추가</b> (북마크바가 안 보이면 Ctrl+Shift+B)</li><li>이름: <b>AOB로 복사</b>, URL 칸에 붙여넣기 → 저장</li><li>DB 사이트에서 고객 상세 화면을 열고(번호 보기를 눌러 둔 상태) 북마크를 누르면 복사 완료</li></ol>' +
+      '<p><b>휴대폰 크롬</b></p><ol class="kkg"><li>아무 페이지나 별표(☆)로 북마크한 뒤, 북마크 수정에서 이름을 <b>AOB로 복사</b>, URL을 코드로 바꿔 저장</li><li>DB 고객 상세 화면에서 주소창에 <b>AOB로 복사</b>를 입력하고, 아래 나오는 북마크(★)를 누르기</li></ol>' +
       '<p class="note">삼성 인터넷에서는 이 방식이 안 될 수 있습니다. DB 사이트는 크롬으로 열어 주세요.</p></div>' +
       '<div class="mrow"><button class="btn lg" type="button" id="bmBack" style="margin-right:auto">돌아가기</button><button class="btn lg" type="button" id="bmPage">끌어다 놓는 페이지 열기</button><button class="go" type="button" id="bmCopy">코드 복사</button></div>');
     $('bmPage').onclick = function(){ openExt('https://sicrics27-gif.github.io/mh-analyzer/bookmark.html'); };
@@ -4757,7 +4760,7 @@ function HealthUI(root, H) {
     var h = '<div class="chead"><button class="btn back" type="button" data-act="back">‹ 목록</button><h2 data-i="◎">' + esc(title) + '</h2><span class="cmeta">' + esc(k === 'all' ? '모든 영업 채널을 한 화면에서' : CH_DESC[k] || '') + '</span></div>' +
       '<div class="chtabs" role="tablist">' + chTabs().map(function(x){ var n = chCount(x[0]); if (x[0] === 'none' && !n) return ''; return '<button type="button" role="tab" data-cm="tab" data-k="' + x[0] + '" aria-selected="' + (k === x[0]) + '">' + x[1] + '<b>' + n + '</b></button>'; }).join('') + '</div>' +
       '<div class="bkpi chk">' + [['고객', rows.length], ['가망', stg.lead || 0], ['상담 중', stg.consult || 0], ['계약', stg.contract || 0], ['관리', stg.care || 0], ['이번 달 신규', nNew], ['할 일', nTodo], ['30일+ 미연락', nQuiet]].map(function(x){ return '<div><small>' + x[0] + '</small><b>' + x[1] + '</b></div>'; }).join('') + '</div>';
-    if (k === 'db') h += '<div class="dbbar"><div><b>회사 DB 고객 가져오기</b><small>DB 사이트 상세 화면에서 "OC9로 복사" 북마크를 차례로 누른 뒤, 여기서 한 번에 가져옵니다.</small></div><button class="go" type="button" data-cm="db">DB 고객 가져오기</button><button class="btn" type="button" data-cm="bm">북마크 만들기 페이지</button><button class="btn" type="button" data-cm="how">사용법</button></div>';
+    if (k === 'db') h += '<div class="dbbar"><div><b>회사 DB 고객 가져오기</b><small>DB 사이트 상세 화면에서 "AOB로 복사" 북마크를 차례로 누른 뒤, 여기서 한 번에 가져옵니다.</small></div><button class="go" type="button" data-cm="db">DB 고객 가져오기</button><button class="btn" type="button" data-cm="bm">북마크 만들기 페이지</button><button class="btn" type="button" data-cm="how">사용법</button></div>';
     if (k === 'none' && rows.length) h += '<div class="gapban a">' + IC.warn + '<span>오른쪽 <b>영업 채널</b> 칸에서 고르면 바로 그 채널로 옮겨집니다. 계약을 마친 고객은 고객 단계를 <b>계약</b>이나 <b>관리</b>로 두면 자동으로 보유고객에 들어갑니다.</span></div>';
     var extraHead = k === 'db' ? '<th>인수상태</th><th>배분일</th><th>AS 마감</th>' : k === 'mine' ? '<th>보유 계약</th><th>월 보험료</th><th>응당일</th>' : '<th>지역</th><th>만남</th>';
     var extra = function(c){
@@ -4777,9 +4780,9 @@ function HealthUI(root, H) {
   }
   function openDbHow(){
     openDlg('<h4>' + IC.user + ' 회사 DB 고객 가져오기 · 사용법</h4><div class="form dbhow2">' +
-      '<div class="hstep"><i>1</i><div><b>북마크 만들기 (처음 한 번만, PC 크롬)</b><span>아래 <b>북마크 만들기 페이지 열기</b> → 크롬에서 <b>Ctrl + Shift + B</b>로 북마크바를 켜고 → 페이지의 파란 <b>"OC9로 복사"</b> 버튼을 북마크바로 <b>끌어다 놓기</b>.</span></div></div>' +
-      '<div class="hstep"><i>2</i><div><b>DB 사이트에서 모으기</b><span>link.afg.kr 에서 고객 <b>상세 화면</b>을 열고(번호가 가려져 있으면 번호 보기 먼저) 북마크 <b>"OC9로 복사"</b>를 누르기. 여러 명이면 고객마다 차례로 누르면 계속 모입니다. ("지금까지 N명")</span></div></div>' +
-      '<div class="hstep"><i>3</i><div><b>OC9에서 한 번에 가져오기</b><span>OC9 → <b>DB 고객 가져오기</b> → <b>붙여넣기</b> → 미리보기 확인 → <b>가져오기</b>. 새 고객은 <b>DB</b> 채널로 등록되고, 이미 있는 고객은 정보만 채워집니다.</span></div></div>' +
+      '<div class="hstep"><i>1</i><div><b>북마크 만들기 (처음 한 번만, PC 크롬)</b><span>아래 <b>북마크 만들기 페이지 열기</b> → 크롬에서 <b>Ctrl + Shift + B</b>로 북마크바를 켜고 → 페이지의 파란 <b>"AOB로 복사"</b> 버튼을 북마크바로 <b>끌어다 놓기</b>.</span></div></div>' +
+      '<div class="hstep"><i>2</i><div><b>DB 사이트에서 모으기</b><span>link.afg.kr 에서 고객 <b>상세 화면</b>을 열고(번호가 가려져 있으면 번호 보기 먼저) 북마크 <b>"AOB로 복사"</b>를 누르기. 여러 명이면 고객마다 차례로 누르면 계속 모입니다. ("지금까지 N명")</span></div></div>' +
+      '<div class="hstep"><i>3</i><div><b>AOB에서 한 번에 가져오기</b><span>AOB → <b>DB 고객 가져오기</b> → <b>붙여넣기</b> → 미리보기 확인 → <b>가져오기</b>. 새 고객은 <b>DB</b> 채널로 등록되고, 이미 있는 고객은 정보만 채워집니다.</span></div></div>' +
       '<div class="hstep"><i>4</i><div><b>다음 번에 모을 때</b><span>30분 넘게 지나 북마크를 다시 누르면 "이어서 모을까요?"라고 묻습니다. 이미 가져온 사람들이면 <b>취소</b>(새로 시작)를 누르세요.</span></div></div>' +
       '<p class="note">목록 화면의 표를 통째로 복사해 붙여 넣어도 여러 명이 들어갑니다(번호는 가려진 채로). 이 기능은 대표님이 보고 있는 화면 글만 옮기며, DB 사이트에 자동으로 접속하지 않습니다.</p></div>' +
       '<div class="mrow"><button class="btn lg" type="button" id="dhX" style="margin-right:auto">닫기</button><button class="btn lg" type="button" id="dhBm">북마크 만들기 페이지 열기</button><button class="go" type="button" id="dhGo">DB 고객 가져오기</button></div>', 'wide');
@@ -5034,7 +5037,7 @@ function HealthUI(root, H) {
   function autoColor(x){ var n = custNames(); if (Object.keys(n).some(function(k){ return x.indexOf(k) >= 0; })) return /프로세스/.test(x) ? 'g' : 'r'; return /교육|미팅|회의|석회|공유/.test(x) ? 'b' : 'k'; }
   function itemsOf(d){ var v = PL.d.days[d]; return v && v.items ? v.items.slice().sort(function(a, b){ return a.t < b.t ? -1 : a.t > b.t ? 1 : 0; }) : []; }
   function reportText(d){ var it = itemsOf(d); return '일월화수목금토'[wdOf(d)] + ') ' + PL.d.nick + ' 싯플랜 🗓️\n\n' + it.map(function(x){ return '⏰️' + x.t + ' ' + x.x; }).join('\n'); }
-  // OC9 할 일(다음 할 일)도 싯플랜에 흐리게 보여 줌
+  // AOB 할 일(다음 할 일)도 싯플랜에 흐리게 보여 줌
   function todosOn(d){ return S.list.filter(function(c){ return c.next && c.next.d === d; }).map(function(c){ var m = /^(\d{1,2}):?(\d{2})\s*/.exec(c.next.t || ''); return { t: m ? String(m[1]).padStart(2, '0') + m[2] : '', x: c.name + ' ' + (c.next.t || '할 일').replace(/^\d{1,2}:?\d{2}\s*/, ''), cid: c.id }; }); }
 
   // ---------- ACFP 목표 → 주간 행동 목표 ----------
@@ -5054,7 +5057,7 @@ function HealthUI(root, H) {
   function manTxt(n){ n = Math.round(n || 0); return n >= 10000 ? (n / 10000).toLocaleString('ko-KR', { maximumFractionDigits: 1 }) + '만' : n.toLocaleString('ko-KR'); }
   function acfpPanel(ym){
     var G = PL.d.goal, F = funnel(G), weeks = weeksOf(ym), t = todayStr(), mon = actuals(ym + '-01', ym + '-' + String(mDays(ym)).padStart(2, '0'));
-    if (!G.acfp) return '<section class="acfp empty"><div><b>ACFP 월납 목표를 정해 보세요</b><small>목표 월납을 넣으면 한 주에 계약 몇 건, 만남 몇 번, 연락 몇 명이 필요한지 거꾸로 계산하고, OC9 기록으로 진행률을 자동으로 셉니다.</small></div><button class="go" type="button" data-pl="goal">목표 정하기</button></section>';
+    if (!G.acfp) return '<section class="acfp empty"><div><b>ACFP 월납 목표를 정해 보세요</b><small>목표 월납을 넣으면 한 주에 계약 몇 건, 만남 몇 번, 연락 몇 명이 필요한지 거꾸로 계산하고, AOB 기록으로 진행률을 자동으로 셉니다.</small></div><button class="go" type="button" data-pl="goal">목표 정하기</button></section>';
     var pct = Math.min(100, Math.round(mon.amt / G.acfp * 100));
     var bar = function(v, goal){ var p = goal ? Math.min(100, Math.round(v / goal * 100)) : 0; return '<span class="pbar"><em style="width:' + p + '%" class="' + (p >= 100 ? 'ok' : '') + '"></em></span>'; };
     var h = '<section class="acfp"><div class="ac-h"><div><span class="eyebrow">' + (+ym.slice(5)) + '월 ACFP 월납 목표</span><b class="ac-goal">' + manTxt(G.acfp) + '원</b><small>현재 ' + manTxt(mon.amt) + '원 · ' + pct + '% · 계약 ' + mon.deal + '건</small>' + bar(mon.amt, G.acfp) + '</div>' +
@@ -5085,7 +5088,7 @@ function HealthUI(root, H) {
       $('gMineN').textContent = '최근 90일: 연락 ' + a.contact + ' · 만남 ' + a.meet + ' · 계약 ' + deals.length + '건 기준으로 바꿨습니다'; prev();
     };
     $('gX').onclick = closeDlg;
-    $('gGo').onclick = async function(){ PL.d.goal = { acfp: (+$('gA').value || 0) * 10000, avg: Math.max(1, +$('gV').value || 10) * 10000, m2c: +$('gM').value || 3, c2m: +$('gC').value || 5 }; PL.d.nick = $('gN').value.trim() || '남혁'; await planSave(); closeDlg(); toast('목표를 저장했습니다'); showPlan(); };
+    $('gGo').onclick = async function(){ PL.d.goal = { acfp: (+$('gA').value || 0) * 10000, avg: Math.max(1, +$('gV').value || 10) * 10000, m2c: +$('gM').value || 3, c2m: +$('gC').value || 5 }; PL.d.nick = $('gN').value.trim() || '남혁'; await planSave(); closeDlg(); toast('목표를 저장했습니다'); S.acfpOn = true; try { localStorage.setItem('mhs_acfp', '1'); } catch(e){} showPlan(); };
   }
   function openDeal(cid){
     var c = cid ? S.list.find(function(x){ return x.id === cid; }) : null;
@@ -5108,14 +5111,16 @@ function HealthUI(root, H) {
   // ---------- 싯플랜 화면 ----------
   async function showPlan(ym){
     await planLoad();
-    S.pm = ym || S.pm || ymOf(todayStr()); S.pview = S.pview || (window.innerWidth < 760 ? 'list' : 'month');
+    S.pm = ym || S.pm || ymOf(todayStr()); S.pview = S.pview || 'month';
+    if (S.acfpOn === undefined) { try { S.acfpOn = localStorage.getItem('mhs_acfp') === '1'; } catch(e){ S.acfpOn = false; } }
+    if (gcReady() && Date.now() - GC_LAST > 60 * 1000) setTimeout(function(){ gcAuto(); }, 400);
     S.cur = null; S.data = null; S.view = 'plan'; $('shell').classList.add('has-c'); armBack(); renderList();
     var y = +S.pm.slice(0, 4), m = +S.pm.slice(5, 7), n = mDays(S.pm), first = wdOf(dstr(y, m, 1)), t = todayStr();
     var prevM = m === 1 ? dstr(y - 1, 12, 1) : dstr(y, m - 1, 1), nextM = m === 12 ? dstr(y + 1, 1, 1) : dstr(y, m + 1, 1);
     var gOn = gcReady(), gBad = gOn && PL.d.gcal && PL.d.gcal.err;
     var h = '<div class="chead plhead"><button class="btn back" type="button" data-act="back">‹ 목록</button><div class="pttl"><small>' + esc(PL.d.nick) + '의 MONTHLY PLAN</small><h2>싯플랜</h2></div><span class="pnav"><button type="button" class="pb" data-pm="' + prevM.slice(0, 7) + '" aria-label="이전 달">‹</button><b>' + y + '. ' + m + '월</b><button type="button" class="pb" data-pm="' + nextM.slice(0, 7) + '" aria-label="다음 달">›</button><button type="button" class="pb ptoday" data-pm="' + ymOf(t) + '">오늘</button></span></div>' +
-      '<div class="ptool"><span class="stb" role="group"><button type="button" data-pvw="month" aria-pressed="' + (S.pview === 'month') + '">월간</button><button type="button" data-pvw="list" aria-pressed="' + (S.pview === 'list') + '">주간</button></span><span class="sp"></span><button class="btn" type="button" data-pl="today">' + IC.cal + '오늘 보고 복사</button><button class="btn" type="button" data-pl="snap">' + IC.doc + '사진 저장</button><button class="btn" type="button" data-pl="cal"><span class="gdot' + (gBad ? ' bad' : gOn ? ' on' : '') + '"></span>캘린더 연동</button></div>';
-    h += acfpPanel(S.pm);
+      '<div class="ptool"><span class="stb" role="group"><button type="button" data-pvw="month" aria-pressed="' + (S.pview === 'month') + '">월간</button><button type="button" data-pvw="list" aria-pressed="' + (S.pview === 'list') + '">주간</button></span><button class="btn pgoal" type="button" data-pl="acfp" aria-pressed="' + !!S.acfpOn + '" title="ACFP 월납 목표 보이기/숨기기"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>월납 목표</button><span class="sp"></span><button class="btn" type="button" data-pl="today">' + IC.cal + '오늘 보고 복사</button><button class="btn" type="button" data-pl="snap">' + IC.doc + '사진 저장</button><button class="btn" type="button" data-pl="cal"><span class="gdot' + (gBad ? ' bad' : gOn ? ' on' : '') + '"></span>캘린더 연동</button></div>';
+    if (S.acfpOn) h += acfpPanel(S.pm);
     var memo = (PL.d.months[S.pm] || {}).memo || '';
     if (S.pview === 'month') {
       var cells = [], d0 = 1 - first;
@@ -5134,7 +5139,7 @@ function HealthUI(root, H) {
           return '<button type="button" class="prow' + (d === t ? ' today' : '') + (wdOf(d) === 0 ? ' sun' : wdOf(d) === 6 ? ' sat' : '') + '" data-pd="' + d + '"><span class="pr-d"><b>' + (+d.slice(8)) + '</b><small>' + '일월화수목금토'[wdOf(d)] + '</small></span><span class="pr-i">' + (v.big ? '<span class="pbig">' + esc(v.big) + '</span>' : '') + (it.length || td.length ? it.map(function(x){ return '<span class="pi c-' + (x.c || 'k') + '"><i>' + x.t + '</i><em>' + esc(x.x) + '</em></span>'; }).join('') + td.map(function(x){ return '<span class="pi todo"><i>' + (x.t || '📌') + '</i><em>' + esc(x.x) + '</em></span>'; }).join('') : '<span class="pempty">일정 없음 · 눌러서 넣기</span>') + '</span></button>'; }).join('') + '</div>'; }).join('') + '</div>' +
         '<details class="pmemo2"><summary>이달의 메모 (SPECIAL MEMO)</summary><textarea id="pMemo" placeholder="이달의 메모">' + esc(memo) + '</textarea></details>';
     }
-    h += '<div class="plegend"><span class="pi c-r"><i></i><em>고객</em></span><span class="pi c-g"><i></i><em>프로세스</em></span><span class="pi c-b"><i></i><em>교육·회의</em></span><span class="pi c-k"><i></i><em>기타</em></span><span class="pi todo"><i>📌</i><em>OC9 할 일</em></span><small>날짜를 누르면 시간별 일정을 넣고 고칠 수 있습니다</small></div>';
+    h += '<div class="plegend"><span class="pi c-r"><i></i><em>고객</em></span><span class="pi c-g"><i></i><em>프로세스</em></span><span class="pi c-b"><i></i><em>교육·회의</em></span><span class="pi c-k"><i></i><em>기타</em></span><span class="pi todo"><i>📌</i><em>AOB 할 일</em></span><small>날짜를 누르면 시간별 일정을 넣고 고칠 수 있습니다</small></div>';
     $('main').innerHTML = h; window.scrollTo(0, 0);
     var pm = $('pMemo'); if (pm) pm.addEventListener('change', async function(){ PL.d.months[S.pm] = Object.assign({}, PL.d.months[S.pm], { memo: this.value }); await planSave(); toast('메모를 저장했습니다'); });
   }
@@ -5149,7 +5154,7 @@ function HealthUI(root, H) {
     var prev = function(){ $('pdPrev').textContent = text(); };
     openDlg('<h4>' + IC.cal + ' ' + (+d.slice(5, 7)) + '월 ' + (+d.slice(8)) + '일 (' + '일월화수목금토'[wdOf(d)] + ') 싯플랜</h4><div class="form pdform">' +
       '<div class="pdtpl">' + PLAN_TPL.map(function(x, i){ return '<button type="button" class="pb" data-tp="' + i + '">' + x[0] + ' ' + x[1] + '</button>'; }).join('') + '</div>' +
-      (td.length ? '<div class="pdtodo"><small>OC9 할 일에서 가져오기</small>' + td.map(function(x, i){ return '<button type="button" class="pb gold" data-td="' + i + '">📌 ' + esc((x.t ? x.t + ' ' : '') + x.x) + '</button>'; }).join('') + '</div>' : '') +
+      (td.length ? '<div class="pdtodo"><small>AOB 할 일에서 가져오기</small>' + td.map(function(x, i){ return '<button type="button" class="pb gold" data-td="' + i + '">📌 ' + esc((x.t ? x.t + ' ' : '') + x.x) + '</button>'; }).join('') + '</div>' : '') +
       '<div id="pdRows"></div><datalist id="pdNames">' + S.list.slice(0, 400).map(function(c){ return '<option value="' + esc(c.name) + ' ">'; }).join('') + '</datalist>' +
       '<button type="button" class="btn" id="pdAdd">+ 일정 한 줄 추가</button>' +
       '<label class="l">하루 전체 메모 (크게 표시 · 예: 다낭 휴가, 병가)</label><input id="pdBig" type="text" maxlength="20" value="' + esc(v.big || '') + '">' +
@@ -5163,9 +5168,12 @@ function HealthUI(root, H) {
     $('pdIcs').onclick = function(){ if (PL.d.days[d]) sendIcs([d], d); else toast('저장을 먼저 누른 뒤 보내 주세요'); };
     $('pdX').onclick = closeDlg;
     $('pdGo').onclick = async function(){
-      var it = items.filter(function(x){ return x.x.trim(); }).map(function(x){ return { t: String(x.t || '').replace(/\D/g, '').padStart(x.t ? 4 : 0, '0').slice(0, 4), x: x.x.trim(), c: x.c || 'k' }; });
-      var big = $('pdBig').value.trim();
-      if (it.length || big) PL.d.days[d] = { items: it, big: big }; else delete PL.d.days[d];
+      var it = items.filter(function(x){ return x.x.trim(); }).map(function(x){ var o = { t: String(x.t || '').replace(/\D/g, '').padStart(x.t ? 4 : 0, '0').slice(0, 4), x: x.x.trim(), c: x.c || 'k' }; if (x.gid) o.gid = x.gid; return o; });
+      var big = $('pdBig').value.trim(), pv = PL.d.days[d] || {};
+      // 삼성·구글 캘린더와 이어진 일정(gid)을 지웠으면 캘린더에서도 지우도록 적어 둠
+      PL.d.gdel = PL.d.gdel || []; (pv.items || []).forEach(function(x){ if (x.gid && !it.some(function(y){ return y.gid === x.gid; })) PL.d.gdel.push(x.gid); }); if (pv.bigGid && !big) PL.d.gdel.push(pv.bigGid);
+      if (it.length || big) { PL.d.days[d] = { items: it, big: big }; if (big && pv.bigGid) PL.d.days[d].bigGid = pv.bigGid; } else delete PL.d.days[d];
+      PL.d.mt = PL.d.mt || {}; PL.d.mt[d] = Date.now();
       await planSave(); closeDlg(); toast(gcReady() ? '저장했습니다 · 구글 캘린더에 맞추는 중…' : '저장했습니다'); var y = window.scrollY; showPlan(d.slice(0, 7)); window.scrollTo(0, y);
       if (gcReady()) gcPush([d], true).catch(function(){});
     };
@@ -5216,13 +5224,13 @@ function HealthUI(root, H) {
     if (t.dataset.pd) { await planLoad(); openDay(t.dataset.pd); }
     else if (t.dataset.pm) showPlan(t.dataset.pm);
     else if (t.dataset.pvw) { S.pview = t.dataset.pvw; showPlan(); }
-    else { var a = t.dataset.pl; await planLoad(); if (a === 'goal') openGoal(); else if (a === 'deal') openDeal(); else if (a === 'snap') planSnap(); else if (a === 'today') { var tx = reportText(todayStr()); if (!itemsOf(todayStr()).length) { toast('오늘 일정이 없습니다 · 오늘 날짜를 눌러 넣어 주세요'); return; } copyText(tx, '오늘 싯플랜'); } else if (a === 'open') showPlan(); else if (a === 'cal') openCalSend(); }
+    else { var a = t.dataset.pl; await planLoad(); if (a === 'goal') openGoal(); else if (a === 'deal') openDeal(); else if (a === 'snap') planSnap(); else if (a === 'today') { var tx = reportText(todayStr()); if (!itemsOf(todayStr()).length) { toast('오늘 일정이 없습니다 · 오늘 날짜를 눌러 넣어 주세요'); return; } copyText(tx, '오늘 싯플랜'); } else if (a === 'open') showPlan(); else if (a === 'cal') openCalSend(); else if (a === 'acfp') { S.acfpOn = !S.acfpOn; try { localStorage.setItem('mhs_acfp', S.acfpOn ? '1' : '0'); } catch(e){} var y0 = window.scrollY; showPlan(); window.scrollTo(0, y0); } }
   });
 
   // ---------- 삼성 캘린더 · 구글 캘린더로 보내기 (.ics) ----------
   function icsOf(days){
     var esc2 = function(s){ return String(s).replace(/\\/g, '\\\\').replace(/[,;]/g, function(c){ return '\\' + c; }).replace(/\n/g, '\\n'); };
-    var L = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//AFG OC9//싯플랜//KO', 'CALSCALE:GREGORIAN', 'X-WR-CALNAME:' + PL.d.nick + ' 싯플랜', 'X-WR-TIMEZONE:Asia/Seoul',
+    var L = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//AOB//싯플랜//KO', 'CALSCALE:GREGORIAN', 'X-WR-CALNAME:' + PL.d.nick + ' 싯플랜', 'X-WR-TIMEZONE:Asia/Seoul',
       'BEGIN:VTIMEZONE', 'TZID:Asia/Seoul', 'BEGIN:STANDARD', 'DTSTART:19700101T000000', 'TZOFFSETFROM:+0900', 'TZOFFSETTO:+0900', 'TZNAME:KST', 'END:STANDARD', 'END:VTIMEZONE'];
     var stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, ''), n = 0;
     days.forEach(function(d){
@@ -5247,20 +5255,24 @@ function HealthUI(root, H) {
     var a = document.createElement('a'); a.href = URL.createObjectURL(file); a.download = name; document.body.appendChild(a); a.click(); setTimeout(function(){ a.remove(); }, 1500);
     toast('일정 ' + r.n + '개를 캘린더 파일로 저장했습니다 · 파일을 열면 캘린더에 들어갑니다');
   }
-  // ---------- 구글 캘린더 자동 맞추기 (삼성 캘린더에도 같이 보임) ----------
-  // 대표님 구글 계정에 '남혁 싯플랜' 캘린더를 하나 만들고, 이 앱은 그 캘린더만 고칩니다 (다른 일정은 못 봄).
-  var GC = 'https://www.googleapis.com/calendar/v3', GCOL = { k: '8', r: '11', g: '10', b: '9' }, GC_BUSY = false;
+  // ---------- 구글 캘린더 자동 동기화 (삼성 캘린더에도 같이 보임) ----------
+  // 대표님 구글 계정에 '남혁 싯플랜' 캘린더를 하나 만들고, 이 앱은 그 캘린더만 다룹니다 (다른 일정은 못 봄).
+  // 양방향 자동: 싯플랜에서 저장하면 바로 올리고, 삼성·구글 캘린더에서 고친 것은 앱을 열 때·화면에 돌아올 때·5분마다 가져옵니다.
+  var GC = 'https://www.googleapis.com/calendar/v3', GCOL = { k: '8', r: '11', g: '10', b: '9' }, GCOL_R = { '11': 'r', '10': 'g', '9': 'b', '8': 'k' }, GC_BUSY = false, GC_PULL = false, GC_LAST = 0;
   function gcReady(){ return !!(Sync.calOn && Sync.calOn()); }
   function gcIdOf(ds, tag, x, used){ var id = 'oc9' + ds + tag + (hashN(x) >>> 0).toString(32), k = id, n = 1; while (used[k]) k = id + 'v' + (n++); used[k] = 1; return k; }
   function hashN(s){ var h = 0; s = String(s); for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return h; }
+  function bodyHash(b){ return String(hashN(JSON.stringify(b))); }
+  // 하루치 일정 → 구글 일정. 반환 { id: { body, ref } } (ref = 어느 항목에서 왔는지). 캘린더에서 가져온 일정은 원래 id(gid)를 그대로 씀
   function gcEvents(d){
     var it = itemsOf(d), v = PL.d.days[d] || {}, ds = d.replace(/-/g, ''), used = {}, out = {};
-    if (v.big) out[gcIdOf(ds, 'a', v.big, used)] = { summary: v.big, start: { date: d }, end: { date: addDay(d, 1) }, description: 'AFG OC9 싯플랜' };
+    var keyOf = function(gid, tag, x){ if (gid && !used[gid]) { used[gid] = 1; return gid; } return gcIdOf(ds, tag, x, used); };
+    if (v.big) out[keyOf(v.bigGid, 'a', v.big)] = { body: { summary: v.big, start: { date: d }, end: { date: addDay(d, 1) }, description: 'AOB 싯플랜' }, ref: { kind: 'big' } };
     it.forEach(function(x, i){
       if (!/^\d{4}$/.test(x.t)) return;
       var nx = it[i + 1] && /^\d{4}$/.test(it[i + 1].t) && it[i + 1].t > x.t ? it[i + 1].t : null, e2 = endOf(x.t, nx);
       var tm = function(t){ return { dateTime: d + 'T' + t.slice(0, 2) + ':' + t.slice(2) + ':00', timeZone: 'Asia/Seoul' }; };
-      out[gcIdOf(ds, x.t, x.x, used)] = { summary: x.x, start: tm(x.t), end: tm(e2), colorId: GCOL[x.c || 'k'] || '8', description: 'AFG OC9 싯플랜 · ' + PCOL[x.c || 'k'][0] };
+      out[keyOf(x.gid, x.t, x.x)] = { body: { summary: x.x, start: tm(x.t), end: tm(e2), colorId: GCOL[x.c || 'k'] || '8', description: 'AOB 싯플랜 · ' + PCOL[x.c || 'k'][0] }, ref: { kind: 'item', item: x } };
     });
     return out;
   }
@@ -5268,11 +5280,11 @@ function HealthUI(root, H) {
   async function gcCalendar(){
     PL.d.gcal = PL.d.gcal || {};
     var name = PL.d.nick + ' 싯플랜';
-    if (PL.d.gcal.id) { try { await gcJson(GC + '/calendars/' + encodeURIComponent(PL.d.gcal.id)); return PL.d.gcal.id; } catch(e){ if (e.code !== 'NOT_FOUND') throw e; PL.d.gcal.id = null; PL.d.gsync = {}; } }
+    if (PL.d.gcal.id) { try { await gcJson(GC + '/calendars/' + encodeURIComponent(PL.d.gcal.id)); return PL.d.gcal.id; } catch(e){ if (e.code !== 'NOT_FOUND') throw e; PL.d.gcal.id = null; PL.d.gsync = {}; PL.d.gpull = null; } }
     // 다른 기기에서 이미 만들었으면 그걸 씀
-    try { var l = await gcJson(GC + '/users/me/calendarList?maxResults=250'); var f = (l.items || []).find(function(c){ return c.summary === name; }); if (f) { PL.d.gcal.id = f.id; PL.d.gsync = {}; await planSave(); return f.id; } } catch(e){ if (e.code === 'API_OFF' || e.code === 'NEED_LOGIN' || e.code === 'OFFLINE') throw e; } // 목록 보기 권한이 없으면 그냥 새로 만듦
-    var j = await gcJson(GC + '/calendars', 'POST', { summary: name, timeZone: 'Asia/Seoul', description: 'AFG OC9 싯플랜에서 자동으로 맞추는 캘린더입니다. 여기서 고치면 다음 맞추기 때 싯플랜 내용으로 덮어씁니다.' });
-    PL.d.gcal.id = j.id; PL.d.gsync = {}; await planSave(); return j.id;
+    try { var l = await gcJson(GC + '/users/me/calendarList?maxResults=250'); var f = (l.items || []).find(function(c){ return c.summary === name; }); if (f) { PL.d.gcal.id = f.id; PL.d.gsync = {}; PL.d.gpull = null; await planSave(); return f.id; } } catch(e){ if (e.code === 'API_OFF' || e.code === 'NEED_LOGIN' || e.code === 'OFFLINE') throw e; } // 목록 보기 권한이 없으면 그냥 새로 만듦
+    var j = await gcJson(GC + '/calendars', 'POST', { summary: name, timeZone: 'Asia/Seoul', description: 'AOB 싯플랜과 자동으로 맞춰지는 캘린더입니다. 여기(삼성·구글 캘린더)에서 고치면 싯플랜에도 반영됩니다.' });
+    PL.d.gcal.id = j.id; PL.d.gsync = {}; PL.d.gpull = null; await planSave(); return j.id;
   }
   async function gcPool(jobs, n){ var i = 0; await Promise.all(Array.from({ length: Math.min(n, jobs.length) }, async function(){ while (i < jobs.length) await jobs[i++](); })); }
   // days: 맞출 날짜들. 바뀐 일정만 올리고, 싯플랜에서 지운 일정은 캘린더에서도 지움
@@ -5283,24 +5295,27 @@ function HealthUI(root, H) {
     try {
       var cal = await gcCalendar(), base = GC + '/calendars/' + encodeURIComponent(cal) + '/events';
       PL.d.gsync = PL.d.gsync || {};
+      var rmId = async function(id){ try { await Sync.gapi(base + '/' + encodeURIComponent(id), { method: 'DELETE' }); } catch(e){ if (e.code !== 'NOT_FOUND' && e.status !== 410) throw e; } del++; };
+      // 싯플랜에서 지운, 캘린더에서 온 일정
+      var gd = (PL.d.gdel || []).slice(); if (gd.length) { await gcPool(gd.map(function(id){ return function(){ return rmId(id); }; }), 4); Object.keys(PL.d.gsync).forEach(function(d){ gd.forEach(function(id){ if (PL.d.gsync[d]) delete PL.d.gsync[d][id]; }); }); PL.d.gdel = []; }
       for (var di = 0; di < days.length; di++) {
         var d = days[di], want = gcEvents(d), prev = PL.d.gsync[d] || {}, now = {}, jobs = [];
         Object.keys(want).forEach(function(id){
-          var b = want[id], h = String(hashN(JSON.stringify(b)));
+          var b = want[id].body, h = bodyHash(b);
           if (prev[id] === h) { now[id] = h; return; }
           jobs.push(async function(){
             var body = Object.assign({ id: id, status: 'confirmed' }, b);
             try {
-              if (prev[id]) await gcJson(base + '/' + id, 'PUT', body);
+              if (prev[id]) await gcJson(base + '/' + encodeURIComponent(id), 'PUT', body);
               else await gcJson(base, 'POST', body);
             } catch(e){
-              if (e.status === 409 || e.code === 'NOT_FOUND') { if (e.status === 409) await gcJson(base + '/' + id, 'PUT', body); else await gcJson(base, 'POST', body); }
+              if (e.status === 409 || e.code === 'NOT_FOUND') { if (e.status === 409) await gcJson(base + '/' + encodeURIComponent(id), 'PUT', body); else await gcJson(base, 'POST', body); }
               else throw e;
             }
             now[id] = h; up++;
           });
         });
-        Object.keys(prev).forEach(function(id){ if (want[id]) return; jobs.push(async function(){ try { await Sync.gapi(base + '/' + id, { method: 'DELETE' }); } catch(e){ if (e.code !== 'NOT_FOUND' && e.status !== 410) throw e; } del++; }); });
+        Object.keys(prev).forEach(function(id){ if (want[id]) return; jobs.push(function(){ return rmId(id); }); });
         await gcPool(jobs, 4);
         if (Object.keys(now).length) PL.d.gsync[d] = now; else delete PL.d.gsync[d];
       }
@@ -5329,15 +5344,111 @@ function HealthUI(root, H) {
     return gcPush(Object.keys(ds).sort(), quiet);
   }
 
+  // ---- 삼성·구글 캘린더에서 고친 것 가져오기 (캘린더 → 싯플랜) ----
+  function seoulParts(iso){ var s = new Date(iso).toLocaleString('sv-SE', { timeZone: 'Asia/Seoul', hour12: false }); return { d: s.slice(0, 10), t: s.slice(11, 13) + s.slice(14, 16) }; }
+  function evInfo(ev){
+    var st = ev.start || {}, x = String(ev.summary || '').trim(), c = GCOL_R[ev.colorId] || '';
+    if (st.date) return { d: st.date, t: '', x: x, c: c, allDay: true };
+    if (!st.dateTime) return null;
+    var p = seoulParts(st.dateTime); return { d: p.d, t: p.t, x: x, c: c, allDay: false };
+  }
+  function sigOf(d, t, x, c){ return d + '|' + t + '|' + x + '|' + (c || 'k'); }
+  // 로컬 일정에서 구글 일정 id 찾기 → { d, ref }
+  function gcIndex(){
+    var idx = {};
+    Object.keys(PL.d.days).forEach(function(d){
+      var m = gcEvents(d); Object.keys(m).forEach(function(id){ idx[id] = { d: d, ref: m[id].ref }; });
+      ((PL.d.days[d] || {}).items || []).forEach(function(x){ if (x.gid && !idx[x.gid]) idx[x.gid] = { d: d, ref: { kind: 'item', item: x } }; });
+    });
+    return idx;
+  }
+  function gcApply(evs){
+    var idx = gcIndex(), changed = {}, adopted = {}, n = 0;
+    var gsync = PL.d.gsync = PL.d.gsync || {}, mt = PL.d.mt = PL.d.mt || {}, from = addDay(todayStr(), -60), TOL = 120000;
+    var inPrev = function(id){ return Object.keys(gsync).some(function(d){ return gsync[d] && gsync[d][id]; }); };
+    var rmPrev = function(id){ Object.keys(gsync).forEach(function(d){ if (gsync[d] && gsync[d][id]) { delete gsync[d][id]; if (!Object.keys(gsync[d]).length) delete gsync[d]; } }); };
+    var dayOf = function(d){ var v = PL.d.days[d] = PL.d.days[d] || { items: [], big: '' }; v.items = v.items || []; return v; };
+    var dropRef = function(d, ref){ var v = PL.d.days[d]; if (!v) return; if (ref.kind === 'big') { v.big = ''; delete v.bigGid; } else { var i = (v.items || []).indexOf(ref.item); if (i >= 0) v.items.splice(i, 1); } if (!(v.items || []).length && !v.big) delete PL.d.days[d]; };
+    var addRemote = function(info, id){ var v = dayOf(info.d); if (info.allDay && !v.big) { v.big = info.x.slice(0, 20); v.bigGid = id; } else v.items.push({ t: info.allDay ? '' : info.t, x: info.x, c: info.c || autoColor(info.x), gid: id }); adopted[id] = 1; };
+    evs.forEach(function(ev){
+      var id = ev.id; if (!id) return;
+      var loc = idx[id], upd = Date.parse(ev.updated || '') || 0, localNewer = function(d){ return upd && mt[d] && upd < mt[d] - TOL; };
+      if (ev.status === 'cancelled') {
+        if (!loc) return;                       // 우리가 지운 것이거나 모르는 것
+        if (localNewer(loc.d)) return;          // 로컬이 더 최근 → 다음 올리기에서 로컬 기준으로 정리
+        dropRef(loc.d, loc.ref); rmPrev(id); changed[loc.d] = 1; n++; return;
+      }
+      var info = evInfo(ev); if (!info || !info.x) return;
+      if (loc) {
+        var li = loc.ref.kind === 'big' ? { t: '', x: (PL.d.days[loc.d] || {}).big || '', c: '' } : loc.ref.item;
+        var cur = sigOf(loc.d, li.t, li.x, loc.ref.kind === 'big' ? '' : li.c);
+        var rem = sigOf(info.d, info.allDay ? '' : info.t, loc.ref.kind === 'big' && info.allDay ? info.x.slice(0, 20) : info.x, loc.ref.kind === 'big' ? '' : (info.c || li.c));
+        if (cur === rem) return;
+        if (localNewer(loc.d)) return;
+        dropRef(loc.d, loc.ref); rmPrev(id); changed[loc.d] = 1;
+        if (!info.c && loc.ref.kind === 'item') info.c = li.c;
+        addRemote(info, id); changed[info.d] = 1; n++;
+      } else {
+        if (inPrev(id)) return;                 // 우리가 올렸던 옛 버전 (로컬이 먼저 바뀜)
+        if (info.d < from) return;
+        var v = PL.d.days[info.d], dup = v && (info.allDay ? (v.big === info.x.slice(0, 20) && !v.bigGid ? 'big' : null) : (v.items || []).find(function(x){ return !x.gid && x.t === info.t && x.x === info.x; }));
+        if (dup === 'big') { v.bigGid = id; adopted[id] = 1; } else if (dup) { dup.gid = id; adopted[id] = 1; } else addRemote(info, id);
+        changed[info.d] = 1; n++;
+      }
+    });
+    Object.keys(changed).forEach(function(d){
+      mt[d] = Date.now();
+      var m = gcEvents(d); if (!PL.d.days[d]) { delete gsync[d]; return; }
+      var g = gsync[d] = gsync[d] || {};
+      Object.keys(g).forEach(function(id){ if (!m[id]) delete g[id]; });
+      Object.keys(m).forEach(function(id){ if (g[id] !== undefined || adopted[id]) g[id] = bodyHash(m[id].body); });
+      if (!Object.keys(g).length) delete gsync[d];
+    });
+    return n;
+  }
+  async function gcPull(quiet){
+    if (!gcReady() || GC_PULL) return 0;
+    await planLoad();
+    if (!PL.d.gcal || !PL.d.gcal.id) return 0;
+    GC_PULL = true;
+    try {
+      var base = GC + '/calendars/' + encodeURIComponent(PL.d.gcal.id) + '/events', evs = [], token = (PL.d.gpull || {}).token || '', page = '', next = '';
+      for (var guard = 0; guard < 30; guard++) {
+        var q = token ? { syncToken: token } : { timeMin: new Date(Date.now() - 60 * 864e5).toISOString() };
+        q.singleEvents = 'true'; q.maxResults = '2500'; if (page) q.pageToken = page;
+        var j;
+        try { j = await gcJson(base + '?' + Object.keys(q).map(function(k){ return k + '=' + encodeURIComponent(q[k]); }).join('&')); }
+        catch(e){ if (e.status === 410 && token) { token = ''; page = ''; evs = []; continue; } if (e.code === 'NOT_FOUND') { PL.d.gcal.id = null; await planSave(); return 0; } throw e; }
+        evs = evs.concat(j.items || []); page = j.nextPageToken || ''; if (!page) { next = j.nextSyncToken || ''; break; }
+      }
+      var n = gcApply(evs);
+      PL.d.gpull = { token: next, at: Date.now() }; PL.d.gcal.err = ''; await planSave();
+      if (n && S.view === 'plan' && $('dlg').hidden) { var y = window.scrollY; showPlan(S.pm); window.scrollTo(0, y); }
+      if (n && !quiet) toast('삼성·구글 캘린더에서 바뀐 일정 ' + n + '개를 가져왔습니다');
+      return n;
+    } catch(e){ var m = gcErrTxt(e); if (PL.d.gcal) { PL.d.gcal.err = m; try { await planSave(); } catch(e2){} } if (!quiet) toast('캘린더 가져오기 실패 · ' + m); return 0; }
+    finally { GC_PULL = false; }
+  }
+  // 자동 동기화: 가져오기 → 올리기. 앱을 열 때, 화면에 돌아올 때, 싯플랜을 열 때, 5분마다
+  async function gcAuto(force){
+    if (!gcReady() || GC_BUSY || GC_PULL) return;
+    if (!force && Date.now() - GC_LAST < 4 * 60 * 1000) return;
+    GC_LAST = Date.now();
+    try { await gcPull(true); } catch(e){}
+    try { await gcAll(true); } catch(e){}
+  }
+  setInterval(function(){ try { if (document.visibilityState === 'visible' && Store.isOpen()) gcAuto(); } catch(e){} }, 5 * 60 * 1000);
+  document.addEventListener('visibilitychange', function(){ try { if (document.visibilityState === 'visible' && Store.isOpen()) setTimeout(function(){ gcAuto(); }, 1500); } catch(e){} });
+
   function openCalSend(){
     var t = todayStr(), wdn = wdOf(t), sun = addDay(t, -wdn), wk = []; for (var i = 0; i < 7; i++) wk.push(addDay(sun, i));
     var y = +S.pm.slice(0, 4), m = +S.pm.slice(5, 7), mon = []; for (var k = 1; k <= mDays(S.pm); k++) mon.push(dstr(y, m, k));
     var on = gcReady(), g = PL.d.gcal || {}, api = 'https://console.cloud.google.com/apis/library/calendar-json.googleapis.com';
     var gsec = '<div class="gcbox"><div class="gch"><b>' + IC.cal + ' 구글 캘린더 자동 맞추기</b><span class="gcst ' + (on ? 'on' : '') + '">' + (on ? '켜짐' : '꺼짐') + '</span></div>' +
-      (on ? '<p class="note" style="margin:4px 0">하루 일정을 저장할 때마다 구글 캘린더의 <b>“' + esc(PL.d.nick) + ' 싯플랜”</b> 캘린더에 자동으로 들어갑니다.' + (g.last ? ' 마지막 맞춤: ' + new Date(g.last).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '') + '</p>' +
+      (on ? '<p class="note" style="margin:4px 0"><b>양방향 자동 동기화 중.</b> 싯플랜에서 저장하면 바로 구글 캘린더의 <b>“' + esc(PL.d.nick) + ' 싯플랜”</b> 캘린더에 들어가고, 삼성·구글 캘린더에서 고치거나 새로 넣은 일정은 앱을 열 때와 5분마다 싯플랜으로 가져옵니다.' + (g.last ? ' 마지막 동기화: ' + new Date(Math.max(g.last, (PL.d.gpull || {}).at || 0)).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '') + '</p>' +
         (g.err ? '<p class="note" style="color:#b3261e;margin:4px 0">' + esc(g.err) + '</p>' : '') +
-        '<div class="calbtns"><button class="go" type="button" id="gcNow">지금 전체 맞추기</button><button class="btn" type="button" id="gcRe">다시 연결</button><button class="btn" type="button" id="gcOff">끄기</button></div>'
-      : '<p class="note" style="margin:4px 0">한 번 연결하면 싯플랜을 저장할 때마다 구글 캘린더에 자동으로 들어갑니다. 휴대폰 <b>삼성 캘린더</b>에도 같이 보입니다.</p><div class="calbtns"><button class="go" type="button" id="gcOn">구글 캘린더 연결</button></div>') +
+        '<div class="calbtns"><button class="go" type="button" id="gcNow">지금 바로 동기화</button><button class="btn" type="button" id="gcRe">다시 연결</button><button class="btn" type="button" id="gcOff">끄기</button></div>'
+      : '<p class="note" style="margin:4px 0">한 번 연결하면 싯플랜 ↔ 구글 캘린더가 자동으로 맞춰집니다. 휴대폰 <b>삼성 캘린더</b>에도 같이 보이고, 삼성 캘린더에서 고친 일정도 싯플랜으로 돌아옵니다.</p><div class="calbtns"><button class="go" type="button" id="gcOn">구글 캘린더 연결</button></div>') +
       '<details class="gchelp"><summary>삼성 캘린더 · 네이버 캘린더에서 보는 법</summary><ol class="kkg">' +
       '<li><b>삼성 캘린더:</b> 휴대폰 <b>설정 → 계정 및 백업 → 계정 관리 → 구글 계정 → 계정 동기화</b>에서 <b>Calendar</b>를 켭니다. 그다음 삼성 캘린더 왼쪽 위 <b>≡ 메뉴</b> → <b>' + esc(PL.d.nick) + ' 싯플랜</b>에 체크.</li>' +
       '<li><b>네이버 캘린더:</b> PC에서 구글 캘린더 → 왼쪽 <b>' + esc(PL.d.nick) + ' 싯플랜</b> 옆 ⋮ → <b>설정 및 공유</b> → 맨 아래 <b>iCal 형식의 비공개 주소</b>를 복사 → 네이버 캘린더 → <b>환경설정 → 캘린더 관리 → 구독 캘린더 추가</b>(또는 “다른 캘린더 구독”)에 붙여넣기. 네이버는 몇 시간마다 따라옵니다.</li>' +
@@ -5353,12 +5464,12 @@ function HealthUI(root, H) {
       '<div class="mrow"><button class="btn lg" type="button" id="csX" style="margin-left:auto">닫기</button></div>');
     $('csX').onclick = closeDlg;
     var conn = function(){
-      if (!Sync.supported()) { toast('이 화면에서는 구글 연결이 안 됩니다 · 설치한 프로그램이나 OC9 웹 주소에서 해 주세요'); return; }
+      if (!Sync.supported()) { toast('이 화면에서는 구글 연결이 안 됩니다 · 설치한 프로그램이나 AOB 웹 주소에서 해 주세요'); return; }
       Sync.calLogin().then(async function(){ toast('구글 캘린더를 연결했습니다 · 일정을 맞추는 중…'); try { await gcAll(); } catch(e){} openCalSend(); }, function(e){ toast(e && e.code === 'CAL_UNCHECKED' ? gcErrTxt(e) : '연결하지 못했습니다 · ' + (e && e.message || e)); });
     };
     if ($('gcOn')) $('gcOn').onclick = conn;
     if ($('gcRe')) $('gcRe').onclick = conn;
-    if ($('gcNow')) $('gcNow').onclick = async function(){ var b = this; b.disabled = true; b.textContent = '맞추는 중…'; try { await gcAll(); } catch(e){} openCalSend(); };
+    if ($('gcNow')) $('gcNow').onclick = async function(){ var b = this; b.disabled = true; b.textContent = '동기화 중…'; try { await gcPull(false); } catch(e){} try { await gcAll(); } catch(e){} GC_LAST = Date.now(); openCalSend(); };
     if ($('gcOff')) $('gcOff').onclick = function(){ Sync.calOn(false); toast('자동 맞추기를 껐습니다 · 구글 캘린더의 일정은 그대로 남아 있습니다'); openCalSend(); };
     $('dlgBox').querySelectorAll('[data-cs]').forEach(function(b){ b.onclick = function(){ var k = b.dataset.cs; sendIcs(k === 'today' ? [t] : k === 'week' ? wk : mon, k === 'today' ? t : k === 'week' ? sun + '주' : S.pm); }; });
   }
@@ -5481,7 +5592,7 @@ function HealthUI(root, H) {
   });
 
   // ================= NHC 본사 · 보장분석부서 연결 =================
-  // AFG OC9 = NHC(남혁컴퍼니) 보장분석부서 산하 고객관리 프로그램. 회사로는 익명 의뢰서와 숫자 통계만 나감.
+  // AOB(구 AFG OC9) = NHC(남혁컴퍼니) 보장분석부서 산하 고객관리 프로그램. 회사로는 익명 의뢰서와 숫자 통계만 나감.
   var NX = { id: '__nhc', busy: false };
   async function nhcLoad(){ try { return (await Store.loadData(NX.id)) || null; } catch(e){ return null; } }
   async function nhcSave(d){ await Store.saveHead({ id: NX.id, hidden: true, name: '__nhc', status: 'admin', created: d.created || Date.now() }); await Store.saveData(NX.id, d); }
@@ -5490,7 +5601,7 @@ function HealthUI(root, H) {
   async function nhcSetup(after){
     var d = await nhcLoad() || {};
     openDlg('<h4>' + IC.shield2 + ' NHC 본사 연결 · 보장분석부서</h4><div class="form nxform">' +
-      '<div>AFG OC9을 <b>NHC(남혁컴퍼니) 보장분석부서</b> 산하 프로그램으로 연결합니다. 연결하면 <b>① 보장분석 자동 의뢰</b> <b>② 뉴스 연계 연락 캠페인</b> <b>③ 아침 고객관리 브리핑(텔레그램)</b>이 켜집니다.</div>' +
+      '<div>AOB(어센틱 오션브랜치 9팀 고객관리)를 <b>NHC(남혁컴퍼니) 보장분석부서</b> 산하 프로그램으로 연결합니다. 연결하면 <b>① 보장분석 자동 의뢰</b> <b>② 뉴스 연계 연락 캠페인</b> <b>③ 아침 고객관리 브리핑(텔레그램)</b>이 켜집니다.</div>' +
       '<div class="safe">' + IC.lock + '<span>회사로 보내는 것은 <b>성별·나이대(5세 단위)·계약/담보 목록</b>과 <b>이름 없는 숫자 통계</b>뿐입니다. 이름·생년월일·전화번호·병력은 보내지 않고, 어떤 의뢰번호가 어느 고객인지는 이 프로그램 안에만 있습니다. 토큰은 잠금 비밀번호로 암호화해 저장합니다.</span></div>' +
       '<label class="l">회사 저장소</label><input id="nxRepo" type="text" spellcheck="false" value="' + esc(d.repo || NHC.DEF_REPO) + '">' +
       '<label class="l">GitHub 토큰 (github_pat_로 시작)</label><input id="nxTok" type="password" autocomplete="off" spellcheck="false" placeholder="' + (d.token ? '연결됨 · 바꿀 때만 넣으세요' : 'github_pat_…') + '">' +
@@ -5853,11 +5964,11 @@ function HealthUI(root, H) {
       (S.cur.covReq = S.cur.covReq || {})[k] = Object.assign({}, S.cur.covReq[k], { st: 'agreed', agreedAt: todayStr() });
       (S.cur.notes = S.cur.notes || []).push({ id: Date.now().toString(36), at: Date.now(), d: todayStr(), k: 'note', t: COVAPP[k].name + ' 보장분석 동의 완료' });
       if (S.cur.next && /보장분석 동의 확인/.test(S.cur.next.t || '')) S.cur.next = { d: todayStr(), t: COVAPP[k].name.replace(/화재|손해보험/, '') + ' 보장분석 PDF 받아 공유하기' };
-      await saveCur('동의 완료로 표시했습니다 · 앱에서 보장분석 PDF를 만들어 AFG OC9로 공유하세요');
+      await saveCur('동의 완료로 표시했습니다 · 앱에서 보장분석 PDF를 만들어 AOB로 공유하세요');
     }
   });
 
-  // ================= 공유로 받은 PDF (보장분석 앱 → 공유 → AFG OC9) =================
+  // ================= 공유로 받은 PDF (보장분석 앱 → 공유 → AOB) =================
   async function takeShared(){
     if (!('caches' in window)) return;
     var c, idx; try { c = await caches.open('mhs-share'); var r = await c.match('./__share/index'); if (!r) return; idx = await r.json(); } catch(e){ return; }
@@ -5913,6 +6024,7 @@ function HealthUI(root, H) {
     if (ar && !ar.ok && ar.purpose !== 'refresh' && ar.error !== 'cal_unchecked') toast(ar.error === 'access_denied' ? '구글 로그인을 취소했습니다' : '구글 로그인하지 못했습니다 (' + ar.error + ')');
     setTimeout(checkPend, 600);
     setTimeout(apkCheck, 5000);
+    setTimeout(function(){ gcAuto(true); }, 7000);
     setTimeout(takeShared, 400);
     setTimeout(function(){ nhcDaily().then(function(){ if (!S.cur && !S.view) showWelcome(); }); }, 2500);
     setTimeout(function(){ nhcPoll(); }, 4000);
@@ -6166,7 +6278,7 @@ function HealthUI(root, H) {
 
   // ================= 안드로이드 앱(APK) =================
   // 앱(껍데기)은 처음 한 번만 설치 · 화면과 기능은 열 때마다 최신으로 자동 업데이트. 껍데기가 바뀐 경우에만 '새 앱' 안내
-  var APK_URL = 'https://github.com/sicrics27-gif/mh-analyzer/releases/download/apk-latest/AFG-OC9.apk', APK_PAGE = 'https://sicrics27-gif.github.io/mh-analyzer/app.html';
+  var APK_URL = 'https://github.com/sicrics27-gif/mh-analyzer/releases/download/apk-latest/AOB.apk', APK_PAGE = 'https://sicrics27-gif.github.io/mh-analyzer/app.html';
   (function(){ var m = /[?&]app=apk(?:&v=(\d+))?/.exec(location.search); if (m) { try { sessionStorage.setItem('mhs_apk', m[1] || '1'); history.replaceState(null, '', location.pathname + location.hash); } catch(e){} } })();
   function apkCode(){ try { return +sessionStorage.getItem('mhs_apk') || 0; } catch(e){ return 0; } }
   function inApk(){ return apkCode() > 0; }
@@ -6181,9 +6293,9 @@ function HealthUI(root, H) {
   }
   function openApk(){
     var qr = ''; try { window.qrcode.stringToBytes = window.qrcode.stringToBytesFuncs['UTF-8']; var q = window.qrcode(0, 'M'); q.addData(APK_PAGE); q.make(); qr = q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); } catch(e){}
-    openDlg('<h4>📱 안드로이드 앱 (AFG OC9)</h4><div class="form apkdlg">' + (inApk() ? '<p class="note">지금 앱으로 쓰고 계십니다 (앱 버전 ' + apkCode() + '). 화면과 기능은 열 때마다 자동으로 최신이 됩니다.</p>' : '') +
+    openDlg('<h4>📱 안드로이드 앱 (AOB)</h4><div class="form apkdlg">' + (inApk() ? '<p class="note">지금 앱으로 쓰고 계십니다 (앱 버전 ' + apkCode() + '). 화면과 기능은 열 때마다 자동으로 최신이 됩니다.</p>' : '') +
       '<div class="apkrow">' + (qr && !IS_MOBILE ? '<div class="apkqr">' + qr + '<small>휴대폰 카메라로 찍기</small></div>' : '') +
-      '<ol class="kkg"><li>휴대폰에서 <b>앱 받기</b>를 누릅니다 (AFG-OC9.apk 저장).</li><li>다운로드 알림이나 <b>내 파일 → 다운로드</b>에서 파일을 누릅니다.</li><li>“출처를 알 수 없는 앱” 안내가 나오면 <b>설정 → 이 출처 허용</b>을 켜고 뒤로 와서 <b>설치</b>.</li><li>홈 화면의 <b>AFG OC9</b> 아이콘으로 엽니다. 크롬에서 쓰던 자료는 그대로 이어서 보입니다.</li></ol></div>' +
+      '<ol class="kkg"><li>휴대폰에서 <b>앱 받기</b>를 누릅니다 (AOB.apk 저장).</li><li>다운로드 알림이나 <b>내 파일 → 다운로드</b>에서 파일을 누릅니다.</li><li>“출처를 알 수 없는 앱” 안내가 나오면 <b>설정 → 이 출처 허용</b>을 켜고 뒤로 와서 <b>설치</b>.</li><li>홈 화면의 <b>AOB</b> 아이콘으로 엽니다. 크롬에서 쓰던 자료는 그대로 이어서 보입니다.</li></ol></div>' +
       '<p class="note">앱은 처음 한 번만 설치하면 됩니다. 기능이 바뀌어도 다시 설치할 필요 없이 열 때마다 최신으로 바뀝니다.</p></div>' +
       '<div class="mrow"><button class="btn lg" type="button" id="apkX">닫기</button><a class="go" id="apkGo" href="' + APK_URL + '" style="margin-left:auto;display:inline-flex;align-items:center;text-decoration:none">앱 받기 (APK)</a></div>');
     $('apkX').onclick = closeDlg;

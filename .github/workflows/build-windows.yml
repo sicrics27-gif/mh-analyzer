@@ -31,11 +31,11 @@ jobs:
           Get-ChildItem src-tauri/target/release/bundle/nsis/*.exe | Select-Object -First 1 | Copy-Item -Destination out/MH-Analyzer-setup.exe
       - uses: actions/upload-artifact@v4
         with:
-          name: AFG-OC9-windows
+          name: AOB-windows
           path: out/*
       - name: 릴리스에 올리기
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ github.run_number }}
-          name: AFG OC9 빌드 ${{ github.run_number }}
+          name: AOB 빌드 ${{ github.run_number }}
           files: out/*
