@@ -134,13 +134,11 @@
                     <category android:name="android.intent.category.DEFAULT" />
                     
                         <data android:mimeType="application/pdf" />
-                    
-                        <data android:mimeType=".pdf" />
-                    
+
                         <data android:mimeType="application/zip" />
-                    
-                        <data android:mimeType=".zip" />
-                    
+
+                        <data android:mimeType="application/x-zip-compressed" />
+
                 </intent-filter>
             
 

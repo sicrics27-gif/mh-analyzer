@@ -88,7 +88,7 @@ android {
 
         
             // The data for the app to support web share target.
-            resValue "string", "shareTarget", '{\\"action\\":\\"https://sicrics27-gif.github.io/mh-analyzer/share-target\\",\\"method\\":\\"POST\\",\\"enctype\\":\\"multipart/form-data\\",\\"params\\":{\\"files\\":[{\\"name\\":\\"file\\",\\"accept\\":[\\"application/pdf\\",\\".pdf\\",\\"application/zip\\",\\".zip\\"]}]}}'
+            resValue "string", "shareTarget", '{\\"action\\":\\"https://sicrics27-gif.github.io/mh-analyzer/share-target\\",\\"method\\":\\"POST\\",\\"enctype\\":\\"multipart/form-data\\",\\"params\\":{\\"files\\":[{\\"name\\":\\"file\\",\\"accept\\":[\\"application/pdf\\",\\"application/zip\\",\\"application/x-zip-compressed\\"]}]}}'
         
 
         // The hostname is used when building the intent-filter, so the TWA is able to

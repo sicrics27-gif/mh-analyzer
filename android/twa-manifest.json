@@ -45,9 +45,8 @@
           "name": "file",
           "accept": [
             "application/pdf",
-            ".pdf",
             "application/zip",
-            ".zip"
+            "application/x-zip-compressed"
           ]
         }
       ]
