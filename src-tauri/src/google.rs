@@ -9,6 +9,7 @@ use tauri::Manager;
 
 include!("google_cfg.rs");
 const SCOPE: &str = "openid email https://www.googleapis.com/auth/drive.appdata";
+const CAL_SCOPE: &str = "https://www.googleapis.com/auth/calendar.app.created";
 
 static TOKEN: Mutex<Option<(String, u64)>> = Mutex::new(None);
 
@@ -52,7 +53,8 @@ fn token_request(form: &[(&str, &str)]) -> Result<serde_json::Value, String> {
     }
 }
 
-fn login_blocking(app: tauri::AppHandle) -> Result<(), String> {
+fn login_blocking(app: tauri::AppHandle, cal: bool) -> Result<(), String> {
+    let scope = if cal { format!("{} {}", SCOPE, CAL_SCOPE) } else { SCOPE.to_string() };
     let listener = TcpListener::bind("127.0.0.1:0").map_err(|e| e.to_string())?;
     let port = listener.local_addr().map_err(|e| e.to_string())?.port();
     let redirect = format!("http://127.0.0.1:{}", port);
@@ -60,8 +62,8 @@ fn login_blocking(app: tauri::AppHandle) -> Result<(), String> {
     let challenge = base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(Sha256::digest(verifier.as_bytes()));
     let state = rand_str(24);
     let url = format!(
-        "https://accounts.google.com/o/oauth2/v2/auth?client_id={}&redirect_uri={}&response_type=code&scope={}&code_challenge={}&code_challenge_method=S256&state={}&access_type=offline&prompt=consent",
-        enc(DESKTOP_CLIENT_ID), enc(&redirect), enc(SCOPE), challenge, state
+        "https://accounts.google.com/o/oauth2/v2/auth?client_id={}&redirect_uri={}&response_type=code&scope={}&code_challenge={}&code_challenge_method=S256&state={}&access_type=offline&prompt=consent&include_granted_scopes=true",
+        enc(DESKTOP_CLIENT_ID), enc(&redirect), enc(&scope), challenge, state
     );
     open_browser(&url);
     listener.set_nonblocking(true).map_err(|e| e.to_string())?;
@@ -103,8 +105,9 @@ fn login_blocking(app: tauri::AppHandle) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub async fn google_login(app: tauri::AppHandle) -> Result<(), String> {
-    tauri::async_runtime::spawn_blocking(move || login_blocking(app)).await.map_err(|e| e.to_string())?
+pub async fn google_login(app: tauri::AppHandle, cal: Option<bool>) -> Result<(), String> {
+    let cal = cal.unwrap_or(false);
+    tauri::async_runtime::spawn_blocking(move || login_blocking(app, cal)).await.map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
