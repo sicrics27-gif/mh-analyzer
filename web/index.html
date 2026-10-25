@@ -4073,7 +4073,8 @@ function HealthUI(root, H) {
   }
   // 하루 한 번: 캠페인 받기 · 숫자 통계 올리기
   async function nhcDaily(force){
-    if (!nhcOn() || !Store.isOpen()) return;
+    if (!Store.isOpen()) return;
+    if (!nhcOn()) { var c0 = await nhcLoad(); if (c0 && c0.token) setNhcOn(true); else return; } // 다른 기기에서 연결한 설정이 구글 동기화로 넘어온 경우
     var t = todayStr(), cps = campsGet();
     var NA = 0; try { NA = +localStorage.getItem('mhs_camps_at') || 0; } catch(e){}
     if (!force && ((cps && cps.date === t) || Date.now() - NA < 60 * 60 * 1000)) { nhcStats(briefData()); return; }
