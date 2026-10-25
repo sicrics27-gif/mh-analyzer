@@ -1300,6 +1300,62 @@ table.ctt .due{color:var(--red);font-weight:700}
 .sfilt select{min-width:0;flex:1 1 auto}
 .sfilt{display:grid!important;grid-template-columns:auto auto auto minmax(0,1fr)}
 .sfilt button{padding:0 10px}
+/* ===== 영업 RPG ===== */
+.gchip{display:flex;align-items:center;gap:9px;width:100%;padding:7px 10px;border-radius:12px;border:1px solid rgba(217,188,134,.28);background:linear-gradient(135deg,rgba(201,169,106,.16),rgba(201,169,106,.04));color:var(--side-ink);font:inherit;cursor:pointer;text-align:left}
+.gchip[hidden]{display:none}.gchip:hover{border-color:rgba(217,188,134,.55)}
+.gc-lv{font-weight:800;font-size:12.5px;color:#141414;background:linear-gradient(135deg,#E9D2A6,#C9A96A);border-radius:8px;padding:3px 7px;flex:0 0 auto}
+.gc-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.gc-t b{font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gc-t i{display:block;height:4px;border-radius:4px;background:rgba(255,255,255,.12);overflow:hidden}.gc-t em{display:block;height:100%;background:linear-gradient(90deg,#C9A96A,#F2DDB0)}
+.gc-s{font-size:12.5px;font-weight:700;flex:0 0 auto}
+.lv-ring{width:44px;height:44px;border-radius:50%;flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 25%,#F6E3BC,#C9A96A 55%,#8C6A2F);color:#141414;box-shadow:0 0 0 3px rgba(201,169,106,.25)}
+.lv-ring b{font-size:18px;font-weight:900;line-height:1}.lv-ring small{font-size:8.5px;font-weight:800;letter-spacing:.12em}
+.lv-ring.big{width:84px;height:84px}.lv-ring.big b{font-size:34px}
+.gstrip{display:flex;align-items:center;gap:16px;width:100%;text-align:left;background:var(--paper);border:1px solid color-mix(in srgb,#C9A96A 35%,var(--line));border-radius:14px;padding:10px 16px;margin-bottom:10px;cursor:pointer;font:inherit;color:var(--ink)}
+.gstrip:hover{border-color:#C9A96A}
+.gs-m{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.gs-m b{font-size:15px}.gs-m small{color:var(--mute);font-size:12px}
+.gs-bar{display:block;height:7px;border-radius:7px;background:var(--soft);overflow:hidden}.gs-bar em{display:block;height:100%;border-radius:7px;background:linear-gradient(90deg,#C9A96A,#F2DDB0);transition:width .5s}
+.gs-bar.lg{height:10px;margin:6px 0 4px}
+.gs-k{display:flex;flex-direction:column;align-items:center}.gs-k small{color:var(--mute);font-size:11px}.gs-k b{font-size:15px}
+.gstrip>i{font-style:normal;color:var(--ink2);font-size:13px;font-weight:600}
+.gsec{margin:14px 0 8px;font-size:14px;display:flex;align-items:baseline;gap:8px}
+.qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.qcard{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.qcard.ok{border-color:color-mix(in srgb,var(--green) 50%,var(--line));background:color-mix(in srgb,var(--green) 8%,var(--paper))}
+.qc-h{display:flex;align-items:center;gap:8px}.qc-h b{font-size:14px;flex:1}.qc-x{font-size:11.5px;font-weight:800;color:#C9A96A;background:rgba(201,169,106,.14);border-radius:6px;padding:2px 6px}
+.qc-bar{height:6px;border-radius:6px;background:var(--soft);overflow:hidden}.qc-bar em{display:block;height:100%;background:var(--ocean,#2F6BFF)}.qcard.ok .qc-bar em{background:var(--green)}
+.qcard small{color:var(--mute);font-size:12px}
+.ghero{display:flex;align-items:center;gap:20px;flex-wrap:wrap;background:linear-gradient(135deg,rgba(201,169,106,.14),rgba(47,107,255,.06));border:1px solid color-mix(in srgb,#C9A96A 35%,var(--line));border-radius:18px;padding:20px 22px;margin:12px 0}
+.gh-m{flex:1;min-width:220px;display:flex;flex-direction:column}.gh-xp{font-size:30px;font-weight:900}.gh-xp small{font-size:14px;color:var(--mute)}
+.gh-k{display:grid;grid-template-columns:repeat(4,auto);gap:6px 18px}.gh-k div{display:flex;flex-direction:column}.gh-k small{color:var(--mute);font-size:12px}.gh-k b{font-size:18px}
+.ggrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.gbox{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 14px}.gbox h5{margin:0 0 8px;font-size:14px}
+.wbars{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;height:130px;align-items:end}
+.wb{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:3px}.wb span{width:100%;max-width:30px;border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,#F2DDB0,#C9A96A)}
+.wb b{font-size:11px;color:var(--ink2)}.wb small{font-size:11px;color:var(--mute)}
+.wsum{font-size:12.5px;color:var(--ink2);margin-top:8px}
+.glog{list-style:none;margin:0;padding:0;font-size:13px}.glog li{display:grid;grid-template-columns:62px 1fr auto auto;gap:8px;padding:5px 0;border-top:1px dashed var(--line)}.glog span{color:var(--mute)}.glog em{font-style:normal;color:var(--ink2)}.glog i{font-style:normal;font-weight:800;color:#C9A96A}
+.gbadges{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.bd{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;opacity:.45}
+.bd.ok{opacity:1;border-color:color-mix(in srgb,#C9A96A 50%,var(--line))}.bd i{font-style:normal;font-size:22px;color:#C9A96A}.bd b{font-size:13px}.bd small{font-size:11px;color:var(--mute)}
+.grules{margin:14px 0}.grules summary{cursor:pointer;font-weight:600;font-size:13.5px}.gr{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.gr span{background:var(--soft);border-radius:8px;padding:4px 9px;font-size:12.5px}.gr b{margin-left:6px;color:#C9A96A}
+.xppop{position:fixed;right:22px;top:18px;z-index:200;background:linear-gradient(135deg,#E9D2A6,#C9A96A);color:#141414;font-weight:900;font-size:15px;padding:9px 16px;border-radius:999px;box-shadow:0 10px 28px rgba(0,0,0,.35);animation:xpin 1.9s ease forwards;pointer-events:none}
+@keyframes xpin{0%{opacity:0;transform:translateY(-10px) scale(.9)}12%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0;transform:translateY(-14px)}}
+@media (prefers-reduced-motion:reduce){.xppop{animation:none}}
+.lvbox .lvup{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:10px 0}.lvup h4{font-size:24px;margin:6px 0 0}
+.rl.lvr b{font-size:14px;font-weight:900;color:#141414;background:linear-gradient(135deg,#E9D2A6,#C9A96A);border-radius:8px;padding:3px 7px}
+@media (max-width:900px){.ggrid{grid-template-columns:1fr}.gstrip{flex-wrap:wrap;gap:10px}.gstrip .gs-m{flex-basis:100%;order:3}.gh-k{grid-template-columns:repeat(2,auto)}}
+.lgbox{background:var(--paper);border:1px solid color-mix(in srgb,#C9A96A 35%,var(--line));border-radius:16px;padding:14px 16px;margin-top:14px}
+.lgbox h5{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 10px;font-size:15px}
+.lgt{list-style:none;margin:0;padding:0}
+.lgt li{display:grid;grid-template-columns:40px minmax(0,1fr) 52px 52px 52px 96px;align-items:center;gap:8px;padding:9px 6px;border-top:1px solid var(--line)}
+.lgt li.me{background:color-mix(in srgb,#2F6BFF 10%,transparent);border-radius:10px}
+.lg-r{font-size:18px;font-weight:900;text-align:center}.lg-n{display:flex;flex-direction:column;min-width:0}.lg-n small{color:var(--mute);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lg-s{display:flex;flex-direction:column;align-items:center;font-weight:700;font-size:14px}.lg-s small{color:var(--mute);font-size:10.5px;font-weight:500}
+.lg-x{text-align:right;font-weight:900;font-size:17px;color:#C9A96A}.lg-x small{font-size:11px;color:var(--mute)}
+@media (max-width:600px){.lgt li{grid-template-columns:32px minmax(0,1fr) 44px 80px}.lgt .lg-s:nth-of-type(3),.lgt .lg-s:nth-of-type(4){display:none}}
+.lvcard{position:fixed;right:22px;top:64px;z-index:200;display:flex;align-items:center;gap:12px;padding:12px 18px 12px 12px;border-radius:16px;border:1px solid rgba(201,169,106,.6);background:#1c1f26;color:#ECEFF4;font:inherit;text-align:left;cursor:pointer;box-shadow:0 18px 40px rgba(0,0,0,.4);animation:qin .25s ease-out;transition:opacity .35s,transform .35s}
+.lvcard span:last-child{display:flex;flex-direction:column}.lvcard b{font-size:15px}.lvcard small{color:#B4BBC8;font-size:12px}
+.lvcard.out{opacity:0;transform:translateY(-8px)}
 
 </style>
 </head>
@@ -1309,6 +1365,7 @@ table.ctt .due{color:var(--red);font-weight:700}
   <aside class="side" aria-label="고객 목록">
     <nav class="srail" aria-label="접힌 메뉴">
       <button type="button" class="rl-brand" data-rail="open" title="메뉴 펼치기"><b>OC9</b></button>
+      <button type="button" class="rl lvr" data-gm="open" title="내 성장"><b id="rlLv">1</b></button>
       <button type="button" class="rl pri" data-rail="new" title="신규 고객 등록"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><circle cx="10" cy="8" r="4"/><path d="M2 21c0-4 4-7 8-7s8 3 8 7zM19 8h2v3h3v2h-3v3h-2v-3h-3v-2h3z"/></svg></button>
       <button type="button" class="rl" data-rail="search" title="고객 검색"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button>
       <button type="button" class="rl" data-rail="list" title="고객 목록"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><i class="rlb" id="rlCnt"></i></button>
@@ -1321,6 +1378,7 @@ table.ctt .due{color:var(--red);font-weight:700}
       <button type="button" class="rl" data-rail="open" title="메뉴 펼치기 (오른쪽으로 끌어도 됩니다)">»</button>
     </nav>
     <div class="sbrand"><b class="wm"><span>AFG</span><i>OC9</i></b><small>Authentic Financial Group · Ocean Branch 9팀</small><button type="button" class="sfold" data-rail="close" title="메뉴 접기 (왼쪽으로 끌어도 됩니다)">«</button></div>
+    <button type="button" class="gchip" id="gchip" data-gm="open" hidden title="내 성장 · 레벨과 퀘스트"></button>
     <button class="sbtn pri" id="newCust" type="button"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><circle cx="10" cy="8" r="4"/><path d="M2 21c0-4 4-7 8-7s8 3 8 7zM19 8h2v3h3v2h-3v3h-2v-3h-3v-2h3z"/></svg>신규 고객 등록</button>
     <div class="sqw"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" class="sq" type="search" placeholder="이름 · 전화번호 · 메모 검색" autocomplete="off"></div>
     <div class="sfilt" id="sfilt"><button id="fAll" type="button" data-f="all">전체</button><button id="fTodo" type="button" data-f="todo">할 일</button><button id="fSel" type="button" title="여러 명 골라서 채널·단계·할 일을 한 번에">선택</button><select id="fStage" aria-label="고객 단계로 거르기"><option value="">모든 단계</option><option value="lead">가망</option><option value="consult">상담 중</option><option value="contract">계약</option><option value="care">관리</option></select></div>
@@ -2974,8 +3032,8 @@ function HealthUI(root, H) {
     for (var i = 0; i < rows.length; i++) { try { var h = await dec(rows[i]); if (!h.deleted && !h.hidden) out.push(h); } catch (e) { } }
     return out.sort(function (a, b) { return (b.updated || 0) - (a.updated || 0); });
   }
-  var onChange = null;
-  function changed() { if (onChange) try { onChange(); } catch (e) { } }
+  var onChange = [];
+  function changed() { onChange.forEach(function (f) { try { f(); } catch (e) { } }); }
   async function saveHead(h) { touch(); h.updated = Date.now(); if (!h.id) { h.id = uid(); h.created = h.updated; } await put('idx', h.id, await enc(h)); changed(); return h; }
   async function saveData(id, data) { touch(); await put('data', id, await enc(data)); }
   async function loadData(id) { touch(); var b = await get('data', id); return b ? dec(b) : null; }
@@ -3069,7 +3127,7 @@ function HealthUI(root, H) {
     list: list, saveHead: saveHead, saveData: saveData, loadData: loadData, remove: remove,
     exportBackup: exportBackup, importBackup: importBackup,
     rawAll: rawAll, rawData: rawData, putRaw: putRaw, mergeRemote: mergeRemote, hasLocal: async function () { var k = await tx('idx', 'readonly', function (st) { return req(st.getAllKeys()); }); return (k || []).filter(function (x) { return x !== '__admin'; }).length; }, vault: vault, adoptVault: adoptVault,
-    onChange: function (f) { onChange = f; }, isOpen: function () { return !!key; }, checkIdle: checkIdle,
+    onChange: function (f) { onChange.push(f); }, isOpen: function () { return !!key; }, checkIdle: checkIdle,
     isMemory: function () { return !!mem; }, onLock: function (f) { onLock = f; }
   };
 })(this);
@@ -3719,6 +3777,112 @@ function HealthUI(root, H) {
 
 </script>
 <script>
+// 영업 RPG: 고객을 챙기는 행동을 경험치·레벨·퀘스트·배지로 (브라우저/Node 공용)
+// 점수는 따로 기록하지 않고 이미 저장된 상담 기록·분석·단계에서 계산 → 기기 간 동기화도 그대로.
+(function (root) {
+  // 같은 고객·같은 날·같은 종류는 한 번만 (기록을 여러 번 눌러 점수 부풀리기 방지)
+  var XP = { call: 10, miss: 3, sms: 8, kakao: 8, meet: 30, note: 2, add: 5, analyze: 20, coverage: 15, nhc: 20, claim: 40, consult: 15, contract: 80, care: 20 };
+  var XP_TXT = { call: '통화', miss: '부재중 통화', sms: '문자', kakao: '카톡', meet: '만남', note: '메모', add: '고객 등록', analyze: '병력 분석', coverage: '보장분석 반영', nhc: '보장분석부서 의뢰', claim: '청구 안내', consult: '상담 시작', contract: '계약', care: '관리 고객 전환', quest: '퀘스트 완료' };
+  var TITLES = [[1, '신입 플래너'], [3, '루키 플래너'], [5, '오션 레인저'], [8, '케어 스페셜리스트'], [12, '보장 마스터'], [16, '오션 레전드'], [20, 'AFG 그랜드마스터']];
+  function need(lv) { return 100 + (lv - 1) * 60; }           // 레벨 lv → lv+1 에 필요한 XP
+  function levelOf(xp) { var lv = 1, rest = xp; while (rest >= need(lv)) { rest -= need(lv); lv++; } return { lv: lv, cur: rest, need: need(lv) }; }
+  function titleOf(lv) { var t = TITLES[0][1]; TITLES.forEach(function (x) { if (lv >= x[0]) t = x[1]; }); return t; }
+  function ymdOf(ms) { var d = new Date(ms - new Date().getTimezoneOffset() * 6e4); return d.toISOString().slice(0, 10); }
+  function addDay(a, n) { var t = new Date(a + 'T00:00:00Z'); t.setUTCDate(t.getUTCDate() + n); return t.toISOString().slice(0, 10); }
+  function dayDiff(a, b) { return Math.round((new Date(b + 'T00:00:00Z') - new Date(a + 'T00:00:00Z')) / 864e5); }
+
+  // 모든 고객에서 경험치 사건 뽑기
+  function events(list) {
+    var ev = [], seen = {};
+    function push(cid, d, k, extra) { if (!d || !XP[k]) return; var key = cid + '|' + d + '|' + k; if (seen[key]) return; seen[key] = 1; ev.push(Object.assign({ cid: cid, d: d, k: k, xp: XP[k] }, extra || {})); }
+    list.forEach(function (c) {
+      if (c.sample) return;
+      if (c.created) push(c.id, ymdOf(c.created), 'add');
+      (c.notes || []).forEach(function (n) {
+        var k = n.k === 'call' ? (n.ok === false ? 'miss' : 'call') : n.k === 'msg' ? 'sms' : n.k;
+        if (/^\[NHC/.test(n.t || '')) return;
+        push(c.id, n.d, k);
+      });
+      var g = c.game || {};
+      ['analyze', 'coverage', 'nhc', 'claim', 'consult', 'contract', 'care'].forEach(function (k) { (g[k] || []).forEach(function (d) { push(c.id, d, k); }); });
+    });
+    return ev;
+  }
+  function contactDay(e) { return /^(call|sms|kakao|meet)$/.test(e.k); }
+
+  // 오늘의 퀘스트 (날짜마다 바뀜, 브리핑 데이터와 연결)
+  function quests(today, B, ev) {
+    var todayEv = ev.filter(function (e) { return e.d === today; });
+    var did = function (k, ids) { return todayEv.filter(function (e) { return (Array.isArray(k) ? k.indexOf(e.k) >= 0 : e.k === k) && (!ids || ids[e.cid]); }).length; };
+    var ids = function (arr) { var o = {}; (arr || []).forEach(function (x) { o[x.c.id] = 1; }); return o; };
+    var pool = [];
+    if (B && B.bday.length) pool.push({ id: 'bday', t: '생일 고객 축하 연락', goal: Math.min(2, B.bday.length), done: did(['call', 'sms', 'kakao', 'meet'], ids(B.bday)), xp: 40, hint: '브리핑 → 생일 (7일 안)' });
+    if (B && B.quiet.length) pool.push({ id: 'quiet', t: '오래 연락 못 한 고객 깨우기', goal: Math.min(3, B.quiet.length), done: did(['call', 'sms', 'kakao', 'meet'], ids(B.quiet)), xp: 50, hint: '브리핑 → 오래 연락 못 한 고객' });
+    if (B && B.claim.length) pool.push({ id: 'claim', t: '청구기한 임박 고객 안내', goal: 1, done: did(['claim', 'call', 'kakao', 'sms'], ids(B.claim)), xp: 50, hint: '브리핑 → 청구기한 임박' });
+    if (B && B.todo.length) pool.push({ id: 'todo', t: '오늘 할 일 처리', goal: Math.min(3, B.todo.length), done: Math.min(did(['call', 'sms', 'kakao', 'meet', 'note'], ids(B.todo)), 3), xp: 30, hint: '브리핑 → 오늘 할 일' });
+    if (B && B.ann.length) pool.push({ id: 'ann', t: '응당일 고객 안부', goal: 1, done: did(['call', 'sms', 'kakao', 'meet'], ids(B.ann)), xp: 30, hint: '브리핑 → 계약 응당일' });
+    var base = [
+      { id: 'call5', t: '통화 5건', goal: 5, done: did('call'), xp: 30, hint: '부재중은 빼고 셉니다' },
+      { id: 'msg3', t: '카톡·문자 안부 3건', goal: 3, done: did(['sms', 'kakao']), xp: 20, hint: '고객 화면 → 카톡 보내기' },
+      { id: 'meet1', t: '고객 만나기 1건', goal: 1, done: did('meet'), xp: 40, hint: '상담 기록 → 만남' },
+      { id: 'nhc1', t: '보장분석 의뢰 1건', goal: 1, done: did('nhc'), xp: 30, hint: '보장 현황 → 분석 의뢰' }
+    ];
+    // 날짜로 섞어 3개 고르기 (브리핑 연동 퀘스트 우선)
+    var seed = +today.replace(/-/g, '') % 97;
+    var pick = pool.slice(0, 2);
+    var rest = base.slice(seed % base.length).concat(base.slice(0, seed % base.length));
+    while (pick.length < 3 && rest.length) pick.push(rest.shift());
+    return pick.map(function (q) { q.done = Math.min(q.done, q.goal); q.ok = q.done >= q.goal; return q; });
+  }
+
+  var BADGES = [
+    ['call1', '첫 통화', '통화 기록 1건', function (s) { return s.n.call >= 1; }],
+    ['call100', '콜 마스터', '통화 100건', function (s) { return s.n.call >= 100; }],
+    ['meet10', '발로 뛰는 플래너', '만남 10건', function (s) { return s.n.meet >= 10; }],
+    ['meet50', '현장의 달인', '만남 50건', function (s) { return s.n.meet >= 50; }],
+    ['msg100', '안부 장인', '카톡·문자 100건', function (s) { return s.n.sms + s.n.kakao >= 100; }],
+    ['streak7', '7일 연속', '7일 연속 고객 연락', function (s) { return s.best >= 7; }],
+    ['streak30', '30일 연속', '30일 연속 고객 연락', function (s) { return s.best >= 30; }],
+    ['contract1', '첫 계약', '계약 단계 고객 1명', function (s) { return s.n.contract >= 1; }],
+    ['contract10', '열 번째 계약', '계약 10건', function (s) { return s.n.contract >= 10; }],
+    ['claim10', '숨은 보험금 헌터', '청구 안내 10건', function (s) { return s.n.claim >= 10; }],
+    ['nhc10', '본사와 한 팀', '보장분석부서 의뢰 10건', function (s) { return s.n.nhc >= 10; }],
+    ['cust100', '고객 100명', '등록 고객 100명', function (s) { return s.n.add >= 100; }],
+    ['quest30', '퀘스트 헌터', '오늘의 퀘스트 30개 완료', function (s) { return s.questDone >= 30; }]
+  ];
+
+  // qlog: {날짜: [완료한 퀘스트 id...]} — 완료 보너스는 기록해 둔 것만 인정
+  function compute(list, today, B, qlog) {
+    var ev = events(list), n = {};
+    Object.keys(XP).forEach(function (k) { n[k] = 0; });
+    ev.forEach(function (e) { n[e.k]++; });
+    var qx = 0, questDone = 0; Object.keys(qlog || {}).forEach(function (d) { (qlog[d] || []).forEach(function (q) { qx += q.xp || 0; questDone++; }); });
+    var xp = ev.reduce(function (s, e) { return s + e.xp; }, 0) + qx;
+    var L = levelOf(xp);
+    // 연속 기록
+    var days = {}; ev.forEach(function (e) { if (contactDay(e)) days[e.d] = 1; });
+    var streak = 0, d = today; if (!days[d]) d = addDay(d, -1);
+    while (days[d]) { streak++; d = addDay(d, -1); }
+    var best = 0, run = 0, all = Object.keys(days).sort(); all.forEach(function (x, i) { run = i && dayDiff(all[i - 1], x) === 1 ? run + 1 : 1; if (run > best) best = run; });
+    // 최근 7일·이번 주
+    var week = []; for (var i = 6; i >= 0; i--) { var dd = addDay(today, -i); week.push({ d: dd, xp: ev.filter(function (e) { return e.d === dd; }).reduce(function (s, e) { return s + e.xp; }, 0) + ((qlog || {})[dd] || []).reduce(function (s, q) { return s + (q.xp || 0); }, 0) }); }
+    var wd = new Date(today + 'T12:00:00').getDay(), mon = addDay(today, -((wd + 6) % 7));
+    var wk = { xp: 0, call: 0, meet: 0, msg: 0, contract: 0 };
+    ev.forEach(function (e) { if (e.d >= mon && e.d <= today) { wk.xp += e.xp; if (e.k === 'call') wk.call++; if (e.k === 'meet') wk.meet++; if (e.k === 'sms' || e.k === 'kakao') wk.msg++; if (e.k === 'contract') wk.contract++; } });
+    Object.keys(qlog || {}).forEach(function (dq) { if (dq >= mon && dq <= today) (qlog[dq] || []).forEach(function (q) { wk.xp += q.xp || 0; }); });
+    var stat = { n: n, best: Math.max(best, streak), questDone: questDone };
+    var badges = BADGES.map(function (b) { return { id: b[0], t: b[1], d: b[2], ok: b[3](stat) }; });
+    var todayXp = week[6].xp;
+    var recent = ev.filter(function (e) { return e.d >= addDay(today, -6); }).sort(function (a, b) { return a.d < b.d ? 1 : -1; }).slice(0, 12);
+    return { xp: xp, lv: L.lv, cur: L.cur, need: L.need, title: titleOf(L.lv), nextTitle: (TITLES.find(function (x) { return x[0] > L.lv; }) || [0, ''])[1], nextTitleLv: (TITLES.find(function (x) { return x[0] > L.lv; }) || [0])[0], streak: streak, best: stat.best, week: week, wk: wk, monday: mon, today: todayXp, n: n, badges: badges, quests: quests(today, B, ev), recent: recent };
+  }
+
+  var api = { compute: compute, events: events, levelOf: levelOf, titleOf: titleOf, XP: XP, XP_TXT: XP_TXT, TITLES: TITLES };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.Game = api;
+})(this);
+
+</script>
+<script>
 (function(){
   var $ = function(id){ return document.getElementById(id); };
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -4020,13 +4184,13 @@ function HealthUI(root, H) {
       var pl = kind === 'meet' ? $('lgPlace').value.trim() : '';
       if (t || pl) (c.notes = c.notes || []).push(Object.assign({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), at: Date.now(), d: d, k: kind, t: t || '만남' }, pl ? { place: pl } : {}));
       if (nd) c.next = { d: nd, t: nt }; else if (!nt && c.next && !$('lgNd').value) c.next = null;
-      if ((!c.stage || c.stage === 'lead' || c.stage === 'db') && (t || pl) && (kind === 'meet' || kind === 'call')) c.stage = 'consult';
+      if ((!c.stage || c.stage === 'lead' || c.stage === 'db') && (t || pl) && (kind === 'meet' || kind === 'call')) { c.stage = 'consult'; stageMark(c, 'consult'); }
       await saveCur('기록을 저장했습니다');
     };
   }
   document.addEventListener('click', async function(e){
     var t;
-    if ((t = e.target.closest('[data-stage]'))) { S.cur.stage = t.dataset.stage; await saveCur(S.cur.name + ' 고객을 ' + stageTxt(t.dataset.stage) + ' 단계로 바꿨습니다'); return; }
+    if ((t = e.target.closest('[data-stage]'))) { S.cur.stage = t.dataset.stage; stageMark(S.cur, t.dataset.stage); await saveCur(S.cur.name + ' 고객을 ' + stageTxt(t.dataset.stage) + ' 단계로 바꿨습니다'); return; }
     if ((t = e.target.closest('[data-copyph]'))) { copyText(phoneTxt(t.dataset.copyph), '전화번호'); return; }
     if ((t = e.target.closest('[data-ndel]'))) { if (!confirm('이 기록을 지울까요?')) return; S.cur.notes = (S.cur.notes || []).filter(function(x){ return x.id !== t.dataset.ndel; }); await saveCur('기록을 지웠습니다'); return; }
     if ((t = e.target.closest('[data-act="nextDone"]'))) { var nx = S.cur.next; (S.cur.notes = S.cur.notes || []).push({ id: Date.now().toString(36), at: Date.now(), d: todayStr(), k: 'note', t: '할 일 완료: ' + (nx && nx.t || dot(nx && nx.d)) }); S.cur.next = null; await saveCur('할 일을 완료했습니다'); return; }
@@ -4326,7 +4490,7 @@ function HealthUI(root, H) {
     for (var i = 0; i < ids.length; i++) {
       var c = S.list.find(function(x){ return x.id === ids[i]; }); if (!c || c.sample) continue;
       var h = Object.assign({}, c), m = /^(stage|ch|todo):(.*)$/.exec(v); if (!m) continue;
-      if (m[1] === 'stage') { h.stage = m[2]; label = stageTxt(m[2]) + ' 단계로'; }
+      if (m[1] === 'stage') { h.stage = m[2]; stageMark(h, m[2]); label = stageTxt(m[2]) + ' 단계로'; }
       else if (m[1] === 'ch') { h.ch = m[2]; if (h.stage === 'db') h.stage = 'lead'; label = (chTxt(m[2]) || '미분류') + ' 채널로'; }
       else if (m[1] === 'todo') { if (m[2] === 'clear') { h.next = null; label = '할 일 지움'; } else { h.next = { d: m[2], t: (c.next && c.next.t) || '연락하기' }; label = '할 일 ' + dot(m[2]) + (m[2] === t ? ' (오늘)' : ''); } }
       await Store.saveHead(h); n++;
@@ -4394,6 +4558,138 @@ function HealthUI(root, H) {
     $('clist').addEventListener('touchmove', function(e){ if (tm && (Math.abs(e.touches[0].clientX - sx) > 8 || Math.abs(e.touches[0].clientY - sy) > 8)) { clearTimeout(tm); tm = null; } }, { passive: true });
     $('clist').addEventListener('touchend', function(e){ if (tm) { clearTimeout(tm); tm = null; } if (fired) { e.preventDefault(); fired = false; } });
   })();
+
+  // ================= 영업 RPG: 레벨 · 퀘스트 · 배지 =================
+  var GM = { id: '__game', d: null, last: null };
+  function gameMark(c, k, d){ c.game = c.game || {}; var a = c.game[k] = c.game[k] || []; d = d || todayStr(); if (a.indexOf(d) >= 0) return false; a.push(d); if (a.length > 300) a.splice(0, a.length - 300); return true; }
+  function stageMark(c, st){ if (/^(consult|contract|care)$/.test(st)) gameMark(c, st); }
+  async function gameLoad(){ if (GM.d) return GM.d; try { GM.d = (await Store.loadData(GM.id)) || { qlog: {} }; } catch(e){ GM.d = { qlog: {} }; } GM.d.qlog = GM.d.qlog || {}; return GM.d; }
+  async function gameSave(){ await Store.saveHead({ id: GM.id, hidden: true, name: '__game', status: 'admin', created: GM.d.created || Date.now() }); await Store.saveData(GM.id, GM.d); }
+  function gameNow(){ var B = null; try { B = briefData(); } catch(e){} return Game.compute(S.list, todayStr(), B, (GM.d && GM.d.qlog) || {}); }
+  // 저장할 때마다: 퀘스트 완료 보너스 기록, +XP 알림, 레벨 업 축하
+  var gameBusy = false;
+  async function gameTick(quiet){
+    if (gameBusy || !Store.isOpen()) return; gameBusy = true;
+    try {
+      await gameLoad();
+      var G = gameNow(), t = todayStr(), log = GM.d.qlog[t] = GM.d.qlog[t] || [], got = [];
+      G.quests.forEach(function(q){ if (q.ok && !log.some(function(x){ return x.id === q.id; })) { log.push({ id: q.id, xp: q.xp, t: q.t }); got.push(q); } });
+      Object.keys(GM.d.qlog).forEach(function(d){ if (dayDiff(d, t) > 400) delete GM.d.qlog[d]; });
+      if (got.length) { await gameSave(); G = gameNow(); }
+      var prev = GM.last; GM.last = G;
+      drawGameChip(G);
+      clearTimeout(GM.ls); GM.ls = setTimeout(function(){ League.submit(G); }, 4000);
+      if (!quiet && prev && G.xp > prev.xp) xpPop('+' + (G.xp - prev.xp) + ' XP' + (got.length ? ' · 퀘스트 완료!' : ''));
+      if (!quiet && prev && G.lv > prev.lv) levelUp(G);
+    } finally { gameBusy = false; }
+  }
+  function xpPop(t){ var el = document.createElement('div'); el.className = 'xppop'; el.textContent = t; document.body.appendChild(el); setTimeout(function(){ el.remove(); }, 1900); }
+  function levelUp(G){ // 일을 막지 않는 축하 카드 (5초 뒤 사라짐, 누르면 내 성장)
+    var old = document.querySelector('.lvcard'); if (old) old.remove();
+    var el = document.createElement('button'); el.type = 'button'; el.className = 'lvcard'; el.setAttribute('data-gm', 'open');
+    el.innerHTML = '<span class="lv-ring"><b>' + G.lv + '</b></span><span><b>레벨 업! Lv.' + G.lv + '</b><small>' + esc(G.title) + (G.nextTitle ? ' · Lv.' + G.nextTitleLv + ' 「' + esc(G.nextTitle) + '」까지' : '') + '</small></span>';
+    document.body.appendChild(el); setTimeout(function(){ el.classList.add('out'); setTimeout(function(){ el.remove(); }, 400); }, 5000);
+  }
+  function drawGameChip(G){
+    var el = $('gchip'); if (!el) return; G = G || GM.last; if (!G) { el.hidden = true; return; }
+    el.hidden = false;
+    el.innerHTML = '<span class="gc-lv">Lv.' + G.lv + '</span><span class="gc-t"><b>' + esc(G.title) + '</b><i><em style="width:' + Math.round(G.cur / G.need * 100) + '%"></em></i></span>' + (G.streak ? '<span class="gc-s" title="연속 연락 일수">🔥' + G.streak + '</span>' : '');
+    var rl = $('rlLv'); if (rl) rl.textContent = G.lv;
+  }
+  function gameStrip(G){
+    G = G || GM.last; if (!G) return '';
+    var done = G.quests.filter(function(q){ return q.ok; }).length;
+    return '<button type="button" class="gstrip" data-gm="open"><span class="lv-ring"><b>' + G.lv + '</b></span><span class="gs-m"><b>' + esc(G.title) + '</b><span class="gs-bar"><em style="width:' + Math.round(G.cur / G.need * 100) + '%"></em></span><small>' + G.cur + ' / ' + G.need + ' XP · 오늘 +' + G.today + '</small></span>' +
+      '<span class="gs-k"><small>연속</small><b>' + (G.streak ? '🔥 ' + G.streak + '일' : '—') + '</b></span><span class="gs-k"><small>오늘의 퀘스트</small><b>' + done + ' / ' + G.quests.length + '</b></span><i>내 성장 ›</i></button>';
+  }
+  function questCards(G){
+    return '<div class="qgrid">' + G.quests.map(function(q){ return '<div class="qcard' + (q.ok ? ' ok' : '') + '"><div class="qc-h"><b>' + esc(q.t) + '</b><span class="qc-x">+' + q.xp + ' XP</span></div><div class="qc-bar"><em style="width:' + Math.round(q.done / q.goal * 100) + '%"></em></div><small>' + (q.ok ? '완료!' : q.done + ' / ' + q.goal + ' · ' + esc(q.hint)) + '</small></div>'; }).join('') + '</div>';
+  }
+  async function showGame(){
+    await gameLoad(); S.cur = null; S.data = null; S.view = 'game';
+    $('shell').classList.add('has-c'); armBack(); renderList();
+    var G = gameNow(); GM.last = G; drawGameChip(G);
+    var mx = Math.max.apply(null, G.week.map(function(w){ return w.xp; }).concat([10]));
+    var h = '<div class="chead"><button class="btn back" type="button" data-act="back">‹ 목록</button><h2 data-i="▲">내 성장</h2><span class="cmeta">고객을 챙길수록 레벨이 오릅니다</span></div>' +
+      '<section class="ghero"><div class="lv-ring big"><b>' + G.lv + '</b><small>LEVEL</small></div><div class="gh-m"><span class="eyebrow">' + esc(G.title) + '</span><b class="gh-xp">' + G.xp.toLocaleString('ko-KR') + '<small> XP</small></b><span class="gs-bar lg"><em style="width:' + Math.round(G.cur / G.need * 100) + '%"></em></span><small class="note">다음 레벨까지 ' + (G.need - G.cur) + ' XP' + (G.nextTitle ? ' · Lv.' + G.nextTitleLv + ' 「' + esc(G.nextTitle) + '」' : '') + '</small></div>' +
+      '<div class="gh-k"><div><small>오늘</small><b>+' + G.today + '</b></div><div><small>이번 주</small><b>' + G.wk.xp + '</b></div><div><small>연속 연락</small><b>' + (G.streak ? '🔥 ' + G.streak + '일' : '—') + '</b></div><div><small>최고 연속</small><b>' + G.best + '일</b></div></div></section>' +
+      '<h5 class="gsec">오늘의 퀘스트 <small class="note">매일 아침 브리핑에 맞춰 바뀝니다 · 완료하면 보너스 XP</small></h5>' + questCards(G) +
+      '<div class="ggrid"><section class="gbox"><h5>최근 7일</h5><div class="wbars">' + G.week.map(function(w){ var dd = new Date(w.d + 'T12:00:00'); return '<div class="wb"><span style="height:' + Math.max(4, Math.round(w.xp / mx * 100)) + '%" title="' + w.xp + ' XP"></span><b>' + (w.xp || '') + '</b><small>' + '일월화수목금토'[dd.getDay()] + '</small></div>'; }).join('') + '</div>' +
+      '<div class="wsum">이번 주 통화 <b>' + G.wk.call + '</b> · 만남 <b>' + G.wk.meet + '</b> · 카톡·문자 <b>' + G.wk.msg + '</b></div></section>' +
+      '<section class="gbox"><h5>최근 활동</h5>' + (G.recent.length ? '<ul class="glog">' + G.recent.map(function(e){ var c = S.list.find(function(x){ return x.id === e.cid; }); return '<li><span>' + dot(e.d) + '</span><b>' + esc(Game.XP_TXT[e.k] || e.k) + '</b><em>' + esc(c ? c.name : '') + '</em><i>+' + e.xp + '</i></li>'; }).join('') + '</ul>' : '<p class="note">아직 활동이 없습니다. 오늘의 퀘스트부터 시작해 보세요.</p>') + '</section></div>' +
+      '<h5 class="gsec">배지 <small class="note">' + G.badges.filter(function(b){ return b.ok; }).length + ' / ' + G.badges.length + '</small></h5><div class="gbadges">' + G.badges.map(function(b){ return '<div class="bd' + (b.ok ? ' ok' : '') + '"><i>' + (b.ok ? '★' : '☆') + '</i><b>' + esc(b.t) + '</b><small>' + esc(b.d) + '</small></div>'; }).join('') + '</div>' +
+      '<div id="leagueBox"></div>' +
+      '<details class="grules"><summary>경험치 기준</summary><div class="gr">' + Object.keys(Game.XP).map(function(k){ return '<span>' + esc(Game.XP_TXT[k]) + '<b>+' + Game.XP[k] + '</b></span>'; }).join('') + '</div><p class="note">같은 고객에게 같은 날 같은 종류 기록은 한 번만 셉니다. 계약 점수는 일부러 크지 않게 두었습니다. 꾸준히 연락하고 챙기는 행동이 레벨을 올립니다.</p></details>';
+    $('main').innerHTML = h; window.scrollTo(0, 0);
+    if (window.League) League.draw($('leagueBox'), G);
+  }
+  document.addEventListener('click', function(e){ if (e.target.closest('[data-gm="open"]')) showGame(); });
+  Store.onChange(function(){ clearTimeout(GM.t); GM.t = setTimeout(function(){ gameTick(); }, 250); });
+
+  // ================= 9팀 리그전 (주간 순위 · 숫자만 공유) =================
+  var League = (function(){
+    var L = { url: '', at: 0, rows: null, err: '' };
+    function nick(v){ try { if (v !== undefined) localStorage.setItem('mhs_nick', v); return localStorage.getItem('mhs_nick') || ''; } catch(e){ return ''; } }
+    async function url(){ if (L.url && Date.now() - L.at < 10 * 60 * 1000) return L.url; try { var l = await Access.fetchList(); L.url = l.league || ''; L.at = Date.now(); } catch(e){} return L.url; }
+    function me(){ var lic = Access.lic(); return lic && lic.c; }
+    async function submit(G, force){
+      var u = await url(), c = me(), n = nick(); if (!u || !c || !n || !G) return;
+      var key = G.monday + '|' + G.wk.xp + '|' + G.lv; try { if (!force && localStorage.getItem('mhs_lgsent') === key) return; } catch(e){}
+      try {
+        var r = await fetch(u, { method: 'POST', body: JSON.stringify({ c: c, n: n, week: G.monday, xp: G.wk.xp, call: G.wk.call, meet: G.wk.meet, msg: G.wk.msg, lv: G.lv, tot: G.xp, st: G.streak, ti: G.title }) });
+        var j = await r.json(); if (j.ok) localStorage.setItem('mhs_lgsent', key); else L.err = j.error || '';
+      } catch(e){ L.err = '리그 서버에 연결하지 못했습니다'; }
+    }
+    async function load(G){ var u = await url(); if (!u) return null; var r = await fetch(u + '?week=' + encodeURIComponent(G.monday) + '&c=' + encodeURIComponent(me() || '') + '&t=' + Date.now()); var j = await r.json(); return j.rows || []; }
+    async function draw(box, G){
+      if (!box) return;
+      var u = await url(), adm = await admLoad();
+      if (!u) {
+        box.innerHTML = '<section class="lgbox"><h5>🏆 9팀 리그전</h5>' + (adm && adm.token ?
+          '<p class="note">관리자 설정이 한 번 필요합니다. 구글 Apps Script로 무료 리그 서버를 만들고 주소를 넣으면, OTP를 받은 동료 모두에게 리그가 열립니다.</p><button class="go" type="button" id="lgSetup">리그 서버 연결하기</button>'
+          : '<p class="note">관리자가 리그를 열면 이곳에 9팀 주간 순위가 나옵니다.</p>') + '</section>';
+        if ($('lgSetup')) $('lgSetup').onclick = function(){ setup(adm); };
+        return;
+      }
+      if (!me()) { box.innerHTML = '<section class="lgbox"><h5>🏆 9팀 리그전</h5><p class="note">OTP를 등록한 기기에서만 리그에 참여할 수 있습니다.</p></section>'; return; }
+      if (!nick()) {
+        box.innerHTML = '<section class="lgbox"><h5>🏆 9팀 리그전 참가</h5><p class="note">순위표에 보일 이름을 정하세요. 리그에는 <b>이름·주간 경험치·통화·만남·연락 수·레벨</b>만 올라가고, 고객 정보는 절대 올라가지 않습니다.</p><div class="cfq"><input id="lgNick" type="text" maxlength="10" placeholder="예: 강남혁, 오션킹"><button class="go" type="button" id="lgJoin">참가하기</button></div></section>';
+        $('lgJoin').onclick = async function(){ var v = $('lgNick').value.trim(); if (!v) return; nick(v); await submit(G, true); draw(box, G); };
+        return;
+      }
+      box.innerHTML = '<section class="lgbox"><h5>🏆 9팀 리그전 <small class="note">이번 주 (' + dot(G.monday) + ' ~) · 월요일마다 새로 시작</small></h5><p class="note">불러오는 중…</p></section>';
+      await submit(G);
+      var rows; try { rows = await load(G); } catch(e){ box.querySelector('.note:last-child').textContent = '리그 서버에 연결하지 못했습니다'; return; }
+      rows.sort(function(a, b){ return b.xp - a.xp || b.meet - a.meet; });
+      var medal = ['🥇', '🥈', '🥉'];
+      box.innerHTML = '<section class="lgbox"><h5>🏆 9팀 리그전 <small class="note">이번 주 (' + dot(G.monday) + ' ~) · 월요일마다 새로 시작</small><button class="pb" type="button" id="lgNickBtn" style="margin-left:auto">이름 바꾸기</button></h5>' +
+        (rows.length ? '<ol class="lgt">' + rows.map(function(r, i){ return '<li class="' + (r.me ? 'me' : '') + '"><span class="lg-r">' + (medal[i] || (i + 1)) + '</span><span class="lg-n"><b>' + esc(r.n) + '</b><small>Lv.' + r.lv + ' ' + esc(r.ti || '') + (r.st ? ' · 🔥' + r.st : '') + '</small></span><span class="lg-s"><small>통화</small>' + r.call + '</span><span class="lg-s"><small>만남</small>' + r.meet + '</span><span class="lg-s"><small>연락</small>' + r.msg + '</span><span class="lg-x">' + r.xp.toLocaleString('ko-KR') + '<small> XP</small></span></li>'; }).join('') + '</ol>' : '<p class="note">이번 주 첫 기록을 남겨 보세요.</p>') +
+        '<p class="note">점수는 고객을 챙기는 활동(통화·만남·연락·청구 안내)으로 쌓입니다. 고객 정보는 리그에 올라가지 않습니다.</p></section>';
+      $('lgNickBtn').onclick = function(){ var v = prompt('리그에 보일 이름', nick()); if (v && v.trim()) { nick(v.trim().slice(0, 10)); submit(G, true).then(function(){ draw(box, G); }); } };
+    }
+    function setup(adm){
+      openDlg('<h4>🏆 리그 서버 연결 (관리자 · 한 번만)</h4><div class="form" style="font-size:14px;line-height:1.75"><ol class="kkg">' +
+        '<li>PC 크롬에서 <button type="button" class="lnk" id="lgOpen">script.google.com</button> 을 열고 <b>새 프로젝트</b></li>' +
+        '<li>편집기에 있는 글을 모두 지우고, 아래 <b>코드 복사</b>로 복사한 코드를 붙여 넣고 저장(Ctrl+S)</li>' +
+        '<li>오른쪽 위 <b>배포 → 새 배포</b> → 톱니바퀴에서 <b>웹 앱</b> 선택</li>' +
+        '<li><b>다음 사용자로 실행: 나</b>, <b>액세스 권한: 모든 사용자</b> → 배포 → 권한 허용(고급 → 이동)</li>' +
+        '<li>나오는 <b>웹 앱 URL</b>(https://script.google.com/macros/s/…/exec)을 아래에 붙여 넣기</li></ol>' +
+        '<div class="safe">' + IC.lock + '<span>리그 서버에는 이름·주간 숫자만 저장되고, OTP가 사용 중인 사람만 점수를 올릴 수 있습니다. 주소는 OTP 목록(access.json)에 함께 저장되어 동료들에게 자동으로 열립니다.</span></div>' +
+        '<label class="l">웹 앱 URL</label><input id="lgUrl" type="text" placeholder="https://script.google.com/macros/s/…/exec"><div class="ferr" id="lgErr"></div></div>' +
+        '<div class="mrow"><button class="btn lg" type="button" id="lgX" style="margin-right:auto">닫기</button><button class="btn lg" type="button" id="lgCode">코드 복사</button><button class="go" type="button" id="lgSave">확인 · 저장</button></div>', 'wide');
+      $('lgX').onclick = closeDlg;
+      $('lgOpen').onclick = function(){ openExt('https://script.google.com/home/projects/create'); };
+      $('lgCode').onclick = async function(){ try { var t = await (await fetch('https://sicrics27-gif.github.io/mh-analyzer/league-appscript.js?t=' + Date.now())).text(); copyText(t, '리그 서버 코드'); } catch(e){ openExt('https://sicrics27-gif.github.io/mh-analyzer/league-appscript.js'); } };
+      $('lgSave').onclick = async function(){
+        var v = $('lgUrl').value.trim(), b = this; if (!/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(v)) { $('lgErr').textContent = '주소 형식이 맞지 않습니다. …/exec 로 끝나는 웹 앱 URL을 넣으세요.'; return; }
+        b.disabled = true; b.textContent = '확인 중…';
+        try { var j = await (await fetch(v + '?week=2000-01-03&t=' + Date.now())).json(); if (!j.ok) throw 0; await Access.edit(adm.token, function(l){ l.league = v; }, '리그 서버 연결'); L.url = v; L.at = Date.now(); closeDlg(); toast('리그를 열었습니다'); if (S.view === 'game') showGame(); }
+        catch(e){ b.disabled = false; b.textContent = '확인 · 저장'; $('lgErr').textContent = '연결하지 못했습니다. 배포할 때 액세스 권한을 "모든 사용자"로 했는지 확인하세요.'; }
+      };
+    }
+    return { draw: draw, submit: submit };
+  })();
+  window.League = League;
 
   // ================= 연락: 전화·문자·카톡 바로가기와 마지막 연락일 =================
   var MSG_TPL0, MSG_TPL = MSG_TPL0 = [
@@ -4588,7 +4884,7 @@ function HealthUI(root, H) {
       req.ask = $('nxAsk').value.trim().replace(new RegExp(S.cur.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '고객').replace(/01[016789][-.\s]?\d{3,4}[-.\s]?\d{4}/g, '').slice(0, 300);
       try { await NHC.send(cfg, req); }
       catch(e){ b.disabled = false; b.textContent = '보내기'; $('nxErr').textContent = e.message || String(e); return; }
-      closeDlg(); S.cur.nhcReq = { id: req.id, at: Date.now() };
+      closeDlg(); S.cur.nhcReq = { id: req.id, at: Date.now() }; gameMark(S.cur, 'nhc');
       await saveCur('보장분석부서에 의뢰했습니다 · 결과가 오면 알려 드립니다');
       setTimeout(function(){ nhcPoll(); }, 90 * 1000);
     };
@@ -4634,7 +4930,11 @@ function HealthUI(root, H) {
   function updateFacts(){
     var c = S.cur; if (!c || c.sample || !S.data) return;
     var f; try { f = NHC.facts(S.data.coverage || null, S.BN ? claimSets() : null, todayStr()); } catch(e){ return; }
-    if (cvxSame(f, c.cvx)) return;
+    var gch = false, dd = function(ms){ return new Date(ms - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10); };
+    if (S.data.analyzedAt && !S.data.covOnly) gch = gameMark(c, 'analyze', dd(S.data.analyzedAt)) || gch;
+    if (S.data.coverageAt) gch = gameMark(c, 'coverage', dd(S.data.coverageAt)) || gch;
+    (S.data.claimLog || []).forEach(function(l){ if (l.at) gch = gameMark(c, 'claim', dd(l.at)) || gch; });
+    if (cvxSame(f, c.cvx) && !gch) return;
     c.cvx = f; Store.saveHead(c).then(async function(){ S.list = await Store.list(); renderList(); }).catch(function(){});
   }
   async function briefCalc(){
@@ -4694,6 +4994,7 @@ function HealthUI(root, H) {
     $('shell').classList.add('has-c'); armBack(); renderList();
     var B = briefData(), cps = campsGet(), t = todayStr();
     var h = '<div class="chead"><button class="btn back" type="button" data-act="back">‹ 목록</button><h2 data-i="★">오늘의 브리핑</h2><span class="cmeta">' + dot(t) + ' · 연락할 고객을 한 화면에</span></div>' +
+      gameStrip() + (GM.last ? '<h5 class="gsec">오늘의 퀘스트</h5>' + questCards(GM.last) : '') +
       '<div class="bkpi">' + [['할 일', B.todo.length], ['생일 7일', B.bday.length], ['응당일 14일', B.ann.length], ['청구기한 60일', B.claim.length], ['90일 미연락', B.quiet.length]].map(function(k){ return '<div><small>' + k[0] + '</small><b>' + k[1] + '</b></div>'; }).join('') + '</div>';
     if (B.nocvx) h += '<div class="gapban a">' + IC.warn + '<span>분석해 둔 고객 ' + B.nocvx + '명은 아직 보장 요약(응당일·청구기한·캠페인 대상)이 계산되지 않았습니다.</span><button class="btn" type="button" data-nx="bcalc">지금 계산</button></div>';
     // NHC 뉴스 연계 캠페인
@@ -4925,6 +5226,7 @@ function HealthUI(root, H) {
   var S = { list: [], cur: null, data: null, E: null, HI: null, CL: null, HP: null, tab: 'prod', pv: null, pvTab: 'sum', hmode: 'code', filter: 'all', q: '' };
   try { S.hmode = localStorage.getItem('mhs_hmode') || 'code'; } catch(e){}
   async function enterApp(){
+    GM.d = null; GM.last = null;
     $('lock').hidden = true; $('shell').hidden = false;
     $('memBan').hidden = !memMode;
     S.list = await Store.list();
@@ -4939,6 +5241,7 @@ function HealthUI(root, H) {
     setTimeout(takeShared, 400);
     setTimeout(function(){ nhcDaily().then(function(){ if (!S.cur && !S.view) showWelcome(); }); }, 2500);
     setTimeout(function(){ nhcPoll(); }, 4000);
+    gameTick(true).then(function(){ if (!S.cur && !S.view) showWelcome(); });
     if (Sync.isOn()) { if (Sync.autoRefresh && Sync.autoRefresh()) return; syncNow(); }
   }
 
@@ -5169,7 +5472,7 @@ function HealthUI(root, H) {
 
   function showWelcome(){
     S.cur = null; S.data = null; S.view = ''; $('shell').classList.remove('has-c');
-    $('main').innerHTML = briefMini() + $('tplWelcome').innerHTML;
+    $('main').innerHTML = gameStrip() + briefMini() + $('tplWelcome').innerHTML;
     renderList();
   }
 
@@ -5873,6 +6176,7 @@ function HealthUI(root, H) {
       var ph = $('fPhone').value.replace(/\D/g, '');
       if (ph && !normPhone(ph)) { err.textContent = '휴대폰 번호를 확인하세요. (예: 010-1234-5678)'; return; }
       h.name = name; h.sex = sx; h.birth = bd; h.memo = $('fMemo').value.trim();
+      if (stg !== (c && c.stage)) stageMark(h, stg);
       h.phone = ph; h.stage = stg; h.ch = chv; h.ref = $('fRef').value.trim(); h.interest = $('fInt').value.trim();
       h = await Store.saveHead(h);
       S.list = await Store.list();
