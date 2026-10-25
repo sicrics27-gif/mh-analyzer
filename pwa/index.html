@@ -3617,7 +3617,11 @@ function HealthUI(root, H) {
 
   function parse(text) {
     text = String(text || '').replace(/\r/g, '');
-    if (/^\s*\[AFG-DB\]/.test(text)) return { kind: 'detail', people: parseDetail(text) };
+    if (/^\s*\[AFG-DB\]/.test(text)) {
+      var all = [], seen = {};
+      text.split(/\n?\[END\]\n?/).forEach(function (b) { if (!/\[AFG-DB\]/.test(b)) return; parseDetail(b.slice(b.indexOf('[AFG-DB]'))).forEach(function (p) { var k = p.name + '|' + (p.phone || p.birth || ''); if (seen[k]) return; seen[k] = 1; all.push(p); }); });
+      return { kind: 'detail', people: all };
+    }
     return { kind: 'list', people: parseList(text) };
   }
 
@@ -4097,10 +4101,10 @@ function HealthUI(root, H) {
   });
 
   // ---------- 회사 DB(link.afg.kr) 고객 가져오기 ----------
-  var DB_BM = "javascript:(function(){var L=[];document.querySelectorAll('input,textarea,select').forEach(function(e){var t=(e.type||'').toLowerCase();if(/hidden|file|button|submit|password|search/.test(t))return;var v;if(t==='checkbox'||t==='radio'){if(!e.checked)return;var lb=(e.labels&&e.labels[0]&&e.labels[0].innerText)||(e.parentElement&&e.parentElement.innerText)||e.value||'';v='[선택] '+lb.trim().split('\\n')[0];}else if(e.tagName==='SELECT'){v=e.selectedIndex>=0?e.options[e.selectedIndex].text:'';}else v=e.value;v=String(v||'').trim();if(!v)return;var lab='';for(var p=e.parentElement,i=0;p&&i<4&&!lab;p=p.parentElement,i++){var tx=(p.innerText||'').split('\\n')[0].trim();if(tx&&tx!==v&&tx.length<16&&!/^\\[/.test(tx))lab=tx;}L.push(/^\\[선택\\]/.test(v)?v:(lab?lab+': ':'')+v);});var out='[AFG-DB]\\n'+L.join('\\n')+'\\n[PAGE]\\n'+document.body.innerText.slice(0,8000);var ok=function(){alert('OC9용으로 복사했습니다.\\nOC9 → 도구 → 회사 DB 고객 가져오기에 붙여 넣으세요.');};if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(out).then(ok,function(){prompt('아래 글을 전체 복사하세요',out);});else prompt('아래 글을 전체 복사하세요',out);})();";
+  var DB_BM = "javascript:(function(){var L=[];document.querySelectorAll('input,textarea,select').forEach(function(e){var t=(e.type||'').toLowerCase();if(/hidden|file|button|submit|password|search/.test(t))return;var v;if(t==='checkbox'||t==='radio'){if(!e.checked)return;var lb=(e.labels&&e.labels[0]&&e.labels[0].innerText)||(e.parentElement&&e.parentElement.innerText)||e.value||'';v='[선택] '+lb.trim().split('\\n')[0];}else if(e.tagName==='SELECT'){v=e.selectedIndex>=0?e.options[e.selectedIndex].text:'';}else v=e.value;v=String(v||'').trim();if(!v)return;var lab='';for(var p=e.parentElement,i=0;p&&i<4&&!lab;p=p.parentElement,i++){var tx=(p.innerText||'').split('\\n')[0].trim();if(tx&&tx!==v&&tx.length<16&&!/^\\[/.test(tx))lab=tx;}L.push(/^\\[선택\\]/.test(v)?v:(lab?lab+': ':'')+v);});var blk='[AFG-DB]\\n'+L.join('\\n')+'\\n[PAGE]\\n'+document.body.innerText.slice(0,3000);var K='oc9_db_bag',bag;try{bag=JSON.parse(localStorage.getItem(K)||'null');}catch(e){bag=null;}if(!bag||Date.now()-bag.t>12*3600e3)bag={t:Date.now(),b:[]};else if(bag.b.length&&Date.now()-bag.t>30*60e3&&!confirm('전에 모아 둔 고객 '+bag.b.length+'명이 있습니다.\\n이어서 모을까요?\\n(취소를 누르면 비우고 새로 시작)'))bag={t:Date.now(),b:[]};var key=L.slice(0,3).join('|');var dup=bag.b.some(function(x){return x.k===key;});if(!dup)bag.b.push({k:key,v:blk});bag.t=Date.now();try{localStorage.setItem(K,JSON.stringify(bag));}catch(e){}var out=bag.b.map(function(x){return x.v;}).join('\\n[END]\\n');var msg=(dup?'이미 담은 고객입니다.\\n':'담았습니다.\\n')+'지금까지 '+bag.b.length+'명 모임 · 클립보드에 '+bag.b.length+'명 전부 복사됨\\n\\n다 모았으면 OC9 → 회사 DB 고객 가져오기 → 붙여넣기';var ok=function(){alert(msg);};if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(out).then(ok,function(){prompt('아래 글을 전체 복사하세요',out);});else prompt('아래 글을 전체 복사하세요',out);})();";
   function openDbImport(){
     openDlg('<h4>' + IC.user + ' 회사 DB 고객 가져오기</h4><div class="form dbform">' +
-      '<div class="dbhow"><div><b>① 한 명씩 (전체 정보)</b><span>DB 사이트에서 고객 상세 화면을 연 뒤 <b>"OC9로 복사"</b> 북마크를 누르고, 아래에 붙여 넣기. 이름·전체 번호·생년월일·성별·지역·특이사항·인수상태·AS 마감까지 들어갑니다.</span><button type="button" class="pb" id="dbBm">북마크 만드는 법</button></div>' +
+      '<div class="dbhow"><div><b>① 한 명씩 (전체 정보)</b><span>DB 사이트에서 고객 상세 화면을 연 뒤 <b>"OC9로 복사"</b> 북마크를 누르기. 여러 명을 차례로 눌러 모은 뒤 한 번에 붙여 넣어도 됩니다. 이름·전체 번호·생년월일·성별·지역·특이사항·인수상태·AS 마감까지 들어갑니다.</span><button type="button" class="pb" id="dbBm">북마크 만드는 법</button></div>' +
       '<div><b>② 목록 한꺼번에</b><span>DB 목록 화면에서 표시 개수를 크게 하고, 표를 길게 눌러(PC는 드래그) <b>전체 선택 → 복사</b>해서 붙여 넣기. 목록에는 번호가 가려져 있어, 번호는 ①로 한 번 더 넣으면 채워집니다.</span></div></div>' +
       '<textarea id="dbTxt" rows="7" placeholder="여기에 붙여 넣으세요"></textarea>' +
       '<div class="safe">' + IC.lock + '<span>대표님이 보고 있는 화면을 옮겨 적는 방식입니다. DB 사이트에 자동으로 접속하지 않습니다. 가져온 정보는 잠금 비밀번호로 암호화해 저장합니다.</span></div>' +
