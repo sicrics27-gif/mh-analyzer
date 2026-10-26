@@ -37,5 +37,5 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ github.run_number }}
-          name: AOB 빌드 ${{ github.run_number }}
+          name: AOB9 빌드 ${{ github.run_number }}
           files: out/*

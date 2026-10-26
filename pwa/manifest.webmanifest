@@ -1,6 +1,6 @@
 {
- "name": "AOB · 어센틱 오션브랜치 9팀",
- "short_name": "AOB",
+ "name": "AOB9 · 어센틱 오션브랜치 9팀",
+ "short_name": "AOB9",
  "description": "어센틱 오션브랜치 9팀 고객관리 (병력고지·보장분석·싯플랜)",
  "share_target": {
   "action": "./share-target",

@@ -26,8 +26,8 @@ def twaManifest = [
     applicationId: 'io.github.sicrics27gif.oc9',
     hostName: 'sicrics27-gif.github.io', // The domain being opened in the TWA.
     launchUrl: '/mh-analyzer/?app=apk&v=' + appCode, // The start path for the TWA. Must be relative to the domain.
-    name: 'AOB', // The application name.
-    launcherName: 'AOB', // The name shown on the Android Launcher.
+    name: 'AOB9', // The application name.
+    launcherName: 'AOB9', // The name shown on the Android Launcher.
     themeColor: '#090B10', // The color used for the status bar.
     themeColorDark: '#000000', // The color used for the dark status bar.
     navigationColor: '#090B10', // The color used for the navigation bar.
