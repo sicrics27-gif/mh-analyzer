@@ -1461,6 +1461,8 @@ table.act td{vertical-align:top}table.act td small{color:var(--mute)}table.act t
 .pi em{font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .pi.c-k{--c:#9aa3b2}.pi.c-r{--c:#ff6b61}.pi.c-g{--c:#3ecf7a}.pi.c-b{--c:#5b93ff}
 .pi.todo{--c:#C9A96A;background:transparent;border-left-style:dotted;color:var(--ink2);font-style:normal;opacity:.9}
+/* 상담 확정 문자 */
+.cfsec{border-color:color-mix(in srgb,#FEE500 45%,transparent)}.cfrow{display:flex;align-items:center;gap:8px}.cfck{flex:none;width:30px;height:30px;border-radius:8px;border:2px solid #C9A400;background:transparent;color:#2e7d32;font-size:17px;font-weight:900;line-height:1;cursor:pointer}.cfrow.done .cfck{border-color:#2e7d32;background:color-mix(in srgb,#2e7d32 15%,transparent)}.cfrow.done .ctn b{text-decoration:line-through;opacity:.6}.pi.cf em::before,.hp-r.cf span::before{content:"✉ "}.pi.cfok em::before,.hp-r.cfok span::before{content:"✓ ";color:#2e7d32}.pdr .cfb{grid-column:2/-1;justify-self:start;white-space:nowrap}.cfbtns{flex-wrap:wrap;gap:8px}.cfform .msgtxt{min-height:300px}
 :root[data-theme="dark"] .pr-i .pi.c-k,:root[data-theme="dark"] .pr-i .pi.c-r,:root[data-theme="dark"] .pr-i .pi.c-g,:root[data-theme="dark"] .pr-i .pi.c-b{color:var(--ink)}
 .pmore{font-size:11px;font-weight:700;color:var(--mute);padding:0 6px}
 .pbig{font-size:12.5px;font-weight:800;color:#E8C77A;background:linear-gradient(90deg,rgba(201,169,106,.22),rgba(201,169,106,.06));border-radius:5px;padding:3px 7px;margin:0 0 1px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -5560,7 +5562,7 @@ function HealthUI(root, H) {
   var PCOL = { k: ['검정', '#1d2430'], r: ['고객', '#b3261e'], g: ['프로세스', '#2e7d32'], b: ['교육·회의', '#1f4fb8'] };
   var WD_EN = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
   async function planLoad(){ if (PL.d) return PL.d; try { PL.d = (await Store.loadData(PL.id)) || {}; } catch(e){ PL.d = {}; } var d = PL.d; d.days = d.days || {}; d.months = d.months || {}; d.deals = d.deals || []; d.goal = Object.assign({ acfp: 0, avg: 100000, m2c: 3, c2m: 5 }, d.goal || {}); d.nick = d.nick || '남혁'; return d; }
-  async function planSave(){ await Store.saveHead({ id: PL.id, hidden: true, name: '__plan', status: 'admin', created: PL.d.created || Date.now() }); await Store.saveData(PL.id, PL.d); }
+  async function planSave(){ await Store.saveHead({ id: PL.id, hidden: true, name: '__plan', status: 'admin', created: PL.d.created || Date.now() }); await Store.saveData(PL.id, PL.d); cfSoon(); }
   function ymOf(d){ return d.slice(0, 7); }
   function mDays(ym){ var y = +ym.slice(0, 4), m = +ym.slice(5, 7); return new Date(y, m, 0).getDate(); }
   function dstr(y, m, d){ return y + '-' + String(m).padStart(2, '0') + '-' + String(d).padStart(2, '0'); }
@@ -5656,6 +5658,7 @@ function HealthUI(root, H) {
     var h = '<div class="chead plhead"><button class="btn back" type="button" data-act="back">‹ 목록</button><div class="pttl"><small>' + esc(PL.d.nick) + '의 MONTHLY PLAN</small><h2>싯플랜</h2></div><span class="pnav"><button type="button" class="pb" data-pm="' + prevM.slice(0, 7) + '" aria-label="이전 달">‹</button><b>' + y + '. ' + m + '월</b><button type="button" class="pb" data-pm="' + nextM.slice(0, 7) + '" aria-label="다음 달">›</button><button type="button" class="pb ptoday" data-pm="' + ymOf(t) + '">오늘</button></span></div>' +
       '<div class="ptool"><span class="stb" role="group"><button type="button" data-pvw="month" aria-pressed="' + (S.pview === 'month') + '">월간</button><button type="button" data-pvw="list" aria-pressed="' + (S.pview === 'list') + '">주간</button></span><button class="btn pgoal" type="button" data-pl="acfp" aria-pressed="' + !!S.acfpOn + '" title="ACFP 월납 목표 보이기/숨기기"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>월납 목표</button><span class="sp"></span><button class="btn" type="button" data-pl="photo">📷 사진으로 일정 넣기</button><button class="btn" type="button" data-pl="today">' + IC.cal + '오늘 보고 복사</button><button class="btn" type="button" data-pl="snap">' + IC.doc + '사진 저장</button><button class="btn" type="button" data-pl="cal"><span class="gdot' + (gBad ? ' bad' : gOn ? ' on' : '') + '"></span>캘린더 연동</button></div>';
     if (S.acfpOn) h += acfpPanel(S.pm);
+    h += cfSec();
     var memo = (PL.d.months[S.pm] || {}).memo || '';
     if (S.pview === 'month') {
       var cells = [], d0 = 1 - first;
@@ -5663,7 +5666,7 @@ function HealthUI(root, H) {
       h += weekChip(S.pm) + bizDetails('phonly') + '<div class="pcal">' + bizPanel(memo) + '<div class="pcgrid">' + WD_EN.map(function(w, i){ return '<div class="ph' + (i === 0 ? ' sun' : i === 6 ? ' sat' : '') + '"><span class="en">' + w.slice(0, 3) + '</span><span class="ko">' + '일월화수목금토'[i] + '</span></div>'; }).join('') +
         cells.map(function(d){ if (!d) return '<div class="pcd off"></div>';
           var v = PL.d.days[d] || {}, it = itemsOf(d), td = todosOn(d).filter(function(x){ return !it.some(function(y){ return y.x.indexOf(x.x.split(' ')[0]) >= 0; }); });
-          var all = it.map(function(x){ return '<span class="pi c-' + (x.c || 'k') + '"><i>' + x.t + '</i><em>' + esc(x.x) + '</em></span>'; }).concat(td.map(function(x){ return '<span class="pi todo"><i>' + (x.t || '📌') + '</i><em>' + esc(x.x) + '</em></span>'; }));
+          var all = it.map(function(x){ return '<span class="pi c-' + (x.c || 'k') + cfMark(d, x) + '"><i>' + x.t + '</i><em>' + esc(x.x) + '</em></span>'; }).concat(td.map(function(x){ return '<span class="pi todo"><i>' + (x.t || '📌') + '</i><em>' + esc(x.x) + '</em></span>'; }));
           var cap = v.big ? 4 : 5, more = all.length > cap ? '<span class="pmore">+' + (all.length - cap + 1) + '</span>' : '', trd = trailDay(d);
           if (trd && trd.v.length) more += '<span class="ptr">📍' + trd.v.length + '</span>';
           return '<button type="button" class="pcd' + (d === t ? ' today' : '') + (d < t ? ' past' : '') + (wdOf(d) === 0 ? ' sun' : wdOf(d) === 6 ? ' sat' : '') + '" data-pd="' + d + '"><span class="pd">' + (+d.slice(8)) + '</span>' + (v.big ? '<span class="pbig">' + esc(v.big) + '</span>' : '') +
@@ -5672,7 +5675,7 @@ function HealthUI(root, H) {
       var days = []; for (var k = 1; k <= n; k++) days.push(dstr(y, m, k));
       var wk = weeksOf(S.pm);
       h += weekChip(S.pm) + bizDetails() + '<div class="plist">' + wk.map(function(w, wi){ return '<div class="pw"><div class="pw-h">' + (wi + 1) + '주 · ' + dot(w.from).slice(3) + ' ~ ' + dot(w.to).slice(3) + '</div>' + days.filter(function(d){ return d >= w.from && d <= w.to; }).map(function(d){ var it = itemsOf(d), v = PL.d.days[d] || {}, td = todosOn(d);
-          return '<button type="button" class="prow' + (d === t ? ' today' : '') + (wdOf(d) === 0 ? ' sun' : wdOf(d) === 6 ? ' sat' : '') + '" data-pd="' + d + '"><span class="pr-d"><b>' + (+d.slice(8)) + '</b><small>' + '일월화수목금토'[wdOf(d)] + '</small></span><span class="pr-i">' + (v.big ? '<span class="pbig">' + esc(v.big) + '</span>' : '') + (it.length || td.length ? it.map(function(x){ return '<span class="pi c-' + (x.c || 'k') + '"><i>' + x.t + '</i><em>' + esc(x.x) + '</em></span>'; }).join('') + td.map(function(x){ return '<span class="pi todo"><i>' + (x.t || '📌') + '</i><em>' + esc(x.x) + '</em></span>'; }).join('') : '<span class="pempty">일정 없음 · 눌러서 넣기</span>') + '</span></button>'; }).join('') + '</div>'; }).join('') + '</div>' +
+          return '<button type="button" class="prow' + (d === t ? ' today' : '') + (wdOf(d) === 0 ? ' sun' : wdOf(d) === 6 ? ' sat' : '') + '" data-pd="' + d + '"><span class="pr-d"><b>' + (+d.slice(8)) + '</b><small>' + '일월화수목금토'[wdOf(d)] + '</small></span><span class="pr-i">' + (v.big ? '<span class="pbig">' + esc(v.big) + '</span>' : '') + (it.length || td.length ? it.map(function(x){ return '<span class="pi c-' + (x.c || 'k') + cfMark(d, x) + '"><i>' + x.t + '</i><em>' + esc(x.x) + '</em></span>'; }).join('') + td.map(function(x){ return '<span class="pi todo"><i>' + (x.t || '📌') + '</i><em>' + esc(x.x) + '</em></span>'; }).join('') : '<span class="pempty">일정 없음 · 눌러서 넣기</span>') + '</span></button>'; }).join('') + '</div>'; }).join('') + '</div>' +
         '<details class="pmemo2"><summary>이달의 메모 (SPECIAL MEMO)</summary><textarea id="pMemo" placeholder="이달의 메모">' + esc(memo) + '</textarea></details>';
     }
     h += '<div class="plegend"><span class="pi c-r"><i></i><em>고객</em></span><span class="pi c-g"><i></i><em>프로세스</em></span><span class="pi c-b"><i></i><em>교육·회의</em></span><span class="pi c-k"><i></i><em>기타</em></span><span class="pi todo"><i>📌</i><em>AOB9 할 일</em></span><small>날짜를 누르면 시간별 일정을 넣고 고칠 수 있습니다</small></div>';
@@ -5682,9 +5685,10 @@ function HealthUI(root, H) {
   function openDay(d){
     var v = PL.d.days[d] || {}, items = itemsOf(d).map(function(x){ return Object.assign({}, x); }), td = todosOn(d);
     var draw = function(){
-      $('pdRows').innerHTML = items.map(function(x, i){ return '<div class="pdr"><input type="text" inputmode="numeric" maxlength="4" class="pdt" data-i="' + i + '" value="' + esc(x.t) + '" placeholder="0900"><input type="text" class="pdx" data-i="' + i + '" value="' + esc(x.x) + '" placeholder="내용 (예: 김보근 프로세스)" list="pdNames"><select class="pdc" data-i="' + i + '">' + Object.keys(PCOL).map(function(k){ return '<option value="' + k + '"' + ((x.c || 'k') === k ? ' selected' : '') + '>' + PCOL[k][0] + '</option>'; }).join('') + '</select><button type="button" class="tl-x" data-rm="' + i + '" aria-label="지우기">×</button></div>'; }).join('') || '<p class="note">아래에서 일정을 넣으세요.</p>';
+      $('pdRows').innerHTML = items.map(function(x, i){ return '<div class="pdr"><input type="text" inputmode="numeric" maxlength="4" class="pdt" data-i="' + i + '" value="' + esc(x.t) + '" placeholder="0900"><input type="text" class="pdx" data-i="' + i + '" value="' + esc(x.x) + '" placeholder="내용 (예: 김보근 프로세스)" list="pdNames"><select class="pdc" data-i="' + i + '">' + Object.keys(PCOL).map(function(k){ return '<option value="' + k + '"' + ((x.c || 'k') === k ? ' selected' : '') + '>' + PCOL[k][0] + '</option>'; }).join('') + '</select><button type="button" class="tl-x" data-rm="' + i + '" aria-label="지우기">×</button>' + (CF_RE.test(x.x || '') ? '<button type="button" class="pb cfb" data-cfi="' + i + '" title="저장하고 상담 확정 문자 만들기">✉ 확정 문자 만들기</button>' : '') + '</div>'; }).join('') || '<p class="note">아래에서 일정을 넣으세요.</p>';
       $('pdRows').querySelectorAll('input,select').forEach(function(el){ el.oninput = el.onchange = function(){ var i = +el.dataset.i, x = items[i]; if (el.classList.contains('pdt')) x.t = el.value.replace(/\D/g, '').slice(0, 4); else if (el.classList.contains('pdx')) { x.x = el.value; if (!x.cset) x.c = autoColor(x.x); var sel = el.parentNode.querySelector('.pdc'); if (sel && !x.cset) sel.value = x.c; } else { x.c = el.value; x.cset = 1; } prev(); }; });
       $('pdRows').querySelectorAll('[data-rm]').forEach(function(b){ b.onclick = function(){ items.splice(+b.dataset.rm, 1); draw(); prev(); }; });
+      $('pdRows').querySelectorAll('[data-cfi]').forEach(function(b){ b.onclick = async function(){ var x = items[+b.dataset.cfi], xx = String(x.x || '').trim(), gid = x.gid; await $('pdGo').onclick(); var y = ((PL.d.days[d] || {}).items || []).find(function(z){ return gid ? z.gid === gid : z.x === xx; }); if (y) cfOpen(await cfEnsure(d, y)); }; });
       drawSug();
     };
     // 추천 일정: 고르면 목록으로 올라가고(추천에서 사라짐), 목록에서 지우면 다시 추천으로 내려옴
@@ -5720,7 +5724,7 @@ function HealthUI(root, H) {
     $('pdIcs').onclick = function(){ if (PL.d.days[d]) sendIcs([d], d); else toast('저장을 먼저 누른 뒤 보내 주세요'); };
     $('pdX').onclick = closeDlg;
     $('pdGo').onclick = async function(){
-      var it = items.filter(function(x){ return x.x.trim(); }).map(function(x){ var o = { t: String(x.t || '').replace(/\D/g, '').padStart(x.t ? 4 : 0, '0').slice(0, 4), x: x.x.trim(), c: x.c || 'k' }; if (x.gid) o.gid = x.gid; return o; });
+      var it = items.filter(function(x){ return x.x.trim(); }).map(function(x){ var o = { t: String(x.t || '').replace(/\D/g, '').padStart(x.t ? 4 : 0, '0').slice(0, 4), x: x.x.trim(), c: x.c || 'k' }; if (x.gid) o.gid = x.gid; if (x.loc) o.loc = x.loc; return o; });
       var big = $('pdBig').value.trim(), pv = PL.d.days[d] || {};
       // 삼성·구글 캘린더와 이어진 일정(gid)을 지웠으면 캘린더에서도 지우도록 적어 둠
       PL.d.gdel = PL.d.gdel || []; (pv.items || []).forEach(function(x){ if (x.gid && !it.some(function(y){ return y.gid === x.gid; })) PL.d.gdel.push(x.gid); }); if (pv.bigGid && !big) PL.d.gdel.push(pv.bigGid);
@@ -5824,7 +5828,7 @@ function HealthUI(root, H) {
       if (!/^\d{4}$/.test(x.t)) return;
       var nx = it[i + 1] && /^\d{4}$/.test(it[i + 1].t) && it[i + 1].t > x.t ? it[i + 1].t : null, e2 = endOf(x.t, nx);
       var tm = function(t){ return { dateTime: d + 'T' + t.slice(0, 2) + ':' + t.slice(2) + ':00', timeZone: 'Asia/Seoul' }; };
-      out[keyOf(x.gid, x.t, x.x)] = { body: { summary: x.x, start: tm(x.t), end: tm(e2), colorId: GCOL[x.c || 'k'] || '8', description: 'AOB 싯플랜 · ' + PCOL[x.c || 'k'][0] }, ref: { kind: 'item', item: x } };
+      out[keyOf(x.gid, x.t, x.x)] = { body: Object.assign({ summary: x.x, start: tm(x.t), end: tm(e2), colorId: GCOL[x.c || 'k'] || '8', description: 'AOB 싯플랜 · ' + PCOL[x.c || 'k'][0] }, x.loc ? { location: x.loc } : {}), ref: { kind: 'item', item: x } };
     });
     return out;
   }
@@ -5899,10 +5903,10 @@ function HealthUI(root, H) {
   // ---- 삼성·구글 캘린더에서 고친 것 가져오기 (캘린더 → 싯플랜) ----
   function seoulParts(iso){ var s = new Date(iso).toLocaleString('sv-SE', { timeZone: 'Asia/Seoul', hour12: false }); return { d: s.slice(0, 10), t: s.slice(11, 13) + s.slice(14, 16) }; }
   function evInfo(ev){
-    var st = ev.start || {}, x = String(ev.summary || '').trim(), c = GCOL_R[ev.colorId] || '';
-    if (st.date) return { d: st.date, t: '', x: x, c: c, allDay: true };
+    var st = ev.start || {}, x = String(ev.summary || '').trim(), c = GCOL_R[ev.colorId] || '', loc = String(ev.location || '').trim().slice(0, 80);
+    if (st.date) return { d: st.date, t: '', x: x, c: c, allDay: true, loc: loc };
     if (!st.dateTime) return null;
-    var p = seoulParts(st.dateTime); return { d: p.d, t: p.t, x: x, c: c, allDay: false };
+    var p = seoulParts(st.dateTime); return { d: p.d, t: p.t, x: x, c: c, allDay: false, loc: loc };
   }
   function sigOf(d, t, x, c){ return d + '|' + t + '|' + x + '|' + (c || 'k'); }
   // 로컬 일정에서 구글 일정 id 찾기 → { d, ref }
@@ -5921,7 +5925,7 @@ function HealthUI(root, H) {
     var rmPrev = function(id){ Object.keys(gsync).forEach(function(d){ if (gsync[d] && gsync[d][id]) { delete gsync[d][id]; if (!Object.keys(gsync[d]).length) delete gsync[d]; } }); };
     var dayOf = function(d){ var v = PL.d.days[d] = PL.d.days[d] || { items: [], big: '' }; v.items = v.items || []; return v; };
     var dropRef = function(d, ref){ var v = PL.d.days[d]; if (!v) return; if (ref.kind === 'big') { v.big = ''; delete v.bigGid; } else { var i = (v.items || []).indexOf(ref.item); if (i >= 0) v.items.splice(i, 1); } if (!(v.items || []).length && !v.big) delete PL.d.days[d]; };
-    var addRemote = function(info, id){ var v = dayOf(info.d); if (info.allDay && !v.big) { v.big = info.x.slice(0, 20); v.bigGid = id; } else v.items.push({ t: info.allDay ? '' : info.t, x: info.x, c: info.c || autoColor(info.x), gid: id }); adopted[id] = 1; };
+    var addRemote = function(info, id){ var v = dayOf(info.d); if (info.allDay && !v.big) { v.big = info.x.slice(0, 20); v.bigGid = id; } else { var ni = { t: info.allDay ? '' : info.t, x: info.x, c: info.c || autoColor(info.x), gid: id }; if (info.loc) ni.loc = info.loc; v.items.push(ni); } adopted[id] = 1; };
     evs.forEach(function(ev){
       var id = ev.id; if (!id) return;
       var loc = idx[id], upd = Date.parse(ev.updated || '') || 0, localNewer = function(d){ return upd && mt[d] && upd < mt[d] - TOL; };
@@ -5992,6 +5996,178 @@ function HealthUI(root, H) {
   }
   setInterval(function(){ try { if (document.visibilityState === 'visible' && Store.isOpen()) gcAuto(); } catch(e){} }, 5 * 60 * 1000);
   document.addEventListener('visibilitychange', function(){ try { if (document.visibilityState === 'visible' && Store.isOpen()) setTimeout(function(){ gcAuto(); }, 1500); } catch(e){} });
+
+  // ---------- 상담 확정 문자: 제목에 '고객님'이 들어간 새 상담 일정 → 확정 문자 준비 · 알림 · 오늘 할 일 체크 ----------
+  // 삼성·구글 캘린더에서 들어온 일정이든, AOB9 싯플랜에서 넣은 일정이든 저장될 때마다 살펴봅니다.
+  // 고객 이름·주소·번호는 이 기기 안(암호화 저장)에서만 쓰고 어디로도 보내지 않습니다. 실제 발송은 대표님이 카톡·문자 버튼을 눌러서.
+  var CF_RE = /고객님/, CF_BUSY = false, CF_T = 0, CF_WANT = '';
+  function cfSoon(){ clearTimeout(CF_T); CF_T = setTimeout(function(){ cfScan().catch(function(){}); }, 900); }
+  function cfKey(d, x){ return x.gid || ('l' + d + '|' + (x.t || '') + '|' + x.x); }
+  function cfDay(ts){ return new Date(ts - new Date(ts).getTimezoneOffset() * 60000).toISOString().slice(0, 10); }
+  // "홍길동 고객님 해운대구 우동" · "[상담]홍길동고객님(부산 남구 대연동)" → 이름·장소·번호
+  function cfParse(s){
+    s = String(s || ''); var i = s.indexOf('고객님'), pre = i >= 0 ? s.slice(0, i) : s, post = i >= 0 ? s.slice(i + 3) : '';
+    var ph = (s.match(/01\d[-.\s]?\d{3,4}[-.\s]?\d{4}/) || [''])[0], sep = /^[\s()[\]·:,/|~-]+|[\s()[\]·:,/|~-]+$/g;
+    if (ph) { pre = pre.replace(ph, ''); post = post.replace(ph, ''); }
+    var nm = (pre.match(/([가-힣A-Za-z]{2,10})[\s)\]]*$/) || ['', ''])[1];
+    var place = post.replace(sep, '').replace(/^(상담|방문|미팅|보장분석)\s*/, '').replace(sep, '').replace(/\s*(댁\s*)?방문\s*(예정|상담)?$/, '').replace(sep, '').trim();
+    return { name: nm, place: place, phone: normPhone(ph) };
+  }
+  function cfWhen(d, t){
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(d || '')) return '';
+    var s = (+d.slice(5, 7)) + '월 ' + (+d.slice(8)) + '일 ' + '일월화수목금토'[wdOf(d)] + '요일';
+    if (/^\d{4}$/.test(t || '')) { var h = +t.slice(0, 2), m = +t.slice(2); s += ' ' + (h < 12 ? '오전' : '오후') + ' ' + (h % 12 || 12) + '시' + (m ? ' ' + m + '분' : ''); }
+    else s += ' {오전/오후} {시}시';
+    return s;
+  }
+  function cfMe(){ return PL.d && PL.d.cfSign || (myId().name ? meLine() : '강남혁 팀장'); }
+  function cfText(r, sign){
+    var w = cfWhen(r.d, r.t) || '{월}월 {일}일 {요일}요일 {오전/오후} {시}시';
+    return (r.name || '{고객명}') + ' 고객님\n안녕하세요.\n방금 전화드린 담당자 ' + (sign || cfMe()) + '입니다.\n\n-상담 예약 확정-\n상담일시 : ' + w + '\n상담장소 : ' + (r.place || '{장소}') + '\n고객님댁 방문예정\n\n' +
+      '무료로 진행 해드리는 일정이라 정말 필요로 원하시는 고객님들이 상담을 못받으실 수 있어 일정 변동 있으시면 미리 연락 부탁드립니다.\n\n' + w + '에 뵙겠습니다. 감사합니다.';
+  }
+  function cfNew(d, x, st){
+    var p = cfParse(x.x), c = p.name ? S.list.find(function(z){ return z.name === p.name; }) : null, now = Date.now();
+    return { k: cfKey(d, x), id: now.toString(36) + Math.random().toString(36).slice(2, 6), d: d, t: x.t || '', x: x.x, name: p.name, place: p.place || x.loc || '', phone: p.phone || (c ? normPhone(c.phone) : ''), cid: c ? c.id : '', st: st, at: now };
+  }
+  // 싯플랜 전체를 보고 새 상담 일정을 찾음. 처음 한 번은 이미 있던 일정을 '예전 일정'으로만 적어 둠 (알림 폭탄 방지)
+  async function cfScan(){
+    if (CF_BUSY || !Store.isOpen()) return 0;
+    CF_BUSY = true;
+    try {
+      await planLoad();
+      var C = PL.d.cfm = PL.d.cfm || { list: [] }, first = !C.init, t = todayStr(), seen = {}, fresh = [], dirty = first;
+      Object.keys(PL.d.days).forEach(function(d){
+        if (d < t) return;
+        (PL.d.days[d].items || []).forEach(function(x){
+          if (!CF_RE.test(x.x || '')) return;
+          var k = cfKey(d, x), r = C.list.find(function(y){ return y.k === k; }); seen[k] = 1;
+          if (!r) { r = cfNew(d, x, first ? 'old' : 'ready'); C.list.push(r); dirty = true; if (!first) fresh.push(r); return; }
+          if (r.x !== x.x && !r.ed) { var p = cfParse(x.x); r.x = x.x; r.name = p.name || r.name; r.place = p.place || x.loc || r.place; if (p.phone) r.phone = p.phone; dirty = true; }
+          if (r.d !== d || r.t !== (x.t || '')) { r.d = d; r.t = x.t || ''; delete r.txt; if (r.st === 'sent') { r.st = 'ready'; r.moved = 1; fresh.push(r); } dirty = true; } // 일정이 옮겨짐 → 다시 보내도록
+        });
+      });
+      var keep = C.list.filter(function(r){ return seen[r.k] || (r.st === 'sent' && r.sentAt && cfDay(r.sentAt) === t); }); // 지운·지난 일정 정리 (오늘 보낸 것은 체크 표시용으로 남김)
+      if (keep.length !== C.list.length) { C.list = keep; dirty = true; }
+      C.init = 1;
+      if (dirty) { await planSave(); clearTimeout(CF_T); }
+      if (fresh.length) {
+        var shown = 0; for (var i = 0; i < fresh.length; i++) if (await cfNotify(fresh[i])) shown++;
+        toast('✉️ 확정 문자 준비됨 · ' + fresh.map(function(r){ return (r.name || '고객') + ' 고객님'; }).join(', ') + (shown ? '' : ' · 홈의 "확정 문자 발송"에서 보내세요'));
+        if ($('dlg').hidden) { if (S.view === 'plan') { var y = window.scrollY; showPlan(S.pm); window.scrollTo(0, y); } else if (!S.cur && !S.view) showWelcome(); }
+      }
+      return fresh.length;
+    } finally { CF_BUSY = false; }
+  }
+  async function cfNotify(r){
+    try {
+      if (!window.Notification || Notification.permission !== 'granted') return false;
+      var title = '확정 문자 준비됨', body = (r.name || '고객') + ' 고객님 · ' + cfWhen(r.d, r.t).replace(' {오전/오후} {시}시', '') + (r.moved ? ' (일정 변경)' : '') + '\n눌러서 카톡·문자로 보내세요';
+      var reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration();
+      if (reg && reg.showNotification) { await reg.showNotification(title, { body: body, tag: 'cf-' + r.id, icon: 'icon-192.png', badge: 'icon-192.png', data: { cf: r.id }, requireInteraction: true }); return true; }
+      var n = new Notification(title, { body: body, tag: 'cf-' + r.id, icon: 'icon-192.png' });
+      n.onclick = function(){ try { window.focus(); } catch(e){} n.close(); cfWant(r.id); };
+      return true;
+    } catch(e){ return false; }
+  }
+  function cfWant(id){ if (Store.isOpen()) cfOpen(id); else CF_WANT = id; }
+  try { if (navigator.serviceWorker) navigator.serviceWorker.addEventListener('message', function(e){ if (e.data && e.data.cf) cfWant(e.data.cf); }); } catch(e){}
+  // 잠금 풀고 들어올 때: 알림을 눌러 열렸으면(?cf=) 그 문자부터 보여 줌
+  async function cfBoot(){
+    try { var q = new URLSearchParams(location.search).get('cf'); if (q) { CF_WANT = q; history.replaceState(null, '', location.pathname); } } catch(e){}
+    try { await cfScan(); } catch(e){}
+    if (CF_WANT) { var id = CF_WANT; CF_WANT = ''; cfOpen(id); }
+  }
+  // 싯플랜의 일정 하나로 확정 문자 만들기 (알림 전에 직접 열 때)
+  async function cfEnsure(d, x){
+    await planLoad(); var C = PL.d.cfm = PL.d.cfm || { list: [], init: 1 }, k = cfKey(d, x), r = C.list.find(function(y){ return y.k === k; });
+    if (!r) { r = cfNew(d, x, 'ready'); C.list.push(r); } else if (r.st === 'old') r.st = 'ready';
+    await planSave(); return r.id;
+  }
+  function cfMark(d, x){ var C = PL.d && PL.d.cfm; if (!C || !CF_RE.test(x.x || '')) return ''; var k = cfKey(d, x), r = C.list.find(function(y){ return y.k === k; }); return !r ? '' : r.st === 'ready' ? ' cf' : r.st === 'sent' ? ' cfok' : ''; }
+  async function cfSet(id, st, via){
+    await planLoad(); var r = ((PL.d.cfm || {}).list || []).find(function(x){ return x.id === id; }); if (!r) return null;
+    r.st = st; if (st === 'sent') { r.sentAt = Date.now(); r.via = via || ''; delete r.moved; } else delete r.sentAt;
+    await planSave(); return r;
+  }
+  function cfRefresh(){ if (!$('dlg').hidden) return; if (S.view === 'plan') { var y = window.scrollY; showPlan(S.pm); window.scrollTo(0, y); } else if (S.view === 'brief') showBrief(); else if (!S.cur && !S.view) showWelcome(); }
+  // 오늘 할 일 · 싯플랜 · 브리핑에 들어가는 '확정 문자 발송' 체크 목록
+  function cfSec(){
+    var C = PL.d && PL.d.cfm; if (!C) return '';
+    var t = todayStr(), by = function(a, b){ return (a.d + a.t) < (b.d + b.t) ? -1 : 1; };
+    var rd = C.list.filter(function(r){ return r.st === 'ready'; }).sort(by), dn = C.list.filter(function(r){ return r.st === 'sent' && r.sentAt && cfDay(r.sentAt) === t; }).sort(by);
+    if (!rd.length && !dn.length) return '';
+    var row = function(r){ var done = r.st === 'sent'; return '<div class="brow cfrow' + (done ? ' done' : '') + '"><button type="button" class="cfck" data-cfck="' + r.id + '" aria-pressed="' + done + '" aria-label="' + (done ? '보냄 · 누르면 다시 보낼 목록으로' : '보냄으로 체크') + '">' + (done ? '✓' : '') + '</button><button type="button" class="ctn" data-cfo="' + r.id + '"><b>' + esc(r.name || '(이름 없음)') + ' 고객님 · 확정 문자 발송</b><small>' + esc(cfWhen(r.d, r.t).replace(' {오전/오후} {시}시', '')) + (r.place ? ' · ' + esc(r.place) : '') + (r.moved ? ' · 일정 바뀜' : '') + (done ? ' · 보냄' : '') + '</small></button></div>'; };
+    var ask = window.Notification && Notification.permission === 'default' ? '<p class="note"><button type="button" class="lnk2" data-cfn="1">🔔 휴대폰 알림 켜기</button> · 켜 두면 새 상담 일정이 생길 때 "확정 문자 준비됨" 알림이 뜹니다</p>' : '';
+    return '<section class="bsec cfsec"><h5>✉️ 확정 문자 발송 <b>' + rd.length + '</b></h5>' + rd.map(row).join('') + dn.map(row).join('') + ask + '</section>';
+  }
+  document.addEventListener('click', async function(e){
+    var b = e.target.closest('[data-cfo],[data-cfck],[data-cfn]'); if (!b || b.closest('#dlg')) return;
+    if (b.dataset.cfo) cfOpen(b.dataset.cfo);
+    else if (b.dataset.cfn) { try { await Notification.requestPermission(); } catch(e2){} cfRefresh(); }
+    else { var on = b.getAttribute('aria-pressed') === 'true', r = await cfSet(b.dataset.cfck, on ? 'ready' : 'sent', 'check'); if (r) toast(on ? '다시 보낼 목록으로 돌렸습니다' : (r.name || '고객') + ' 고객님 확정 문자 발송 완료로 체크했습니다'); cfRefresh(); }
+  });
+  // 편집 화면: 빈 칸은 직접 고치고 → [카카오톡 공유] · [문자 보내기] · [복사]
+  async function cfOpen(id){
+    await planLoad(); var r = ((PL.d.cfm || {}).list || []).find(function(x){ return x.id === id; });
+    if (!r) { toast('이 확정 문자는 이미 정리되었습니다 (일정이 지났거나 지워짐)'); return; }
+    try { if (navigator.serviceWorker) navigator.serviceWorker.getRegistration().then(function(g){ if (g && g.getNotifications) g.getNotifications({ tag: 'cf-' + r.id }).then(function(ns){ ns.forEach(function(n){ n.close(); }); }); }).catch(function(){}); } catch(e){}
+    var hm = r.t ? r.t.slice(0, 2) + ':' + r.t.slice(2) : '', edited = !!r.txt;
+    openDlg('<h4>✉️ 상담 확정 문자' + (r.st === 'sent' ? ' <small class="note">· 보냄</small>' : '') + '</h4><div class="form plform cfform">' +
+      '<p class="note">캘린더 일정 <b>' + esc(r.x) + '</b>에서 뽑았습니다. 빈 칸이나 틀린 곳은 고쳐 주세요. 고객 정보는 이 기기 안에서만 씁니다.</p>' +
+      '<div class="frow2"><div><label class="l">고객명</label><input id="cfN" type="text" maxlength="12" value="' + esc(r.name) + '" placeholder="예: 홍길동"></div><div><label class="l">고객 번호 (문자용 · 선택)</label><input id="cfP" type="tel" inputmode="tel" value="' + esc(phoneTxt(r.phone)) + '" placeholder="010-0000-0000"></div></div>' +
+      '<div class="frow2"><div><label class="l">상담 날짜</label><input id="cfD" type="date" value="' + esc(r.d) + '"></div><div><label class="l">시각</label><input id="cfT" type="time" value="' + hm + '"></div></div>' +
+      '<label class="l">상담장소 (주소)</label><input id="cfL" type="text" maxlength="80" value="' + esc(r.place) + '" placeholder="예: 부산 해운대구 우동">' +
+      '<label class="l">담당자 (문자에 들어갈 이름·직급)</label><input id="cfS" type="text" maxlength="20" value="' + esc(cfMe()) + '">' +
+      '<label class="l">보낼 문자 <button type="button" class="lnk2" id="cfRe">양식으로 다시 만들기</button></label><textarea id="cfX" class="ktxt msgtxt" spellcheck="false"></textarea>' +
+      '<div id="cfQr" class="msgqr" hidden></div><div class="note" id="cfNote"></div></div>' +
+      '<div class="mrow cfbtns"><button class="btn lg" type="button" id="cfClose" style="margin-right:auto">닫기</button>' +
+      (r.st === 'ready' ? '<button class="btn lg" type="button" id="cfSkip">안 보냄</button>' : '') +
+      '<button class="btn lg" type="button" id="cfCopy">복사</button><button class="btn lg" type="button" id="cfSms">' + IC.sms + '문자 보내기</button><button class="go kakao" type="button" id="cfKk">' + IC.chat + '카카오톡 공유</button>' +
+      '<button class="go" type="button" id="cfDone" hidden>보냈어요 ✓</button></div>', 'wide kbox');
+    var ta = $('cfX');
+    var cur = function(){ var tt = $('cfT').value; return { name: $('cfN').value.trim(), d: $('cfD').value, t: tt ? tt.replace(':', '') : '', place: $('cfL').value.trim() }; };
+    var build = function(){ ta.value = cfText(cur(), $('cfS').value.trim()); };
+    if (edited) ta.value = r.txt; else build();
+    ['cfN', 'cfD', 'cfT', 'cfL', 'cfS'].forEach(function(k){ $(k).addEventListener('input', function(){ if (!edited) build(); }); });
+    ta.addEventListener('input', function(){ edited = true; });
+    $('cfRe').onclick = function(){ edited = false; build(); };
+    // 고친 내용은 이 기기에만 저장
+    var keep = async function(){
+      var c = cur(), ph = normPhone($('cfP').value), sg = $('cfS').value.trim();
+      if (c.name !== r.name || c.place !== r.place || ph !== r.phone) r.ed = 1;
+      r.name = c.name; r.place = c.place; r.phone = ph; if (edited) r.txt = ta.value; else delete r.txt;
+      if (sg && sg !== cfMe()) PL.d.cfSign = sg;
+      await planSave(); return { txt: ta.value, ph: ph };
+    };
+    var blank = function(txt){ return /\{(고객명|장소|월|일|요일|오전\/오후|시)\}/.test(txt); };
+    var sent = async function(via, msg){ await cfSet(r.id, 'sent', via); closeDlg(); toast(msg || '확정 문자 발송 완료로 체크했습니다'); cfRefresh(); };
+    var showDone = function(note){ $('cfNote').textContent = note; $('cfDone').hidden = false; };
+    $('cfClose').onclick = async function(){ await keep(); closeDlg(); cfRefresh(); };
+    if ($('cfSkip')) $('cfSkip').onclick = async function(){ await keep(); await cfSet(r.id, 'old'); closeDlg(); toast('이 일정은 확정 문자 목록에서 뺐습니다 · 싯플랜 일정 창에서 다시 열 수 있습니다'); cfRefresh(); };
+    $('cfDone').onclick = function(){ sent($('cfDone').dataset.via || 'copy'); };
+    $('cfCopy').onclick = async function(){ var k = await keep(); if (blank(k.txt)) toast('{ } 빈 칸이 남아 있습니다 · 고친 뒤 보내 주세요'); copyText(k.txt, '확정 문자'); $('cfDone').dataset.via = 'copy'; showDone('복사했습니다 · 카카오톡이나 문자에 붙여 넣어 보낸 뒤 [보냈어요 ✓]를 눌러 주세요'); };
+    $('cfSms').onclick = async function(){
+      var k = await keep(); if (blank(k.txt) && !confirm('{ } 빈 칸이 남아 있습니다. 그대로 보낼까요?')) return;
+      if (IS_MOBILE) { await cfSet(r.id, 'sent', 'sms'); closeDlg(); location.href = 'sms:' + k.ph + '?body=' + encodeURIComponent(k.txt); return; }
+      // PC: 휴대폰 카메라로 찍으면 문자 앱이 번호·내용으로 열리는 QR
+      var box = $('cfQr'); box.hidden = false;
+      try { if (!window.qrcode) throw 0; window.qrcode.stringToBytes = window.qrcode.stringToBytesFuncs['UTF-8']; var q = window.qrcode(0, 'L'); q.addData('SMSTO:' + k.ph + ':' + k.txt); q.make();
+        box.innerHTML = q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }) + '<div><b>휴대폰 카메라로 이 QR을 찍으세요</b><br><span class="note">문자 앱이 ' + (k.ph ? phoneTxt(k.ph) + ' 번호와 ' : '') + '이 내용으로 열립니다.</span></div>';
+      } catch(e){ box.innerHTML = '<span class="note">QR을 만들지 못했습니다 · [복사]를 눌러 주세요</span>'; }
+      $('cfDone').dataset.via = 'sms'; showDone('휴대폰에서 문자를 보낸 뒤 [보냈어요 ✓]를 눌러 주세요');
+    };
+    $('cfKk').onclick = async function(){
+      var k = await keep(); if (blank(k.txt) && !confirm('{ } 빈 칸이 남아 있습니다. 그대로 보낼까요?')) return;
+      if (IS_MOBILE && navigator.share) {
+        try { await navigator.share({ text: k.txt }); await sent('kakao', '카톡 공유 완료 · 확정 문자 발송 체크했습니다'); }
+        catch(e){ if (e && e.name === 'AbortError') return; copyText(k.txt, '확정 문자'); $('cfDone').dataset.via = 'kakao'; showDone('공유 창이 열리지 않아 복사했습니다 · 카카오톡에 붙여 넣어 보낸 뒤 [보냈어요 ✓]'); }
+        return;
+      }
+      copyText(k.txt, '확정 문자'); $('cfDone').dataset.via = 'kakao';
+      showDone('복사했습니다 · 카카오톡 PC에서 "나와의 채팅" 또는 ' + (r.name || '고객') + '님 대화방을 열고 Ctrl+V로 붙여 넣은 뒤 [보냈어요 ✓]를 눌러 주세요');
+    };
+  }
 
   function openCalSend(){
     var t = todayStr(), wdn = wdOf(t), sun = addDay(t, -wdn), wk = []; for (var i = 0; i < 7; i++) wk.push(addDay(sun, i));
@@ -6330,7 +6506,7 @@ function HealthUI(root, H) {
     $('shell').classList.add('has-c'); armBack(); renderList();
     var B = briefData(), cps = campsGet(), t = todayStr();
     var h = '<div class="chead"><button class="btn back" type="button" data-act="back">‹ 목록</button><h2 data-i="★">오늘의 브리핑</h2><span class="cmeta">' + dot(t) + ' · 연락할 고객을 한 화면에</span></div>' +
-      gameStrip() + (GAME_ON && GM.last ? '<h5 class="gsec">오늘의 퀘스트</h5>' + questCards(GM.last) : '') +
+      gameStrip() + cfSec() + (GAME_ON && GM.last ? '<h5 class="gsec">오늘의 퀘스트</h5>' + questCards(GM.last) : '') +
       '<div class="bkpi">' + [['할 일', B.todo.length], ['생일 7일', B.bday.length], ['응당일 14일', B.ann.length], ['청구기한 60일', B.claim.length], ['90일 미연락', B.quiet.length]].map(function(k){ return '<div><small>' + k[0] + '</small><b>' + k[1] + '</b></div>'; }).join('') + '</div>';
     if (B.nocvx) h += '<div class="gapban a">' + IC.warn + '<span>분석해 둔 고객 ' + B.nocvx + '명은 아직 보장 요약(응당일·청구기한·캠페인 대상)이 계산되지 않았습니다.</span><button class="btn" type="button" data-nx="bcalc">지금 계산</button></div>';
     // NHC 뉴스 연계 캠페인
@@ -6583,6 +6759,7 @@ function HealthUI(root, H) {
     setTimeout(function(){ gcAuto(true); }, 7000);
     setTimeout(connBadge, 9000);
     setTimeout(function(){ planLoad().then(function(){ procLoad(); mdLoad(); trailLoad(); }); }, 300);
+    setTimeout(cfBoot, 1200);
     setTimeout(sugNotify, 9000);
     setTimeout(takeShared, 400);
     setTimeout(function(){ nhcDaily().then(function(){ if (!S.cur && !S.view) showWelcome(); }); }, 2500);
@@ -7955,7 +8132,7 @@ function HealthUI(root, H) {
   $('sugBtn').onclick = function(){ showSug('all'); };
   function showWelcome(){
     S.cur = null; S.data = null; S.view = ''; $('shell').classList.remove('has-c');
-    var hd = homeDash(); $('main').innerHTML = hd ? hd : gameStrip() + briefMini() + $('tplWelcome').innerHTML;
+    var hd = homeDash(); $('main').innerHTML = hd ? hd : gameStrip() + cfSec() + briefMini() + $('tplWelcome').innerHTML;
     renderList();
   }
 
@@ -7972,8 +8149,8 @@ function HealthUI(root, H) {
     return '<section class="hd"><div class="hd-top"><div><h2>' + (who ? esc(who) + ', ' : '') + '좋은 하루예요</h2><small>' + dot(t) + ' (' + '일월화수목금토'[wdOf(t)] + ') · 고객 ' + L.length + '명</small></div>' +
       '<div class="hd-act"><button class="go" type="button" data-hd="new">＋ 신규 고객 <kbd>N</kbd></button><button class="btn" type="button" data-hd="plan">🗓 오늘 싯플랜 <kbd>2</kbd></button><button class="btn" type="button" data-hd="keys">⌨ 단축키 <kbd>?</kbd></button></div></div>' +
       '<div class="hd-kpi">' + kpi.map(function(k){ return '<button type="button" class="' + (k[3] || '') + '" data-hd="' + k[2] + '"><small>' + k[0] + '</small><b>' + k[1] + '</b></button>'; }).join('') + '</div>' +
-      '<div class="hd-grid"><div class="hd-col">' + bSec('오늘 할 일 · 지난 할 일', B.todo, '오늘 할 일이 없습니다.') + bSec('오늘 만날 수 있는 고객', B.meetToday, '만남 정보에 편한 요일·시간을 넣어 두면 여기에 나옵니다.') + '</div>' +
-      '<div class="hd-col"><section class="bsec hd-plan"><h5>오늘 싯플랜 <button type="button" class="lnk2" data-pd="' + t + '">편집</button></h5>' + (plan.length ? plan.map(function(x){ return '<div class="hp-r c-' + (x.c || 'k') + '"><i>' + (x.t ? x.t.slice(0, 2) + ':' + x.t.slice(2) : '—') + '</i><span>' + esc(x.x) + '</span></div>'; }).join('') : '<p class="note">오늘 일정이 없습니다. <button type="button" class="lnk2" data-pd="' + t + '">일정 넣기</button></p>') + '</section>' +
+      '<div class="hd-grid"><div class="hd-col">' + cfSec() + bSec('오늘 할 일 · 지난 할 일', B.todo, '오늘 할 일이 없습니다.') + bSec('오늘 만날 수 있는 고객', B.meetToday, '만남 정보에 편한 요일·시간을 넣어 두면 여기에 나옵니다.') + '</div>' +
+      '<div class="hd-col"><section class="bsec hd-plan"><h5>오늘 싯플랜 <button type="button" class="lnk2" data-pd="' + t + '">편집</button></h5>' + (plan.length ? plan.map(function(x){ return '<div class="hp-r c-' + (x.c || 'k') + cfMark(t, x) + '"><i>' + (x.t ? x.t.slice(0, 2) + ':' + x.t.slice(2) : '—') + '</i><span>' + esc(x.x) + '</span></div>'; }).join('') : '<p class="note">오늘 일정이 없습니다. <button type="button" class="lnk2" data-pd="' + t + '">일정 넣기</button></p>') + '</section>' +
       bSec('생일 (7일 안)', B.bday, '7일 안에 생일인 고객이 없습니다.') + bSec('오래 연락 못 한 고객 (90일+)', B.quiet, '90일 넘게 연락이 끊긴 고객이 없습니다.') + '</div></div>' +
       '<section class="bsec hd-rec"><h5>최근 본 고객</h5><div class="hd-chips">' + recent.map(function(c){ return '<button type="button" data-ctopen="' + c.id + '"><i class="cav s-' + (c.stage === 'db' ? 'lead' : c.stage || 'lead') + '">' + esc(c.name.slice(0, 1)) + '</i>' + esc(c.name) + '<small>' + stageTxt(c.stage) + '</small></button>'; }).join('') + '</div></section>' +
       '<div class="bgrid">' + bizBriefSecs() + '</div></section>';

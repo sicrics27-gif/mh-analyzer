@@ -1,4 +1,4 @@
-const V="mhs-1792990663";const ASSETS=["./","index.html","manifest.webmanifest","icon-192.png","icon-512.png","lib/pdf.min.js","lib/pdf.worker.min.js","lib/jszip.min.js","lib/xlsx.full.min.js","lib/PretendardVariable.woff2","lib/qrcode.js","lib/bg-afg.jpg","lib/bg-afg-tall.jpg","lib/bg-afg-hero.jpg","lib/bg-concrete-side.jpg","lib/bg-main.jpg","lib/afg-mark.jpg","lib/leaflet.js","lib/leaflet.css"];
+const V="mhs-1792990664";const ASSETS=["./","index.html","manifest.webmanifest","icon-192.png","icon-512.png","lib/pdf.min.js","lib/pdf.worker.min.js","lib/jszip.min.js","lib/xlsx.full.min.js","lib/PretendardVariable.woff2","lib/qrcode.js","lib/bg-afg.jpg","lib/bg-afg-tall.jpg","lib/bg-afg-hero.jpg","lib/bg-concrete-side.jpg","lib/bg-main.jpg","lib/afg-mark.jpg","lib/leaflet.js","lib/leaflet.css"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()));});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
 self.addEventListener("fetch",e=>{const u=new URL(e.request.url);
@@ -7,3 +7,5 @@ self.addEventListener("fetch",e=>{const u=new URL(e.request.url);
  if(u.origin===location.origin){e.respondWith(fetch(e.request).then(r=>{const c=r.clone();caches.open(V).then(x=>x.put(e.request,c));return r;}).catch(()=>caches.match(e.request,{ignoreSearch:true}).then(r=>r||caches.match("index.html"))));return;}
  if(/fonts\.(googleapis|gstatic)\.com$/.test(u.hostname)){e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{const c=res.clone();caches.open(V).then(x=>x.put(e.request,c));return res;})));}
 });
+// 상담 확정 문자 알림을 누르면: 열려 있는 AOB9 창에 알려 주고, 없으면 새로 엶 (?cf=문자 id)
+self.addEventListener("notificationclick",e=>{e.notification.close();const id=(e.notification.data||{}).cf;if(!id)return;e.waitUntil(self.clients.matchAll({type:"window",includeUncontrolled:true}).then(cs=>{for(const c of cs){if("focus" in c){c.postMessage({cf:id});return c.focus();}}return self.clients.openWindow("./?cf="+encodeURIComponent(id));}));});
