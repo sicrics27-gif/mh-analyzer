@@ -1883,6 +1883,10 @@ body.cph-on{overflow:hidden}
 .rgrow input[type=checkbox]{width:18px;height:18px}
 @media (max-width:620px){.rgr{grid-template-columns:1fr auto}.rgr input[type=date]{grid-column:1}.rgr input[type=text]{grid-column:2}}
 
+/* 꾹 누르기·끌기 때 글자 파랗게 잡힘 막기 — 입력칸과 .sel-ok 는 예외 */
+html,body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+input,textarea,select,[contenteditable]:not([contenteditable="false"]),[contenteditable]:not([contenteditable="false"]) *,.sel-ok,.sel-ok *{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+img,a,svg{-webkit-user-drag:none}
 </style>
 </head>
 <body>
@@ -8864,5 +8868,14 @@ function HealthUI(root, H) {
 
 </script>
 <script>if("serviceWorker" in navigator&&location.protocol!=="file:"){addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script>
+<script>
+/* 입력칸이 아닌 곳: 꾹 누르기 메뉴·이미지/링크 끌기 막기 */
+(function(){
+  var OK = 'input,textarea,select,[contenteditable]:not([contenteditable="false"]),.sel-ok';
+  function editable(t){ return t && t.closest && t.closest(OK); }
+  document.addEventListener('contextmenu', function(e){ if (!editable(e.target)) e.preventDefault(); });
+  document.addEventListener('dragstart', function(e){ var t = e.target; if (t && t.nodeType === 3) t = t.parentNode; if (editable(t)) return; if (t && t.closest && t.closest('img,a,svg')) e.preventDefault(); });
+})();
+</script>
 </body>
 </html>
