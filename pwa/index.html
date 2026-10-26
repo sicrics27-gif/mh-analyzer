@@ -1719,6 +1719,14 @@ details.pcard>summary::after{content:"▾";margin-left:auto;color:var(--mute)}de
 .ctl{display:flex;flex-direction:column;gap:6px}.ctr{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 10px;border-radius:12px;background:var(--soft)}
 .ct-d{font-size:12.5px;color:var(--mute);font-variant-numeric:tabular-nums}.ct-n{flex:1;display:flex;flex-direction:column;min-width:140px}.ct-n b{font-size:14px}.ct-n small{color:var(--mute);font-size:12px}
 .ct-a{display:flex;gap:6px;flex-wrap:wrap}
+/* 보험사 고객등록 현황 */
+.stb button[data-st="pending"][aria-pressed="true"]{background:#e0a33a;color:#fff}
+.rgw{display:inline-block;font-size:11.5px;font-weight:700;color:#ffbe5a;border:1px solid rgba(255,190,90,.55);border-radius:999px;padding:1px 8px}
+.rgwarn{border:1px solid rgba(255,190,90,.55);background:rgba(255,190,90,.1);color:var(--ink);border-radius:10px;padding:8px 10px;font-size:13px;line-height:1.45}
+.rgt{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0 12px}.rgt th,.rgt td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:right}.rgt th:first-child,.rgt td:first-child{text-align:left}
+.rgt th{color:var(--mute);font-weight:600;font-size:12px}.rgt button{border:0;background:none;color:var(--ink);font:inherit;font-weight:700;cursor:pointer;padding:0;text-decoration:underline dotted}
+.rgl{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px}
+.rgdots{display:flex;flex-wrap:wrap;gap:3px;margin-top:2px}.rgdots i{font-style:normal;font-size:10.5px;padding:0 5px;border-radius:5px;background:rgba(255,255,255,.06);color:var(--mute)}.rgdots i.done{background:rgba(62,207,142,.18);color:#3ecf8e}.rgdots i.pending{background:rgba(224,163,58,.2);color:#ffbe5a}
 /* 처리할 고객 업무 */
 .pm-tabs{display:flex;gap:2px;padding:6px 6px 0;border-bottom:1px solid var(--line)}
 .pm-tabs button{flex:1;height:32px;border:0;border-radius:8px 8px 0 0;background:transparent;color:var(--mute);font:inherit;font-size:12px;font-weight:700;letter-spacing:.06em;cursor:pointer}
@@ -1828,7 +1836,7 @@ details.pcard>summary::after{content:"▾";margin-left:auto;color:var(--mute)}de
     <div class="clist" id="clist"></div>
     <div class="sclip" id="sclip" hidden></div>
     <div class="ssync" id="ssync"></div>
-    <details class="smenu" id="smenu"><summary><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>도구 · 백업 · 사용자 관리</summary><div class="sfoot"><button type="button" class="dbm" data-act="dbImport">회사 DB 고객 가져오기</button><button id="mapBtn" type="button">🗺️ 지역별 고객 (지도)</button><button id="callBtn" type="button">☎️ 액션콜 연습</button><button id="mdBtn" type="button">⭐ MD’s PICK</button><button id="sugBtn" type="button">💡 건의사항</button><button id="apkBtn" type="button">안드로이드 앱 (APK)</button><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button><button type="button" data-sync="signout">구글 계정 바꾸기</button><button type="button" id="themeBtn">밝은 화면으로</button><button id="admBtn" type="button" class="adm">사용자 관리</button><button type="button" class="adm nxm" data-nx="setup">NHC 본사 연결 · 보장분석부서</button></div></details>
+    <details class="smenu" id="smenu"><summary><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>도구 · 백업 · 사용자 관리</summary><div class="sfoot"><button type="button" class="dbm" data-act="dbImport">회사 DB 고객 가져오기</button><button id="mapBtn" type="button">🗺️ 지역별 고객 (지도)</button><button id="regBtn" type="button">🏢 보험사 고객등록 현황</button><button id="callBtn" type="button">☎️ 액션콜 연습</button><button id="mdBtn" type="button">⭐ MD’s PICK</button><button id="sugBtn" type="button">💡 건의사항</button><button id="apkBtn" type="button">안드로이드 앱 (APK)</button><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button><button type="button" data-sync="signout">구글 계정 바꾸기</button><button type="button" id="themeBtn">밝은 화면으로</button><button id="admBtn" type="button" class="adm">사용자 관리</button><button type="button" class="adm nxm" data-nx="setup">NHC 본사 연결 · 보장분석부서</button></div></details>
     <input type="file" id="bkFile" accept=".json,application/json" hidden>
     <div class="slock"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6 10V8a6 6 0 1 1 12 0v2h1v12H5V10zm2 0h8V8a4 4 0 1 0-8 0z"/></svg>고객 정보는 잠금 비밀번호로 암호화 저장 <span id="verTag"></span></div>
     <div id="memBan" class="membanner" hidden>저장소를 쓸 수 없는 화면입니다 · 창을 닫으면 사라집니다</div>
@@ -4097,12 +4105,26 @@ function HealthUI(root, H) {
   }
   async function campaigns(cfg) { var f = await getFile(cfg, 'outbox/crm/campaigns.json'); return f ? f.data : null; }
   async function stats(cfg, st) { await putFile(cfg, 'inbox/crm/stats.json', st, '고객관리 통계 ' + st.date); }
+  // AFG 통로 v2 (NHC docs/afg-bridge.md) — 숫자만. 보험사 이름 외의 글자는 보내지 않음
+  function cleanTasks(t) {
+    var n = function (v) { v = Math.round(+v || 0); return v > 0 ? v : 0; }, out = { v: 2, date: String(t.date || '').slice(0, 10) };
+    if (t.pipeline) out.pipeline = { signed_month: n(t.pipeline.signed_month), premium_month: n(t.pipeline.premium_month) };
+    if (t.refund) out.refund = { card: n(t.refund.card), hidden: n(t.refund.hidden), rider: n(t.refund.rider), done: n(t.refund.done) };
+    out.registration = {};
+    Object.keys(t.registration || {}).slice(0, 40).forEach(function (k) {
+      if (/\d|@/.test(k)) return; // 숫자·메일 모양이 섞인 이름은 보내지 않음
+      var name = String(k).replace(/[^A-Za-z가-힣·& ]/g, '').trim().slice(0, 20); if (!name) return;
+      out.registration[name] = { done: n(t.registration[k].done), pending: n(t.registration[k].pending) };
+    });
+    return out;
+  }
+  async function tasks(cfg, t) { var o = cleanTasks(t); await putFile(cfg, 'inbox/afg/tasks.json', o, 'AFG 업무 숫자 ' + o.date); }
 
   var ROWS = { '10': '실손입원', '11': '실손통원', '12': '일반암', '13': '고액암', '14': '유사암', '15': '암통원일당', '16': '암수술', '17': '다빈치', '18': '특정면역항암', '19': '표적항암', '20': '세기조절', '21': '양성자', '22': '정위', '23': '중입자', '24': '항암방사선', '25': '항암약물',
     '26': '뇌혈관진단', '27': '뇌졸중진단', '28': '뇌출혈진단', '29': '뇌혈관수술', '30': '뇌경색혈전', '31': '허혈성진단', '32': '부정맥/심부전', '33': '급성심근경색', '34': '허혈성수술', '35': '심근경색혈전', '36': '질병수술', '37': '상해수술', '38': '1종수술', '39': '2종수술', '40': '3종수술', '41': '4종수술', '42': '5종수술', '43': '1-7종수술',
     '44': '질병후유장해', '45': '상해후유장해', '46': '질병입원일당', '47': '상해입원일당', '48': '응급실', '49': '일반사망', '50': '질병사망', '51': '상해/재해사망', '52': '골절', '53': '깁스', '54': '화상', '55': '배상책임', '56': '교통사고처리지원금', '57': '자동차벌금', '58': '변호사선임', '59': '자동차부상치료' };
   root.NHC = { DEF_REPO: DEF_REPO, ROWS: ROWS, CATS: CATS, facts: facts, deid: deid, matches: matches, targetTxt: targetTxt, ageOf: ageOf, newId: newId,
-    verify: verify, send: send, fetchResult: fetchResult, campaigns: campaigns, stats: stats };
+    verify: verify, send: send, fetchResult: fetchResult, campaigns: campaigns, stats: stats, tasks: tasks, cleanTasks: cleanTasks };
 })(this);
 
 </script>
@@ -4706,7 +4728,7 @@ function HealthUI(root, H) {
         (c.interest ? '<span class="cc-kv"><small>관심</small>' + esc(c.interest) + '</span>' : '') +
       '</div>' +
       '<div class="cc-next' + (n != null && n <= 0 ? ' due' : '') + '">' + (c.next && c.next.d ? '<span><small>다음 할 일</small><b>' + dot(c.next.d) + ' · ' + dueTxt(n) + '</b> ' + esc(c.next.t || '') + '</span><button type="button" class="pb" data-act="nextDone">완료</button>' : '<span class="note">다음 할 일이 없습니다</span>') + '<button type="button" class="pb" data-ptab="log">기록 · 할 일 추가</button></div>' +
-      '</section>' + contactBar() + meetBar() + covReqBar() + contractsBar() + procBar() + refundBar();
+      '</section>' + contactBar() + meetBar() + covReqBar() + contractsBar() + regBar() + procBar() + refundBar();
     return h;
   }
   function timeline(){
@@ -5328,14 +5350,20 @@ function HealthUI(root, H) {
     openDlg('<h4>' + IC.won + (ed ? ' 계약 수정' : ' 계약 실적 넣기') + '</h4><div class="form plform"><label class="l">고객</label><input id="dN" type="text" list="dNl" value="' + esc(ed ? ed.name : c ? c.name : '') + '" placeholder="고객 이름"><datalist id="dNl">' + S.list.slice(0, 400).map(function(x){ return '<option value="' + esc(x.name) + '">'; }).join('') + '</datalist>' +
       '<div class="frow2"><div><label class="l">월납 보험료 (원)</label><input id="dA" type="number" inputmode="numeric" min="0" step="1000" placeholder="예: 85000" value="' + (ed ? ed.amt : '') + '"></div><div><label class="l">계약일</label><input id="dD" type="date" value="' + (ed ? ed.d : todayStr()) + '"></div></div>' +
       '<div class="frow2"><div><label class="l">보험사 (선택)</label><input id="dC" type="text" maxlength="20" value="' + esc(ed && ed.co || '') + '" placeholder="예: 메리츠"></div><div><label class="l">상품 (선택)</label><input id="dP" type="text" maxlength="30" value="' + esc(ed && ed.p || '') + '" placeholder="예: 간편건강 3.5.5"></div></div>' +
+      '<div class="rgwarn" id="dW" hidden></div>' +
       '<label class="l">증권 파일 링크 (선택 · 네이버 MYBOX·구글 드라이브 공유 링크)</label><input id="dU" type="url" value="' + esc(ed && ed.url || '') + '" placeholder="https://">' +
       (PL.d.deals.length ? '<details class="dlist"><summary>이번 달 넣은 계약 ' + PL.d.deals.filter(function(x){ return x.d.slice(0, 7) === todayStr().slice(0, 7); }).length + '건</summary>' + PL.d.deals.slice().reverse().slice(0, 30).map(function(x, i){ return '<div class="dli"><span>' + dot(x.d) + ' · ' + esc(x.name) + (x.p ? ' · ' + esc(x.p) : '') + '</span><b>' + won(x.amt) + '</b><button type="button" class="tl-x" data-ddel="' + x.id + '" aria-label="지우기">×</button></div>'; }).join('') + '</details>' : '') +
       '<div class="ferr" id="dE"></div></div><div class="mrow"><button class="btn lg" type="button" id="dX" style="margin-left:auto">닫기</button><button class="go" type="button" id="dGo">저장</button></div>');
     $('dX').onclick = closeDlg;
+    // 보험사 고객등록 확인: 넣으려는 보험사에 미등록·요청중이면 "먼저 고객등록 필요" 경고
+    var dCust = function(){ var n = $('dN').value.trim(); return S.list.find(function(x){ return x.name === n; }) || (n ? null : c); };
+    var dWarn = function(){ var w = regWarn(dCust(), $('dC').value.trim()); $('dW').hidden = !w; $('dW').textContent = w ? '⚠ ' + w : ''; return w; };
+    ['dN', 'dC'].forEach(function(id){ $(id).addEventListener('input', dWarn); }); dWarn();
     $('dlgBox').querySelectorAll('[data-ddel]').forEach(function(b){ b.onclick = async function(){ PL.d.deals = PL.d.deals.filter(function(x){ return x.id !== b.dataset.ddel; }); await planSave(); openDeal(cid); }; });
     $('dGo').onclick = async function(){
       var n = $('dN').value.trim(), a = +$('dA').value || 0, d = $('dD').value || todayStr(); if (!n || !a) { $('dE').textContent = '고객 이름과 월납 보험료를 넣으세요.'; return; }
       var cc = S.list.find(function(x){ return x.name === n; }), url = $('dU').value.trim(); if (url && !/^https?:\/\//.test(url)) { $('dE').textContent = '링크는 https:// 로 시작해야 합니다.'; return; }
+      var rw = dWarn(); if (rw && !ed && !confirm(rw + '\n\n그래도 계약 실적을 저장할까요?')) return;
       var rec = { id: ed ? ed.id : Date.now().toString(36), d: d, name: n, cid: cc ? cc.id : (ed ? ed.cid : ''), amt: a, p: $('dP').value.trim(), co: $('dC').value.trim(), url: url };
       if (ed) Object.assign(ed, rec); else PL.d.deals.push(rec); await planSave();
       if (cc && !/^(contract|care)$/.test(cc.stage || '')) { var h = Object.assign({}, cc); h.stage = 'contract'; stageMark(h, 'contract'); await Store.saveHead(h); S.list = await Store.list(); renderList(); }
@@ -6066,8 +6094,22 @@ function HealthUI(root, H) {
     try { localStorage.setItem('mhs_camps_at', String(Date.now())); var c = await NHC.campaigns(cfg); if (c) localStorage.setItem('mhs_camps', JSON.stringify(c)); } catch(e){ if (force) toast(e.message || String(e)); }
     nhcStats(briefData(), true);
   }
+  // AFG 통로 v2: inbox/afg/tasks.json (보험사별 고객등록 수 · 이달 체결 · 환급금 찾기) — 고객 이름 없이 숫자만
+  async function nhcTasks(force){
+    if (!nhcOn()) return;
+    var t = todayStr(); try { if (!force && localStorage.getItem('mhs_ntask') === t) return; } catch(e){}
+    var cfg = await nhcLoad(); if (!cfg || !cfg.token) return;
+    await planLoad(); await regLoad();
+    var ym = t.slice(0, 7), deals = (PL.d && PL.d.deals || []).filter(function(x){ return String(x.d || '').slice(0, 7) === ym; });
+    var rf = { card: 0, hidden: 0, rider: 0, done: 0 };
+    S.list.forEach(function(c){ var r = c.refund || {}; [['point', 'card'], ['hidden', 'hidden'], ['rider', 'rider']].forEach(function(p){ var s = r[p[0]]; if (s && s.st === 1) rf[p[1]]++; if (s && s.st === 2) rf.done++; }); });
+    var N = regCounts(), reg = {}; Object.keys(N).forEach(function(k){ reg[k] = { done: N[k].done, pending: N[k].pending }; });
+    var tk = { date: t, pipeline: { signed_month: deals.length, premium_month: deals.reduce(function(s, x){ return s + (x.amt || 0); }, 0) }, refund: rf, registration: reg };
+    try { await NHC.tasks(cfg, tk); localStorage.setItem('mhs_ntask', t); } catch(e){}
+  }
   async function nhcStats(B, force){
     if (!nhcOn()) return;
+    try { await nhcTasks(force); } catch(e){}
     var t = todayStr(); try { if (!force && localStorage.getItem('mhs_nstat') === t) return; } catch(e){}
     var cfg = await nhcLoad(); if (!cfg || !cfg.token) return;
     var stg = { lead: 0, consult: 0, contract: 0, care: 0 }; S.list.forEach(function(c){ stg[c.stage || 'lead'] = (stg[c.stage || 'lead'] || 0) + 1; });
@@ -6277,7 +6319,7 @@ function HealthUI(root, H) {
     setTimeout(checkPend, 600);
     setTimeout(apkCheck, 5000);
     setTimeout(function(){ gcAuto(true); }, 7000);
-    setTimeout(function(){ planLoad().then(function(){ procLoad(); mdLoad(); trailLoad(); }); }, 300);
+    setTimeout(function(){ planLoad().then(function(){ procLoad(); regLoad(); mdLoad(); trailLoad(); }); }, 300);
     setTimeout(sugNotify, 9000);
     setTimeout(takeShared, 400);
     setTimeout(function(){ nhcDaily().then(function(){ if (!S.cur && !S.view) showWelcome(); }); }, 2500);
@@ -6608,6 +6650,119 @@ function HealthUI(root, H) {
     await saveCur(x.t + ' · ' + RF_ST[st]);
   }
 
+  // ---------- 보험사 고객등록 현황 (고객마다 보험사별 등록완료 / 요청중 / 미등록 · 등록일 · 메모) ----------
+  // 고객 카드(c.reg)에 암호화 저장. 기존 고객은 c.reg 가 없으므로 모두 '미등록'으로 시작. NHC로는 보험사별 숫자만 나감.
+  var REG_DEF = ['삼성화재', '한화손보', 'DB손보', '현대해상', 'KB손보', '메리츠화재'];
+  var REG_ST = [['done', '등록완료'], ['pending', '요청중'], ['none', '미등록']];
+  var REGV = { ins: '', st: '' };
+  async function regLoad(){ if (!BZ.reg) BZ.reg = await hidLoad('__reg', {}); return regIns(); }
+  function regIns(){ return BZ.reg && BZ.reg.ins && BZ.reg.ins.length ? BZ.reg.ins : REG_DEF; }
+  function regOf(c, ins){ var r = (c.reg || {})[ins]; return r && (r.st === 'done' || r.st === 'pending') ? r : { st: 'none', d: r && r.d || '', m: r && r.m || '' }; }
+  function regStTxt(st){ var x = REG_ST.find(function(y){ return y[0] === st; }); return x ? x[1] : '미등록'; }
+  // 보험사 이름 맞추기: "메리츠" → 메리츠화재, "db" → DB손보, "KB손해보험" → KB손보 (삼성생명은 삼성화재와 다른 회사)
+  function regNorm(s){ return String(s || '').replace(/\(주\)|주식회사|\s/g, '').toUpperCase(); }
+  function regCore(s){ var a = regNorm(s), b; do { b = a; a = a.replace(/(손해보험|손보|화재|해상|보험)$/, ''); } while (a !== b && a); return a || regNorm(s); }
+  function regMatch(co){ var a = regNorm(co); if (!a) return ''; var L = regIns(), ac = regCore(co); return L.find(function(x){ return regNorm(x) === a; }) || L.find(function(x){ return regCore(x) === ac; }) || L.find(function(x){ return regCore(x).indexOf(ac) === 0; }) || ''; }
+  // 계약을 넣으려는 보험사에 등록이 안 돼 있으면 경고 문구 (없으면 '')
+  function regWarn(c, co){ if (!c || !co) return ''; var ins = regMatch(co); if (!ins) return ''; var r = regOf(c, ins); if (r.st === 'done') return ''; return ins + (r.st === 'pending' ? ' 고객등록이 아직 요청중입니다 (요청일 ' + (r.d ? dot(r.d) : '미입력') + ').' : '에 고객등록이 안 되어 있습니다.') + ' 계약 전에 먼저 고객등록이 필요합니다.'; }
+  function regCustIns(c){ var L = regIns().slice(); Object.keys(c.reg || {}).forEach(function(k){ if (L.indexOf(k) < 0 && regOf(c, k).st !== 'none') L.push(k); }); return L; }
+  function regBar(){
+    var c = S.cur; if (!c || c.sample) return '';
+    var L = regCustIns(c), cnt = { done: 0, pending: 0, none: 0 }; L.forEach(function(k){ cnt[regOf(c, k).st]++; });
+    return '<details class="pcard rgc"' + (cnt.done || cnt.pending ? ' open' : '') + '><summary><b>🏢 보험사 고객등록</b><small>등록완료 ' + cnt.done + ' · 요청중 ' + cnt.pending + ' · 미등록 ' + cnt.none + '</small></summary><div class="rfl">' +
+      L.map(function(k){ var r = regOf(c, k);
+        return '<div class="rfr"><div class="rf-t"><b>' + esc(k) + '</b><small>' + (r.st === 'done' ? '등록일 ' + (r.d ? dot(r.d) : '미입력') : r.st === 'pending' ? '요청일 ' + (r.d ? dot(r.d) : '미입력') : '미등록') + (r.m ? ' · ' + esc(r.m) : '') + '</small></div><div class="rf-a"><span class="stb">' +
+          REG_ST.map(function(s){ return '<button type="button" data-rgst="' + esc(k) + '" data-st="' + s[0] + '" aria-pressed="' + (r.st === s[0]) + '">' + s[1] + '</button>'; }).join('') +
+          '</span><button type="button" class="pb" data-rgedit="' + esc(k) + '">날짜 · 메모</button></div></div>'; }).join('') +
+      '</div><div class="ct-a"><button type="button" class="btn" data-rgins="1">보험사 목록 편집</button><button type="button" class="btn" data-rgall="1">전체 고객 등록 현황</button></div>' +
+      '<p class="note">계약을 넣을 보험사에 고객등록이 안 되어 있으면 계약 넣기 화면에서 알려 드립니다.</p></details>';
+  }
+  async function regSet(ins, st){
+    var c = S.cur; if (!c || c.sample) return; c.reg = c.reg || {}; var r = c.reg[ins] || {};
+    if ((r.st || 'none') === st) return;
+    r.st = st; if (st === 'none') r.d = ''; else if (!r.d || st === 'done') r.d = todayStr();
+    if (st === 'none' && !r.m) delete c.reg[ins]; else c.reg[ins] = r;
+    if (st === 'done') { await addNote('note', '[고객등록] ' + ins + ' 등록완료'); toast(ins + ' 고객등록 완료로 표시했습니다'); return; }
+    await saveCur(ins + ' · ' + regStTxt(st));
+  }
+  function openRegEdit(ins){
+    var c = S.cur, r = regOf(c, ins);
+    openDlg('<h4>🏢 ' + esc(ins) + ' 고객등록</h4><div class="form"><label class="l">상태</label><select id="rgS">' + REG_ST.map(function(s){ return '<option value="' + s[0] + '"' + (r.st === s[0] ? ' selected' : '') + '>' + s[1] + '</option>'; }).join('') + '</select>' +
+      '<label class="l">등록일 (요청중이면 요청한 날)</label><input id="rgD" type="date" value="' + esc(r.d || '') + '">' +
+      '<label class="l">메모 (선택)</label><input id="rgM" type="text" maxlength="60" value="' + esc(r.m || '') + '" placeholder="예: 지점 통해 요청 · 서류 보완 필요"></div>' +
+      '<div class="mrow"><button class="btn lg" type="button" id="rgX" style="margin-left:auto">닫기</button><button class="go" type="button" id="rgGo">저장</button></div>');
+    $('rgX').onclick = closeDlg;
+    $('rgGo').onclick = async function(){
+      var st = $('rgS').value, d = $('rgD').value || '', m = $('rgM').value.trim(); c.reg = c.reg || {};
+      if (st === 'none' && !m) delete c.reg[ins]; else c.reg[ins] = { st: st, d: st === 'none' ? '' : (d || todayStr()), m: m };
+      closeDlg(); await saveCur(ins + ' 고객등록 정보를 저장했습니다');
+    };
+  }
+  function openRegIns(){
+    var rows = regIns().slice();
+    var draw = function(){
+      $('rgRows').innerHTML = rows.map(function(x, i){ return '<div class="ptr" style="grid-template-columns:minmax(0,1fr) 28px"><input type="text" class="rg-n" data-i="' + i + '" value="' + esc(x) + '" maxlength="20" placeholder="보험사 이름"><button type="button" class="tl-x" data-i="' + i + '" aria-label="지우기">×</button></div>'; }).join('');
+      $('rgRows').querySelectorAll('.rg-n').forEach(function(el){ el.oninput = function(){ rows[+el.dataset.i] = el.value; }; });
+      $('rgRows').querySelectorAll('.tl-x').forEach(function(el){ el.onclick = function(){ rows.splice(+el.dataset.i, 1); draw(); }; });
+    };
+    openDlg('<h4>🏢 보험사 목록</h4><div class="form"><p class="note">모든 고객의 "보험사 고객등록" 칸에 나오는 보험사입니다. 목록에서 빼도 이미 등록완료·요청중으로 적어 둔 고객 기록은 그대로 남습니다. 이름을 바꾸면 새 보험사로 취급되니, 같은 회사는 같은 이름으로 써 주세요.</p><div id="rgRows"></div><button type="button" class="btn" id="rgAdd">+ 보험사 추가</button></div>' +
+      '<div class="mrow"><button class="btn lg" type="button" id="rgX" style="margin-right:auto">닫기</button><button class="btn lg" type="button" id="rgDef">기본값으로</button><button class="go" type="button" id="rgGo">저장</button></div>', 'wide');
+    draw();
+    $('rgAdd').onclick = function(){ rows.push(''); draw(); var all = $('rgRows').querySelectorAll('.rg-n'); if (all.length) all[all.length - 1].focus(); };
+    $('rgDef').onclick = function(){ rows = REG_DEF.slice(); draw(); };
+    $('rgX').onclick = closeDlg;
+    $('rgGo').onclick = async function(){
+      var out = []; rows.forEach(function(x){ x = String(x || '').trim().slice(0, 20); if (x && out.indexOf(x) < 0) out.push(x); });
+      BZ.reg = BZ.reg || {}; BZ.reg.ins = out; await hidSave('__reg', '__reg', BZ.reg); closeDlg(); toast('보험사 목록을 저장했습니다');
+      if (S.view === 'reg') showReg(); else if (S.cur) renderCustomer();
+    };
+  }
+  // 보험사별 숫자 (화면 집계 · NHC 통로 공용) — 고객 이름 없음
+  function regCounts(){
+    var L = regIns(), out = {}; L.forEach(function(k){ out[k] = { done: 0, pending: 0, none: 0 }; });
+    S.list.forEach(function(c){ if (c.sample) return; L.forEach(function(k){ out[k][regOf(c, k).st]++; }); });
+    return out;
+  }
+  async function showReg(ins, st){
+    if (ins !== undefined) REGV.ins = ins; if (st !== undefined) REGV.st = st;
+    S.cur = null; S.data = null; S.view = 'reg'; $('shell').classList.add('has-c'); armBack(); renderList();
+    var L = await regLoad(); if (S.view !== 'reg') return;
+    if (REGV.ins && L.indexOf(REGV.ins) < 0) REGV.ins = '';
+    var cs = S.list.filter(function(c){ return !c.sample; }), N = regCounts(), I = REGV.ins, F = REGV.st;
+    var list = cs.filter(function(c){
+      if (I) return !F || regOf(c, I).st === F;
+      if (!F) return true;
+      if (F === 'none') return L.every(function(k){ return regOf(c, k).st === 'none'; }); // 어느 보험사에도 등록 안 된 고객
+      return L.some(function(k){ return regOf(c, k).st === F; });
+    });
+    var stCnt = function(s){ return cs.filter(function(c){ return I ? regOf(c, I).st === s : s === 'none' ? L.every(function(k){ return regOf(c, k).st === 'none'; }) : L.some(function(k){ return regOf(c, k).st === s; }); }).length; };
+    var h = '<div class="chead"><button class="btn back" type="button" data-act="back">‹ 목록</button><h2 data-i="🏢">보험사 고객등록 현황</h2><span class="cmeta">고객별로 보험사마다 등록완료 · 요청중 · 미등록을 관리합니다</span></div>' +
+      '<table class="rgt"><thead><tr><th>보험사</th><th>등록완료</th><th>요청중</th><th>미등록</th></tr></thead><tbody>' +
+      L.map(function(k){ var n = N[k]; return '<tr><td>' + esc(k) + '</td>' + REG_ST.map(function(s){ return '<td><button type="button" data-rgv="' + esc(k) + '|' + s[0] + '">' + n[s[0]] + '</button></td>'; }).join('') + '</tr>'; }).join('') +
+      '</tbody></table>' +
+      '<div class="sgf">' + [['', '모든 보험사']].concat(L.map(function(k){ return [k, k]; })).map(function(x){ return '<button type="button" data-rgi="' + esc(x[0]) + '" aria-pressed="' + (I === x[0]) + '">' + esc(x[1]) + '</button>'; }).join('') + '</div>' +
+      '<div class="sgf" style="margin-top:0">' + [['', '전체 고객', cs.length]].concat(REG_ST.map(function(s){ return [s[0], !I && s[0] === 'none' ? '어디에도 미등록' : s[1], stCnt(s[0])]; })).map(function(x){ return '<button type="button" data-rgf="' + x[0] + '" aria-pressed="' + (F === x[0]) + '">' + x[1] + ' <b>' + x[2] + '</b></button>'; }).join('') + '</div>' +
+      '<div class="mdtop"><small class="note">' + (I ? esc(I) + ' 기준 ' : '모든 보험사 기준 ') + list.length + '명' + (!I && F && F !== 'none' ? ' · 한 곳이라도 ' + regStTxt(F) + '인 고객' : '') + '</small>' +
+      (I && F === 'none' && list.length ? '<button class="btn" type="button" data-rgbulk="1" style="margin-left:auto">이 ' + list.length + '명 모두 "요청중"으로 표시</button>' : '') +
+      '<button class="btn" type="button" data-rgins="1"' + (I && F === 'none' && list.length ? '' : ' style="margin-left:auto"') + '>보험사 목록 편집</button></div>' +
+      (list.length ? '<div class="rgl">' + list.slice(0, 500).map(function(c){ var r = I ? regOf(c, I) : null;
+          return '<button type="button" class="bzrow" data-ctopen="' + c.id + '"><b>' + esc(c.name) + '</b>' + (r ? '<span>' + regStTxt(r.st) + (r.d ? ' · ' + dot(r.d) : '') + (r.m ? ' · ' + esc(r.m) : '') + '</span>' : '') +
+            '<span class="rgdots">' + L.map(function(k){ var s = regOf(c, k).st; return '<i class="' + s + '" title="' + esc(k) + ' ' + regStTxt(s) + '">' + esc(k.slice(0, 4)) + '</i>'; }).join('') + '</span></button>'; }).join('') + '</div>' + (list.length > 500 ? '<p class="note">외 ' + (list.length - 500) + '명</p>' : '')
+        : '<div class="sgbox"><p class="note">조건에 맞는 고객이 없습니다.</p></div>') +
+      '<p class="note">고객 화면의 "보험사 고객등록" 칸에서 상태·등록일·메모를 바꿀 수 있습니다. NHC 본사로는 보험사별 등록완료·요청중 고객 수(숫자)만 올라갑니다.</p>';
+    $('main').innerHTML = h; window.scrollTo(0, 0);
+    $('main').querySelectorAll('[data-rgi]').forEach(function(b){ b.onclick = function(){ showReg(b.dataset.rgi); }; });
+    $('main').querySelectorAll('[data-rgf]').forEach(function(b){ b.onclick = function(){ showReg(undefined, b.dataset.rgf); }; });
+    $('main').querySelectorAll('[data-rgv]').forEach(function(b){ var p = b.dataset.rgv.split('|'); b.onclick = function(){ showReg(p[0], p[1]); }; });
+    var bk = $('main').querySelector('[data-rgbulk]');
+    if (bk) bk.onclick = async function(){
+      if (!confirm(I + '에 미등록인 ' + list.length + '명을 모두 "요청중"(요청일 오늘)으로 표시할까요?')) return;
+      bk.disabled = true; var t = todayStr();
+      for (var i = 0; i < list.length; i++) { var h2 = Object.assign({}, list[i]); h2.reg = Object.assign({}, h2.reg || {}); h2.reg[I] = { st: 'pending', d: t, m: (h2.reg[I] && h2.reg[I].m) || '' }; await Store.saveHead(h2); }
+      S.list = await Store.list(); toast(list.length + '명을 요청중으로 표시했습니다'); showReg(I, 'pending');
+    };
+  }
+
   // ---------- 계약 목록 (계약 실적 + 보장분석 계약) ----------
   function dealsOf(c){ return (PL.d && PL.d.deals || []).filter(function(x){ return x.cid === c.id || (!x.cid && x.name === c.name); }).sort(function(a, b){ return a.d < b.d ? 1 : -1; }); }
   function contractsBar(){
@@ -6616,7 +6771,7 @@ function HealthUI(root, H) {
     if (!/contract|care/.test(st) && !ds.length) return '';
     var sum = ds.reduce(function(s, x){ return s + (x.amt || 0); }, 0);
     return '<details class="pcard ctc" open><summary><b>' + IC.doc + ' 계약 현황</b><small>' + (ds.length ? '내 계약 ' + ds.length + '건 · 월납 ' + won(sum) : '아직 넣은 계약이 없습니다') + (cov.length ? ' · 보장분석 계약 ' + cov.length + '건' : '') + '</small></summary>' +
-      (ds.length ? '<div class="ctl">' + ds.map(function(x){ return '<div class="ctr"><span class="ct-d">' + dot(x.d) + '</span><span class="ct-n"><b>' + esc([x.co, x.p].filter(Boolean).join(' ') || '상품 미입력') + '</b><small>월납 ' + won(x.amt) + '</small></span>' + (x.url ? '<button type="button" class="pb" data-rfurl="' + esc(x.url) + '">증권 열기</button>' : '') + '<button type="button" class="pb" data-dedit="' + x.id + '">수정</button></div>'; }).join('') + '</div>' : '') +
+      (ds.length ? '<div class="ctl">' + ds.map(function(x){ return '<div class="ctr"><span class="ct-d">' + dot(x.d) + '</span><span class="ct-n"><b>' + esc([x.co, x.p].filter(Boolean).join(' ') || '상품 미입력') + '</b><small>월납 ' + won(x.amt) + '</small></span>' + (regWarn(c, x.co) ? '<span class="rgw" title="' + esc(regWarn(c, x.co)) + '">고객등록 필요</span>' : '') + (x.url ? '<button type="button" class="pb" data-rfurl="' + esc(x.url) + '">증권 열기</button>' : '') + '<button type="button" class="pb" data-dedit="' + x.id + '">수정</button></div>'; }).join('') + '</div>' : '') +
       '<div class="ct-a"><button type="button" class="btn" data-dnew="' + c.id + '">+ 계약 추가</button>' + (cov.length ? '<button type="button" class="btn" data-ptab="cov">보장분석 계약 보기</button>' : '') + '</div>' +
       '<p class="note">증권 파일이 네이버 MYBOX·구글 드라이브에 있으면 공유 링크를 넣어 두세요. 여기서 바로 엽니다.</p></details>';
   }
@@ -7002,6 +7157,10 @@ function HealthUI(root, H) {
     if ((t = e.target.closest('[data-pc]'))) { if (t.dataset.pc === 'tpl') openProcTpl(); else await procToggle(t.dataset.pc); return; }
     if ((t = e.target.closest('[data-rf]'))) { await refundSet(t.dataset.rf, +t.dataset.st); return; }
     if ((t = e.target.closest('[data-rfamt]'))) { var k = t.dataset.rfamt, s = S.cur.refund[k], v = prompt('찾아드린 금액 (원)', s.amt || ''); if (v === null) return; s.amt = Math.max(0, +String(v).replace(/[^\d]/g, '') || 0); await saveCur('금액을 저장했습니다 · 합계 ' + man(refundTotal(S.cur))); return; }
+    if ((t = e.target.closest('[data-rgst]'))) { await regSet(t.dataset.rgst, t.dataset.st); return; }
+    if ((t = e.target.closest('[data-rgedit]'))) { openRegEdit(t.dataset.rgedit); return; }
+    if ((t = e.target.closest('[data-rgins]'))) { await regLoad(); openRegIns(); return; }
+    if ((t = e.target.closest('[data-rgall]')) || (t = e.target.closest('#regBtn'))) { showReg(); return; }
     if ((t = e.target.closest('[data-rfurl]'))) { openExt(t.dataset.rfurl); return; }
     if ((t = e.target.closest('[data-dnew]'))) { await planLoad(); openDeal(t.dataset.dnew); return; }
     if ((t = e.target.closest('[data-dedit]'))) { await planLoad(); openDeal(S.cur && S.cur.id, t.dataset.dedit); return; }
@@ -7091,7 +7250,7 @@ function HealthUI(root, H) {
     var it = [['.scm', '👥', '고객관리', '영업 채널별로 보기'], ['#gchip', '⭐', '내 성장', '레벨 · 퀘스트 · 배지'], ['[data-act="dbImport"]', '📥', 'DB 고객 가져오기', '회사 DB 사이트'], ['[data-nx="setup"]', '🏢', 'NHC 본사 연결', '보장분석부서'],
       ['#bkOut', '💾', '백업 내보내기', ''], ['#bkIn', '📂', '백업 불러오기', ''], ['#sample', '🧪', '예시 고객 보기', ''], ['#themeBtn', '🌗', $('themeBtn').textContent, ''], ['[data-sync="signout"]', '🔄', '구글 계정 바꾸기', ''], ['#admBtn', '🛡️', '사용자 관리', ''], ['#lockBtn', '🔒', '잠그기', '']];
     it.splice(2, 0, ['#sugBtn', '💡', '건의사항', '기능 아이디어 올리기 · 검토']);
-    it.splice(2, 0, ['#mapBtn', '🗺️', '지역별 고객', '지도로 보기'], ['#callBtn', '☎️', '액션콜', '통화 대본 · 연습 · AI 통화'], ['#mdBtn', '⭐', 'MD\u2019s PICK', '추천 상품 노트']);
+    it.splice(2, 0, ['#mapBtn', '🗺️', '지역별 고객', '지도로 보기'], ['#regBtn', '🏢', '보험사 고객등록', '보험사별 등록 · 미등록 고객'], ['#callBtn', '☎️', '액션콜', '통화 대본 · 연습 · AI 통화'], ['#mdBtn', '⭐', 'MD\u2019s PICK', '추천 상품 노트']);
     it.splice(3, 0, ['#apkBtn', '📱', inApk() ? '앱 정보' : '안드로이드 앱 받기', inApk() ? '자동 업데이트 중' : 'APK로 설치']);
     openDlg('<h4>더보기</h4><div class="msheet">' + it.filter(function(x){ var el = document.querySelector(x[0]); return el && !(el.hidden || getComputedStyle(el).display === 'none' && x[0] !== '#gchip' && x[0] !== '.scm'); }).map(function(x){ return '<button type="button" data-px=\'' + x[0] + '\'><i>' + x[1] + '</i><b>' + esc(x[2]) + '</b>' + (x[3] ? '<small>' + esc(x[3]) + '</small>' : '') + '</button>'; }).join('') + '</div><div class="mrow"><button class="btn lg" type="button" id="msX" style="margin-left:auto">닫기</button></div>');
     $('msX').onclick = closeDlg;
