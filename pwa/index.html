@@ -6974,13 +6974,18 @@ function HealthUI(root, H) {
     } catch(e){ toast(String(e.message || e)); }
   }
   // 길안내: T map · 카카오맵 · 네이버지도 · 구글지도
+  // 앱 열기 주소: 안드로이드는 intent:// (앱이 없으면 플레이 스토어로), 아이폰은 scheme://
+  function appUrl(scheme, path, pkg){
+    if (/Android/i.test(navigator.userAgent || '')) return 'intent://' + path + '#Intent;scheme=' + scheme + ';action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=' + pkg + ';S.browser_fallback_url=' + encodeURIComponent('https://play.google.com/store/apps/details?id=' + pkg) + ';end';
+    return scheme + '://' + path;
+  }
   function openNavi(q, ll){
     q = String(q || '').trim(); var enc = encodeURIComponent, lat = ll && ll[0], lng = ll && ll[1], label = q || (ll ? '지도 위치' : '');
     if (!q && !ll) { toast('목적지가 없습니다 · 만남 정보에 지역이나 근처 장소를 넣어 주세요'); return; }
     var items = [
-      ['T map', ll ? 'tmap://route?goalname=' + enc(label) + '&goalx=' + lng + '&goaly=' + lat : 'tmap://search?name=' + enc(q), IS_MOBILE],
+      ['T map', appUrl('tmap', ll ? 'route?goalname=' + enc(label) + '&goalx=' + lng + '&goaly=' + lat : 'search?name=' + enc(q), 'com.skt.tmap.ku'), IS_MOBILE],
       ['카카오맵', ll ? 'https://map.kakao.com/link/to/' + enc(label) + ',' + lat + ',' + lng : 'https://map.kakao.com/link/search/' + enc(q), true],
-      ['네이버지도', ll ? 'nmap://route/car?dlat=' + lat + '&dlng=' + lng + '&dname=' + enc(label) + '&appname=io.github.sicrics27gif.oc9' : 'nmap://search?query=' + enc(q) + '&appname=io.github.sicrics27gif.oc9', IS_MOBILE],
+      ['네이버지도', appUrl('nmap', (ll ? 'route/car?dlat=' + lat + '&dlng=' + lng + '&dname=' + enc(label) : 'search?query=' + enc(q)) + '&appname=io.github.sicrics27gif.oc9', 'com.nhn.android.nmap'), IS_MOBILE],
       ['구글지도', ll ? 'https://www.google.com/maps/dir/?api=1&destination=' + lat + ',' + lng : 'https://www.google.com/maps/search/?api=1&query=' + enc(q), true]
     ].filter(function(x){ return x[2]; });
     openDlg('<h4>🧭 길안내</h4><div class="form"><p class="note">목적지: <b>' + esc(label) + '</b>' + (IS_MOBILE ? '' : ' · 휴대폰에서는 T map·네이버지도 앱으로도 바로 열립니다') + '</p><div class="navl">' + items.map(function(x){ return '<button type="button" class="btn lg" data-nv="' + esc(x[1]) + '">' + x[0] + '</button>'; }).join('') + '</div></div><div class="mrow"><button class="btn lg" type="button" id="nvX" style="margin-left:auto">닫기</button></div>');
