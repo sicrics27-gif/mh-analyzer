@@ -6302,7 +6302,7 @@ function HealthUI(root, H) {
     };
     if ($('crqWeb')) $('crqWeb').onclick = function(){ openExt(a.web); };
     $('crqGo').onclick = async function(){
-      if (IS_MOBILE) { if (ph) copyText(ph, '휴대폰 번호'); closeDlg(); await mark(); setTimeout(function(){ location.href = appLink(k); }, 250); }
+      if (IS_MOBILE) { if (ph) copyText(ph, '휴대폰 번호'); closeDlg(); await mark(); if (inApk() && apkCode() < APK_OPEN_MIN) { openApkOld(k); return; } setTimeout(function(){ location.href = appLink(k); }, 250); }
       else { closeDlg(); await mark(); }
     };
   }
@@ -7635,6 +7635,14 @@ function HealthUI(root, H) {
   (function(){ var m = /[?&]app=apk(?:&v=(\d+))?/.exec(location.search); if (m) { try { sessionStorage.setItem('mhs_apk', m[1] || '1'); history.replaceState(null, '', location.pathname + location.hash); } catch(e){} } })();
   function apkCode(){ try { return +sessionStorage.getItem('mhs_apk') || 0; } catch(e){ return 0; } }
   function inApk(){ return apkCode() > 0; }
+  // 보험사 앱 바로 열기 통로가 들어간 첫 앱 버전
+  var APK_OPEN_MIN = 8;
+  function openApkOld(k){
+    var a = COVAPP[k];
+    openDlg('<h4>📱 앱을 한 번 새로 설치해 주세요</h4><div class="form"><p class="note">지금 쓰시는 AOB9 앱(버전 ' + apkCode() + ')에는 <b>' + esc(a.name + ' ' + a.app) + '</b> 앱을 바로 여는 기능이 없습니다. 새 앱(버전 ' + APK_OPEN_MIN + ' 이상)을 받아 설치하면 그다음부터 바로 열립니다. 고객 자료는 그대로 남습니다.</p><ol class="kkg"><li>아래 <b>새 앱 받기</b> → 다운로드된 AOB.apk 누르기 → <b>업데이트</b></li><li>AOB9를 다시 열고 동의 요청을 다시 누르기</li></ol></div>' +
+      '<div class="mrow"><button class="btn lg" type="button" id="aoX" style="margin-right:auto">닫기</button><button class="btn lg" type="button" id="aoStore">이번엔 플레이스토어로</button><a class="go" href="' + APK_URL + '" style="display:inline-flex;align-items:center;text-decoration:none">새 앱 받기</a></div>');
+    $('aoX').onclick = closeDlg; $('aoStore').onclick = function(){ closeDlg(); location.href = 'https://play.google.com/store/apps/details?id=' + a.pkg; };
+  }
   async function apkCheck(){
     if (!inApk()) return;
     try { if (sessionStorage.getItem('mhs_apkchk')) return; sessionStorage.setItem('mhs_apkchk', '1'); } catch(e){}
