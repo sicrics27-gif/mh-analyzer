@@ -6174,7 +6174,7 @@ function HealthUI(root, H) {
     var st = { v: 1, date: t, customers: S.list.length, stage: stg, todo: B.todo.length, overdue: B.todo.filter(function(x){ return x.n < 0; }).length, birthday7: B.bday.length, anniv14: B.ann.length,
       claimSoon: B.claim.length, claimAmt: B.claim.reduce(function(s, x){ return s + ((x.c.cvx || {}).claimAmt || 0); }, 0), noContact90: B.quiet.length, coverPending: B.pending };
     try { await NHC.stats(cfg, st); localStorage.setItem('mhs_nstat', t); } catch(e){}
-    try { await planLoad(); await NHC.tasks(cfg, { v: 2, date: t, registration: regStats() }); } catch(e){}
+    try { await planLoad(); var mDeals = (PL.d.deals || []).filter(function(x){ return x.d && x.d.slice(0, 7) === t.slice(0, 7); }); await NHC.tasks(cfg, { v: 2, date: t, registration: regStats(), pipeline: { signed_month: mDeals.length, premium_month: Math.round(mDeals.reduce(function(s2, x){ return s2 + (+x.amt || 0); }, 0)) } }); } catch(e){}
   }
 
   // ================= 연락 현황 화면 =================
