@@ -22,6 +22,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="io.github.sicrics27gif.oc9">
 
+    <!-- 안드로이드 11+ : 열어 줄 보험사·지도 앱이 설치돼 있는지 볼 수 있게 -->
+    <queries>
+        <package android:name="kr.co.meritzfire_sag" />
+        <package android:name="kr.co.meritzfire.meritzoneplus" />
+        <package android:name="kr.co.meritzfire_mof" />
+        <package android:name="com.kbinsure.KBSmart" />
+        <package android:name="com.skt.tmap.ku" />
+        <package android:name="com.nhn.android.nmap" />
+        <package android:name="net.daum.android.map" />
+    </queries>
+
     
 
     
@@ -162,6 +173,19 @@
             
 
             
+        </activity>
+
+        <activity android:name=".OpenAppActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="aob9app" android:host="open" />
+            </intent-filter>
         </activity>
 
         <activity android:name="com.google.androidbrowserhelper.trusted.FocusActivity" />

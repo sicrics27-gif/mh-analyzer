@@ -6272,8 +6272,8 @@ function HealthUI(root, H) {
     meritz: { name: '메리츠화재', app: '영업지원 모바일', pkg: 'kr.co.meritzfire_sag', web: 'https://sales.meritzfire.com' },
     kb: { name: 'KB손해보험', app: 'KB스마트비서', pkg: 'com.kbinsure.KBSmart', web: '' }
   };
-  // 크롬은 다른 앱의 첫 화면을 바로 못 엶 → 플레이 스토어의 '실행(launch)' 주소로 앱을 직접 띄움 (없으면 설치 화면)
-  function appLink(k){ var a = COVAPP[k]; return 'intent://launch?id=' + a.pkg + '#Intent;scheme=market;package=com.android.vending;S.browser_fallback_url=' + encodeURIComponent('https://play.google.com/store/apps/details?id=' + a.pkg) + ';end'; }
+  // 크롬은 다른 앱의 첫 화면을 바로 못 엶 → AOB9 안드로이드 앱의 '앱 열기 통로'(aob9app://open)로 실행. 통로가 없으면(옛 앱·PC) 그 앱의 플레이 스토어 화면
+  function appLink(k){ var a = COVAPP[k]; return 'intent://open?pkg=' + a.pkg + '#Intent;scheme=aob9app;package=io.github.sicrics27gif.oc9;S.browser_fallback_url=' + encodeURIComponent('https://play.google.com/store/apps/details?id=' + a.pkg) + ';end'; }
   function covReqBar(){
     var c = S.cur, r = c.covReq || {}, d = S.data, kinds = (d && d.coverage && d.coverage.kinds) || [];
     var chip = function(k){
