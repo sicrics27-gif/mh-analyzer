@@ -1,4 +1,4 @@
-// AOB · 9팀 팀 서버 (리그전 + 건의사항) — 구글 Apps Script, 관리자(강남혁) 구글 계정에서 한 번 배포
+// AOB9 · 9팀 팀 서버 (리그전 + 건의사항 + MD's PICK + OTP 요청) — 구글 Apps Script, 관리자(강남혁) 구글 계정에서 한 번 배포
 // 저장하는 것: 리그(별명·주간 숫자), 건의사항(이름·제목·내용·상태·답변). 고객 정보는 받지 않습니다.
 // OTP가 '사용 중'인 사람만 글을 올릴 수 있습니다 (access.json 확인). 건의사항 검토는 관리자 열쇠가 있어야 합니다.
 const ACCESS = 'https://raw.githubusercontent.com/sicrics27-gif/mh-analyzer/main/access.json';
@@ -81,6 +81,23 @@ function doPost(e) {
       sh.deleteRow(o.row);
       return out({ ok: true });
     }
+    // ---------- OTP 요청 (아직 OTP가 없는 동료 → 관리자) ----------
+    if (b.a === 'otp_req') {
+      const n = String(b.n || '').trim().slice(0, 12), m = String(b.m || '').trim().toLowerCase().slice(0, 80);
+      if (!n || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m)) return out({ ok: false, error: '이름과 구글 계정(이메일)을 정확히 넣어 주세요' });
+      const sh = otpSheet(), all = otpRows(sh), day = Date.now() - 864e5;
+      if (all.filter(o => +o.at > day).length >= 40) return out({ ok: false, error: '오늘 요청이 너무 많습니다. 관리자에게 직접 연락하세요' });
+      const same = all.find(o => o.m === m && o.st === 'new'); if (same) return out({ ok: true, rid: String(same.rid), again: true });
+      const rid = Utilities.getUuid().replace(/-/g, '').slice(0, 12);
+      sh.appendRow([rid, Date.now(), n, m, String(b.dev || '').slice(0, 20), String(b.note || '').slice(0, 200), 'new', '', '']);
+      return out({ ok: true, rid: rid });
+    }
+    if (b.a === 'otp_done' || b.a === 'otp_no') {
+      if (!isAdmin(b.k)) return out({ ok: false, error: '관리자만' });
+      const sh = otpSheet(), o = otpRows(sh).find(x => String(x.rid) === String(b.rid)); if (!o) return out({ ok: false, error: '없는 요청' });
+      sh.getRange(o.row, OTC.indexOf('st') + 1, 1, 3).setValues([[b.a === 'otp_done' ? 'done' : 'no', b.a === 'otp_done' ? String(b.code || '').slice(0, 30) : '', Date.now()]]);
+      return out({ ok: true });
+    }
     // ---------- MD's PICK (추천 상품 노트) ----------
     if (b.a === 'md_add' || b.a === 'md_edit') {
       if (!allowed(b.c)) return out({ ok: false, error: 'OTP 사용자가 아닙니다' });
@@ -118,6 +135,14 @@ function doPost(e) {
     return out({ ok: true });
   } finally { lock.releaseLock(); }
 }
+// OTP 요청 시트
+const OTC = ['rid', 'at', 'n', 'm', 'dev', 'note', 'st', 'code', 'dt'];
+function otpSheet() {
+  const ss = SpreadsheetApp.openById(props().getProperty('SUG_SHEET') || sheet().getParent().getId());
+  let sh = ss.getSheetByName('OTP요청'); if (!sh) { sh = ss.insertSheet('OTP요청'); sh.appendRow(OTC); sh.setFrozenRows(1); }
+  return sh;
+}
+function otpRows(sh) { const v = sh.getDataRange().getValues(); v.shift(); return v.map((r, i) => { const o = { row: i + 2 }; OTC.forEach((k, j) => { o[k] = r[j]; }); return o; }).filter(o => o.rid); }
 // MD's PICK 시트
 const MDC = ['id', 'at', 'c', 'n', 'cat', 'ins', 'prod', 'why', 'tip', 'likes', 'pin'];
 function mdSheet() {
@@ -131,6 +156,8 @@ function mdList(me) {
 }
 function doGet(e) {
   const prm = e.parameter || {};
+  if (prm.a === 'otpreq') { if (!isAdmin(prm.k)) return out({ ok: false, error: '관리자만' }); return out({ ok: true, rows: otpRows(otpSheet()).filter(o => o.st === 'new').map(o => ({ rid: String(o.rid), at: +o.at, n: String(o.n), m: String(o.m), dev: String(o.dev || ''), note: String(o.note || '') })) }); }
+  if (prm.a === 'otpstat') { const o = otpRows(otpSheet()).find(x => String(x.rid) === String(prm.rid) && x.m === String(prm.m || '').toLowerCase()); if (!o) return out({ ok: false }); return out({ ok: true, st: String(o.st), code: o.st === 'done' ? String(o.code || '') : '' }); }
   if (prm.a === 'md') { const me = allowed(prm.c) ? prm.c : ''; return out({ ok: true, rows: mdList(me) }); }
   if (prm.a === 'sug') {
     const me = allowed(prm.c) ? prm.c : '';
