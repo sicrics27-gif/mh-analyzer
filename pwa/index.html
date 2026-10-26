@@ -1883,10 +1883,6 @@ body.cph-on{overflow:hidden}
 .rgrow input[type=checkbox]{width:18px;height:18px}
 @media (max-width:620px){.rgr{grid-template-columns:1fr auto}.rgr input[type=date]{grid-column:1}.rgr input[type=text]{grid-column:2}}
 
-/* 꾹 누르기·끌기 때 글자 파랗게 잡힘 막기 — 입력칸과 .sel-ok 는 예외 */
-html,body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
-input,textarea,select,[contenteditable]:not([contenteditable="false"]),[contenteditable]:not([contenteditable="false"]) *,.sel-ok,.sel-ok *{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
-img,a,svg{-webkit-user-drag:none}
 </style>
 </head>
 <body>
@@ -1900,7 +1896,7 @@ img,a,svg{-webkit-user-drag:none}
       <button type="button" class="rl" data-rail="search" title="고객 검색"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button>
       <button type="button" class="rl" data-rail="list" title="고객 목록"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><i class="rlb" id="rlCnt"></i></button>
       <button type="button" class="rl" data-pl="open" title="싯플랜"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></button>
-      <button type="button" class="rl gold" data-nx="brief" title="오늘의 브리핑"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17l-6.1 3.4 1.5-6.8L2.2 9l6.9-.7z"/></svg><i class="rlb" id="rlTodo"></i></button>
+      <button type="button" class="rl gold" id="rlMap" title="지도 (고객 지도·내 동선)"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4z"/><path d="M9 4v13M15 6.5v13"/></svg></button>
       <button type="button" class="rl" data-cm="open" title="고객관리 (영업 채널별)"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.5a3 3 0 0 1 0 6M18 14c2 .7 3.5 2.8 3.5 5.5"/></svg></button>
       <button type="button" class="rl" data-act="contacts" title="연락 현황"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg></button>
       <span class="rl-sp"></span>
@@ -1917,7 +1913,7 @@ img,a,svg{-webkit-user-drag:none}
     <div class="snav">
     <button type="button" class="sct scm" data-cm="open" data-tb="chan"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.5a3 3 0 0 1 0 6M18 14c2 .7 3.5 2.8 3.5 5.5"/></svg><b>고객관리</b><small>영업 채널별</small></button>
     <button type="button" class="sct spl" data-pl="open" data-tb="plan"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M7 14h4M7 17h7"/></svg><b>싯플랜</b><small>ACFP 목표</small></button>
-    <button type="button" class="sct sbr" data-nx="brief" data-tb="brief"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17l-6.1 3.4 1.5-6.8L2.2 9l6.9-.7z"/></svg><b>브리핑</b><small>생일·응당일·청구</small></button>
+    <button type="button" class="sct sbr" id="snMap" data-tb="map"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4z"/><path d="M9 4v13M15 6.5v13"/></svg><b>지도</b><small>고객 지도·내 동선</small></button>
     <button type="button" class="sct" data-act="contacts" data-tb="contacts"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><b>연락 현황</b><small>통화·문자·카톡</small></button>
     </div>
     <div class="clist" id="clist"></div>
@@ -1929,7 +1925,7 @@ img,a,svg{-webkit-user-drag:none}
     <div id="memBan" class="membanner" hidden>저장소를 쓸 수 없는 화면입니다 · 창을 닫으면 사라집니다</div>
   </aside>
   <main class="main" id="main"></main>
-  <nav class="tabbar" id="tabbar" aria-label="주요 메뉴"><button type="button" data-act="back" data-tb="list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><circle cx="9" cy="8" r="3.4"/><path d="M2.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5M16.5 4.6a3.2 3.2 0 0 1 0 6.2M18.5 14c2 .8 3.4 3 3.4 5.6"/></svg><span>고객</span></button><button type="button" data-pl="open" data-tb="plan"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M7 14h4M7 17h7"/></svg><span>싯플랜</span></button><button type="button" data-nx="brief" data-tb="brief"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17l-6.1 3.4 1.5-6.8L2.2 9l6.9-.7z"/></svg><span>브리핑</span></button><button type="button" data-act="contacts" data-tb="contacts"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><span>연락</span></button><button type="button" data-tb="more" id="tbMore"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg><span>더보기</span></button></nav>
+  <nav class="tabbar" id="tabbar" aria-label="주요 메뉴"><button type="button" data-act="back" data-tb="list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><circle cx="9" cy="8" r="3.4"/><path d="M2.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5M16.5 4.6a3.2 3.2 0 0 1 0 6.2M18.5 14c2 .8 3.4 3 3.4 5.6"/></svg><span>고객</span></button><button type="button" data-pl="open" data-tb="plan"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M7 14h4M7 17h7"/></svg><span>싯플랜</span></button><button type="button" data-tb="map" id="tbMap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4z"/><path d="M9 4v13M15 6.5v13"/></svg><span>지도</span></button><button type="button" data-act="contacts" data-tb="contacts"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><span>연락</span></button><button type="button" data-tb="more" id="tbMore"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg><span>더보기</span></button></nav>
   <button type="button" class="fab" id="fab" aria-label="신규 고객 등록"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
 </div>
 <template id="tplWelcome">
@@ -6411,23 +6407,28 @@ function HealthUI(root, H) {
     backAt = Date.now(); toast('뒤로 버튼을 한 번 더 누르면 닫힙니다'); armBack();
   });
 
-  // 휴대폰: 화면을 옆으로 밀면 한 단계 뒤로 (고객 화면 → 고객 목록)
+  // 휴대폰: 화면을 좌우로 밀면 옆 탭으로 (고객 ↔ 싯플랜 ↔ 지도 ↔ 연락) · 고객 상세 화면에서는 오른쪽으로 밀면 목록으로
+  var TABS = ['list', 'plan', 'map', 'contacts'];
+  function curTab(){ var b = document.querySelector('.tabbar [data-tb].on'); return b ? b.dataset.tb : ''; }
+  function goTab(k){ var b = document.querySelector('.tabbar [data-tb="' + k + '"]'); if (b) b.click(); }
   (function(){
     var sx = 0, sy = 0, st = 0, ok = false;
-    var NOSW = '.tw, table, .ptabs, .nxgrid, textarea, input, select, .msgqr, .ctf, .tpl, .cc-stage, .stb, .seg, .gseg, .kh-act, [contenteditable]';
+    var NOSW = '.tw, table, .ptabs, .nxgrid, textarea, input, select, .msgqr, .ctf, .tpl, .cc-stage, .stb, .seg, .gseg, .kh-act, .sgf, .mapf, .rgcos, .chchips, .mapbox, .leaflet-container, .pcgrid, .rgseg, [contenteditable]';
     document.addEventListener('touchstart', function(e){
-      ok = false; if (e.touches.length !== 1 || !$('lock').hidden || $('shell').hidden) return;
+      ok = false; if (e.touches.length !== 1 || !$('lock').hidden || $('shell').hidden || $('cph')) return;
       var t = e.touches[0]; sx = t.clientX; sy = t.clientY; st = Date.now();
-      ok = !(e.target.closest && e.target.closest(NOSW));
+      ok = !(e.target.closest && e.target.closest(NOSW)) && sx > 18 && sx < window.innerWidth - 18;
     }, { passive: true });
     document.addEventListener('touchend', function(e){
       if (!ok) return; ok = false;
       var t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
-      if (Date.now() - st > 800 || Math.abs(dx) < 80 || Math.abs(dy) > Math.abs(dx) * 0.5) return;
-      if (!$('modal').hidden || !$('dlg').hidden || S.pv || S.cur || S.view || $('shell').classList.contains('has-c')) {
-        var m = $('main'); if (m && m.animate && $('dlg').hidden && $('modal').hidden) { try { m.animate([{ transform: 'translateX(' + (dx > 0 ? 0 : 0) + 'px)', opacity: 1 }, { transform: 'translateX(' + (dx > 0 ? 60 : -60) + 'px)', opacity: 0 }], { duration: 160, easing: 'ease-in' }); } catch(er){} }
-        setTimeout(stepBack, 120);
-      }
+      if (Date.now() - st > 700 || Math.abs(dx) < 70 || Math.abs(dy) > Math.abs(dx) * 0.5) return;
+      if (!$('modal').hidden || !$('dlg').hidden || S.pv) return;
+      var m = $('main'), anim = function(){ if (m && m.animate) try { m.animate([{ transform: 'translateX(' + (dx > 0 ? -40 : 40) + 'px)', opacity: .4 }, { transform: 'none', opacity: 1 }], { duration: 180, easing: 'ease-out' }); } catch(e2){} };
+      if (S.cur) { if (dx > 0) { stepBack(); anim(); } return; }
+      var i = TABS.indexOf(curTab()); if (i < 0) i = 0;
+      var j = i + (dx < 0 ? 1 : -1); if (j < 0 || j >= TABS.length) return;
+      goTab(TABS[j]); anim();
     }, { passive: true });
   })();
 
@@ -6446,7 +6447,7 @@ function HealthUI(root, H) {
     var c = $('rlCnt'), t = $('rlTodo'), d = $('rlDot'); if (!c) return;
     c.textContent = S.list.length || ''; 
     var n = 0; try { var B = briefData(); n = B.todo.length + B.bday.length + B.claim.length; } catch(e){}
-    t.textContent = n || ''; t.hidden = !n;
+    if (t) { t.textContent = n || ''; t.hidden = !n; }
     var st = syncSt && syncSt.status; d.className = 'rl-dot ' + (!window.Sync || !Sync.isOn() ? 'off' : st === 'error' || st === 'needLogin' ? 'bad' : st === 'running' ? 'run' : 'ok');
   }
   try { if (localStorage.getItem('mhs_rail') === '1') { RAIL.on = true; $('shell').classList.add('mini'); } } catch(e){}
@@ -6868,6 +6869,7 @@ function HealthUI(root, H) {
     g[area] = out || { fail: Date.now() }; try { await hidSave('__geo', '__geo', g); } catch(e){}
     return out;
   }
+  function mnote(t){ var e = $('mapNote'); if (e) e.textContent = t; }
   async function showMap(tab){
     if (tab) MAPV.tab = tab;
     S.cur = null; S.data = null; S.view = 'map'; $('shell').classList.add('has-c'); armBack(); renderList();
@@ -6892,7 +6894,7 @@ function HealthUI(root, H) {
     LF.tileLayer('https://{s}.basemaps.cartocdn.com/' + (dark ? 'dark_all' : 'light_all') + '/{z}/{x}/{y}{r}.png', { maxZoom: 19, subdomains: 'abcd', attribution: '&copy; OpenStreetMap &copy; CARTO' }).addTo(map);
     MAPV.map = map; MAPV.mk = {}; var layer = LF.layerGroup().addTo(map), pts = [], miss = 0, key = await kakaoKey(), fk = MAPV.focus ? (function(){ var fc = S.list.find(function(x){ return x.id === MAPV.focus; }); return fc ? areaKey(fc) : ''; })() : '';
     if (fk) { var ki = keys.indexOf(fk); if (ki > 0) { keys.splice(ki, 1); keys.unshift(fk); } }
-    $('mapNote').textContent = (key ? '카카오' : 'OpenStreetMap') + ' 지도 검색으로 지역 위치를 찾는 중… (처음 한 번만, 그다음은 저장된 위치 사용)';
+    mnote((key ? '카카오' : 'OpenStreetMap') + ' 지도 검색으로 지역 위치를 찾는 중… (처음 한 번만, 그다음은 저장된 위치 사용)');
     var col = { lead: '#9aa3b2', consult: '#4f7dff', contract: '#e2c27e', care: '#3ecf8e' };
     for (var i = 0; i < keys.length; i++) {
       if (S.view !== 'map') return;
@@ -6907,7 +6909,7 @@ function HealthUI(root, H) {
       else if (pts.length === 1) map.setView(pts[0], 12); else map.fitBounds(pts, { padding: [30, 30], maxZoom: 13 });
     }
     if (fk && MAPV.focus) { MAPV.focus = ''; if (pts.length) map.fitBounds(pts, { padding: [30, 30], maxZoom: 13 }); }
-    $('mapNote').textContent = '지역 ' + (keys.length - miss) + '곳 표시' + (miss ? ' · 위치를 못 찾은 지역 ' + miss + '곳 (지역 이름을 "서울 강남구 역삼동"처럼 적으면 잘 찾습니다)' : '') + (key ? '' : ' · 도구 메뉴의 카카오 키를 넣으면 더 정확합니다');
+    mnote('지역 ' + (keys.length - miss) + '곳 표시' + (miss ? ' · 위치를 못 찾은 지역 ' + miss + '곳 (지역 이름을 "서울 강남구 역삼동"처럼 적으면 잘 찾습니다)' : '') + (key ? '' : ' · 도구 메뉴의 카카오 키를 넣으면 더 정확합니다'));
   }
 
   // 고객 이름 → 지도에서 그 고객 지역으로 이동 · 말풍선 열기
@@ -7469,9 +7471,9 @@ function HealthUI(root, H) {
     var all = path.concat(pts).map(function(x){ return [x[0], x[1]]; }); if (all.length === 1) map.setView(all[0], 14); else if (all.length) map.fitBounds(all, { padding: [30, 30], maxZoom: 15 });
     // 장소 이름이 없는 방문은 동 이름으로 (천천히 채움)
     var todo = D.v.map(function(v, i){ return { v: v, i: i }; }).filter(function(x){ return !x.v.name && !x.v.area; }); if (!todo.length) return;
-    $('mapNote').textContent = '방문한 곳의 동 이름을 찾는 중…';
+    mnote('방문한 곳의 동 이름을 찾는 중…');
     for (var q = 0; q < todo.length; q++) { if (S.view !== 'map') return; var x = todo[q], t = await revGeo(x.v.lat, x.v.lng); if (t) { x.v.area = t; var el = $('main').querySelector('.trv[data-tri="' + x.i + '"] .trv-n'); if (el) el.textContent = t; } }
-    await trailSave(); $('mapNote').textContent = '';
+    await trailSave(); mnote('');
   }
   function openTrailImport(){
     openDlg('<h4>📥 구글 타임라인 가져오기</h4><div class="form" style="font-size:14px;line-height:1.75"><ol class="kkg">' +
@@ -7621,11 +7623,12 @@ function HealthUI(root, H) {
 
   // ================= 아래 메뉴(휴대폰) · 현재 화면 표시 =================
   function tabSync(){
-    var k = !$('shell').classList.contains('has-c') ? 'list' : S.view === 'plan' ? 'plan' : S.view === 'brief' ? 'brief' : S.view === 'contacts' ? 'contacts' : S.view === 'chan' ? 'chan' : S.cur ? 'list' : '';
+    var k = !$('shell').classList.contains('has-c') ? 'list' : S.view === 'plan' ? 'plan' : S.view === 'map' ? 'map' : S.view === 'contacts' ? 'contacts' : S.view === 'chan' ? 'chan' : S.cur ? 'list' : '';
     document.querySelectorAll('[data-tb]').forEach(function(b){ var on = b.dataset.tb === k && !(k === 'list' && b.closest('.snav')); b.classList.toggle('on', on); });
   }
   try { new MutationObserver(function(){ setTimeout(tabSync, 0); }).observe($('main'), { childList: true }); } catch(e){}
   $('fab').onclick = function(){ $('newCust').click(); };
+  ['tbMap', 'snMap', 'rlMap'].forEach(function(id){ var b = $(id); if (b) b.onclick = function(){ showMap(); }; });
   $('tbMore').onclick = function(){
     var it = [['.scm', '👥', '고객관리', '영업 채널별로 보기'], ['#gchip', '⭐', '내 성장', '레벨 · 퀘스트 · 배지'], ['[data-act="dbImport"]', '📥', 'DB 고객 가져오기', '회사 DB 사이트'], ['[data-nx="setup"]', '🏢', 'NHC 본사 연결', '보장분석부서'],
       ['#bkOut', '💾', '백업 내보내기', ''], ['#bkIn', '📂', '백업 불러오기', ''], ['#sample', '🧪', '예시 고객 보기', ''], ['#themeBtn', '🌗', $('themeBtn').textContent, ''], ['[data-sync="signout"]', '🔄', '구글 계정 바꾸기', ''], ['#admBtn', '🛡️', '사용자 관리', ''], ['#lockBtn', '🔒', '잠그기', '']];
@@ -8868,14 +8871,5 @@ function HealthUI(root, H) {
 
 </script>
 <script>if("serviceWorker" in navigator&&location.protocol!=="file:"){addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script>
-<script>
-/* 입력칸이 아닌 곳: 꾹 누르기 메뉴·이미지/링크 끌기 막기 */
-(function(){
-  var OK = 'input,textarea,select,[contenteditable]:not([contenteditable="false"]),.sel-ok';
-  function editable(t){ return t && t.closest && t.closest(OK); }
-  document.addEventListener('contextmenu', function(e){ if (!editable(e.target)) e.preventDefault(); });
-  document.addEventListener('dragstart', function(e){ var t = e.target; if (t && t.nodeType === 3) t = t.parentNode; if (editable(t)) return; if (t && t.closest && t.closest('img,a,svg')) e.preventDefault(); });
-})();
-</script>
 </body>
 </html>
