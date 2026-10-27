@@ -2194,14 +2194,15 @@ img,svg,a{-webkit-user-drag:none;user-drag:none}
           else if (code === 6 || code === 7) fire(r, 'error', { error: 'no-speech' });
           r._end();
         })
-      ]).then(function (hs) { subs = hs; });
+      ]).then(function (hs) { r._subs = hs; if (active !== r) hs.forEach(function (h) { try { h.remove(); } catch (e) { } }); });
     };
-    Rec.prototype._end = function () { if (active !== this) return; active = null; clearSubs(); fire(this, 'end'); };
+    Rec.prototype._end = function () { if (active !== this) return; active = null; (this._subs || []).forEach(function (h) { try { h.remove(); } catch (e) { } }); this._subs = null; fire(this, 'end'); };
     Rec.prototype.start = function () {
       var r = this; if (active && active !== r) active.abort();
       active = r; r._stop = false; r._final = [];
-      r._listen().then(function () { return N.speechStart({ lang: r.lang || 'ko-KR' }); })
-        .then(function () { fire(r, 'start'); fire(r, 'audiostart'); })
+      // 시작 준비 중에 멈춤(pause)이 눌렸으면 휴대폰 마이크를 아예 켜지 않음 → 켜진 채 남아 상대 목소리가 묻히는 문제 방지
+      r._listen().then(function () { if (active !== r || r._stop) return 'skip'; return N.speechStart({ lang: r.lang || 'ko-KR' }); })
+        .then(function (x) { if (x === 'skip') return; if (active !== r || r._stop) { N.speechStop().catch(function () { }); return; } fire(r, 'start'); fire(r, 'audiostart'); })
         .catch(function (e) { fire(r, 'error', { error: /권한|not-allowed/.test(String(e && (e.code || e.message))) ? 'not-allowed' : 'audio-capture', message: String(e && e.message || e) }); r._end(); });
     };
     Rec.prototype.stop = function () { var r = this; r._stop = true; N.speechStop().catch(function () { }).then(function () { setTimeout(function () { r._end(); }, 300); }); };
@@ -7518,6 +7519,7 @@ function HealthUI(root, H) {
       if (voiceCfg().phone) { var hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 280; var lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 3600; node.connect(hp); hp.connect(lp); node = lp; }
       var g = ctx.createGain(); g.gain.value = VO.vol; node.connect(g); g.connect(ctx.destination);
       src.onended = function(){ if (VO.src === src) VO.src = null; res(); }; VO.src = src; src.start();
+      setTimeout(function(){ if (VO.src === src) { try { src.onended = null; src.stop(); } catch(e){} VO.src = null; } res(); }, (buf.duration + 2.5) * 1000); // 소리가 막혀도 통화가 멈추지 않게
     });
   }
   function bestVoice(female){
@@ -7525,7 +7527,7 @@ function HealthUI(root, H) {
     var score = function(x){ var n = x.name; return (/Neural|Natural|Online|Premium|Enhanced/i.test(n) ? 4 : 0) + (/Google|Samsung|SMT/i.test(n) ? 2 : 0) + (female && /female|여성|Yuna|Sun|Hyun|SunHi|Ji/i.test(n) ? 2 : 0) + (!female && /male|남성|InJoon|Hyunsu|Bong/i.test(n) && !/female/i.test(n) ? 2 : 0) + (x.localService ? 0 : 1); };
     return v.sort(function(a, b){ return score(b) - score(a); })[0];
   }
-  function sayDevice(text, female){ return new Promise(function(res){ if (!ttsOk()) return res(); try { speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(text); u.lang = 'ko-KR'; var bv = bestVoice(female); if (bv) u.voice = bv; u.rate = 1.06; u.pitch = female ? 1.08 : 0.88; u.volume = VO.vol; u.onend = function(){ res(); }; u.onerror = function(){ res(); }; speechSynthesis.speak(u); } catch(e){ res(); } }); }
+  function sayDevice(text, female){ return new Promise(function(res){ if (!ttsOk()) return res(); try { speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(text); u.lang = 'ko-KR'; var bv = bestVoice(female); if (bv) u.voice = bv; u.rate = 1.06; u.pitch = female ? 1.08 : 0.88; u.volume = VO.vol; u.onend = function(){ res(); }; u.onerror = function(){ res(); }; setTimeout(res, 4000 + String(text).length * 200); speechSynthesis.speak(u); } catch(e){ res(); } }); }
   async function speak(text, female){
     await new Promise(function(r){ setTimeout(r, 250 + Math.random() * 500); }); // 실제 통화처럼 대답 전 짧은 뜸
     if (aiVoiceOk()) { try { return await playBuf(await aiTts(text, female)); } catch(e){ if (!VO.warned) { VO.warned = true; toast('AI 목소리를 못 불러와 기기 목소리로 합니다 · ' + (e.message || e)); } } }
