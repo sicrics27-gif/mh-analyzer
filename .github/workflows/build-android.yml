@@ -48,7 +48,8 @@ jobs:
           cp app/build/outputs/bundle/release/app-release.aab ../../out/AOB-playstore.aab
           echo "{\"code\":${APP_CODE},\"native\":true}" > ../../out/apk.json
           rm -f oc9.keystore
-          keytool -printcert -jarfile ../../out/AOB.apk | grep -E "SHA1|SHA-1|SHA256" || true
+          FP=$(keytool -printcert -jarfile ../../out/AOB.apk 2>/dev/null | grep -E "SHA1:|SHA-1:" | head -1 | sed 's/.*: *//')
+          echo "::notice title=SHA1::${FP}"
       - if: steps.key.outputs.ok == '1'
         uses: actions/upload-artifact@v4
         with:
