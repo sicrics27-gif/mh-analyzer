@@ -1,0 +1,26 @@
+{
+  "appId": "io.github.sicrics27gif.oc9",
+  "appName": "AOB9",
+  "webDir": "www",
+  "server": {
+    "url": "https://sicrics27-gif.github.io/mh-analyzer/?app=cap",
+    "androidScheme": "https",
+    "errorPath": "index.html"
+  },
+  "android": {
+    "backgroundColor": "#090B10",
+    "allowMixedContent": false,
+    "captureInput": false,
+    "webContentsDebuggingEnabled": false,
+    "appendUserAgent": "AOB9App"
+  },
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_aob",
+      "iconColor": "#3B6BFF"
+    },
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "aob9-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AOB9 안드로이드 앱 (크롬 없이 앱 화면으로 AOB9 웹을 엽니다)",
+  "dependencies": {
+    "@capacitor-community/text-to-speech": "8.0.2",
+    "@capacitor/android": "8.5.3",
+    "@capacitor/app": "8.1.2",
+    "@capacitor/browser": "8.0.5",
+    "@capacitor/cli": "8.5.3",
+    "@capacitor/core": "8.5.3",
+    "@capacitor/filesystem": "8.1.5",
+    "@capacitor/local-notifications": "8.3.1",
+    "@capacitor/share": "8.0.3"
+  }
+}

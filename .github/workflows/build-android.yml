@@ -1,8 +1,9 @@
 name: 안드로이드 앱(APK) 만들기 — AOB9
+# 진짜 앱(크롬 없이 자체 화면) · 폴더 app-android/ · 같은 패키지·같은 서명 → 예전 앱 위에 '업데이트'로 설치됨
 on:
   push:
-    branches: [main]
-    paths: ['android/**', '.github/workflows/build-android.yml']
+    branches: [main, 'native-*']
+    paths: ['app-android/**', '.github/workflows/build-android.yml']
   workflow_dispatch:
 jobs:
   build:
@@ -14,11 +15,15 @@ jobs:
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: '17'
-      - name: 안드로이드 SDK 확인
+          java-version: '21'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: 앱 부품 설치·연결
+        working-directory: app-android
         run: |
-          echo "ANDROID_HOME=$ANDROID_HOME"
-          ls "$ANDROID_HOME" || true
+          npm ci
+          npx cap sync android
           echo "sdk.dir=$ANDROID_HOME" > android/local.properties
       - name: 서명 열쇠 꺼내기 (금고에서)
         id: key
@@ -28,32 +33,33 @@ jobs:
         run: |
           if [ -z "$OC9_KEY_PASS" ] || [ -z "$OC9_KEYSTORE_B64" ]; then echo "::warning::금고(Secrets)에 OC9_KEYSTORE_B64 / OC9_KEY_PASS 가 아직 없어 APK를 만들지 않았습니다."; echo "ok=0" >> $GITHUB_OUTPUT; exit 0; fi
           echo "ok=1" >> $GITHUB_OUTPUT
-          echo "$OC9_KEYSTORE_B64" | base64 -d > android/oc9.keystore
+          echo "$OC9_KEYSTORE_B64" | base64 -d > app-android/android/oc9.keystore
       - name: APK 빌드
         if: steps.key.outputs.ok == '1'
-        working-directory: android
+        working-directory: app-android/android
         env:
           OC9_KEY_PASS: ${{ secrets.OC9_KEY_PASS }}
           APP_CODE: ${{ github.run_number }}
         run: |
           chmod +x gradlew
           ./gradlew --no-daemon assembleRelease bundleRelease
-          mkdir -p ../out
-          cp app/build/outputs/apk/release/app-release.apk ../out/AOB.apk
-          cp app/build/outputs/bundle/release/app-release.aab ../out/AOB-playstore.aab
-          echo "{\"code\":${APP_CODE}}" > ../out/apk.json
+          mkdir -p ../../out
+          cp app/build/outputs/apk/release/app-release.apk ../../out/AOB.apk
+          cp app/build/outputs/bundle/release/app-release.aab ../../out/AOB-playstore.aab
+          echo "{\"code\":${APP_CODE},\"native\":true}" > ../../out/apk.json
           rm -f oc9.keystore
+          keytool -printcert -jarfile ../../out/AOB.apk | grep -E "SHA1|SHA-1|SHA256" || true
       - if: steps.key.outputs.ok == '1'
         uses: actions/upload-artifact@v4
         with:
           name: AOB-android
           path: out/*
-      - name: 다운로드 주소에 올리기 (항상 같은 주소)
-        if: steps.key.outputs.ok == '1'
+      - name: 다운로드 주소에 올리기 (항상 같은 주소) — main 에서만
+        if: steps.key.outputs.ok == '1' && github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: apk-latest
           name: AOB9 안드로이드 앱
-          body: "AOB9(어센틱 오션브랜치 9팀) 안드로이드 앱 (빌드 ${{ github.run_number }}). 휴대폰에서 AOB.apk 를 눌러 설치하세요. AOB-playstore.aab 는 구글 플레이 콘솔에 올리는 파일입니다."
+          body: "AOB9(어센틱 오션브랜치 9팀) 안드로이드 앱 (빌드 ${{ github.run_number }}) · 진짜 앱(크롬 없이). 휴대폰에서 AOB.apk 를 눌러 설치하세요. AOB-playstore.aab 는 구글 플레이 콘솔에 올리는 파일입니다."
           files: out/*
           make_latest: false
