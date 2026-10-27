@@ -1978,6 +1978,11 @@ html.split .smenu{display:none!important}
 /* 비밀번호 칸: 브라우저 "비밀번호 저장" 창이 뜨지 않도록 일반 칸 + 가림 표시 */
 input.pw{-webkit-text-security:disc;text-security:disc;font-family:inherit;letter-spacing:.12em}
 input.pw::placeholder{letter-spacing:0}
+/* 관리자 전용 메뉴 (팀원 화면에는 안 보임) */
+html:not(.is-adm) .adm-only{display:none!important}
+.msh{margin:14px 2px 6px;font-weight:800;font-size:13.5px;color:var(--gold2,#e2c27e)}.msh small{font-weight:500;color:var(--mute);margin-left:6px}
+.msheet.adm button{border-color:rgba(226,194,126,.35)}
+.sbrand .wm{cursor:default;user-select:none}
 
 </style>
 </head>
@@ -2015,7 +2020,7 @@ input.pw::placeholder{letter-spacing:0}
     <div class="clist" id="clist"></div>
     <div class="sclip" id="sclip" hidden></div>
     <div class="ssync" id="ssync"></div>
-    <details class="smenu" id="smenu"><summary><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>도구 · 백업 · 사용자 관리</summary><div class="sfoot"><button type="button" class="dbm" data-act="dbImport">회사 DB 고객 가져오기</button><button id="connBtn" type="button">🔗 연결 · 권한</button><button id="keysBtn" type="button" data-hd="keys">⌨ 단축키</button><button id="regBtn" type="button">🏢 보험사 고객등록</button><button id="mapBtn" type="button">🗺️ 지역별 고객 (지도)</button><button id="callBtn" type="button">☎️ 액션콜 연습</button><button id="mdBtn" type="button">⭐ MD’s PICK</button><button id="sugBtn" type="button">💡 건의사항</button><button id="apkBtn" type="button">안드로이드 앱 (APK)</button><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button><button type="button" data-sync="signout">구글 계정 바꾸기</button><button type="button" id="themeBtn">밝은 화면으로</button><button id="admBtn" type="button" class="adm">사용자 관리</button><button type="button" class="adm nxm" data-nx="setup">NHC 본사 연결 · 보장분석부서</button></div></details>
+    <details class="smenu" id="smenu"><summary><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>도구 · 백업 · 사용자 관리</summary><div class="sfoot"><button type="button" class="dbm" data-act="dbImport">회사 DB 고객 가져오기</button><button id="teamSetBtn" type="button" class="adm-only">🏆 팀 서버</button><button id="connBtn" type="button">🔗 연결 · 권한</button><button id="keysBtn" type="button" data-hd="keys">⌨ 단축키</button><button id="regBtn" type="button">🏢 보험사 고객등록</button><button id="mapBtn" type="button">🗺️ 지역별 고객 (지도)</button><button id="callBtn" type="button">☎️ 액션콜 연습</button><button id="mdBtn" type="button">⭐ MD’s PICK</button><button id="sugBtn" type="button">💡 건의사항</button><button id="apkBtn" type="button">안드로이드 앱 (APK)</button><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button><button type="button" data-sync="signout">구글 계정 바꾸기</button><button type="button" id="themeBtn">밝은 화면으로</button><button id="admBtn" type="button" class="adm adm-only">사용자 관리</button><button type="button" class="adm nxm adm-only" data-nx="setup">NHC 본사 연결 · 보장분석부서</button></div></details>
     <input type="file" id="bkFile" accept=".json,application/json" hidden>
     <div class="slock"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6 10V8a6 6 0 1 1 12 0v2h1v12H5V10zm2 0h8V8a4 4 0 1 0-8 0z"/></svg>고객 정보는 잠금 비밀번호로 암호화 저장 <span id="verTag"></span></div>
     <div id="memBan" class="membanner" hidden>저장소를 쓸 수 없는 화면입니다 · 창을 닫으면 사라집니다</div>
@@ -4929,7 +4934,7 @@ function HealthUI(root, H) {
     $('admGo').onclick = async function(){
       var t = $('admTok').value.trim(), b = this; if (!t) { $('admErr').textContent = '토큰을 붙여 넣으세요.'; return; }
       b.disabled = true; b.textContent = '확인 중…';
-      try { await Access.verifyToken(t); var nd = Object.assign({ users: [], created: Date.now() }, d || {}, { token: t }); await admSave(nd); toast('관리자 연결을 마쳤습니다'); openAdmin(); }
+      try { await Access.verifyToken(t); var nd = Object.assign({ users: [], created: Date.now() }, d || {}, { token: t }); await admSave(nd); await roleSync(); toast('관리자 연결을 마쳤습니다'); openAdmin(); }
       catch(e){ b.disabled = false; b.textContent = '연결 확인'; $('admErr').textContent = e.message || String(e); }
     };
   }
@@ -6156,7 +6161,10 @@ function HealthUI(root, H) {
   var NX = { id: '__nhc', busy: false };
   async function nhcLoad(){ try { return (await Store.loadData(NX.id)) || null; } catch(e){ return null; } }
   async function nhcSave(d){ await Store.saveHead({ id: NX.id, hidden: true, name: '__nhc', status: 'admin', created: d.created || Date.now() }); await Store.saveData(NX.id, d); }
-  function nhcOn(){ try { return localStorage.getItem('mhs_nhc') === '1'; } catch(e){ return false; } }
+  // 관리자(대표) 전용 메뉴: 이 기기에 관리자 설정(사용자 관리 토큰)이 있을 때만 보임. 팀원 화면에는 본사 연결·관리 기능이 아예 안 보임
+  var ROLE = { admin: false };
+  async function roleSync(){ var a = null; try { a = await admLoad(); } catch(e){} ROLE.admin = !!(a && a.token); document.documentElement.classList.toggle('is-adm', ROLE.admin); return ROLE.admin; }
+  function nhcOn(){ if (!ROLE.admin) return false; try { return localStorage.getItem('mhs_nhc') === '1'; } catch(e){ return false; } }
   function setNhcOn(v){ try { if (v) localStorage.setItem('mhs_nhc', '1'); else localStorage.removeItem('mhs_nhc'); } catch(e){} }
   async function nhcSetup(after){
     var d = await nhcLoad() || {};
@@ -6347,7 +6355,7 @@ function HealthUI(root, H) {
         (fresh && cps.items.length ? cps.items.map(function(cp){ var m = campMatch(cp);
           return '<div class="cpc"><div class="cph"><b>' + esc(cp.title) + '</b><small>' + esc(cp.why) + (cp.news ? ' · 뉴스: ' + esc(cp.news) : '') + '</small><span class="cpt">대상: ' + esc(NHC.targetTxt(cp.target)) + ' → <b>' + m.length + '명</b></span></div><div class="nxk">' + esc(cp.msg.replace(/\{이름\}/g, "○○○")).replace(/\n/g, '<br>') + '</div>' +
             (m.length ? m.slice(0, 20).map(function(c){ return bRow({ c: c, txt: stageTxt(c.stage) + (c.cvx && c.cvx.gens && c.cvx.gens.length ? ' · 실손 ' + c.cvx.gens.join('·') + '세대' : '') }, 'camp:' + cp.id); }).join('') + (m.length > 20 ? '<p class="note">외 ' + (m.length - 20) + '명</p>' : '') : '<p class="note">조건에 맞는 고객이 없습니다' + (B.nocvx ? ' (보장 요약 계산 후 다시 보세요)' : '') + '.</p>') + '</div>'; }).join('') : '<p class="note">매일 아침 NHC 보장분석부서가 뉴스를 보고 연락 캠페인을 만듭니다. 대상 고객은 이 기기 안에서만 고릅니다.</p>') + '</section>';
-    } else h += '<div class="gapban b"><span class="nxb">NHC</span><span>NHC 본사 보장분석부서와 연결하면 매일 아침 <b>뉴스 연계 연락 캠페인</b>과 대상 고객이 여기에 나옵니다.</span><button class="btn" type="button" data-nx="setup">연결하기</button></div>';
+    } else if (ROLE.admin) h += '<div class="gapban b"><span class="nxb">NHC</span><span>NHC 본사 보장분석부서와 연결하면 매일 아침 <b>뉴스 연계 연락 캠페인</b>과 대상 고객이 여기에 나옵니다.</span><button class="btn" type="button" data-nx="setup">연결하기</button></div>';
     h += '<div class="bgrid">' + bSec('오늘 할 일', B.todo, '오늘·지난 할 일이 없습니다.') + bSec('생일 (7일 안)', B.bday, '7일 안에 생일인 고객이 없습니다.') +
       bSec('계약 응당일 (14일 안)', B.ann, '14일 안에 응당일인 계약이 없습니다.') + bSec('청구기한 임박 (60일 안)', B.claim, '60일 안에 기한이 끝나는 청구 건이 없습니다.') +
       bSec('오래 연락 못 한 고객 (90일+)', B.quiet, '90일 넘게 연락이 끊긴 고객이 없습니다.') +
@@ -6574,7 +6582,7 @@ function HealthUI(root, H) {
     GM.d = null; GM.last = null;
     $('lock').hidden = true; $('shell').hidden = false;
     $('memBan').hidden = !memMode;
-    S.list = await Store.list();
+    S.list = await Store.list(); await roleSync();
     renderList(); showWelcome();
     drawSync(); drawClipToggle();
     setTimeout(function(){ otpPoll(); if (OTPQ) admLoad().then(function(a){ if (a && a.token) openAdmin(); else toast('OTP 발급은 관리자 기기에서만 할 수 있습니다'); }); }, 2500);
@@ -7486,7 +7494,7 @@ function HealthUI(root, H) {
   function openAiSetup(back){
     var a = BZ.ai || {};
     openDlg('<h4>🤖 AI 통화 상대 설정</h4><div class="form plform"><p class="note">AI가 가상의 고객 역할을 맡아 <b>실제처럼 대답</b>합니다. 키는 이 기기에 암호화되어 저장되고, 고객 정보는 AI에 보내지 않습니다(가상 인물만 사용). 사용량만큼 해당 회사에 요금이 청구됩니다.</p>' +
-      '<p class="note">추천: <b>Google Gemini</b> — 무료 키 하나로 AI 통화 상대 + <b>사람 같은 목소리</b>(통화 연습) + 사진 일정 읽기까지 됩니다.</p><label class="l">AI 회사</label><select id="aiProv">' + Object.keys(AI_PROV).map(function(k){ return '<option value="' + k + '"' + (a.prov === k ? ' selected' : '') + '>' + AI_PROV[k].t + '</option>'; }).join('') + '</select><div class="note" id="aiHow"></div>' +
+      '<p class="note">추천: <b>Google Gemini</b> — 무료 키 하나로 AI 통화 상대 + <b>사람 같은 목소리</b>(통화 연습) + 사진 일정 읽기까지 됩니다.</p><label class="l">AI 회사</label><select id="aiProv">' + Object.keys(AI_PROV).filter(function(k){ return ROLE.admin || k !== 'anthropic' || a.prov === k; }).map(function(k){ return '<option value="' + k + '"' + (a.prov === k ? ' selected' : '') + '>' + AI_PROV[k].t + '</option>'; }).join('') + '</select><div class="note" id="aiHow"></div>' +
       '<label class="l">API 키</label><input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other" id="aiKey" type="text" class="pw" value="' + esc(a.key || '') + '" placeholder="발급받은 키 붙여넣기">' +
       '<label class="l">모델 이름 (비워 두면 기본값)</label><input id="aiModel" type="text" value="' + esc(a.model || '') + '" placeholder="' + esc(AI_PROV[a.prov || 'gemini'].model) + '"><div class="ferr" id="aiErr"></div></div>' +
       '<div class="mrow"><button class="btn lg" type="button" id="aiX" style="margin-right:auto">닫기</button><button class="btn lg" type="button" id="aiDel">키 지우기</button><button class="go" type="button" id="aiGo">' + (back ? '저장' : '저장하고 통화 시작') + '</button></div>');
@@ -7845,18 +7853,23 @@ function HealthUI(root, H) {
   $('fab').onclick = function(){ $('newCust').click(); };
   ['tbMap', 'snMap', 'rlMap'].forEach(function(id){ var b = $(id); if (b) b.onclick = function(){ showMap(); }; });
   $('tbMore').onclick = function(){
-    var it = [['#connBtn', '🔗', '연결 · 권한', '캘린더·위치·마이크·알림·AI 한 번에'], ['.scm', '👥', '고객관리', '영업 채널별로 보기'], ['#gchip', '⭐', '내 성장', '레벨 · 퀘스트 · 배지'], ['[data-act="dbImport"]', '📥', 'DB 고객 가져오기', '회사 DB 사이트'], ['[data-nx="setup"]', '🏢', 'NHC 본사 연결', '보장분석부서'],
-      ['#bkOut', '💾', '백업 내보내기', ''], ['#bkIn', '📂', '백업 불러오기', ''], ['#sample', '🧪', '예시 고객 보기', ''], ['#themeBtn', '🌗', $('themeBtn').textContent, ''], ['[data-sync="signout"]', '🔄', '구글 계정 바꾸기', ''], ['#admBtn', '🛡️', '사용자 관리', ''], ['#lockBtn', '🔒', '잠그기', '']];
+    var it = [['#connBtn', '🔗', '연결 · 권한', '캘린더·위치·마이크·알림·AI 한 번에'], ['.scm', '👥', '고객관리', '영업 채널별로 보기'], ['#gchip', '⭐', '내 성장', '레벨 · 퀘스트 · 배지'], ['[data-act="dbImport"]', '📥', 'DB 고객 가져오기', '회사 DB 사이트'],
+      ['#bkOut', '💾', '백업 내보내기', ''], ['#bkIn', '📂', '백업 불러오기', ''], ['#sample', '🧪', '예시 고객 보기', ''], ['#themeBtn', '🌗', $('themeBtn').textContent, ''], ['[data-sync="signout"]', '🔄', '구글 계정 바꾸기', ''], ['#lockBtn', '🔒', '잠그기', '']];
+    var AD = ROLE.admin ? [['#admBtn', '🛡️', '사용자 관리', 'OTP 발급 · 요청 · 정지'], ['#teamSetBtn', '🏆', '팀 서버', '팀원 공유 기능 연결'], ['[data-nx="setup"]', '🏢', 'NHC 본사 연결', '보장분석 · 숫자 보고']] : [];
     it.splice(2, 0, ['#sugBtn', '💡', '건의사항', '기능 아이디어 올리기 · 검토']);
     it.splice(2, 0, ['#regBtn', '🏢', '보험사 고객등록', '보험사별 등록 현황'], ['#mapBtn', '🗺️', '지역별 고객', '지도로 보기'], ['#callBtn', '☎️', '액션콜', '통화 대본 · 연습 · AI 통화'], ['#mdBtn', '⭐', 'MD\u2019s PICK', '추천 상품 노트']);
     if (!IS_MOBILE) it.splice(2, 0, ['#keysBtn', '⌨️', '단축키', '키보드로 빠르게']);
     it.splice(3, 0, ['#apkBtn', '📱', inApk() ? '앱 정보' : '안드로이드 앱 받기', inApk() ? '자동 업데이트 중' : 'APK로 설치']);
-    openDlg('<h4>⚙️ 설정 · 메뉴</h4><div class="msheet">' + it.filter(function(x){ var el = document.querySelector(x[0]); return el && !(el.hidden || getComputedStyle(el).display === 'none' && x[0] !== '#gchip' && x[0] !== '.scm'); }).map(function(x){ return '<button type="button" data-px=\'' + x[0] + '\'><i>' + x[1] + '</i><b>' + esc(x[2]) + '</b>' + (x[3] ? '<small>' + esc(x[3]) + '</small>' : '') + '</button>'; }).join('') + '</div><div class="mrow"><button class="btn lg" type="button" id="msX" style="margin-left:auto">닫기</button></div>');
+    var vis = function(x){ var el = document.querySelector(x[0]); if (!el) return false; if (x[0] === '#gchip' || x[0] === '.scm') return true; return !el.hidden && getComputedStyle(el).display !== 'none'; }, btn = function(x){ return '<button type="button" data-px=\'' + x[0] + '\'><i>' + x[1] + '</i><b>' + esc(x[2]) + '</b>' + (x[3] ? '<small>' + esc(x[3]) + '</small>' : '') + '</button>'; };
+    openDlg('<h4>⚙️ 설정 · 메뉴</h4><div class="msheet">' + it.filter(vis).map(btn).join('') + '</div>' + (AD.length ? '<div class="msh">🛡️ 관리자 전용 <small>팀원 화면에는 보이지 않습니다</small></div><div class="msheet adm">' + AD.filter(vis).map(btn).join('') + '</div>' : '') + '<div class="mrow"><button class="btn lg" type="button" id="msX" style="margin-left:auto">닫기</button></div>');
     $('msX').onclick = closeDlg;
     $('dlgBox').querySelectorAll('[data-px]').forEach(function(b){ b.onclick = function(){ var el = document.querySelector(b.dataset.px); closeDlg(); if (el) { if (el.hidden && el.id === 'gchip') { showGame && showGame(); return; } el.click(); } }; });
   };
 
   $('connBtn').onclick = function(){ openConnCenter(); };
+  $('teamSetBtn').onclick = async function(){ var a = await admLoad(); if (a && a.token) League.setup(a); };
+  // 관리자 설정 숨은 입구: 왼쪽 위 AOB9 글자를 5번 연달아 누르기 (팀원 화면엔 관리자 메뉴가 없음)
+  (function(){ var n = 0, t = 0; document.addEventListener('click', function(e){ if (!e.target.closest('.sbrand .wm, .rl-brand')) return; var now = Date.now(); n = now - t < 600 ? n + 1 : 1; t = now; if (n >= 5) { n = 0; openAdmin(); } }); })();
   ['gearBtn', 'rlGear'].forEach(function(id){ var g = $(id); if (g) g.onclick = function(){ $('tbMore').onclick(); }; });
 
   // ================= 연결 · 권한 센터 (외부 연동을 한 화면에서) =================
@@ -7879,8 +7892,8 @@ function HealthUI(root, H) {
     R.push({ k: 'trail', ic: '🧭', t: '구글 지도 타임라인 (내 동선)', d: '구글 지도에서 내보낸 파일을 넣으면 다닌 곳이 지도에', st: trDays ? ['on', trDays + '일치 · ' + (tr.at ? timeTxt(tr.at) + ' 가져옴' : '체크인')] : ['off', '아직 없음'], b: '파일 넣기' });
     R.push({ k: 'ai', ic: '🤖', t: 'AI 키 (자연 음성 · AI 통화 · 사진 일정)', d: 'Gemini 무료 키 하나면 모두 켜짐', st: ai.key ? ['on', AI_PROV[ai.prov || 'gemini'].t] : ['off', '없음'], b: ai.key ? '바꾸기' : '넣기' });
     R.push({ k: 'kakao', ic: '🗺', t: '카카오 지도 키 (선택)', d: '고객 지역·동 이름을 더 정확하게', st: kk ? ['on', '있음'] : ['off', '없음 (기본 지도 사용)'], b: kk ? '바꾸기' : '넣기' });
-    R.push({ k: 'team', ic: '🏆', t: '팀 서버 (OTP 요청 · 건의사항 · MD’s PICK)', d: '팀원과 함께 쓰는 무료 구글 서버', st: lg ? ['on', '연결됨'] : ['off', '아직 없음'], b: lg ? '' : '열기' });
-    R.push({ k: 'nhc', ic: '🏢', t: 'NHC 본사 연결', d: '보장분석 의뢰 · 연락 캠페인 · 숫자 보고', st: nhcOn() ? ['on', '켜짐'] : ['off', '꺼짐'], b: '설정' });
+    if (ROLE.admin) R.push({ k: 'team', ic: '🏆', t: '팀 서버 (OTP 요청 · 건의사항 · MD’s PICK)', d: '팀원과 함께 쓰는 무료 구글 서버', st: lg ? ['on', '연결됨'] : ['off', '아직 없음'], b: lg ? '' : '열기' });
+    if (ROLE.admin) R.push({ k: 'nhc', ic: '🏢', t: 'NHC 본사 연결', d: '보장분석 의뢰 · 연락 캠페인 · 숫자 보고', st: nhcOn() ? ['on', '켜짐'] : ['off', '꺼짐'], b: '설정' });
     R.push({ k: 'phone', ic: '📞', t: '전화 · 문자 · 카톡', d: '휴대폰 기본 앱으로 바로 연결 (따로 허용할 것 없음)', st: ['on', '권한 필요 없음'], b: '' });
     return R;
   }
@@ -8340,7 +8353,7 @@ function HealthUI(root, H) {
     h += '<section class="cvhero"><div><span class="eyebrow">보유 계약 · ' + esc((cv.kinds || []).map(function(k){ return k === 'kb' ? 'KB 보장분석' : '메리츠 M보장분석'; }).join(' + ')) + (cv.asOf ? ' · ' + dot(cv.asOf) + ' 기준' : '') + '</span><b class="kh-num">' + cs.length + '<small>건</small></b><span class="kh-sub">월 보험료 합계 <b>' + won(prem) + '</b> · 실손 ' + (plan.length ? plan.map(function(p){ return '<i class="gen">' + p.gen + '세대</i> ' + esc(p.company); }).join(', ') : '없음') + '</span></div>' +
       '<div class="cvk">' + kpi.map(function(k){ return '<div><small>' + k[0] + '</small><b>' + (k[1] ? man(k[1]) : '—') + '</b></div>'; }).join('') + '</div>' +
       '<div class="kh-act"><button class="btn lg ghost" type="button" data-act="files">' + IC.clip + '보장분석 다시 넣기</button><button class="btn lg ghost" type="button" data-ptab="claim">' + IC.won + '청구할 만한 건 보기</button></div></section>';
-    h += nhcPane();
+    if (ROLE.admin) h += nhcPane();
     h += '<div class="cvlist">' + cs.map(function(c, i){
       var g = c.silson ? Cv.silsonGen(c.start) : 0, live = !c.end || c.end >= todayStr();
       var groups = {}; c.riders.forEach(function(r){ (groups[r.type] = groups[r.type] || []).push(r); });
