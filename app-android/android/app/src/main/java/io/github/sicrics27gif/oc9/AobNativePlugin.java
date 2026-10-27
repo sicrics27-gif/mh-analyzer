@@ -33,6 +33,23 @@ import com.google.android.gms.auth.api.identity.Identity;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Scope;
 
+import android.content.Context;
+import android.media.AudioAttributes;
+import android.media.AudioDeviceInfo;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.os.Build;
+import android.os.PowerManager;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
+import android.speech.tts.Voice;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Locale;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -294,5 +311,149 @@ public class AobNativePlugin extends Plugin {
         JSObject r = new JSObject();
         try { android.content.pm.PackageInfo pi = getContext().getPackageManager().getPackageInfo(getContext().getPackageName(), 0); r.put("version", pi.versionName); r.put("code", androidx.core.content.pm.PackageInfoCompat.getLongVersionCode(pi)); } catch (PackageManager.NameNotFoundException ignored) { }
         call.resolve(r);
+    }
+
+    // ================= 액션콜: 진짜 전화처럼 (벨소리 · 귀에 대고 듣기 · 귀에 대면 화면 꺼짐) =================
+    private Ringtone ring; private Vibrator vib; private MediaPlayer mp; private PluginCall voiceCall; private TextToSpeech tts; private boolean ttsReady = false; private PluginCall sayCall; private PowerManager.WakeLock prox; private boolean callMode = false;
+
+    /** 벨소리: 휴대폰에 설정된 벨소리 + 진동. 무음·진동 모드여도 연습 전화라 미디어 소리로 울림 */
+    @PluginMethod
+    public void ring(PluginCall call) {
+        boolean on = Boolean.TRUE.equals(call.getBoolean("on", true));
+        Context c = getContext();
+        try {
+            if (ring != null) { ring.stop(); ring = null; }
+            if (vib != null) { vib.cancel(); }
+            if (on) {
+                Uri u = RingtoneManager.getActualDefaultRingtoneUri(c, RingtoneManager.TYPE_RINGTONE);
+                if (u == null) u = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+                ring = RingtoneManager.getRingtone(c, u);
+                AudioManager am = (AudioManager) c.getSystemService(Context.AUDIO_SERVICE);
+                boolean loud = am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL;
+                if (ring != null) {
+                    ring.setAudioAttributes(new AudioAttributes.Builder().setUsage(loud ? AudioAttributes.USAGE_NOTIFICATION_RINGTONE : AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build());
+                    if (Build.VERSION.SDK_INT >= 28) ring.setLooping(true);
+                    ring.play();
+                }
+                vib = (Vibrator) c.getSystemService(Context.VIBRATOR_SERVICE);
+                if (vib != null && vib.hasVibrator()) {
+                    long[] pat = new long[] { 0, 900, 700, 900, 700 };
+                    if (Build.VERSION.SDK_INT >= 26) vib.vibrate(VibrationEffect.createWaveform(pat, 1)); else vib.vibrate(pat, 1);
+                }
+            }
+            call.resolve();
+        } catch (Exception e) { call.reject("벨소리를 울리지 못했습니다: " + e.getMessage()); }
+    }
+
+    /** 통화 모드: on=true 면 귀(수화기)로, speaker=true 면 스피커로 */
+    @PluginMethod
+    public void callAudio(PluginCall call) {
+        boolean on = Boolean.TRUE.equals(call.getBoolean("on", true)), spk = Boolean.TRUE.equals(call.getBoolean("speaker", false));
+        AudioManager am = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+        try {
+            callMode = on;
+            if (on) {
+                am.setMode(AudioManager.MODE_IN_COMMUNICATION);
+                if (Build.VERSION.SDK_INT >= 31) {
+                    AudioDeviceInfo pick = null;
+                    for (AudioDeviceInfo d : am.getAvailableCommunicationDevices()) {
+                        int t = d.getType();
+                        if (spk && t == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER) pick = d;
+                        if (!spk && (t == AudioDeviceInfo.TYPE_BLUETOOTH_SCO || t == AudioDeviceInfo.TYPE_WIRED_HEADSET || t == AudioDeviceInfo.TYPE_BLE_HEADSET)) { pick = d; break; }
+                        if (!spk && pick == null && t == AudioDeviceInfo.TYPE_BUILTIN_EARPIECE) pick = d;
+                    }
+                    if (pick != null) am.setCommunicationDevice(pick);
+                } else am.setSpeakerphoneOn(spk);
+            } else {
+                if (Build.VERSION.SDK_INT >= 31) am.clearCommunicationDevice(); else am.setSpeakerphoneOn(false);
+                am.setMode(AudioManager.MODE_NORMAL);
+            }
+            call.resolve();
+        } catch (Exception e) { call.reject("통화 소리 설정 실패: " + e.getMessage()); }
+    }
+
+    private AudioAttributes voiceAttr() {
+        return new AudioAttributes.Builder().setUsage(callMode ? AudioAttributes.USAGE_VOICE_COMMUNICATION : AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).build();
+    }
+
+    /** 상대 목소리 재생 (wav·mp3를 base64로) — 통화 모드면 귀로 들림. 다 들으면 끝남 */
+    @PluginMethod
+    public void playVoice(PluginCall call) {
+        String b64 = call.getString("b64", ""), ext = call.getString("ext", "wav");
+        stopMp();
+        try {
+            File f = new File(getContext().getCacheDir(), "voice." + ext);
+            try (FileOutputStream o = new FileOutputStream(f)) { o.write(Base64.decode(b64, Base64.DEFAULT)); }
+            mp = new MediaPlayer();
+            mp.setAudioAttributes(voiceAttr());
+            mp.setDataSource(f.getAbsolutePath());
+            float vol = call.getFloat("vol", 1f);
+            mp.setVolume(vol, vol);
+            voiceCall = call;
+            mp.setOnCompletionListener(m -> { PluginCall c2 = voiceCall; voiceCall = null; stopMp(); if (c2 != null) c2.resolve(); });
+            mp.setOnErrorListener((m, a, b) -> { PluginCall c2 = voiceCall; voiceCall = null; stopMp(); if (c2 != null) c2.reject("재생 오류 " + a); return true; });
+            mp.prepare();
+            mp.start();
+        } catch (Exception e) { voiceCall = null; stopMp(); call.reject("재생 실패: " + e.getMessage()); }
+    }
+
+    private void stopMp() { try { if (mp != null) { mp.reset(); mp.release(); } } catch (Exception ignored) { } mp = null; }
+
+    @PluginMethod
+    public void stopVoice(PluginCall call) {
+        PluginCall c2 = voiceCall; voiceCall = null; stopMp(); if (c2 != null) c2.resolve();
+        PluginCall s2 = sayCall; sayCall = null; try { if (tts != null) tts.stop(); } catch (Exception ignored) { } if (s2 != null) s2.resolve();
+        call.resolve();
+    }
+
+    /** 휴대폰 기본 목소리로 읽기 (통화 모드면 귀로) */
+    @PluginMethod
+    public void say(PluginCall call) {
+        final String text = call.getString("text", "");
+        final boolean female = Boolean.TRUE.equals(call.getBoolean("female", false));
+        final float rate = call.getFloat("rate", 1.05f);
+        Runnable go = () -> {
+            try {
+                tts.setLanguage(Locale.KOREAN);
+                Voice best = null;
+                try { for (Voice v : tts.getVoices()) { if (v.getLocale() == null || !"ko".equals(v.getLocale().getLanguage()) || v.isNetworkConnectionRequired()) continue; String n = v.getName().toLowerCase(Locale.ROOT); boolean m = n.contains("male") && !n.contains("female"); if (best == null || (female ? n.contains("female") || n.contains("-c-") || n.contains("koa") : m || n.contains("-d-") || n.contains("kod"))) best = v; } } catch (Exception ignored) { }
+                if (best != null) tts.setVoice(best);
+                tts.setPitch(female ? 1.08f : 0.88f); tts.setSpeechRate(rate);
+                tts.setAudioAttributes(voiceAttr());
+                PluginCall old = sayCall; sayCall = call; if (old != null) old.resolve();
+                Bundle b = new Bundle(); b.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, call.getFloat("vol", 1f));
+                tts.speak(text, TextToSpeech.QUEUE_FLUSH, b, "aob" + System.currentTimeMillis());
+            } catch (Exception e) { call.reject("읽기 실패: " + e.getMessage()); }
+        };
+        if (tts != null && ttsReady) { go.run(); return; }
+        tts = new TextToSpeech(getContext(), st -> {
+            ttsReady = st == TextToSpeech.SUCCESS;
+            if (!ttsReady) { call.reject("휴대폰 음성 엔진을 쓸 수 없습니다"); return; }
+            tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                public void onStart(String id) { }
+                public void onDone(String id) { PluginCall c2 = sayCall; sayCall = null; if (c2 != null) c2.resolve(); }
+                public void onError(String id) { PluginCall c2 = sayCall; sayCall = null; if (c2 != null) c2.resolve(); }
+            });
+            go.run();
+        });
+    }
+
+    /** 귀에 대면 화면 꺼짐 (진짜 통화처럼) */
+    @PluginMethod
+    public void proximity(PluginCall call) {
+        boolean on = Boolean.TRUE.equals(call.getBoolean("on", true));
+        try {
+            if (on) {
+                if (prox == null) { PowerManager pm = (PowerManager) getContext().getSystemService(Context.POWER_SERVICE); if (pm.isWakeLockLevelSupported(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK)) prox = pm.newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK, "aob9:call"); }
+                if (prox != null && !prox.isHeld()) prox.acquire(60 * 60 * 1000L);
+            } else if (prox != null && prox.isHeld()) prox.release();
+            call.resolve();
+        } catch (Exception e) { call.reject(e.getMessage()); }
+    }
+
+    @Override
+    protected void handleOnDestroy() {
+        try { if (ring != null) ring.stop(); if (vib != null) vib.cancel(); stopMp(); if (tts != null) tts.shutdown(); if (prox != null && prox.isHeld()) prox.release(); } catch (Exception ignored) { }
+        super.handleOnDestroy();
     }
 }
