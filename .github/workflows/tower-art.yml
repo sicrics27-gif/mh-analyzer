@@ -1,0 +1,35 @@
+# AOB9 타워 그림 만들기 (제미나이) — 이 파일이나 tools/towerart.py 가 바뀌면 실행 · 결과는 같은 가지(branch)에 저장
+name: 타워 그림 만들기
+on:
+  push:
+    branches: ['tower-art']
+    paths: ['.github/workflows/tower-art.yml', 'tools/towerart.py']
+  workflow_dispatch:
+    inputs:
+      only:
+        description: '다시 만들 방 (쉼표로, 비우면 전부)'
+        required: false
+permissions:
+  contents: write
+jobs:
+  gen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -q pillow
+      - name: 그림 생성
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ONLY: ${{ github.event.inputs.only }}
+        run: |
+          if [ -z "$GEMINI_API_KEY" ]; then echo "::error::금고에 GEMINI_API_KEY 가 없습니다"; exit 1; fi
+          python tools/towerart.py
+      - name: 저장
+        if: always()
+        run: |
+          git config user.name "aob9-bot"; git config user.email "aob9-bot@users.noreply.github.com"
+          git add art/tower && git commit -q -m "타워 그림" && for i in 1 2 3; do git pull -q --rebase && git push -q && break; sleep 3; done || true
