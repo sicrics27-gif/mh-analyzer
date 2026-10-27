@@ -7765,7 +7765,10 @@ function HealthUI(root, H) {
     for (var n = 0; n < 9; n++) {
       tried[model] = 1;
       var r = null, j = null;
-      try { r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': a.key }, body: JSON.stringify(body) }); } catch(e0){ var ne = new Error('인터넷 연결을 확인해 주세요'); ne.status = 0; throw ne; }
+      var ac = window.AbortController ? new AbortController() : null, tmo = setTimeout(function(){ if (ac) ac.abort(); }, isTts ? 45000 : 30000);
+      try { r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': a.key }, body: JSON.stringify(body), signal: ac ? ac.signal : undefined }); }
+      catch(e0){ clearTimeout(tmo); if (e0 && e0.name === 'AbortError') { r = { ok: false, status: 503, json: async function(){ return { error: { message: 'timeout · try again later' } }; } }; } else { var ne = new Error('인터넷 연결을 확인해 주세요'); ne.status = 0; throw ne; } }
+      clearTimeout(tmo);
       try { j = await r.json(); } catch(e){}
       if (r.ok) { if (!isTts && gone && a.autoModel !== model && !a.model) { a.autoModel = model; hidSave('__ai', '__ai', a).catch(function(){}); } return j; }
       var msg = (j && j.error && j.error.message) || ('HTTP ' + r.status), hint = /models\/([a-z0-9][\w.\-]*)/i.exec(msg.replace(/models\/[\w.\-]+\s+is no longer/i, ''));
@@ -7828,7 +7831,13 @@ function HealthUI(root, H) {
     if (a.prov === 'openai') { r = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + a.key }, body: JSON.stringify({ model: model, max_tokens: 200, temperature: 0.9, messages: [{ role: 'system', content: sys }].concat(hist.map(function(m){ return { role: m.me ? 'user' : 'assistant', content: m.t }; })) }) }); j = await r.json(); if (!r.ok) throw new Error((j.error && j.error.message) || ('HTTP ' + r.status)); return j.choices[0].message.content.trim(); }
     if (a.prov === 'anthropic') { r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': a.key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, body: JSON.stringify({ model: model, max_tokens: 200, system: sys, messages: hist.length ? hist.map(function(m){ return { role: m.me ? 'user' : 'assistant', content: m.t }; }) : [{ role: 'user', content: '(전화벨이 울린다)' }] }) }); j = await r.json(); if (!r.ok) throw new Error((j.error && j.error.message) || ('HTTP ' + r.status)); return j.content[0].text.trim(); }
     var contents = hist.map(function(m){ return { role: m.me ? 'user' : 'model', parts: [{ text: m.t }] }; }); if (!contents.length) contents.push({ role: 'user', parts: [{ text: '(전화벨이 울린다)' }] });
-    j = await gemCall(a.model || a.autoModel || p.model, { system_instruction: { parts: [{ text: sys }] }, contents: contents, generationConfig: { maxOutputTokens: 400, temperature: 0.9 } }); return (j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts || []).map(function(x){ return x.text || ''; }).join('').trim();
+    // 새 Gemini 모델은 대답 전에 '생각'하는 데 글자 수를 써서, 한도가 작으면 빈 대답이 옴 → 한도를 넉넉히, 빈 대답이면 한 번 더
+    var txt = function(j){ return (j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts || []).filter(function(x){ return !x.thought; }).map(function(x){ return x.text || ''; }).join('').trim(); };
+    for (var tr = 0; tr < 2; tr++) {
+      j = await gemCall(a.model || a.autoModel || p.model, { system_instruction: { parts: [{ text: sys + ' 대답은 1~3문장으로 짧게, 바로 말하세요.' }] }, contents: contents, generationConfig: { maxOutputTokens: 4096, temperature: 0.9 } });
+      var out = txt(j); if (out) return out;
+    }
+    var ee = new Error('AI가 대답을 만들지 못했습니다 · ⏭ 보내기를 눌러 다시 시도하세요'); ee.busy = true; throw ee;
   }
   function aiSys(sc, nm){ var fem = FEMALE.indexOf(nm) >= 0, age = pick(['30대 후반', '40대 초반', '40대 후반', '50대 초반']); return '당신은 한국의 보험 고객 역할을 연기하는 통화 상대입니다. 이름은 ' + nm + '(' + (fem ? '여성' : '남성') + ', ' + age + '), ' + sc.who + '입니다. 성별과 나이에 맞는 말투와 호칭(가족을 말할 때 ' + (fem ? '언니·오빠·남편' : '형·누나·아내') + ' 등)을 일관되게 쓰고, 상대 설계사는 "팀장님" 또는 "설계사님"이라고 부릅니다. 상대방은 보험설계사이고 이 통화의 목표는 "' + sc.goal + '"입니다. 반드시 지킬 것: 1) 실제 전화 통화처럼 짧게(한두 문장) 자연스러운 구어체로만 말한다. 2) 처음에는 조금 무심하거나 바쁜 척하지만, 설계사가 구체적인 숫자·혜택·다음 행동을 분명히 말하면 점점 호의적으로 반응한다. 3) 가끔 현실적인 질문이나 거절("보험료 부담돼요", "지금 바빠요")을 던진다. 4) 설계사가 약속(날짜·시간)을 잡으면 받아들이고 통화를 마무리한다. 5) 괄호 지문이나 설명을 쓰지 말고 대사만 말한다. 첫 대사는 "여보세요?"로 시작한다.'; }
   // ---------- AI 고객과 자유 통화 (같은 전화 화면) ----------
@@ -7842,7 +7851,7 @@ function HealthUI(root, H) {
     el.querySelector('[data-cp="script"] span').textContent = '글로 쓰기';
     var turn = async function(){
       busy = true; if (CALL.ear) CALL.ear.pause(); note('상대가 말하는 중…');
-      try { var t = await aiChat(sys, CALL.hist); if (ended) return; CALL.hist.push({ me: false, t: t }); $('cphYou').innerHTML = '<small>' + esc(nm) + '</small>' + esc(t); await speak(t, female); }
+      try { note('상대가 대답을 생각하는 중…'); var t = await aiChat(sys, CALL.hist); if (ended) return; CALL.hist.push({ me: false, t: t }); $('cphYou').innerHTML = '<small>' + esc(nm) + '</small>' + esc(t); note('상대가 말하는 중…'); if (t) await speak(t, female); }
       catch(e){ note(e && e.busy ? '⏳ ' + e.message + ' (보내기 ⏭ 를 누르면 다시 시도)' : 'AI 오류: ' + (e.message || e) + ' · 설정에서 키·모델을 확인하세요'); busy = false; return; }
       busy = false; if (ended) return; pg();
       if (CALL.ear) { CALL.ear.resume(); note('🎙 말하세요 · 말을 멈추면 잠시 뒤 상대가 대답합니다'); } else note('아래 칸에 내 말을 쓰고 [보내기]');
