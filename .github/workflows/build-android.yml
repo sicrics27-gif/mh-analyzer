@@ -47,9 +47,9 @@ jobs:
           cp app/build/outputs/apk/release/app-release.apk ../../out/AOB.apk
           cp app/build/outputs/bundle/release/app-release.aab ../../out/AOB-playstore.aab
           echo "{\"code\":${APP_CODE},\"native\":true}" > ../../out/apk.json
+          FP=$(keytool -list -v -keystore oc9.keystore -storetype pkcs12 -storepass "$OC9_KEY_PASS" -alias oc9 2>/dev/null | grep -E "SHA1:" | head -1 | sed 's/.*SHA1: *//')
+          echo "::notice title=SHA1::서명 지문 SHA1 ${FP:-없음}"
           rm -f oc9.keystore
-          FP=$(keytool -printcert -jarfile ../../out/AOB.apk 2>/dev/null | grep -E "SHA1:|SHA-1:" | head -1 | sed 's/.*: *//')
-          echo "::notice title=SHA1::${FP}"
       - if: steps.key.outputs.ok == '1'
         uses: actions/upload-artifact@v4
         with:
