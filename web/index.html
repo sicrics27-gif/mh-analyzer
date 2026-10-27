@@ -2052,6 +2052,28 @@ img,svg,a{-webkit-user-drag:none;user-drag:none}
 .arc-list button small{font-size:11.5px;color:var(--mute)}
 @media (prefers-reduced-motion:reduce){.a-walk,.a-elev,.a-led,.a-tw,.a-star,.a-pin,.a-dash,.a-dial,.a-bub,.a-lamp,.a-scr,.a-bdg,.a-n9,.a-bcn,.a-wave{animation:none}}
 
+/* ===== 전화 수신 화면 ===== */
+.inc{position:fixed;inset:0;z-index:10050;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top) + 64px) 24px calc(env(safe-area-inset-bottom) + 56px);background:radial-gradient(120% 80% at 50% 20%,#2c3a63 0%,#121829 55%,#070a12 100%);color:#fff;animation:incIn .25s ease-out}
+.inc.out{opacity:0;transition:opacity .25s}
+@keyframes incIn{from{opacity:0;transform:scale(1.03)}to{opacity:1;transform:none}}
+.inc-top{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.inc-top small{font-size:14px;color:#aeb9d3;letter-spacing:.5px}
+.inc-top b{font-size:34px;font-weight:700;letter-spacing:-.5px}
+.inc-top span{font-size:16px;color:#c9d3ea}
+.inc-av{position:relative;width:132px;height:132px;display:grid;place-items:center}
+.inc-av em{position:relative;z-index:2;width:116px;height:116px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:48px;font-weight:700;background:linear-gradient(145deg,#4a5d93,#2a3762);box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.inc-av i{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(122,162,255,.55);animation:incPulse 2.4s ease-out infinite}
+.inc-av i:nth-child(2){animation-delay:.8s}.inc-av i:nth-child(3){animation-delay:1.6s}
+@keyframes incPulse{from{transform:scale(1);opacity:.9}to{transform:scale(2.1);opacity:0}}
+.inc-msg{margin:0;color:#aeb9d3;font-size:14px}
+.inc-btns{display:flex;justify-content:space-between;width:100%;max-width:340px}
+.inc-btns button{display:flex;flex-direction:column;align-items:center;gap:10px;background:none;border:0;color:#fff;font-size:15px;cursor:pointer}
+.inc-btns button svg{box-sizing:content-box;padding:20px;border-radius:50%}
+.inc-no svg{background:#e5484d;box-shadow:0 8px 24px rgba(229,72,77,.45)}
+.inc-ok svg{background:#2fbf71;box-shadow:0 8px 24px rgba(47,191,113,.5);animation:incShake 1.2s ease-in-out infinite}
+@keyframes incShake{0%,100%{transform:translateY(0) rotate(0)}10%{transform:translateY(-6px) rotate(-12deg)}20%{transform:translateY(-6px) rotate(12deg)}30%{transform:translateY(0) rotate(0)}}
+@media (prefers-reduced-motion:reduce){.inc-av i,.inc-ok svg{animation:none}}
+
 </style>
 </head>
 <body>
@@ -7444,7 +7466,7 @@ function HealthUI(root, H) {
     var M = callMaterial(), nm = pick(FAKE), FEM = FEMALE.indexOf(nm) >= 0, amt = M.refundTot && M.refundN ? Math.round(M.refundTot / M.refundN / 10000) * 10000 : pick([180000, 350000, 620000, 1240000]), A = man(amt);
     var me = meLine();
     var L = {
-      refund: [['상', '여보세요?'], ['나', nm + ' 고객님, 안녕하세요. ' + me + '입니다. 지난번에 말씀드린 못 받으신 보험금 확인해 봤는데요, 결과가 나와서 바로 전화드렸어요.'], ['상', '아 네, 뭐 나온 게 있나요?'], ['나', '네. 3년 전 입원하셨던 건이 청구가 안 돼 있었더라고요. 서류만 내시면 ' + A + ' 정도 받으실 수 있어요.'], ['상', '어머, 진짜요? 그런 게 있는 줄도 몰랐네요.'], ['나', '대부분 모르세요. 저희는 고객님 보험을 계속 들여다보니까 찾을 수 있는 거예요. 제가 청구 서류 준비해서 내일 오전에 찾아뵐게요.'], ['상', '감사해요. ' + (FEM ? '우리 언니도' : '우리 형도') + ' 비슷한 게 있을 텐데…'], ['나', '그럼 ' + (FEM ? '언니분도' : '형님분도') + ' 한번 봐 드릴게요. 번호만 알려 주시면 제가 정중하게 연락드리겠습니다. 내일 뵙겠습니다.']],
+      refund: [['상', '여보세요?'], ['나', nm + ' 고객님, 안녕하세요. ' + me + '입니다. 지난번에 말씀드린 못 받으신 보험금 확인해 봤는데요, 결과가 나와서 바로 전화드렸어요.'], ['상', '아 네, 뭐 나온 게 있나요?'], ['나', '네. 3년 전 입원하셨던 건이 청구가 안 돼 있었더라고요. 서류만 내시면 ' + A + ' 정도 받으실 수 있어요.'], ['상', (FEM ? '어머, ' : '아, ') + '진짜요? 그런 게 있는 줄도 몰랐네요.'], ['나', '대부분 모르세요. 저희는 고객님 보험을 계속 들여다보니까 찾을 수 있는 거예요. 제가 청구 서류 준비해서 내일 오전에 찾아뵐게요.'], ['상', '감사해요. ' + (FEM ? '우리 언니도' : '우리 형도') + ' 비슷한 게 있을 텐데…'], ['나', '그럼 ' + (FEM ? '언니분도' : '형님분도') + ' 한번 봐 드릴게요. 번호만 알려 주시면 제가 정중하게 연락드리겠습니다. 내일 뵙겠습니다.']],
       claim: [['상', '네, 여보세요.'], ['나', nm + ' 고객님, ' + me + '입니다. 지난달에 병원 다녀오신 거 있으시죠? 그 건 청구 가능한지 확인해 드리려고요.'], ['상', '아, 그냥 통원 몇 번 한 건데 그것도 되나요?'], ['나', '네, 실손으로 통원비랑 약값 청구되고요, 진단명에 따라 따로 나오는 진단비도 있을 수 있어요. 진료비 영수증이랑 세부내역서만 있으면 됩니다.'], ['상', '서류는 병원 가서 떼야 하나요?'], ['나', '요즘은 병원 앱이나 무인기에서 바로 나와요. 어려우시면 제가 같이 가 드릴게요. 이번 주 중 언제가 편하세요?'], ['상', '목요일 오후요.'], ['나', '목요일 3시에 뵐게요. 서류 챙기는 법은 문자로 정리해 보내 드리겠습니다.']],
       product: [['상', '여보세요.'], ['나', nm + ' 고객님, ' + me + '입니다. 지난번 말씀하신 건강보험, 제가 여러 회사 비교해 봤는데 ' + M.prod + ' 쪽이 고객님 상황에 제일 맞더라고요.'], ['상', '그게 뭐가 다른데요?'], ['나', M.tip + '. 보험료 차이는 크지 않은데 보장 범위가 넓어요.'], ['상', '음, 보험료가 얼마나 되는데요?'], ['나', '고객님 나이 기준으로 월 8만 원대인데, 설계서 뽑아서 직접 보여 드리는 게 제일 정확해요. 내일 저녁이나 모레 점심 중에 언제가 편하세요?'], ['상', '모레 점심이요.'], ['나', '네, 모레 12시 반에 회사 근처로 가겠습니다. 설계서 두 가지 버전으로 준비할게요.']],
       check: [['상', '네.'], ['나', nm + ' 고객님, ' + me + '입니다. 고객님 보험 전체를 한 번 정리해 봤는데, 암 진단비는 잘 돼 있는데 뇌·심장 쪽이 비어 있더라고요.'], ['상', '그래요? 다 들어 있는 줄 알았는데.'], ['나', '예전 상품들이 그 부분이 약해요. 지금 보험료 안 늘리고 특약 정리해서 채우는 방법도 있어서, 15분만 보여 드리고 싶어요.'], ['상', '보험료 더 내는 건 부담인데.'], ['나', '그래서 불필요한 특약 빼고 그 돈으로 채우는 쪽으로 설계했어요. 오히려 해약환급금이 조금 나올 수도 있고요. 토요일 오전 괜찮으세요?'], ['상', '토요일 11시요.'], ['나', '네, 11시에 뵙겠습니다. 증권 사진만 미리 보내 주시면 더 정확하게 준비할게요.']],
@@ -7514,6 +7536,7 @@ function HealthUI(root, H) {
     VO.cache[key] = p; p.catch(function(){ delete VO.cache[key]; }); return p;
   }
   function playBuf(buf){
+    if (CALL.native && natHas('playVoice')) return natPlay(buf);
     return new Promise(function(res){
       var ctx = actx(), src = ctx.createBufferSource(); src.buffer = buf; var node = src;
       if (voiceCfg().phone) { var hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 280; var lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 3600; node.connect(hp); hp.connect(lp); node = lp; }
@@ -7527,13 +7550,13 @@ function HealthUI(root, H) {
     var score = function(x){ var n = x.name; return (/Neural|Natural|Online|Premium|Enhanced/i.test(n) ? 4 : 0) + (/Google|Samsung|SMT/i.test(n) ? 2 : 0) + (female && /female|여성|Yuna|Sun|Hyun|SunHi|Ji/i.test(n) ? 2 : 0) + (!female && /male|남성|InJoon|Hyunsu|Bong/i.test(n) && !/female/i.test(n) ? 2 : 0) + (x.localService ? 0 : 1); };
     return v.sort(function(a, b){ return score(b) - score(a); })[0];
   }
-  function sayDevice(text, female){ return new Promise(function(res){ if (!ttsOk()) return res(); try { speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(text); u.lang = 'ko-KR'; var bv = bestVoice(female); if (bv) u.voice = bv; u.rate = 1.06; u.pitch = female ? 1.08 : 0.88; u.volume = VO.vol; u.onend = function(){ res(); }; u.onerror = function(){ res(); }; setTimeout(res, 4000 + String(text).length * 200); speechSynthesis.speak(u); } catch(e){ res(); } }); }
+  function sayDevice(text, female){ if (CALL.native && natHas('say')) return Promise.race([natCall('say', { text: text, female: !!female, vol: VO.vol }).catch(function(){}), new Promise(function(r){ setTimeout(r, 4000 + String(text).length * 200); })]); return new Promise(function(res){ if (!ttsOk()) return res(); try { speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(text); u.lang = 'ko-KR'; var bv = bestVoice(female); if (bv) u.voice = bv; u.rate = 1.06; u.pitch = female ? 1.08 : 0.88; u.volume = VO.vol; u.onend = function(){ res(); }; u.onerror = function(){ res(); }; setTimeout(res, 4000 + String(text).length * 200); speechSynthesis.speak(u); } catch(e){ res(); } }); }
   async function speak(text, female){
     await new Promise(function(r){ setTimeout(r, 250 + Math.random() * 500); }); // 실제 통화처럼 대답 전 짧은 뜸
     if (aiVoiceOk()) { try { return await playBuf(await aiTts(text, female)); } catch(e){ if (!VO.warned) { VO.warned = true; toast('AI 목소리를 못 불러와 기기 목소리로 합니다 · ' + (e.message || e)); } } }
     return sayDevice(text, female);
   }
-  function hush(){ try { if (VO.src) { VO.src.onended = null; VO.src.stop(); VO.src = null; } } catch(e){} if (ttsOk()) speechSynthesis.cancel(); }
+  function hush(){ try { if (VO.src) { VO.src.onended = null; VO.src.stop(); VO.src = null; } } catch(e){} if (ttsOk()) speechSynthesis.cancel(); if (CALL.native) natCall('stopVoice').catch(function(){}); }
   // 통화 연결음 (뚜르르…)
   function ringback(sec){ return new Promise(function(res){ var ctx = actx(); if (!ctx) return setTimeout(res, sec * 1000); var t = ctx.currentTime, g = ctx.createGain(); g.gain.value = 0; g.connect(ctx.destination); [440, 480].forEach(function(f){ var o = ctx.createOscillator(); o.frequency.value = f; o.connect(g); o.start(t); o.stop(t + sec); }); for (var k = 0; k < sec; k += 3) { g.gain.setValueAtTime(0.06 * VO.vol, t + k); g.gain.setValueAtTime(0, t + k + 1.2); } setTimeout(res, sec * 1000); }); }
 
@@ -7581,10 +7604,71 @@ function HealthUI(root, H) {
   function phoneTimer(){ CALL.t0 = Date.now(); clearInterval(CALL.timer); CALL.timer = setInterval(function(){ var e = $('cphTm'); if (!e) { clearInterval(CALL.timer); return; } var s = Math.floor((Date.now() - CALL.t0) / 1000); e.textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }, 500); }
   function phoneClose(quiet){
     clearInterval(CALL.timer); hush(); if (CALL.ear) { CALL.ear.stop(); CALL.ear = null; }
+    if (CALL.ringStop) { CALL.ringStop(); CALL.ringStop = null; } var ic = $('incCall'); if (ic) ic.remove(); callAudioEnd();
     var el = $('cph'); if (el) el.remove(); document.body.classList.remove('cph-on');
     if (CALL.lockOff) { CALL.lockOff(); CALL.lockOff = null; }
     try { if (CALL.wake) { CALL.wake.release(); CALL.wake = null; } } catch(e){}
     try { if (document.fullscreenElement && !quiet) document.exitFullscreen(); } catch(e){}
+  }
+  // ---------- 진짜 전화처럼: 벨소리가 울리고 → [받기] → 귀(수화기)로 듣기 · 귀에 대면 화면 꺼짐 ----------
+  function natHas(m){ return NAT_OK === true; }
+  function natCall(m, a){ var N = window.Native && Native.on && Native.aob; if (!N) return Promise.reject(new Error('no native')); return N[m](a || {}); }
+  // 앱 버전이 새 기능을 아는지 (예전 앱에 없는 기능을 부르면 멈추지 않게)
+  var NAT_OK = null;
+  async function natReady(){ if (NAT_OK !== null) return NAT_OK; NAT_OK = false; if (!(window.Native && Native.on)) return false; try { await Promise.race([natCall('ring', { on: false }), new Promise(function(_, rj){ setTimeout(function(){ rj(new Error('t')); }, 1500); })]); NAT_OK = true; } catch(e){ NAT_OK = false; } return NAT_OK; }
+  function wavB64(buf){
+    var ch = buf.getChannelData(0), rate = buf.sampleRate, n = ch.length, out = new DataView(new ArrayBuffer(44 + n * 2)), w = function(o, t){ for (var i = 0; i < t.length; i++) out.setUint8(o + i, t.charCodeAt(i)); };
+    w(0, 'RIFF'); out.setUint32(4, 36 + n * 2, true); w(8, 'WAVE'); w(12, 'fmt '); out.setUint32(16, 16, true); out.setUint16(20, 1, true); out.setUint16(22, 1, true); out.setUint32(24, rate, true); out.setUint32(28, rate * 2, true); out.setUint16(32, 2, true); out.setUint16(34, 16, true); w(36, 'data'); out.setUint32(40, n * 2, true);
+    for (var i = 0; i < n; i++) { var v = Math.max(-1, Math.min(1, ch[i])); out.setInt16(44 + i * 2, v < 0 ? v * 0x8000 : v * 0x7fff, true); }
+    var u = new Uint8Array(out.buffer), bin = ''; for (var k = 0; k < u.length; k += 0x8000) bin += String.fromCharCode.apply(null, u.subarray(k, k + 0x8000)); return btoa(bin);
+  }
+  function natPlay(buf){ return Promise.race([natCall('playVoice', { b64: wavB64(buf), ext: 'wav', vol: VO.vol }).catch(function(){}), new Promise(function(r){ setTimeout(r, (buf.duration + 3) * 1000); })]); }
+  function callAudioEnd(){ if (!CALL.native) return; CALL.native = false; natCall('callAudio', { on: false }).catch(function(){}); natCall('proximity', { on: false }).catch(function(){}); }
+  function spkBind(el){
+    var b = el.querySelector('[data-cp="spk"]'); CALL.spk = false; b.classList.toggle('on', false);
+    b.onclick = function(){ CALL.spk = !CALL.spk; b.classList.toggle('on', CALL.spk);
+      if (CALL.native) { natCall('callAudio', { on: true, speaker: CALL.spk }).catch(function(){}); natCall('proximity', { on: !CALL.spk }).catch(function(){}); }
+      else VO.vol = CALL.spk ? 1 : 0.6; };
+    if (!CALL.native) VO.vol = 0.6;
+  }
+  // 웹(PC·크롬)용 벨소리: 휴대폰 벨소리 느낌의 멜로디를 반복
+  function ringWeb(){
+    var ctx = actx(), stop = false, timer = null; if (!ctx) return function(){};
+    var notes = [659, 784, 988, 784, 659, 523, 659, 784];
+    var play = function(){ if (stop) return; var t = ctx.currentTime + .05; notes.forEach(function(f, i){ var o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'triangle'; o.frequency.value = f; o.connect(g); g.connect(ctx.destination); g.gain.setValueAtTime(0, t + i * .16); g.gain.linearRampToValueAtTime(.12, t + i * .16 + .02); g.gain.exponentialRampToValueAtTime(.001, t + i * .16 + .15); o.start(t + i * .16); o.stop(t + i * .16 + .16); });
+      try { if (navigator.vibrate) navigator.vibrate([700, 500, 700]); } catch(e){} timer = setTimeout(play, 2600); };
+    play(); return function(){ stop = true; clearTimeout(timer); try { if (navigator.vibrate) navigator.vibrate(0); } catch(e){} };
+  }
+  // 전화 수신 화면 → 받으면 true, 거절·부재중이면 false
+  function incoming(el){
+    return new Promise(async function(done){
+      var nm = (el.querySelector('.cph-who b') || {}).textContent || '고객', n4 = String(1000 + Math.floor(Math.random() * 9000));
+      var ov = document.createElement('div'); ov.className = 'inc'; ov.id = 'incCall';
+      ov.innerHTML = '<div class="inc-top"><small>휴대전화</small><b>' + esc(nm) + '</b><span>010-****-' + n4 + '</span></div>' +
+        '<div class="inc-av"><i></i><i></i><i></i><em>' + esc(nm.slice(0, 1)) + '</em></div><p class="inc-msg">전화가 왔습니다 · 연습 통화</p>' +
+        '<div class="inc-btns"><button type="button" class="inc-no" aria-label="거절"><svg viewBox="0 0 24 24" width="34" height="34" fill="#fff"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.96.96 0 0 1 0-1.41C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67a.96.96 0 0 1 0 1.41l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28a11.27 11.27 0 0 0-2.67-1.85.99.99 0 0 1-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg><span>거절</span></button>' +
+        '<button type="button" class="inc-ok" aria-label="받기"><svg viewBox="0 0 24 24" width="34" height="34" fill="#fff"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><span>받기</span></button></div>';
+      document.body.appendChild(ov);
+      var useNat = await natReady(), stopWeb = null, fin = false, tmo = null;
+      if (useNat) { try { await natCall('ring', { on: true }); } catch(e){ useNat = false; } }
+      if (!useNat) stopWeb = ringWeb();
+      CALL.ringStop = function(){ if (stopWeb) stopWeb(); if (useNat) natCall('ring', { on: false }).catch(function(){}); };
+      var end = async function(ok){
+        if (fin) return; fin = true; CALL.ringStop = null; clearTimeout(tmo); if (stopWeb) stopWeb(); if (useNat) natCall('ring', { on: false }).catch(function(){});
+        ov.classList.add('out'); setTimeout(function(){ ov.remove(); }, 260);
+        if (ok) {
+          if (useNat) { CALL.native = true; try { await natCall('callAudio', { on: true, speaker: false }); } catch(e){} natCall('proximity', { on: true }).catch(function(){}); }
+          var sb = el.querySelector('[data-cp="spk"]'); if (sb) sb.classList.toggle('on', false);
+        } else { phoneClose(); showCall(); toast('전화를 받지 않았습니다'); }
+        done(ok);
+      };
+      ov.querySelector('.inc-ok').onclick = function(){ end(true); };
+      ov.querySelector('.inc-no').onclick = function(){ end(false); };
+      // 받기 버튼을 위로 밀어도 받기
+      var sy = null; ov.addEventListener('touchstart', function(e){ if (e.target.closest('.inc-ok')) sy = e.touches[0].clientY; }, { passive: true });
+      ov.addEventListener('touchmove', function(e){ if (sy != null && sy - e.touches[0].clientY > 60) { sy = null; end(true); } }, { passive: true });
+      tmo = setTimeout(function(){ end(false); }, 30000);
+    });
   }
   // 귀에 대면 터치 잠금: 웹앱은 근접 센서를 못 써서 → 휴대폰 기울기(세워서 귀에 댐) + 볼처럼 넓은 접촉/여러 손가락으로 감지
   function phoneLockArm(el){
@@ -7723,7 +7807,7 @@ function HealthUI(root, H) {
       else if (c.r >= 0.62) idleT = setTimeout(advance, isFinal ? 700 : 1300);
     };
     var finish = async function(){
-      if (ended) return; ended = true; if (CALL.ear) CALL.ear.stop(); hush(); clearInterval(CALL.timer);
+      if (ended) return; ended = true; if (CALL.ear) CALL.ear.stop(); hush(); callAudioEnd(); clearInterval(CALL.timer);
       var secs = Math.round((Date.now() - CALL.t0) / 1000), mine = stat.filter(function(x){ return x.heard; });
       var score = stat.length ? Math.round(stat.reduce(function(s, x){ return s + Math.min(1, x.r); }, 0) / stat.length * 100) : null;
       var chars = mine.reduce(function(s, x){ return s + normKo(x.heard).s.length; }, 0), tsec = mine.reduce(function(s, x){ return s + x.secs; }, 0), spd = tsec > 3 ? Math.round(chars / tsec * 60) : 0;
@@ -7742,14 +7826,13 @@ function HealthUI(root, H) {
     el.querySelector('#cphEnd').onclick = function(){ if (CALL.i < S0.lines.length) finish(); else { phoneClose(); showCall(); } };
     el.querySelector('#cphSet').onclick = function(){ el.classList.toggle('showall'); };
     el.querySelector('[data-cp="next"]').onclick = function(){ if (ended) return; hush(); if (me()) advance(); else { CALL.i++; step(); } };
-    el.querySelector('[data-cp="spk"]').onclick = function(){ VO.vol = VO.vol === 1 ? 0.35 : 1; this.classList.toggle('on', VO.vol === 1); };
-    el.querySelector('[data-cp="spk"]').classList.add('on');
+    spkBind(el);
     el.querySelector('[data-cp="hold"]').onclick = function(){ held = !held; this.classList.toggle('on', held); $('cphSt').textContent = held ? '대기 중' : '통화 중'; if (held) { if (CALL.ear) CALL.ear.pause(); hush(); } else step(); };
     el.querySelector('[data-cp="mute"]').onclick = function(){ muted = !muted; this.classList.toggle('on', !muted); if (CALL.ear) { if (muted) CALL.ear.pause(); else if (me()) CALL.ear.resume(); } };
     if (SRC) el.querySelector('[data-cp="mute"]').classList.add('on'); else el.querySelector('[data-cp="mute"]').disabled = true;
     el.querySelector('[data-cp="script"]').onclick = function(){ var b = $('cphAll'); if (b) { b.remove(); return; } var d = document.createElement('div'); d.id = 'cphAll'; d.className = 'cph-all'; d.innerHTML = S0.lines.map(function(l, i){ return '<p class="' + (l[0] === '나' ? 'me' : 'you') + (i === CALL.i ? ' cur' : '') + '">' + esc(l[1]) + '</p>'; }).join(''); el.querySelector('.cph-card').appendChild(d); };
     CALL.ear = SRC ? Ear(onHeard) : null;
-    (async function(){ actx(); $('cphMe').innerHTML = ''; note('연결 중…'); if (aiVoiceOk()) aiTts(S0.lines[0][1], female).catch(function(){}); await ringback(3.2); if (ended) return; $('cphSt').textContent = '통화 중'; phoneTimer(); if (CALL.ear) CALL.ear.begin(); if (CALL.ear) CALL.ear.pause(); step(); })();
+    (async function(){ actx(); $('cphMe').innerHTML = ''; note(''); if (aiVoiceOk()) aiTts(S0.lines[0][1], female).catch(function(){}); if (!(await incoming(el))) { ended = true; return; } if (ended) return; $('cphSt').textContent = '통화 중'; phoneTimer(); if (CALL.ear) CALL.ear.begin(); if (CALL.ear) CALL.ear.pause(); step(); })();
   }
   // AI 실시간 통화: 선택한 AI 모델이 고객 역할을 맡아 말하고, 내 말은 음성 인식으로 보냄
   // Gemini 호출: 구글이 모델을 바꾸면("…no longer available … use models/새모델") 알려 준 새 모델로 자동으로 바꿔 다시 시도하고 기억
@@ -7859,7 +7942,7 @@ function HealthUI(root, H) {
     };
     var typeBox = function(){ var b = $('cphType'); if (b) { b.remove(); return; } var d = document.createElement('div'); d.id = 'cphType'; d.className = 'cph-type'; d.innerHTML = '<input type="text" id="cphTx" placeholder="내 말을 글로"><button type="button" class="go" id="cphTxGo">보내기</button>'; el.querySelector('.cph-card').appendChild(d); var go = function(){ buf = $('cphTx').value; $('cphTx').value = ''; send(); }; $('cphTxGo').onclick = go; $('cphTx').onkeydown = function(e){ if (e.key === 'Enter') go(); }; $('cphTx').focus(); };
     var finish = async function(){
-      if (ended) return; ended = true; if (CALL.ear) CALL.ear.stop(); hush(); clearInterval(CALL.timer); clearTimeout(idleT);
+      if (ended) return; ended = true; if (CALL.ear) CALL.ear.stop(); hush(); callAudioEnd(); clearInterval(CALL.timer); clearTimeout(idleT);
       var secs = Math.round((Date.now() - CALL.t0) / 1000); $('cphSt').textContent = '통화 종료'; $('cphYou').innerHTML = ''; $('cphHeard').textContent = ''; note('');
       var back = function(){ phoneClose(); showCall(); };
       $('cphEnd').onclick = back;
@@ -7875,13 +7958,12 @@ function HealthUI(root, H) {
     el.querySelector('#cphSet').onclick = function(){};
     el.querySelector('[data-cp="next"]').onclick = send;
     el.querySelector('[data-cp="script"]').onclick = typeBox;
-    el.querySelector('[data-cp="spk"]').onclick = function(){ VO.vol = VO.vol === 1 ? 0.35 : 1; this.classList.toggle('on', VO.vol === 1); };
-    el.querySelector('[data-cp="spk"]').classList.add('on');
+    spkBind(el);
     el.querySelector('[data-cp="hold"]').onclick = function(){ var on = this.classList.toggle('on'); $('cphSt').textContent = on ? '대기 중' : '통화 중'; if (CALL.ear) { if (on) CALL.ear.pause(); else if (!busy) CALL.ear.resume(); } };
     el.querySelector('[data-cp="mute"]').onclick = function(){ var on = this.classList.toggle('on'); if (CALL.ear) { if (!on) CALL.ear.pause(); else if (!busy) CALL.ear.resume(); } };
     if (SRC) el.querySelector('[data-cp="mute"]').classList.add('on'); else el.querySelector('[data-cp="mute"]').disabled = true;
     CALL.ear = SRC ? Ear(onHeard) : null; if (!SRC) setTimeout(typeBox, 50);
-    (async function(){ actx(); note('연결 중…'); await ringback(3.2); if (ended) return; $('cphSt').textContent = '통화 중'; phoneTimer(); if (CALL.ear) { CALL.ear.begin(); CALL.ear.pause(); } turn(); })();
+    (async function(){ actx(); note(''); if (!(await incoming(el))) { ended = true; return; } if (ended) return; $('cphSt').textContent = '통화 중'; phoneTimer(); if (CALL.ear) { CALL.ear.begin(); CALL.ear.pause(); } turn(); })();
   }
   // ---------- 사진으로 싯플랜 넣기: 지점 교육일정표 · 손글씨 싯플랜 → AI가 읽어 일정으로 (미리 보고 고른 뒤 저장 → 캘린더 자동 동기화) ----------
   async function aiVision(prompt, imgs){
