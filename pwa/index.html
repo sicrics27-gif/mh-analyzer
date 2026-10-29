@@ -8028,14 +8028,19 @@ function HealthUI(root, H) {
   async function elFetch(path, opt){ opt = opt || {}; opt.headers = Object.assign({ 'xi-api-key': EL.d.key }, opt.headers || {}); var r = await fetch('https://api.elevenlabs.io' + path, opt); if (!r.ok) { var t = ''; try { var j = await r.json(); t = (j.detail && (j.detail.message || j.detail.status || JSON.stringify(j.detail))) || ''; } catch(e){} var er = new Error('ElevenLabs ' + r.status + (t ? ' · ' + t : '')); er.status = r.status; throw er; } return r; }
   async function elTts(text, female){
     var vid = female ? (EL.d.vf || EL.d.vm) : (EL.d.vm || EL.d.vf); if (!vid) throw new Error('ElevenLabs 목소리를 먼저 고르세요 (액션콜 → 설정)');
-    var models = EL.d.model === 'v2' ? ['eleven_multilingual_v2'] : EL.d.model === 'v3' && !CALL.fast ? ['eleven_v3', 'eleven_flash_v2_5', 'eleven_multilingual_v2'] : ['eleven_flash_v2_5', 'eleven_v3', 'eleven_multilingual_v2'], last = null; // 통화는 빠른 모델 먼저 (대답 지연 최소)
+    // 설정에서 고른 모델을 통화 중에도 그대로 씀 (예전엔 속도 때문에 통화 중엔 v3 대신 빠른 모델로 바꿔 써서 말투가 딱딱했음)
+    var models = EL.d.model === 'v2' ? ['eleven_multilingual_v2'] : EL.bad3 ? ['eleven_flash_v2_5', 'eleven_multilingual_v2'] : ['eleven_v3', 'eleven_flash_v2_5', 'eleven_multilingual_v2'], last = null;
     for (var i = 0; i < models.length; i++) {
-      try { var r = await elFetch('/v1/text-to-speech/' + encodeURIComponent(vid) + '?output_format=mp3_22050_32', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: text, model_id: models[i], language_code: 'ko', voice_settings: { stability: 0.32, similarity_boost: 0.8, style: 0.45, use_speaker_boost: true, speed: 1.05 } }) });
+      var v3 = models[i] === 'eleven_v3', tx = v3 ? text : noTags(text); if (!tx) return actx().createBuffer(1, 2400, 24000);
+      var vs = v3 ? { stability: 0.5, similarity_boost: 0.8, use_speaker_boost: true } : { stability: 0.32, similarity_boost: 0.8, style: 0.45, use_speaker_boost: true, speed: 1.05 };
+      try { var r = await elFetch('/v1/text-to-speech/' + encodeURIComponent(vid) + '?output_format=mp3_22050_32', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: tx, model_id: models[i], language_code: 'ko', voice_settings: vs }) });
         return await actx().decodeAudioData(await r.arrayBuffer()); }
-      catch(e){ last = e; if (e.status === 401 || e.status === 402) break; }
+      catch(e){ last = e; if (e.status === 401 || e.status === 402) break; if (v3 && (e.status === 400 || e.status === 403 || e.status === 404 || e.status === 422)) EL.bad3 = true; }
     }
     throw last;
   }
+  function noTags(t){ return String(t || '').replace(/\[[^\]]{1,24}\]\s*/g, '').trim(); }
+  function elV3(){ return elOn() && EL.d.model !== 'v2' && !EL.bad3; }
   function aiVoiceOk(){ if (elOn()) return true; var a = BZ.ai || {}; return !!(a.key && (a.prov === 'gemini' || a.prov === 'openai' || !a.prov) && voiceCfg().ai); }
   function actx(){ if (!VO.ctx) { var C = window.AudioContext || window.webkitAudioContext; if (!C) return null; VO.ctx = new C(); } if (VO.ctx.state === 'suspended') VO.ctx.resume(); return VO.ctx; }
   function b64pcm(b64, rate){ var bin = atob(b64), n = bin.length >> 1, ctx = actx(), buf = ctx.createBuffer(1, n, rate || 24000), ch = buf.getChannelData(0); for (var i = 0; i < n; i++) { var v = bin.charCodeAt(i * 2) | (bin.charCodeAt(i * 2 + 1) << 8); if (v >= 32768) v -= 65536; ch[i] = v / 32768; } return buf; }
@@ -8043,6 +8048,7 @@ function HealthUI(root, H) {
     var a = BZ.ai || {}, key = (elOn() ? 'el|' : '') + (female ? 'f|' : 'm|') + text; if (VO.cache[key]) return VO.cache[key];
     var p = (async function(){
       if (elOn()) return elTts(text, female);
+      text = noTags(text); if (!text) return actx().createBuffer(1, 2400, 24000);
       if (a.prov === 'openai') {
         var r = await fetch('https://api.openai.com/v1/audio/speech', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + a.key }, body: JSON.stringify({ model: 'gpt-4o-mini-tts', voice: female ? 'coral' : 'ash', input: text, response_format: 'mp3', instructions: '한국 사람이 휴대폰으로 통화하듯 자연스럽고 편안한 구어체로. 너무 또박또박 읽지 말고 실제 대화처럼.' }) });
         if (!r.ok) throw new Error('OpenAI 음성 ' + r.status); return await actx().decodeAudioData(await r.arrayBuffer());
@@ -8073,7 +8079,7 @@ function HealthUI(root, H) {
     var score = function(x){ var n = x.name; return (/Neural|Natural|Online|Premium|Enhanced/i.test(n) ? 4 : 0) + (/Google|Samsung|SMT/i.test(n) ? 2 : 0) + (female && /female|여성|Yuna|Sun|Hyun|SunHi|Ji/i.test(n) ? 2 : 0) + (!female && /male|남성|InJoon|Hyunsu|Bong/i.test(n) && !/female/i.test(n) ? 2 : 0) + (x.localService ? 0 : 1); };
     return v.sort(function(a, b){ return score(b) - score(a); })[0];
   }
-  function sayDevice(text, female){ if (CALL.native && natHas('say')) return Promise.race([natCall('say', { text: text, female: !!female, vol: VO.vol }).catch(function(){}), new Promise(function(r){ setTimeout(r, 4000 + String(text).length * 200); })]); return new Promise(function(res){ if (!ttsOk()) return res(); try { speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(text); u.lang = 'ko-KR'; var bv = bestVoice(female); if (bv) u.voice = bv; u.rate = 1.06; u.pitch = female ? 1.08 : 0.88; u.volume = VO.vol; u.onend = function(){ res(); }; u.onerror = function(){ res(); }; setTimeout(res, 4000 + String(text).length * 200); speechSynthesis.speak(u); } catch(e){ res(); } }); }
+  function sayDevice(text, female){ text = noTags(text); if (!text) return Promise.resolve(); if (CALL.native && natHas('say')) return Promise.race([natCall('say', { text: text, female: !!female, vol: VO.vol }).catch(function(){}), new Promise(function(r){ setTimeout(r, 4000 + String(text).length * 200); })]); return new Promise(function(res){ if (!ttsOk()) return res(); try { speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(text); u.lang = 'ko-KR'; var bv = bestVoice(female); if (bv) u.voice = bv; u.rate = 1.06; u.pitch = female ? 1.08 : 0.88; u.volume = VO.vol; u.onend = function(){ res(); }; u.onerror = function(){ res(); }; setTimeout(res, 4000 + String(text).length * 200); speechSynthesis.speak(u); } catch(e){ res(); } }); }
   async function speak(text, female){
     await new Promise(function(r){ setTimeout(r, 60 + Math.random() * 180); }); // 실제 통화처럼 대답 전 짧은 뜸
     if (aiVoiceOk()) { try { return await playBuf(await aiTts(text, female)); } catch(e){ if (!VO.warned) { VO.warned = true; toast('AI 목소리를 못 불러와 기기 목소리로 합니다 · ' + (e.message || e)); } } }
@@ -8437,7 +8443,7 @@ function HealthUI(root, H) {
     var txt = function(j){ return (j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts || []).filter(function(x){ return !x.thought; }).map(function(x){ return x.text || ''; }).join('').trim(); };
     for (var tr = 0; tr < 2; tr++) {
       var gc = { maxOutputTokens: 4096, temperature: 0.95 }; if (CALL.fast && !CALL.noThink) gc.thinkingConfig = { thinkingBudget: 0 };
-      try { j = await gemCall(a.model || (CALL.fast ? 'gemini-flash-lite-latest' : (a.autoModel || p.model)), { system_instruction: { parts: [{ text: sys }] }, contents: contents, generationConfig: gc }); }
+      try { j = await gemCall(a.model || a.autoModel || p.model, { system_instruction: { parts: [{ text: sys }] }, contents: contents, generationConfig: gc }); }
       catch(e1){ if (gc.thinkingConfig && /think/i.test(e1.message || '')) { CALL.noThink = true; tr--; continue; } throw e1; }
       var out = txt(j); if (out) return out;
     }
@@ -8449,7 +8455,7 @@ function HealthUI(root, H) {
     if (a.prov && a.prov !== 'gemini') { var full = await aiChat(sys, hist); splitSent(full).forEach(onSentence); return full; }
     var contents = hist.map(function(m){ return { role: m.me ? 'user' : 'model', parts: [{ text: m.t }] }; });
     if (!contents.length || contents[0].role !== 'user') contents.unshift({ role: 'user', parts: [{ text: '(전화가 연결됨)' }] });
-    var model = a.model || 'gemini-flash-lite-latest', gc = { maxOutputTokens: 2048, temperature: 0.95 }; if (!CALL.noThink) gc.thinkingConfig = { thinkingBudget: 0 };
+    var model = a.model || a.autoModel || AI_PROV.gemini.model, gc = { maxOutputTokens: 2048, temperature: 1 }; /* 설정한 모델 그대로 (가벼운 lite 모델은 말투가 딱딱함) */ if (!CALL.noThink) gc.thinkingConfig = { thinkingBudget: 0 };
     var r = null; try { r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':streamGenerateContent?alt=sse', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': a.key }, body: JSON.stringify({ system_instruction: { parts: [{ text: sys }] }, contents: contents, generationConfig: gc }) }); } catch(e){ r = null; }
     if (!r || !r.ok || !r.body) { var f2 = await aiChat(sys, hist); splitSent(f2).forEach(onSentence); return f2; } // 실패하면 기존 방식(다른 모델 자동 전환 포함)
     var rd = r.body.getReader(), dec = new TextDecoder(), raw = '', text = '', sent = 0;
@@ -8470,7 +8476,7 @@ function HealthUI(root, H) {
       : '예) 설계사: "고객님 보험금 확인해 보니까 받으실 게 있더라고요." → "아 그래요? 얼만데요?" / 설계사: "서류만 내시면 돼요." → "음… 병원 가서 떼야 되는 거죠?"';
     return '상황: 너는 ' + nm + '(' + (fem ? '여성' : '남성') + ', ' + age + ', ' + sc.who + ')이다. 아까 보험설계사(팀장님)한테서 부재중 전화가 와 있어서, 네가 먼저 다시 전화를 걸었다. 그러니 "바쁘다", "누구세요", "무슨 일로 전화하셨어요?"처럼 전화를 받은 사람 같은 말은 하지 않는다. 팀장님은 이미 아는 사이다. 설계사가 이 통화로 하려는 일: "' + sc.goal + '". ' +
       '말투: ' + tone + '. 가족 얘기는 ' + (fem ? '남편·언니·애들' : '아내·형·애들') + '처럼 성별에 맞게. ' + ex + ' ' +
-      '규칙: 1) 한 번에 한 문장, 길어야 두 문장. 짧을수록 좋다. 2) 실제 통화처럼 "아", "음", "어…", "근데", "그러니까"를 섞고, 가끔 말을 끝까지 안 맺는다. 3) 방금 들은 말에만 바로 반응하고, 되풀이·요약·정리하지 않는다. 4) 상담원·AI 말투 금지: "물론입니다", "도움이 되셨으면", "궁금하신 점", "말씀해 주시면", "~하겠습니다", "~습니다". 5) 처음엔 궁금해하거나 살짝 의심하다가, 구체적인 금액·혜택·날짜를 들으면 관심을 보인다. 가끔 현실적인 걱정("보험료 또 나가는 거 아니에요?", "그거 복잡하지 않아요?")을 말한다. 6) 약속을 잡자고 하면 요일·시간을 정하고 짧게 끊는다("네 그럼 그때 봬요~"). 7) 괄호, 지문, 이모지, 따옴표 없이 대사만.'; }
+      '규칙: 1) 한 번에 한 문장, 길어야 두 문장. 짧을수록 좋다. 2) 실제 통화처럼 "아", "음", "어…", "근데", "그러니까"를 섞고, 가끔 말을 끝까지 안 맺는다. 3) 방금 들은 말에만 바로 반응하고, 되풀이·요약·정리하지 않는다. 4) 상담원·AI 말투 금지: "물론입니다", "도움이 되셨으면", "궁금하신 점", "말씀해 주시면", "~하겠습니다", "~습니다". 5) 처음엔 궁금해하거나 살짝 의심하다가, 구체적인 금액·혜택·날짜를 들으면 관심을 보인다. 가끔 현실적인 걱정("보험료 또 나가는 거 아니에요?", "그거 복잡하지 않아요?")을 말한다. 6) 약속을 잡자고 하면 요일·시간을 정하고 짧게 끊는다("네 그럼 그때 봬요~"). ' + (elV3() ? '7) 지문·이모지·따옴표 없이 대사만. 단, 감정이 실릴 때만 가끔(세 번에 한 번 이하) 문장 맨 앞에 영어 감정 태그 하나를 붙인다: [laughs] [chuckles] [sighs] [hesitates] [surprised] [curious]. 예: "[laughs] 아 진짜요? 저 그런 거 하나도 몰랐어요."' : '7) 괄호, 지문, 이모지, 따옴표 없이 대사만.') + ' 8) 문어체·완벽한 문장 금지. 실제 사람처럼 조사를 빼먹거나("그거 얼마예요?"), 말을 고치거나("아니 그게, 그러니까…"), 웃음("하하")·감탄("헐", "와")을 자연스럽게 섞는다.'; }
   // ---------- AI 고객과 자유 통화 (같은 전화 화면) ----------
   function callAi(){
     var sc = SC.find(function(s){ return s.k === CALL.sc; }), nm = pick(FAKE), female = FEMALE.indexOf(nm) >= 0, sys = aiSys(sc, nm) + ' 설계사는 자신을 "' + meLine() + '"라고 소개합니다.', ended = false, busy = false, buf = '', idleT = null;
@@ -8486,7 +8492,7 @@ function HealthUI(root, H) {
     var prep = function(){ if (!aiVoiceOk()) return; aiTts(opener, female).catch(function(){}); FILL.forEach(function(f){ aiTts(f, female).then(function(b){ fillBuf[f] = b; }).catch(function(){}); }); };
     var queue = Promise.resolve();
     var say1 = function(line){ var ap = aiVoiceOk() ? aiTts(line, female).catch(function(){ return null; }) : null;
-      queue = queue.then(async function(){ if (ended) return; var y = $('cphYou'); if (y) { var cur = y.dataset.t ? y.dataset.t + ' ' : ''; y.dataset.t = cur + line; y.innerHTML = '<small>' + esc(nm) + '</small>' + esc(y.dataset.t); } note('상대가 말하는 중…');
+      queue = queue.then(async function(){ if (ended) return; var y = $('cphYou'); if (y) { var cur = y.dataset.t ? y.dataset.t + ' ' : ''; y.dataset.t = cur + noTags(line); y.innerHTML = '<small>' + esc(nm) + '</small>' + esc(y.dataset.t); } note('상대가 말하는 중…');
         var b = ap ? await ap : null; if (ended) return; if (b) await playBuf(b); else await sayDevice(line, female); }); };
     var turn = async function(){
       busy = true; if (CALL.ear) CALL.ear.pause();
@@ -8517,7 +8523,7 @@ function HealthUI(root, H) {
       if (CALL.hist.filter(function(m){ return m.me; }).length < 2) { back(); return; }
       if (secs >= 10) await logCall({ secs: secs, score: null, ai: 1 });
       $('cphMe').innerHTML = '<div class="cph-rep"><b>코치 피드백 정리 중…</b></div>';
-      try { CALL.fast = false; var fb = await aiChat('당신은 보험 영업 코치입니다. 아래는 설계사(나)와 고객의 통화 연습 기록입니다. 한국어로, 잘한 점 2가지와 더 좋아질 점 2가지를 각각 한 줄씩, 마지막에 다음 연습에서 써 볼 한 문장을 제안하세요. 총 6줄 이내.', [{ me: true, t: CALL.hist.map(function(m){ return (m.me ? '설계사: ' : '고객: ') + m.t; }).join('\n') }]);
+      try { CALL.fast = false; var fb = await aiChat('당신은 보험 영업 코치입니다. 아래는 설계사(나)와 고객의 통화 연습 기록입니다. 한국어로, 잘한 점 2가지와 더 좋아질 점 2가지를 각각 한 줄씩, 마지막에 다음 연습에서 써 볼 한 문장을 제안하세요. 총 6줄 이내.', [{ me: true, t: CALL.hist.map(function(m){ return (m.me ? '설계사: ' : '고객: ') + noTags(m.t); }).join('\n') }]);
         $('cphMe').innerHTML = '<div class="cph-rep"><b>코치 피드백</b><small>' + Math.floor(secs / 60) + '분 ' + (secs % 60) + '초</small><p>' + esc(fb).replace(/\n/g, '<br>') + '</p><div class="cph-ra"><button type="button" class="btn" id="cphFb">복사</button><button type="button" class="go" id="cphClose">닫기</button></div></div>';
         $('cphFb').onclick = function(){ copyText(fb, '피드백'); }; $('cphClose').onclick = back; }
       catch(e){ toast('피드백을 받지 못했습니다 · ' + (e.message || e)); back(); }
