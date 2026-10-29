@@ -453,6 +453,17 @@ public class AobNativePlugin extends Plugin {
         } catch (Exception e) { call.reject(e.getMessage()); }
     }
 
+    /** 글을 특정 앱(카카오톡 등)으로 바로 보내기: 앱 고르는 창 없이 그 앱의 '보낼 곳 고르기'로 */
+    @PluginMethod
+    public void shareText(PluginCall call) {
+        String t = call.getString("text", ""), pkg = call.getString("pkg", "");
+        Intent it = new Intent(Intent.ACTION_SEND); it.setType("text/plain"); it.putExtra(Intent.EXTRA_TEXT, t);
+        if (pkg.length() > 0) it.setPackage(pkg);
+        it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        try { getActivity().startActivity(pkg.length() > 0 ? it : Intent.createChooser(it, "보낼 곳 고르기").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); call.resolve(); }
+        catch (ActivityNotFoundException e) { call.reject("앱이 설치되어 있지 않습니다", "noapp"); }
+    }
+
     // ================= 자동 동선 기록 =================
     @PluginMethod
     public void trackStart(PluginCall call) {
