@@ -232,13 +232,16 @@ public class AobNativePlugin extends Plugin {
         final String lang = call.getString("lang", "ko-KR");
         getActivity().runOnUiThread(() -> {
             try {
-                if (!SpeechRecognizer.isRecognitionAvailable(getContext())) { call.reject("이 휴대폰은 음성 인식을 지원하지 않습니다", "unavailable"); return; }
                 if (sr != null) { sr.destroy(); sr = null; }
-                sr = SpeechRecognizer.createSpeechRecognizer(getContext());
+                if (callMode && commOn && mp == null) comm(false);
+                if (SpeechRecognizer.isRecognitionAvailable(getContext())) sr = SpeechRecognizer.createSpeechRecognizer(getContext());
+                else if (Build.VERSION.SDK_INT >= 33 && SpeechRecognizer.isOnDeviceRecognitionAvailable(getContext())) sr = SpeechRecognizer.createOnDeviceSpeechRecognizer(getContext());
+                else { call.reject("이 휴대폰에서 음성 인식 서비스를 찾지 못했습니다 (설정 → 음성 입력에서 Google 음성 인식을 켜 주세요)", "unavailable"); return; }
                 sr.setRecognitionListener(new RecognitionListener() {
-                    public void onReadyForSpeech(Bundle p) { }
+                    long lvAt = 0;
+                    public void onReadyForSpeech(Bundle p) { JSObject o = new JSObject(); o.put("v", 0); notifyListeners("speechLevel", o); }
                     public void onBeginningOfSpeech() { }
-                    public void onRmsChanged(float v) { }
+                    public void onRmsChanged(float v) { long t = System.currentTimeMillis(); if (t - lvAt < 120) return; lvAt = t; JSObject o = new JSObject(); o.put("v", v); notifyListeners("speechLevel", o); }
                     public void onBufferReceived(byte[] b) { }
                     public void onEndOfSpeech() { }
                     public void onEvent(int t, Bundle p) { }
@@ -323,7 +326,7 @@ public class AobNativePlugin extends Plugin {
     }
 
     // ================= 액션콜: 진짜 전화처럼 (벨소리 · 귀에 대고 듣기 · 귀에 대면 화면 꺼짐) =================
-    private Ringtone ring; private Vibrator vib; private MediaPlayer mp; private PluginCall voiceCall; private TextToSpeech tts; private boolean ttsReady = false; private PluginCall sayCall; private PowerManager.WakeLock prox; private boolean callMode = false;
+    private Ringtone ring; private Vibrator vib; private MediaPlayer mp; private PluginCall voiceCall; private TextToSpeech tts; private boolean ttsReady = false; private PluginCall sayCall; private PowerManager.WakeLock prox; private boolean callMode = false; private boolean callSpk = false; private boolean commOn = false;
 
     /** 벨소리: 휴대폰에 설정된 벨소리 + 진동. 무음·진동 모드여도 연습 전화라 미디어 소리로 울림 */
     @PluginMethod
@@ -360,25 +363,36 @@ public class AobNativePlugin extends Plugin {
         boolean on = Boolean.TRUE.equals(call.getBoolean("on", true)), spk = Boolean.TRUE.equals(call.getBoolean("speaker", false));
         AudioManager am = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
         try {
-            callMode = on;
+            callMode = on; callSpk = spk;
+            comm(on);
+            call.resolve();
+        } catch (Exception e) { call.reject("통화 소리 설정 실패: " + e.getMessage()); }
+    }
+
+    /** 통화 소리 길(귀/스피커) 켜고 끄기.
+     *  통화 모드(MODE_IN_COMMUNICATION)가 켜져 있으면 안드로이드가 마이크를 이 앱 통화에만 주고
+     *  음성 인식(구글 앱)에는 조용한 소리만 줌 → 말을 못 알아들음. 그래서 듣는 동안엔 잠깐 끄고, 상대가 말할 때만 켬 */
+    private void comm(boolean on) {
+        AudioManager am = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+        try {
             if (on) {
                 am.setMode(AudioManager.MODE_IN_COMMUNICATION);
                 if (Build.VERSION.SDK_INT >= 31) {
                     AudioDeviceInfo pick = null;
                     for (AudioDeviceInfo d : am.getAvailableCommunicationDevices()) {
                         int t = d.getType();
-                        if (spk && t == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER) pick = d;
-                        if (!spk && (t == AudioDeviceInfo.TYPE_BLUETOOTH_SCO || t == AudioDeviceInfo.TYPE_WIRED_HEADSET || t == AudioDeviceInfo.TYPE_BLE_HEADSET)) { pick = d; break; }
-                        if (!spk && pick == null && t == AudioDeviceInfo.TYPE_BUILTIN_EARPIECE) pick = d;
+                        if (callSpk && t == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER) pick = d;
+                        if (!callSpk && (t == AudioDeviceInfo.TYPE_BLUETOOTH_SCO || t == AudioDeviceInfo.TYPE_WIRED_HEADSET || t == AudioDeviceInfo.TYPE_BLE_HEADSET)) { pick = d; break; }
+                        if (!callSpk && pick == null && t == AudioDeviceInfo.TYPE_BUILTIN_EARPIECE) pick = d;
                     }
                     if (pick != null) am.setCommunicationDevice(pick);
-                } else am.setSpeakerphoneOn(spk);
+                } else am.setSpeakerphoneOn(callSpk);
             } else {
                 if (Build.VERSION.SDK_INT >= 31) am.clearCommunicationDevice(); else am.setSpeakerphoneOn(false);
                 am.setMode(AudioManager.MODE_NORMAL);
             }
-            call.resolve();
-        } catch (Exception e) { call.reject("통화 소리 설정 실패: " + e.getMessage()); }
+            commOn = on;
+        } catch (Exception ignored) { }
     }
 
     private AudioAttributes voiceAttr() {
@@ -390,6 +404,7 @@ public class AobNativePlugin extends Plugin {
     public void playVoice(PluginCall call) {
         String b64 = call.getString("b64", ""), ext = call.getString("ext", "wav");
         stopMp();
+        if (callMode && !commOn) comm(true);
         try {
             File f = new File(getContext().getCacheDir(), "voice." + ext);
             try (FileOutputStream o = new FileOutputStream(f)) { o.write(Base64.decode(b64, Base64.DEFAULT)); }
@@ -428,6 +443,7 @@ public class AobNativePlugin extends Plugin {
                 try { for (Voice v : tts.getVoices()) { if (v.getLocale() == null || !"ko".equals(v.getLocale().getLanguage()) || v.isNetworkConnectionRequired()) continue; String n = v.getName().toLowerCase(Locale.ROOT); boolean m = n.contains("male") && !n.contains("female"); if (best == null || (female ? n.contains("female") || n.contains("-c-") || n.contains("koa") : m || n.contains("-d-") || n.contains("kod"))) best = v; } } catch (Exception ignored) { }
                 if (best != null) tts.setVoice(best);
                 tts.setPitch(female ? 1.08f : 0.88f); tts.setSpeechRate(rate);
+                if (callMode && !commOn) comm(true);
                 tts.setAudioAttributes(voiceAttr());
                 PluginCall old = sayCall; sayCall = call; if (old != null) old.resolve();
                 Bundle b = new Bundle(); b.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, call.getFloat("vol", 1f));
