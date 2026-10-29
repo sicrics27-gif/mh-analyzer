@@ -2092,6 +2092,20 @@ img,svg,a{-webkit-user-drag:none;user-drag:none}
 .citem .r1 .pk:hover{box-shadow:0 0 0 1px rgba(255,255,255,.3)}
 @media (hover:none){.citem .r1 .pk{padding:6px 9px;font-size:12px}}
 
+.trauto{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:12px 14px;margin:0 0 12px;border-radius:12px;border:1px solid var(--line);background:var(--paper)}
+.trauto b{font-size:14.5px}.trauto b em{font-style:normal;font-size:12px;padding:2px 8px;border-radius:999px;margin-left:6px;background:rgba(127,127,127,.18)}
+.trauto.on b em{background:rgba(47,191,113,.18);color:#2fbf71}
+.trauto span{flex:1 1 220px;color:var(--ink2);font-size:13px;line-height:1.5}
+.trauto span a{color:var(--accent,#4f7dff)}
+.trauto button{margin-left:auto}
+
+.pastebig{display:flex;align-items:center;gap:14px;width:100%;margin:2px 0 16px;padding:16px 18px;border-radius:14px;border:1.5px solid rgba(79,125,255,.55);background:linear-gradient(135deg,rgba(79,125,255,.22),rgba(79,125,255,.08));color:var(--ink);text-align:left;cursor:pointer;box-shadow:0 6px 18px -8px rgba(47,95,224,.6)}
+.pastebig i{font-style:normal;font-size:30px;flex:none}
+.pastebig span{display:flex;flex-direction:column;gap:4px}
+.pastebig b{font-size:17px;letter-spacing:-.2px}
+.pastebig small{font-size:12.5px;color:var(--ink2);line-height:1.45}
+.pastebig:active{transform:scale(.99)}
+
 </style>
 </head>
 <body>
@@ -5033,6 +5047,9 @@ function HealthUI(root, H) {
       j.locations.forEach(function (p) { var pos = ll(p); if (!pos) return; var ms = p.timestamp ? new Date(p.timestamp).getTime() : +p.timestampMs; if (ms) pts.push({ ll: pos, ms: ms }); });
       pts.sort(function (a, b) { return a.ms - b.ms; }); addPath(out, pts);
     } else return { ok: false, error: '구글 타임라인 파일이 아닌 것 같습니다 (Timeline.json / location-history.json 을 넣어 주세요)' };
+    return fin(out);
+  }
+  function fin(out) {
     // 정리: 시간순 정렬, 같은 자리 연속 방문 합치기
     Object.keys(out.days).forEach(function (d) {
       var D = out.days[d]; D.v.sort(function (a, b) { return a.s < b.s ? -1 : 1; }); D.t.sort(function (a, b) { return a.s < b.s ? -1 : 1; });
@@ -5042,6 +5059,32 @@ function HealthUI(root, H) {
     var days = Object.keys(out.days).sort(); out.from = days[0] || ''; out.to = days[days.length - 1] || ''; out.n = days.length;
     out.visits = days.reduce(function (s, d) { return s + out.days[d].v.length; }, 0); out.ok = true;
     return out;
+  }
+
+  // 휴대폰이 자동으로 모은 위치점 [[ms, lat, lng, 정확도m], ...] → 방문(머문 곳)·이동·경로
+  function fromPoints(pts) {
+    var P = (pts || []).filter(function (p) { return p && isFinite(p[1]) && isFinite(p[2]) && (!p[3] || p[3] <= 200); }).sort(function (a, b) { return a[0] - b[0]; });
+    var out = { days: {}, kind: 'auto' }, iso = function (ms) { return new Date(ms).toISOString(); }, STAY = 8 * 60000, R = 0.12;
+    var i = 0, lastEnd = null, path = [];
+    var trip = function (toLL, toMs) {
+      if (!lastEnd || !path.length) { path = []; return; }
+      var km = 0, prev = lastEnd.ll; path.forEach(function (p) { km += dist(prev, [p[1], p[2]]); prev = [p[1], p[2]]; }); km += dist(prev, toLL);
+      var h = Math.max(1, toMs - lastEnd.ms) / 3600000, sp = km / h;
+      if (km >= 0.3) addTrip(out, iso(lastEnd.ms), iso(toMs), km, sp >= 8 ? 'IN_PASSENGER_VEHICLE' : 'WALKING', lastEnd.ll, toLL);
+      path = [];
+    };
+    while (i < P.length) {
+      var j = i, c = [P[i][1], P[i][2]], n = 1;
+      while (j + 1 < P.length && dist(c, [P[j + 1][1], P[j + 1][2]]) < R) { j++; n++; c = [c[0] + (P[j][1] - c[0]) / n, c[1] + (P[j][2] - c[1]) / n]; }
+      var s0 = P[i][0], e0 = P[j][0];
+      // 가만히 있으면 휴대폰이 위치를 잘 안 보냄 → 다음 점까지 오래 비면 그동안 머문 것으로 봄 (이동 시간은 시속 30km로 빼기)
+      if (j + 1 < P.length) { var gap = P[j + 1][0] - e0, dk = dist(c, [P[j + 1][1], P[j + 1][2]]), travel = dk / 30 * 3600000; if (gap - travel >= STAY) e0 = Math.max(e0, P[j + 1][0] - travel); }
+      else if (Date.now() - e0 < 30 * 60000) e0 = Math.max(e0, Math.min(Date.now(), e0 + 30 * 60000)); // 지금 머무는 중
+      if (e0 - s0 >= STAY) { trip(c, s0); addVisit(out, iso(s0), iso(e0), c, ''); lastEnd = { ll: c, ms: e0 }; i = j + 1; }
+      else { path.push(P[i]); if (!lastEnd) lastEnd = { ll: [P[i][1], P[i][2]], ms: P[i][0] }; i++; }
+    }
+    addPath(out, P.map(function (p) { return { ll: [p[1], p[2]], ms: p[0] }; }));
+    return fin(out);
   }
   // 그날의 길: 방문·이동·경로점을 시간순으로 이어 붙임 → [[lat,lng],...]
   function route(D) {
@@ -5053,7 +5096,7 @@ function HealthUI(root, H) {
     var out = []; pts.forEach(function (p) { var l = out[out.length - 1]; if (l && Math.abs(l[0] - p[1]) < 1e-5 && Math.abs(l[1] - p[2]) < 1e-5) return; out.push([p[1], p[2]]); });
     return out;
   }
-  var api = { parse: parse, dist: dist, seoul: seoul, modeTxt: modeTxt, route: route };
+  var api = { parse: parse, fromPoints: fromPoints, dist: dist, seoul: seoul, modeTxt: modeTxt, route: route };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.Trail = api;
 })(this);
 
@@ -7026,7 +7069,7 @@ function HealthUI(root, H) {
     setTimeout(takeShared, 400);
     setTimeout(function(){ nhcDaily().then(function(){ if (!S.cur && !S.view) showWelcome(); }); }, 2500);
     setTimeout(function(){ nhcPoll(); }, 4000);
-    gameTick(true).then(function(){ if (!S.cur && !S.view) { if (ARC_ON && skin() === 'arc') Arcade.show(); else showWelcome(); } });
+    setTimeout(trkAuto, 2500); gameTick(true).then(function(){ if (!S.cur && !S.view) { if (ARC_ON && skin() === 'arc') Arcade.show(); else showWelcome(); } });
     if (Sync.isOn()) { if (Sync.autoRefresh && Sync.autoRefresh()) return; syncNow(); }
   }
 
@@ -8297,10 +8340,52 @@ function HealthUI(root, H) {
     return (PL.d.days[d].items || []).filter(function(x){ if (!/^\d{4}$/.test(x.t)) return false; var m = +x.t.slice(0, 2) * 60 + +x.t.slice(2); return m >= a && m <= b; });
   }
   function trailMatches(d){ var D = trailDay(d); if (!D || !PL.d || !PL.d.days[d]) return {}; var out = {}; (PL.d.days[d].items || []).forEach(function(x, i){ if (!/^\d{4}$/.test(x.t)) return; var m = +x.t.slice(0, 2) * 60 + +x.t.slice(2); var v = D.v.find(function(v){ var a = +v.s.slice(0, 2) * 60 + +v.s.slice(3) - 40, b = +v.e.slice(0, 2) * 60 + +v.e.slice(3) + 40; return m >= a && m <= b; }); if (v) out[x.t + '|' + x.x] = v; }); return out; }
+  // ---------- 자동 동선 기록 (진짜 앱): 휴대폰이 모은 위치점을 가져와 '내 동선'에 방문·이동으로 정리 ----------
+  var TRK = { st: null, busy: false };
+  function trkOk(){ return !!(window.Native && Native.on); }
+  async function trkStatus(){ if (!trkOk()) return null; try { TRK.st = await natCall('trackStatus'); } catch(e){ TRK.st = null; } return TRK.st; }
+  async function trkSync(){
+    if (!trkOk() || TRK.busy || !Store.isOpen()) return 0; TRK.busy = true;
+    try {
+      var r = await natCall('trackTake'), pts = (r && r.points) || []; await trailLoad();
+      var raw = TR.d.raw = TR.d.raw || {}, touched = {};
+      pts.forEach(function(p){ var a = Trail.seoul(new Date(p[0]).toISOString()); if (!a) return; (raw[a.day] = raw[a.day] || []).push([p[0], +(+p[1]).toFixed(5), +(+p[2]).toFixed(5), p[3] | 0]); touched[a.day] = 1; });
+      Object.keys(touched).forEach(function(d){
+        var all = raw[d].sort(function(a, b){ return a[0] - b[0]; }), prev = raw[addDay(d, -1)] || [];
+        var calc = Trail.fromPoints(prev.slice(-30).concat(all)).days[d]; if (!calc) return;
+        var old = TR.d.days[d], ci = old ? old.v.filter(function(v){ return v.cid || !v.min; }) : [];
+        calc.v = calc.v.concat(ci).sort(function(a, b){ return a.s < b.s ? -1 : 1; }); calc.auto = 1; TR.d.days[d] = calc;
+      });
+      var keep = [todayStr(), addDay(todayStr(), -1)]; Object.keys(raw).forEach(function(d){ if (keep.indexOf(d) < 0) delete raw[d]; });
+      if (pts.length) { TR.d.at = Date.now(); TR.d.src = TR.d.src || 'auto'; await trailSave(); }
+      return pts.length;
+    } catch(e){ return 0; } finally { TRK.busy = false; }
+  }
+  async function trkAuto(){ if (!trkOk()) return; await trkStatus(); var n = await trkSync(); if (n && S.view === 'map' && $('main').querySelector('.trnav')) showMap('trail'); }
+  setInterval(function(){ if (document.visibilityState === 'visible') trkAuto(); }, 10 * 60 * 1000);
+  document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'visible') setTimeout(trkAuto, 800); });
+  async function trkToggle(on){
+    try {
+      if (on) { await natCall('trackStart'); toast('자동 동선 기록을 켰습니다 · 위쪽 알림에 "AOB9 동선 기록 중"이 보이면 정상입니다'); await trkStatus(); if (TRK.st && TRK.st.battery === false) trkBattery(); }
+      else { await natCall('trackStop'); await trkSync(); toast('자동 동선 기록을 껐습니다'); await trkStatus(); }
+    } catch(e){ toast(/no-loc|위치/.test(String(e && (e.code || e.message))) ? '위치 권한을 허용해야 기록할 수 있습니다 · 설정 → 애플리케이션 → AOB9 → 권한 → 위치' : '켜지 못했습니다: ' + (e.message || e)); }
+  }
+  function trkBattery(){
+    openDlg('<h4>🔋 한 가지만 더 해 주세요</h4><div class="form"><p class="note">삼성 휴대폰은 배터리를 아끼려고 화면이 꺼지면 앱을 재워서 동선 기록이 끊길 수 있습니다. AOB9만 <b>제한 없음</b>으로 바꿔 주세요.</p><ol class="kkg"><li>아래 <b>설정 열기</b>를 누릅니다</li><li>“배터리 사용량 최적화를 중지할까요?” 창이 뜨면 <b>허용</b></li><li>창 대신 설정 화면이 열리면 <b>배터리</b> → <b>제한 없음</b></li></ol><p class="note">위치는 몇 분에 한 번만 확인해서 배터리는 하루 2~4% 정도 더 씁니다.</p></div><div class="mrow"><button class="btn lg" type="button" id="tbX" style="margin-right:auto">나중에</button><button class="go" type="button" id="tbGo">설정 열기</button></div>');
+    $('tbX').onclick = closeDlg; $('tbGo').onclick = function(){ closeDlg(); natCall('openBattery').catch(function(){}); };
+  }
+  function trkCard(){
+    if (!trkOk()) return '<div class="trauto off"><b>🛰 자동 동선 기록</b><span>휴대폰 앱(AOB9)에서 켜면 체크인하지 않아도 다닌 곳이 저절로 남습니다.</span></div>';
+    var st = TRK.st || {}, on = !!st.on;
+    return '<div class="trauto ' + (on ? 'on' : 'off') + '"><b>🛰 자동 동선 기록 ' + (on ? '<em>켜짐</em>' : '<em>꺼짐</em>') + '</b><span>' + (on ? '체크인하지 않아도 8분 넘게 머문 곳이 방문으로 남습니다 · 이 휴대폰에만 저장' + (st.battery === false ? ' · <a href="#" data-trk="bat">배터리 제한 없음으로 바꾸기</a>' : '') : '켜 두면 다닌 곳·머문 시간·이동 거리가 저절로 기록되고, 근처 고객과 싯플랜에 맞춰 보여 줍니다.') + '</span><button type="button" class="' + (on ? 'btn' : 'go') + '" data-trk="' + (on ? 'off' : 'on') + '">' + (on ? '끄기' : '켜기') + '</button></div>';
+  }
+  document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-trk]'); if (!b) return; e.preventDefault(); var k = b.dataset.trk;
+    if (k === 'bat') { trkBattery(); return; }
+    b.disabled = true; trkToggle(k === 'on').then(function(){ if (S.view === 'map') showMap('trail'); else if ($('ccErr')) openConnCenter(); }); });
   async function trailView(tabs){
-    await trailLoad(); await planLoad(); await geoLoad();
+    await trailLoad(); await planLoad(); await geoLoad(); if (trkOk()) { await trkStatus(); await trkSync(); }
     var d = TR.day || todayStr(), D = trailDay(d), days = Object.keys(TR.d.days).sort(), has = days.length > 0;
-    var head = '<div class="chead"><button class="btn back" type="button" data-act="back">‹ 목록</button><h2 data-i="📍">내 동선</h2><span class="cmeta">구글 지도 타임라인과 체크인으로 쌓이는 내 활동 기록 · 이 기기에만 저장</span></div>' + tabs;
+    var head = '<div class="chead"><button class="btn back" type="button" data-act="back">‹ 목록</button><h2 data-i="📍">내 동선</h2><span class="cmeta">자동 기록 · 체크인 · 구글 타임라인으로 쌓이는 내 활동 기록 · 이 기기에만 저장</span></div>' + tabs + trkCard();
     var nav = '<div class="trnav"><button type="button" class="pb" data-trd="' + addDay(d, -1) + '">‹</button><b>' + dot(d) + ' (' + '일월화수목금토'[wdOf(d)] + ')</b><button type="button" class="pb" data-trd="' + addDay(d, 1) + '">›</button><button type="button" class="pb ptoday" data-trd="' + todayStr() + '">오늘</button><span class="sp"></span><button type="button" class="btn" data-tr="import">📥 구글 타임라인 가져오기</button><button type="button" class="btn" data-tr="checkin">📍 지금 위치 체크인</button></div>';
     var sum = D ? '<div class="trsum"><span><small>방문</small><b>' + D.v.length + '곳</b></span><span><small>이동</small><b>' + (D.km || D.t.reduce(function(s, t){ return s + t.km; }, 0)).toFixed(1) + 'km</b></span><span><small>처음</small><b>' + (D.v[0] ? D.v[0].s : '-') + '</b></span><span><small>마지막</small><b>' + (D.v.length ? D.v[D.v.length - 1].e : '-') + '</b></span>' + (has ? '<small class="note">기록 있는 날 ' + days.length + '일 (' + dot(days[0]) + ' ~ ' + dot(days[days.length - 1]) + ')</small>' : '') + '</div>' : '';
     var list = D && (D.v.length || D.t.length) ? '<div class="trl">' + D.v.map(function(v, i){ var pl = planAt(d, v.s, v.e), nc = nearCust(v.lat, v.lng);
@@ -8520,6 +8605,7 @@ function HealthUI(root, H) {
     R.push({ k: 'geo', ic: '📍', t: '위치 (체크인 · 내 동선)', d: '고객 만날 때 체크인, 지도에 현재 위치', st: permTxt(geo), b: geo === 'granted' ? '' : geo === 'denied' ? '허용 방법' : '허용' });
     R.push({ k: 'mic', ic: '🎙', t: '마이크 (액션콜 음성 인식)', d: '말하면 대본 자막이 따라가고 AI 고객과 통화', st: permTxt(mic), b: mic === 'granted' ? '' : mic === 'denied' ? '허용 방법' : '허용' });
     R.push({ k: 'noti', ic: '🔔', t: '알림 (OTP 요청 · 건의사항)', d: '앱을 보고 있지 않을 때도 새 요청을 알려 줌', st: nt === 'unsupported' ? ['off', '이 기기 미지원'] : permTxt(nt === 'default' ? 'prompt' : nt), b: nt === 'default' ? '허용' : nt === 'denied' ? '허용 방법' : '' });
+    if (trkOk()) { var ts = await trkStatus() || {}; R.push({ k: 'track', ic: '🛰', t: '자동 동선 기록', d: '체크인 없이도 다닌 곳이 내 동선에 저절로', st: ts.on ? ['on', '켜짐' + (ts.battery === false ? ' · 배터리 제한 확인' : '')] : ['off', '꺼짐'], b: ts.on ? '끄기' : '켜기' }); }
     R.push({ k: 'trail', ic: '🧭', t: '구글 지도 타임라인 (내 동선)', d: '구글 지도에서 내보낸 파일을 넣으면 다닌 곳이 지도에', st: trDays ? ['on', trDays + '일치 · ' + (tr.at ? timeTxt(tr.at) + ' 가져옴' : '체크인')] : ['off', '아직 없음'], b: '파일 넣기' });
     R.push({ k: 'ai', ic: '🤖', t: 'AI 키 (자연 음성 · AI 통화 · 사진 일정)', d: 'Gemini 무료 키 하나면 모두 켜짐', st: ai.key ? ['on', AI_PROV[ai.prov || 'gemini'].t] : ['off', '없음'], b: ai.key ? '바꾸기' : '넣기' });
     R.push({ k: 'voice', ic: '🎙', t: 'AI 목소리 (ElevenLabs)', d: '액션콜 가상 고객을 실제 사람 같은 목소리로', st: EL.d && EL.d.key ? ['on', '연결됨'] : ['off', '없음 (Gemini 목소리 사용)'], b: EL.d && EL.d.key ? '바꾸기' : '넣기' });
@@ -8561,6 +8647,7 @@ function HealthUI(root, H) {
       if (k === 'geo') { if (btn.textContent === '허용 방법') return permHow('위치'); await curPos(); toast('위치를 허용했습니다'); redraw(); return; }
       if (k === 'mic') { if (btn.textContent === '허용 방법') return permHow('마이크'); await askMic(); toast('마이크를 허용했습니다'); redraw(); return; }
       if (k === 'noti') { if (btn.textContent === '허용 방법') return permHow('알림'); await askNotif(); toast('알림을 허용했습니다'); redraw(); return; }
+      if (k === 'track') { btn.disabled = true; await trkToggle(!(TRK.st && TRK.st.on)); redraw(); return; }
       if (k === 'trail') { closeDlg(); openTrailImport(); return; }
       if (k === 'ai') { closeDlg(); openAiSetup('conn'); return; }
       if (k === 'kakao') { closeDlg(); openKakaoKey(); return; }
@@ -9549,7 +9636,7 @@ function HealthUI(root, H) {
   function openCustForm(c){
     var sex = c ? c.sex : '';
     var b = c && c.birth ? c.birth.slice(0,4) + '-' + c.birth.slice(4,6) + '-' + c.birth.slice(6) : '';
-    openDlg('<h4>' + IC.user + (c ? ' 고객 정보 수정' : ' 신규 고객 등록') + '</h4><div class="form">' +
+    openDlg('<h4>' + IC.user + (c ? ' 고객 정보 수정' : ' 신규 고객 등록') + '</h4><div class="form">' + (c ? '' : '<button type="button" class="pastebig" id="fPaste"><i>📋</i><span><b>메모·SMemo에서 붙여넣어 자동 등록</b><small>고객 정보가 적힌 글을 복사해 두고 누르면 이름·생년월일·번호·성별을 알아서 골라 채웁니다</small></span></button>') +
       '<label class="l" for="fName">이름</label><input id="fName" type="text" maxlength="20" placeholder="고객 이름 (필수)" value="' + esc(c ? c.name : '') + '" autocomplete="off">' +
       '<span class="l">성별</span><div class="sexsel" id="fSex"><button type="button" data-s="M" aria-pressed="' + (sex === 'M') + '">남</button><button type="button" data-s="F" aria-pressed="' + (sex === 'F') + '">여</button></div>' +
       '<label class="l" for="fBirth">생년월일 <small class="note">(PDF 비밀번호로 자동 사용)</small></label><input id="fBirth" inputmode="numeric" maxlength="10" placeholder="YYYY-MM-DD (예: 19580707)" value="' + b + '" autocomplete="off">' +
@@ -9560,7 +9647,7 @@ function HealthUI(root, H) {
       '<label class="l" for="fMemo">메모 <small class="note">(선택)</small></label><textarea id="fMemo" placeholder="상담 내용 등">' + esc(c ? c.memo || '' : '') + '</textarea>' +
       '<div class="safe">' + IC.lock + '<span>고객 정보는 잠금 비밀번호로 암호화되어 이 기기(와 동기화를 켠 내 구글 드라이브)에만 저장됩니다. 주민번호 뒷자리·계좌번호는 입력하지 마세요.</span></div>' +
       (c ? '' : '<label class="consent"><input type="checkbox" id="fOk"> 고객 개인정보 수집·이용 동의 받음</label>') +
-      '<div class="ferr" id="fErr"></div></div><div class="mrow">' + (c ? '' : '<button class="btn lg" type="button" id="fPaste" style="margin-right:auto">' + IC.doc + ' SMemo에서 가져오기</button>') + '<button class="btn lg" type="button" id="fCancel">취소</button><button class="go" type="button" id="fSave">' + (c ? '저장' : '등록') + '</button></div>');
+      '<div class="ferr" id="fErr"></div></div><div class="mrow">' + '<button class="btn lg" type="button" id="fCancel" style="margin-left:auto">취소</button><button class="go" type="button" id="fSave">' + (c ? '저장' : '등록') + '</button></div>');
     var sx = sex, stg = (c && c.stage && c.stage !== 'db' ? c.stage : 'lead'), chv = c ? chOf(c) : (S.ch && S.ch !== 'mine' && S.ch !== 'none' ? S.ch : '');
     $('fCh').onclick = function(e){ var bt = e.target.closest('button'); if (!bt) return; chv = bt.getAttribute('aria-pressed') === 'true' ? '' : bt.dataset.v; this.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed', String(x.dataset.v === chv)); }); };
     $('fStg').onclick = function(e){ var bt = e.target.closest('button'); if (!bt) return; stg = bt.dataset.v; this.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed', String(x === bt)); }); };
