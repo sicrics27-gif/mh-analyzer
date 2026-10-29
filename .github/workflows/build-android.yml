@@ -54,6 +54,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: AOB-android
+          retention-days: 1   # 설치 파일은 릴리스에 따로 보관 → 여기 사본은 하루만 (GitHub 저장 용량 절약)
           path: out/*
       - name: 다운로드 주소에 올리기 (항상 같은 주소) — main 에서만
         if: steps.key.outputs.ok == '1' && github.ref == 'refs/heads/main'
