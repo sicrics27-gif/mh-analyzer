@@ -248,8 +248,8 @@ public class AobNativePlugin extends Plugin {
                 it.putExtra(RecognizerIntent.EXTRA_LANGUAGE, lang);
                 it.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
                 it.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
-                it.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 2500);
-                it.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 2000);
+                it.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 1000);
+                it.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 800);
                 sr.startListening(it);
                 call.resolve();
             } catch (Exception e) { call.reject("음성 인식을 시작하지 못했습니다: " + e.getMessage()); }
