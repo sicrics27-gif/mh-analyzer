@@ -1823,7 +1823,7 @@ body.cph-on{overflow:hidden}
 .k-on{color:#1f5eff;transition:color .15s}.k-off{color:#b5bac4}
 .cph-heard{font-size:12.5px;color:#9aa1ad;min-height:18px}
 .cph-note{font-size:12.5px;color:#7a6200;text-align:center;min-height:16px}
-.cph-btns{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:16px 0 10px}
+.cph-btns{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:6px 0 10px}
 .cph-btns button{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:6px;color:#222;font-size:12.5px;cursor:pointer;padding:6px 0}
 .cph-btns button i{font-style:normal;font-size:22px;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;filter:grayscale(1)}
 .cph-btns button.on i{background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.12);filter:none}
@@ -2152,6 +2152,53 @@ img,svg,a{-webkit-user-drag:none;user-drag:none}
 .pastebig.cam{border-color:rgba(23,138,76,.5);background:linear-gradient(135deg,rgba(23,138,76,.18),rgba(23,138,76,.05));box-shadow:0 6px 18px -8px rgba(23,138,76,.55);margin-bottom:8px}
 .cph-lv{height:4px;margin:6px 14px 0;border-radius:4px;background:rgba(127,127,127,.18);overflow:hidden;opacity:.5;transition:opacity .2s}
 .cph-lv.on{opacity:1}.cph-lv i{display:block;height:100%;width:0;background:#22c55e;border-radius:4px;transition:width .12s}
+
+/* ===== 액션콜 통화 화면: 실제 삼성 전화 앱처럼 ===== */
+#cph.cph{background:#f6f6f6;padding-left:16px;padding-right:16px}
+.cph-top{font-size:13.5px;color:#666;min-height:26px}
+.cph-hd{display:none;color:#1aab55;font-size:14px;align-items:center;gap:6px}.cph-hd b{font-weight:500;font-variant-numeric:tabular-nums}.cph-hd em{width:1px;height:12px;background:#9ad3b0}
+#cph.live .cph-hd{display:inline-flex}#cph.live #cphSt{display:none}
+.cph-who{margin:12px 2px 14px;gap:16px}
+.cph-av{width:56px;height:56px;background:#ececec;color:#444;font-size:22px;font-weight:500;border:1px solid #e2e2e2}
+.cph-who b{font-size:22px;font-weight:700}.cph-who small{font-size:13.5px;color:#666;margin-top:2px;display:block}
+.cph-card{border-radius:22px;padding:16px 16px 14px;box-shadow:none}
+.cph-stat{border-bottom:0;padding-bottom:4px}.cph-stat span{border-right:1px solid #ececec}
+.cph-stat small{font-size:13px;color:#666}.cph-stat b{font-size:16px;font-weight:500;color:#222}
+.cph-note{text-align:left;font-size:13px;color:#8a6d00}
+.cph-note.first{font-size:19px;color:#222;font-weight:400;padding:0 6px 6px}
+.cph-dots{display:flex;justify-content:center;gap:6px;margin:14px 0 4px}.cph-dots i{width:6px;height:6px;border-radius:3px;background:#bbb;transition:width .2s}.cph-dots i.on{width:16px;background:#555}
+.cph-pages{overflow:hidden;position:relative}
+.cph-pages .cph-btns{position:relative;transition:transform .25s ease;grid-template-columns:repeat(5,1fr) 14px;margin:4px 0 12px}
+.cph-pages .p2{position:absolute;inset:0;transform:translateX(100%);grid-template-columns:14px repeat(3,1fr) 1fr}
+#cph.pg2 .p1{transform:translateX(-100%)}#cph.pg2 .p2{transform:none}
+.cph-btns button{color:#222;font-size:12.5px;gap:4px}
+.cph-btns button i{width:50px;height:50px;filter:none;color:#222}
+.cph-btns button.on i{background:#fff;box-shadow:0 1px 5px rgba(0,0,0,.1)}
+.cph-btns button.rec i{color:#4b55d8;background:#fff}.cph-btns button.rec span b{font-weight:400;font-variant-numeric:tabular-nums}
+.cph-btns button[data-cp=mute].on i{background:none;box-shadow:none}
+.cph-btns button[data-cp=mute]:not(.on):not(:disabled) i{background:#fff;box-shadow:0 1px 5px rgba(0,0,0,.1);color:#e5484d}
+.cph-more{border:0;background:none;color:#999;font-size:22px;padding:0;cursor:pointer;align-self:start;margin-top:12px}
+.cph-end{width:68px;height:68px;background:#e8394a;box-shadow:none;margin-bottom:6px}
+/* 수신 화면 */
+#cph.ringing .cph-dots,#cph.ringing .cph-pages,#cph.ringing .cph-end,#cph.ringing .cph-x{display:none}
+.inc2{flex:none;padding:18px 0 4px;display:flex;flex-direction:column;align-items:center;gap:22px;user-select:none;-webkit-user-select:none}
+.inc2-row{display:flex;align-items:center;justify-content:center;gap:4px;width:100%}
+.inc2-row>button{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:14px;color:#222;cursor:pointer;width:64px;padding:0}
+.inc2-row>button i{display:grid;place-items:center;height:34px}
+.inc-no i{color:#e5484d}.inc-ok i{color:#1fbf5f}
+.inc2-ar{display:flex;align-items:center;gap:5px;width:44px;justify-content:center}.inc2-ar i{width:4px;height:4px;border-radius:2px;background:currentColor;opacity:.35;animation:incdot 1.2s infinite}
+.inc2-ar b{font-weight:400;font-size:18px}.inc2-ar.l{color:#e5484d}.inc2-ar.r{color:#1fbf5f}
+.inc2-ar.l i:nth-child(2){animation-delay:.6s}.inc2-ar.l i:nth-child(3){animation-delay:.3s}.inc2-ar.l i:nth-child(4){animation-delay:0s}
+.inc2-ar.r i:nth-child(1){animation-delay:0s}.inc2-ar.r i:nth-child(2){animation-delay:.3s}.inc2-ar.r i:nth-child(3){animation-delay:.6s}
+@keyframes incdot{0%,100%{opacity:.25}50%{opacity:1}}
+.inc2-knob{width:112px;height:112px;border-radius:50%;background:#333;border:8px solid #9a9a9a;box-shadow:0 0 0 1px #888;display:grid;place-items:center;touch-action:none;cursor:grab;flex:none;position:relative;z-index:1}
+.inc2-knob::after{content:'';position:absolute;inset:auto}
+.inc2-knob svg{width:42px;height:42px;padding:10px;border-radius:50%;background:#fff;box-sizing:border-box}
+.inc2.go-ok .inc2-knob{background:#1fbf5f;border-color:#8fe0b0}.inc2.go-no .inc2-knob{background:#e5484d;border-color:#f3a3a6}
+.inc2-pill{display:flex;border:1px solid #ddd;border-radius:999px;background:#fff;overflow:hidden}
+.inc2-pill button{border:0;background:none;padding:9px 18px;font-size:13.5px;color:#222;cursor:pointer}.inc2-pill button+button{border-left:1px solid #e5e5e5}
+.cph-all p.me{background:#eaf0ff}.cph-all p small{display:block;font-size:11px;color:#888}
+.inc2 .inc-no svg,.inc2 .inc-ok svg{background:none;box-shadow:none;padding:0;animation:none}
 
 </style>
 </head>
@@ -8120,19 +8167,41 @@ function HealthUI(root, H) {
   function phoneOpen(o){
     phoneClose(true);
     var el = document.createElement('div'); el.id = 'cph'; el.className = 'cph';
-    el.innerHTML = '<div class="cph-top"><span id="cphSt">' + esc(o.status || '전화 거는 중…') + '</span><button type="button" class="cph-x" id="cphSet" aria-label="설정">⋮</button></div>' +
-      '<div class="cph-who"><span class="cph-av">' + esc(o.nm.slice(0, 1)) + '</span><div><b>' + esc(o.nm) + '</b><small>' + esc(o.sub || '휴대전화') + '</small></div></div>' +
-      '<div class="cph-card"><div class="cph-stat"><span><small>통화 시간</small><b id="cphTm">00:00</b></span><span><small>진행</small><b id="cphPg">-</b></span><span><small>' + (o.ai ? '상대' : '일치율') + '</small><b id="cphSc">' + (o.ai ? 'AI 고객' : '-') + '</b></span></div>' +
+    var SV = function(d, f){ return '<svg viewBox="0 0 24 24" width="26" height="26" fill="' + (f ? 'currentColor' : 'none') + '" stroke="' + (f ? 'none' : 'currentColor') + '" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' + d + '</svg>'; };
+    var ICN = {
+      spk: SV('<path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/>'),
+      bt: SV('<path d="M7 7l10 10-5 4V3l5 4L7 17"/>'),
+      pad: SV('<circle cx="6" cy="5" r="1.5"/><circle cx="12" cy="5" r="1.5"/><circle cx="18" cy="5" r="1.5"/><circle cx="6" cy="11" r="1.5"/><circle cx="12" cy="11" r="1.5"/><circle cx="18" cy="11" r="1.5"/><circle cx="6" cy="17" r="1.5"/><circle cx="12" cy="17" r="1.5"/><circle cx="18" cy="17" r="1.5"/><circle cx="12" cy="22" r="1.5"/>', true),
+      rec: SV('<circle cx="7" cy="12" r="3.5"/><circle cx="17" cy="12" r="3.5"/><path d="M7 15.5h10"/>'),
+      mute: SV('<path d="M9 9V6a3 3 0 0 1 6 0v6c0 .5-.1 1-.3 1.4M12 15a3 3 0 0 1-3-3"/><path d="M6 11a6 6 0 0 0 9.5 4.9M18 11a6 6 0 0 1-.4 2.1M12 17v4M4 4l16 16"/>'),
+      hold: SV('<path d="M9 6v12M15 6v12"/>'),
+      next: SV('<path d="M5 6l8 6-8 6zM17 6v12"/>'),
+      list: SV('<path d="M5 7h14M5 12h14M5 17h9"/>')
+    };
+    var B = function(cp, ic, t, x){ return '<button type="button" data-cp="' + cp + '"' + (x || '') + '><i>' + ICN[ic] + '</i><span>' + t + '</span></button>'; };
+    el.innerHTML = '<div class="cph-top"><span id="cphSt">' + esc(o.status || '전화 거는 중…') + '</span><span class="cph-hd"><b id="cphTm">00:00</b><em></em>HD Voice</span><button type="button" class="cph-x" id="cphSet" aria-label="설정">⋮</button></div>' +
+      '<div class="cph-who"><span class="cph-av">' + esc(o.nm.slice(0, 1)) + '</span><div><b>' + esc(o.nm) + '</b><small>' + esc(o.num || o.sub || '휴대전화') + '</small></div></div>' +
+      '<div class="cph-card"><div class="cph-stat"><span><small>연습</small><b>' + (o.ai ? 'AI 통화' : '대본 통화') + '</b></span><span><small>진행</small><b id="cphPg">-</b></span><span><small>' + (o.ai ? '상대' : '일치율') + '</small><b id="cphSc">' + (o.ai ? 'AI 고객' : '-') + '</b></span></div>' +
       '<div class="cph-cap"><div class="cph-you" id="cphYou"></div><div class="cph-me" id="cphMe"></div><div class="cph-heard" id="cphHeard"></div></div><div class="cph-note" id="cphNote"></div></div>' +
-      '<div class="cph-btns"><button type="button" data-cp="spk"><i>🔊</i><span>스피커</span></button><button type="button" data-cp="script"><i>📄</i><span>대본</span></button><button type="button" data-cp="hold"><i>⏸</i><span>대기중</span></button><button type="button" data-cp="mute"><i>🎙</i><span>내 소리 듣기</span></button><button type="button" data-cp="next"><i>⏭</i><span>다음</span></button></div>' +
+      '<div class="cph-dots"><i class="on"></i><i></i></div>' +
+      '<div class="cph-pages"><div class="cph-btns p1">' + B('spk', 'spk', '스피커') + B('bt', 'bt', '블루투스') + B('script', 'pad', o.ai ? '키패드' : '대본') + B('rec', 'rec', '<b id="cphRec">00:00</b>', ' class="rec"') + B('mute', 'mute', '내 소리 차단') + '<button type="button" class="cph-more" data-cpg="2" aria-label="더 보기">›</button></div>' +
+      '<div class="cph-btns p2"><button type="button" class="cph-more l" data-cpg="1" aria-label="앞으로">‹</button>' + B('hold', 'hold', '대기') + B('next', 'next', o.ai ? '보내기' : '다음') + B('all', 'list', '대화 보기') + '</div></div>' +
       '<button type="button" class="cph-end" id="cphEnd" aria-label="통화 종료"><svg viewBox="0 0 24 24" width="34" height="34" fill="#fff"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.956.956 0 0 1-.29-.7c0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28a11.27 11.27 0 0 0-2.67-1.85.996.996 0 0 1-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg></button>' +
       '<div class="cph-lock" id="cphLock" hidden><div><b>🔒 화면 잠금</b><small>귀에 대고 있는 동안 터치가 막힙니다<br>휴대폰을 내려 보거나, 위로 쓸어 올리면 풀립니다</small></div></div>';
     document.body.appendChild(el); document.body.classList.add('cph-on');
     try { if (navigator.wakeLock) navigator.wakeLock.request('screen').then(function(w){ CALL.wake = w; }).catch(function(){}); } catch(e){}
     phoneLockArm(el);
+    // 버튼 2쪽 넘기기 (› ‹ · 옆으로 밀기)
+    var pg2 = function(n){ el.classList.toggle('pg2', n === 2); el.querySelectorAll('.cph-dots i').forEach(function(d, k){ d.classList.toggle('on', k === n - 1); }); };
+    el.querySelectorAll('[data-cpg]').forEach(function(b){ b.onclick = function(){ pg2(+b.dataset.cpg); }; });
+    var pgx = null, pw = el.querySelector('.cph-pages'); pw.addEventListener('touchstart', function(e){ pgx = e.touches[0].clientX; }, { passive: true });
+    pw.addEventListener('touchend', function(e){ if (pgx == null) return; var dx = e.changedTouches[0].clientX - pgx; pgx = null; if (dx < -50) pg2(2); else if (dx > 50) pg2(1); }, { passive: true });
+    el.querySelector('[data-cp="bt"]').onclick = function(){ toast('블루투스 이어폰·차량을 연결해 두면 자동으로 그쪽으로 들립니다'); };
+    el.querySelector('[data-cp="rec"]').onclick = function(){ toast('연습 통화는 끝나면 기록과 코치 피드백으로 남습니다'); };
+    el.querySelector('[data-cp="all"]').onclick = function(){ var c = el.querySelector('#cphSet'); if (c && c.onclick) c.onclick(); else el.classList.toggle('showall'); };
     return el;
   }
-  function phoneTimer(){ CALL.t0 = Date.now(); clearInterval(CALL.timer); CALL.timer = setInterval(function(){ var e = $('cphTm'); if (!e) { clearInterval(CALL.timer); return; } var s = Math.floor((Date.now() - CALL.t0) / 1000); e.textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }, 500); }
+  function phoneTimer(){ CALL.t0 = Date.now(); clearInterval(CALL.timer); CALL.timer = setInterval(function(){ var e = $('cphTm'); if (!e) { clearInterval(CALL.timer); return; } var s = Math.floor((Date.now() - CALL.t0) / 1000); var tx = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); e.textContent = tx; var r = $('cphRec'); if (r) r.textContent = tx; var c = $('cph'); if (c) c.classList.add('live'); }, 500); }
   function phoneClose(quiet){
     clearInterval(CALL.timer); hush(); if (CALL.ear) { CALL.ear.stop(); CALL.ear = null; }
     if (CALL.ringStop) { CALL.ringStop(); CALL.ringStop = null; } var ic = $('incCall'); if (ic) ic.remove(); callAudioEnd();
@@ -8177,20 +8246,24 @@ function HealthUI(root, H) {
   // 전화 수신 화면 → 받으면 true, 거절·부재중이면 false
   function incoming(el){
     return new Promise(async function(done){
-      var nm = (el.querySelector('.cph-who b') || {}).textContent || '고객', n4 = String(1000 + Math.floor(Math.random() * 9000));
-      var ov = document.createElement('div'); ov.className = 'inc'; ov.id = 'incCall';
-      ov.innerHTML = '<div class="inc-top"><small>휴대전화</small><b>' + esc(nm) + '</b><span>010-****-' + n4 + '</span></div>' +
-        '<div class="inc-av"><i></i><i></i><i></i><em>' + esc(nm.slice(0, 1)) + '</em></div><p class="inc-msg">전화가 왔습니다 · 연습 통화</p>' +
-        '<div class="inc-btns"><button type="button" class="inc-no" aria-label="거절"><svg viewBox="0 0 24 24" width="34" height="34" fill="#fff"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.96.96 0 0 1 0-1.41C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67a.96.96 0 0 1 0 1.41l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28a11.27 11.27 0 0 0-2.67-1.85.99.99 0 0 1-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg><span>거절</span></button>' +
-        '<button type="button" class="inc-ok" aria-label="받기"><svg viewBox="0 0 24 24" width="34" height="34" fill="#fff"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><span>받기</span></button></div>';
-      document.body.appendChild(ov);
+      // 실제 휴대폰(삼성) 수신 화면처럼: 위 '전화 수신 중…' · 같은 카드 · 아래 가운데 동그라미를 왼쪽(거절)/오른쪽(통화)으로 밀기
+      var ph = '<svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>';
+      var hang = '<svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.96.96 0 0 1 0-1.41C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67a.96.96 0 0 1 0 1.41l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28a11.27 11.27 0 0 0-2.67-1.85.99.99 0 0 1-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg>';
+      var st0 = $('cphSt').textContent; $('cphSt').textContent = 'AOB9 전화 수신 중…'; el.classList.add('ringing');
+      var nt = $('cphNote'); if (nt) { nt.textContent = '처음 연결하는 상대방 번호예요.'; nt.classList.add('first'); }
+      var ov = document.createElement('div'); ov.className = 'inc2'; ov.id = 'incCall';
+      ov.innerHTML = '<div class="inc2-row"><button type="button" class="inc-no" aria-label="거절"><i>' + hang + '</i><span>거절</span></button><span class="inc2-ar l"><b>‹</b><i></i><i></i><i></i></span>' +
+        '<div class="inc2-knob" id="incKnob"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#222" stroke-width="1.8" stroke-linecap="round"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4zM16 9.5l5 5M21 9.5l-5 5"/></svg></div>' +
+        '<span class="inc2-ar r"><i></i><i></i><i></i><b>›</b></span><button type="button" class="inc-ok" aria-label="통화"><i>' + ph + '</i><span>통화</span></button></div>' +
+        '<div class="inc2-pill"><button type="button" data-inc="block">수신차단</button><button type="button" data-inc="msg">메시지로 거절</button></div>';
+      el.appendChild(ov);
       var useNat = await natReady(), stopWeb = null, fin = false, tmo = null;
       if (useNat) { try { await natCall('ring', { on: true }); } catch(e){ useNat = false; } }
       if (!useNat) stopWeb = ringWeb();
       CALL.ringStop = function(){ if (stopWeb) stopWeb(); if (useNat) natCall('ring', { on: false }).catch(function(){}); };
       var end = async function(ok){
         if (fin) return; fin = true; CALL.ringStop = null; clearTimeout(tmo); if (stopWeb) stopWeb(); if (useNat) natCall('ring', { on: false }).catch(function(){});
-        ov.classList.add('out'); setTimeout(function(){ ov.remove(); }, 260);
+        ov.remove(); el.classList.remove('ringing'); if (nt) { nt.textContent = ''; nt.classList.remove('first'); } $('cphSt').textContent = st0;
         if (ok) {
           if (useNat) { CALL.native = true; try { await natCall('callAudio', { on: true, speaker: false }); } catch(e){} natCall('proximity', { on: true }).catch(function(){}); }
           var sb = el.querySelector('[data-cp="spk"]'); if (sb) sb.classList.toggle('on', false);
@@ -8199,9 +8272,14 @@ function HealthUI(root, H) {
       };
       ov.querySelector('.inc-ok').onclick = function(){ end(true); };
       ov.querySelector('.inc-no').onclick = function(){ end(false); };
-      // 받기 버튼을 위로 밀어도 받기
-      var sy = null; ov.addEventListener('touchstart', function(e){ if (e.target.closest('.inc-ok')) sy = e.touches[0].clientY; }, { passive: true });
-      ov.addEventListener('touchmove', function(e){ if (sy != null && sy - e.touches[0].clientY > 60) { sy = null; end(true); } }, { passive: true });
+      ov.querySelectorAll('[data-inc]').forEach(function(b){ b.onclick = function(){ end(false); }; });
+      // 가운데 동그라미를 오른쪽으로 밀면 통화, 왼쪽으로 밀면 거절 (손가락·마우스 모두)
+      var kb = ov.querySelector('#incKnob'), sx = null, lim = function(){ return Math.min(130, ov.clientWidth * 0.32); };
+      var mv = function(x){ if (sx == null) return; var d = Math.max(-lim(), Math.min(lim(), x - sx)); kb.style.transform = 'translateX(' + d + 'px)'; ov.classList.toggle('go-ok', d > lim() * 0.7); ov.classList.toggle('go-no', d < -lim() * 0.7); };
+      var up = function(x){ if (sx == null) return; var d = x - sx; sx = null; kb.style.transition = 'transform .2s'; kb.style.transform = ''; ov.classList.remove('go-ok', 'go-no'); if (d > lim() * 0.7) end(true); else if (d < -lim() * 0.7) end(false); };
+      kb.addEventListener('pointerdown', function(e){ sx = e.clientX; kb.style.transition = 'none'; try { kb.setPointerCapture(e.pointerId); } catch(e2){} });
+      kb.addEventListener('pointermove', function(e){ mv(e.clientX); });
+      kb.addEventListener('pointerup', function(e){ up(e.clientX); }); kb.addEventListener('pointercancel', function(){ if (sx != null) up(sx); });
       tmo = setTimeout(function(){ end(false); }, 30000);
     });
   }
@@ -8307,7 +8385,7 @@ function HealthUI(root, H) {
   // ---------- 대본 연습 통화: 실제 통화 화면 + 가사처럼 따라가는 자막 ----------
   function callPractice(){
     var S0 = CALL.s, sc = SC.find(function(s){ return s.k === CALL.sc; }), female = FEMALE.indexOf(S0.nm) >= 0, held = false, muted = false, ended = false, stat = [], lineT0 = 0, lastHeard = '', idleT = null;
-    var el = phoneOpen({ nm: S0.nm, sub: '휴대전화 · ' + sc.t.replace(' 통화', '') });
+    var el = phoneOpen({ nm: S0.nm, num: '010-' + String(2000 + Math.floor(Math.random() * 7999)) + '-' + String(1000 + Math.floor(Math.random() * 8999)) });
     CALL.i = 0;
     var me = function(){ return S0.lines[CALL.i] && S0.lines[CALL.i][0] === '나'; };
     var setPg = function(){ $('cphPg').textContent = Math.min(CALL.i + 1, S0.lines.length) + '/' + S0.lines.length; };
@@ -8493,12 +8571,10 @@ function HealthUI(root, H) {
   function callAi(){
     var sc = SC.find(function(s){ return s.k === CALL.sc; }), nm = pick(FAKE), female = FEMALE.indexOf(nm) >= 0, sys = aiSys(sc, nm) + ' 설계사는 자신을 "' + meLine() + '"라고 소개합니다.', ended = false, busy = false, buf = '', idleT = null;
     CALL.hist = [];
-    var el = phoneOpen({ nm: nm, sub: '휴대전화 · AI 고객', ai: true });
+    var el = phoneOpen({ nm: nm, num: '010-' + String(2000 + Math.floor(Math.random() * 7999)) + '-' + String(1000 + Math.floor(Math.random() * 8999)), ai: true });
     el.querySelector('.cph-card').insertAdjacentHTML('beforeend', '<div class="cph-lv" id="cphLv" title="내 목소리 크기"><i></i></div>');
     var note = function(t){ var n = $('cphNote'); if (n) n.textContent = t || ''; };
     var pg = function(){ $('cphPg').textContent = CALL.hist.filter(function(m){ return m.me; }).length + '마디'; };
-    el.querySelector('[data-cp="next"] span').textContent = '보내기';
-    el.querySelector('[data-cp="script"] span').textContent = '글로 쓰기';
     // 먼저 전화를 건 쪽(고객)의 첫마디 · 맞장구(네~, 아~)는 미리 만들어 둠 → 말 끝나자마자 바로
     var OPEN = female ? ['여보세요, 팀장님? 아까 전화 주셨던데요.', '네 팀장님~ 부재중 전화가 와 있어서요.', '여보세요? 팀장님, 전화하셨었죠?'] : ['여보세요, 팀장님? 아까 전화 주셨던데요.', '예 팀장님, 부재중 와 있길래요.', '여보세요? 전화 주셨었죠?'];
     var opener = pick(OPEN), FILL = female ? ['네~', '아 네네.', '음…', '아~'] : ['네.', '예예.', '음…', '아~'], fillBuf = {};
@@ -8542,7 +8618,7 @@ function HealthUI(root, H) {
       catch(e){ toast('피드백을 받지 못했습니다 · ' + (e.message || e)); back(); }
     };
     el.querySelector('#cphEnd').onclick = finish;
-    el.querySelector('#cphSet').onclick = function(){};
+    el.querySelector('#cphSet').onclick = function(){ var b = $('cphAll'); if (b) { b.remove(); return; } var d = document.createElement('div'); d.id = 'cphAll'; d.className = 'cph-all'; d.innerHTML = '<button type="button" class="btn" id="cphAllX">닫기</button>' + (CALL.hist.length ? CALL.hist.map(function(m){ return '<p class="' + (m.me ? 'me' : '') + '"><small>' + (m.me ? '나' : esc(nm)) + '</small>' + esc(noTags(m.t)) + '</p>'; }).join('') : '<p>아직 대화가 없습니다</p>'); el.querySelector('.cph-card').appendChild(d); $('cphAllX').onclick = function(){ d.remove(); }; };
     el.querySelector('[data-cp="next"]').onclick = send;
     el.querySelector('[data-cp="script"]').onclick = typeBox;
     spkBind(el);
