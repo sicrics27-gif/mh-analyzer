@@ -2154,6 +2154,8 @@ img,svg,a{-webkit-user-drag:none;user-drag:none}
 .wkbox .mact{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
 .prow2{display:flex;gap:6px;flex-wrap:wrap}.prow2 .btn{flex:1}
 .pastebig.cam{border-color:rgba(23,138,76,.5);background:linear-gradient(135deg,rgba(23,138,76,.18),rgba(23,138,76,.05));box-shadow:0 6px 18px -8px rgba(23,138,76,.55);margin-bottom:8px}
+.cph-lv{height:4px;margin:6px 14px 0;border-radius:4px;background:rgba(127,127,127,.18);overflow:hidden;opacity:.5;transition:opacity .2s}
+.cph-lv.on{opacity:1}.cph-lv i{display:block;height:100%;width:0;background:#22c55e;border-radius:4px;transition:width .12s}
 
 </style>
 </head>
@@ -2302,6 +2304,7 @@ img,svg,a{-webkit-user-drag:none;user-drag:none}
           var list = res.map(function (x) { return x; }); list.item = function (i) { return list[i]; };
           fire(r, 'result', { resultIndex: idx, results: list });
         }),
+        N.addListener('speechLevel', function (d) { if (active === r) root.dispatchEvent(new CustomEvent('aob-mic', { detail: +(d && d.v) || 0 })); }),
         N.addListener('speechEnd', function (d) {
           if (active !== r) return;
           var code = d && d.code || 0;
@@ -2320,7 +2323,7 @@ img,svg,a{-webkit-user-drag:none;user-drag:none}
       // 시작 준비 중에 멈춤(pause)이 눌렸으면 휴대폰 마이크를 아예 켜지 않음 → 켜진 채 남아 상대 목소리가 묻히는 문제 방지
       r._listen().then(function () { if (active !== r || r._stop) return 'skip'; return N.speechStart({ lang: r.lang || 'ko-KR' }); })
         .then(function (x) { if (x === 'skip') return; if (active !== r || r._stop) { N.speechStop().catch(function () { }); return; } fire(r, 'start'); fire(r, 'audiostart'); })
-        .catch(function (e) { fire(r, 'error', { error: /권한|not-allowed/.test(String(e && (e.code || e.message))) ? 'not-allowed' : 'audio-capture', message: String(e && e.message || e) }); r._end(); });
+        .catch(function (e) { var cd = String(e && (e.code || e.message)); fire(r, 'error', { error: /권한|not-allowed/.test(cd) ? 'not-allowed' : /unavailable/.test(cd) ? 'service-not-allowed' : 'audio-capture', message: String(e && e.message || e) }); r._end(); });
     };
     Rec.prototype.stop = function () { var r = this; r._stop = true; N.speechStop().catch(function () { }).then(function () { setTimeout(function () { r._end(); }, 300); }); };
     Rec.prototype.abort = function () { this._stop = true; N.speechStop().catch(function () { }); this._end(); };
@@ -8091,11 +8094,14 @@ function HealthUI(root, H) {
 
   // ---------- 음성 인식: 계속 듣고, 말한 만큼 대본을 따라감 ----------
   var SRC = window.SpeechRecognition || window.webkitSpeechRecognition;
+  // 마이크 소리 크기 (앱이 보내 줌) → 통화 화면 아래 막대: 움직이면 마이크가 내 말을 듣는 중
+  window.addEventListener('aob-mic', function(e){ var b = document.querySelector('#cphLv i'); if (!b) return; var v = Math.max(0, Math.min(1, ((e.detail || 0) + 2) / 12)); b.style.width = Math.round(v * 100) + '%'; b.parentNode.classList.add('on'); clearTimeout(b._t); b._t = setTimeout(function(){ b.style.width = '0'; b.parentNode.classList.remove('on'); }, 900); });
   function Ear(onText){
-    var me = { on: false, paused: false, acc: '', rec: null, err: '' };
+    var me = { on: false, paused: false, acc: '', rec: null, err: '', bad: 0, badAt: 0 };
     var start = function(){ if (!SRC || !me.on || me.paused || me.rec) return; var r = new SRC(); r.lang = 'ko-KR'; r.continuous = true; r.interimResults = true; r.maxAlternatives = 1; me.rec = r;
-      r.onresult = function(ev){ var interim = ''; for (var i = ev.resultIndex; i < ev.results.length; i++) { var t = ev.results[i][0].transcript; if (ev.results[i].isFinal) me.acc += ' ' + t; else interim += ' ' + t; } onText((me.acc + ' ' + interim).trim(), !interim); };
-      r.onerror = function(ev){ me.err = ev.error; if (ev.error === 'not-allowed' || ev.error === 'service-not-allowed') { me.on = false; onText(null, false, ev.error); } };
+      r.onresult = function(ev){ me.bad = 0; var interim = ''; for (var i = ev.resultIndex; i < ev.results.length; i++) { var t = ev.results[i][0].transcript; if (ev.results[i].isFinal) me.acc += ' ' + t; else interim += ' ' + t; } onText((me.acc + ' ' + interim).trim(), !interim); };
+      r.onerror = function(ev){ me.err = ev.error; if (ev.error === 'not-allowed' || ev.error === 'service-not-allowed') { me.on = false; onText(null, false, ev.error); return; }
+        if (ev.error !== 'no-speech' && ev.error !== 'aborted') { var now = Date.now(); if (now - me.badAt > 20000) me.bad = 0; me.badAt = now; if (++me.bad >= 6) { me.on = false; onText(null, false, ev.error + (ev.message ? ' · ' + ev.message : '')); } } };
       r.onend = function(){ me.rec = null; if (me.on && !me.paused) setTimeout(start, 120); };
       try { r.start(); } catch(e){ me.rec = null; } };
     me.begin = function(){ me.on = true; me.paused = false; start(); };
@@ -8151,7 +8157,11 @@ function HealthUI(root, H) {
     for (var i = 0; i < n; i++) { var v = Math.max(-1, Math.min(1, ch[i])); out.setInt16(44 + i * 2, v < 0 ? v * 0x8000 : v * 0x7fff, true); }
     var u = new Uint8Array(out.buffer), bin = ''; for (var k = 0; k < u.length; k += 0x8000) bin += String.fromCharCode.apply(null, u.subarray(k, k + 0x8000)); return btoa(bin);
   }
-  function natPlay(buf){ return Promise.race([natCall('playVoice', { b64: wavB64(buf), ext: 'wav', vol: VO.vol }).catch(function(){}), new Promise(function(r){ setTimeout(r, (buf.duration + 3) * 1000); })]); }
+  // 예전 앱(빌드 31 이하): 통화 모드가 켜져 있으면 음성 인식이 마이크 소리를 못 받음 → 듣는 동안 끄고, 말할 때 켬 (새 앱은 앱이 알아서)
+  function oldComm(){ return CALL.native && apkCode() > 0 && apkCode() < 32; }
+  function commSet(on){ if (!oldComm() || CALL.comm === on) return Promise.resolve(); CALL.comm = on; return natCall('callAudio', { on: on, speaker: !!CALL.spk }).catch(function(){}); }
+  async function natPlay(buf){ await commSet(true); return natPlay0(buf); }
+  function natPlay0(buf){ return Promise.race([natCall('playVoice', { b64: wavB64(buf), ext: 'wav', vol: VO.vol }).catch(function(){}), new Promise(function(r){ setTimeout(r, (buf.duration + 3) * 1000); })]); }
   function callAudioEnd(){ if (!CALL.native) return; CALL.native = false; natCall('callAudio', { on: false }).catch(function(){}); natCall('proximity', { on: false }).catch(function(){}); }
   function spkBind(el){
     var b = el.querySelector('[data-cp="spk"]'); CALL.spk = false; b.classList.toggle('on', false);
@@ -8434,6 +8444,11 @@ function HealthUI(root, H) {
     keyToolsBind('aiKey', function(){ return aiKeyTest($('aiProv').value, $('aiKey').value.replace(/\s+/g, '')); });
     $('aiGo').onclick = async function(){ var k = $('aiKey').value.replace(/\s+/g, ''); if (!k) { $('aiErr').textContent = 'API 키를 넣어 주세요'; return; } var wk = keyWrong($('aiProv').value, k); if (wk) { $('aiErr').textContent = wk; return; } BZ.ai = { prov: $('aiProv').value, key: k, model: $('aiModel').value.trim() }; await hidSave('__ai', '__ai', BZ.ai); closeDlg(); VO.cache = {}; VO.gm = ''; VO.warned = false; if (back === 'plan') openPlanPhoto(); else if (back === 'conn') openConnCenter(); else if (back) showCall(); else callAi(); };
   }
+  // '생각 끄기' 설정은 모델마다 받는 형식이 다름 (2.x: thinkingBudget 0 · 3.x: thinkingLevel) → 안 받으면(400) 다음 형식, 끝내 안 되면 설정 없이
+  var THK = {};
+  function thkLadder(m){ return /gemini-([3-9]|\d\d)/.test(m) ? [{ thinkingLevel: 'minimal' }, { thinkingLevel: 'low' }, null] : [{ thinkingBudget: 0 }, null]; }
+  function thkCfg(m){ var L = thkLadder(m); return L[Math.min(THK[m] || 0, L.length - 1)]; }
+  function thkBad(m, st, msg){ var L = thkLadder(m), i = THK[m] || 0; if (i >= L.length - 1 || !L[i]) return false; if (st === 400 || /think|invalid argument/i.test(msg || '')) { THK[m] = i + 1; return true; } return false; }
   async function aiChat(sys, hist){ // CALL.fast: 통화용 (빠른 모델 · 생각 끄기)
     var a = BZ.ai, p = AI_PROV[a.prov] || AI_PROV.gemini, model = a.model || p.model, r, j;
     if (a.prov === 'openai') { r = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + a.key }, body: JSON.stringify({ model: model, max_tokens: 200, temperature: 0.9, messages: [{ role: 'system', content: sys }].concat(hist.map(function(m){ return { role: m.me ? 'user' : 'assistant', content: m.t }; })) }) }); j = await r.json(); if (!r.ok) throw new Error((j.error && j.error.message) || ('HTTP ' + r.status)); return j.choices[0].message.content.trim(); }
@@ -8442,9 +8457,9 @@ function HealthUI(root, H) {
     // 새 Gemini 모델은 대답 전에 '생각'하는 데 글자 수를 써서, 한도가 작으면 빈 대답이 옴 → 한도를 넉넉히, 빈 대답이면 한 번 더
     var txt = function(j){ return (j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts || []).filter(function(x){ return !x.thought; }).map(function(x){ return x.text || ''; }).join('').trim(); };
     for (var tr = 0; tr < 2; tr++) {
-      var gc = { maxOutputTokens: 4096, temperature: 0.95 }; if (CALL.fast && !CALL.noThink) gc.thinkingConfig = { thinkingBudget: 0 };
-      try { j = await gemCall(a.model || a.autoModel || p.model, { system_instruction: { parts: [{ text: sys }] }, contents: contents, generationConfig: gc }); }
-      catch(e1){ if (gc.thinkingConfig && /think/i.test(e1.message || '')) { CALL.noThink = true; tr--; continue; } throw e1; }
+      var mdl = a.model || a.autoModel || p.model, gc = { maxOutputTokens: 4096, temperature: 0.95 }, tk = CALL.fast ? thkCfg(mdl) : null; if (tk) gc.thinkingConfig = tk;
+      try { j = await gemCall(mdl, { system_instruction: { parts: [{ text: sys }] }, contents: contents, generationConfig: gc }); }
+      catch(e1){ if (tk && thkBad(mdl, e1.status, e1.message)) { tr--; continue; } throw e1; }
       var out = txt(j); if (out) return out;
     }
     var ee = new Error('AI가 대답을 만들지 못했습니다 · ⏭ 보내기를 눌러 다시 시도하세요'); ee.busy = true; throw ee;
@@ -8455,8 +8470,9 @@ function HealthUI(root, H) {
     if (a.prov && a.prov !== 'gemini') { var full = await aiChat(sys, hist); splitSent(full).forEach(onSentence); return full; }
     var contents = hist.map(function(m){ return { role: m.me ? 'user' : 'model', parts: [{ text: m.t }] }; });
     if (!contents.length || contents[0].role !== 'user') contents.unshift({ role: 'user', parts: [{ text: '(전화가 연결됨)' }] });
-    var model = a.model || a.autoModel || AI_PROV.gemini.model, gc = { maxOutputTokens: 2048, temperature: 1 }; /* 설정한 모델 그대로 (가벼운 lite 모델은 말투가 딱딱함) */ if (!CALL.noThink) gc.thinkingConfig = { thinkingBudget: 0 };
+    var model = a.model || a.autoModel || AI_PROV.gemini.model, gc = { maxOutputTokens: 2048, temperature: 1 }; /* 설정한 모델 그대로 (가벼운 lite 모델은 말투가 딱딱함) */ var tk = thkCfg(model); if (tk) gc.thinkingConfig = tk;
     var r = null; try { r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':streamGenerateContent?alt=sse', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': a.key }, body: JSON.stringify({ system_instruction: { parts: [{ text: sys }] }, contents: contents, generationConfig: gc }) }); } catch(e){ r = null; }
+    if (r && r.status === 400 && tk) { var em = ''; try { em = ((await r.json()).error || {}).message || ''; } catch(e){} if (thkBad(model, 400, em)) return aiStream(sys, hist, onSentence); }
     if (!r || !r.ok || !r.body) { var f2 = await aiChat(sys, hist); splitSent(f2).forEach(onSentence); return f2; } // 실패하면 기존 방식(다른 모델 자동 전환 포함)
     var rd = r.body.getReader(), dec = new TextDecoder(), raw = '', text = '', sent = 0;
     var flush = function(final){ var rest = text.slice(sent); var m; while ((m = /^[\s\S]*?([.?!~…]+|요(?=[ ,])|다(?=[ ,]))(\s|$)/.exec(rest)) && (m[0].trim().length >= 2)) { if (!final && m.index + m[0].length >= rest.length && !/\s$/.test(m[0])) break; onSentence(m[0].trim()); sent += m[0].length; rest = text.slice(sent); }
@@ -8482,6 +8498,7 @@ function HealthUI(root, H) {
     var sc = SC.find(function(s){ return s.k === CALL.sc; }), nm = pick(FAKE), female = FEMALE.indexOf(nm) >= 0, sys = aiSys(sc, nm) + ' 설계사는 자신을 "' + meLine() + '"라고 소개합니다.', ended = false, busy = false, buf = '', idleT = null;
     CALL.hist = [];
     var el = phoneOpen({ nm: nm, sub: '휴대전화 · AI 고객', ai: true });
+    el.querySelector('.cph-card').insertAdjacentHTML('beforeend', '<div class="cph-lv" id="cphLv" title="내 목소리 크기"><i></i></div>');
     var note = function(t){ var n = $('cphNote'); if (n) n.textContent = t || ''; };
     var pg = function(){ $('cphPg').textContent = CALL.hist.filter(function(m){ return m.me; }).length + '마디'; };
     el.querySelector('[data-cp="next"] span').textContent = '보내기';
@@ -8504,13 +8521,13 @@ function HealthUI(root, H) {
       }
       catch(e){ note(e && e.busy ? '⏳ ' + e.message + ' (보내기 ⏭ 를 누르면 다시 시도)' : 'AI 오류: ' + (e.message || e) + ' · 설정에서 키·모델을 확인하세요'); busy = false; return; }
       busy = false; if (ended) return; pg();
-      if (CALL.ear) { CALL.ear.resume(); note('🎙 말하세요 · 말을 멈추면 바로 상대가 대답합니다'); } else note('아래 칸에 내 말을 쓰고 [보내기]');
+      if (CALL.ear) { await commSet(false); if (ended) return; CALL.ear.resume(); note('🎙 말하세요 · 말을 멈추면 바로 상대가 대답합니다'); } else note('아래 칸에 내 말을 쓰고 [보내기]');
     };
     var send = function(){ var t = String(buf || '').trim(); if (!t || busy || ended) return; buf = ''; clearTimeout(idleT); CALL.hist.push({ me: true, t: t }); $('cphMe').innerHTML = '<span class="k-on">' + esc(t) + '</span>'; $('cphHeard').textContent = ''; if (CALL.ear) CALL.ear.reset();
       var fk = Object.keys(fillBuf); if (fk.length && Math.random() < 0.55) { var fb = fillBuf[pick(fk)]; queue = queue.then(function(){ return ended ? null : playBuf(fb); }); }
       turn(); };
     var onHeard = function(text, isFinal, err){
-      if (err) { CALL.ear = null; note('마이크 권한이 없어 글로 대화합니다 · [글로 쓰기]를 누르세요'); return; }
+      if (err) { CALL.ear = null; note(err === 'not-allowed' ? '마이크 권한이 없어 글로 대화합니다 · [글로 쓰기]를 누르세요' : '🎙 휴대폰 음성 인식이 말을 못 받고 있습니다 (' + err + ') · 아래 칸에 글로 대화하세요'); setTimeout(typeBox, 30); return; }
       if (busy || ended) return; buf = text; $('cphMe').innerHTML = '<span class="k-off">' + esc(text) + '</span>'; clearTimeout(idleT); var tt = String(text || '').trim(), done = /(요|다|까|죠|네|지|야|래|데|게|니|어|아|구나|거든)[.?!~…]*$/.test(tt); // 말이 끝난 모양이면 더 빨리
       idleT = setTimeout(send, isFinal ? (done ? 120 : 350) : (done ? 550 : 950));
     };
