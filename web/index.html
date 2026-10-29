@@ -2171,6 +2171,20 @@ img,svg,a{-webkit-user-drag:none;user-drag:none}
   function plug(n) { if (!on) return null; try { return (C.Plugins && C.Plugins[n]) || (C.registerPlugin && C.registerPlugin(n)) || null; } catch (e) { return null; } }
   var N = plug('AobNative');
   root.Native = { on: on, plug: plug, aob: N };
+  // 폴더블(갤럭시 폴드 등)을 펼쳤을 때도 접었을 때와 같은 휴대폰 화면으로: 넓은 터치 화면이면 화면 폭을 680으로 맞춰 확대해서 보여 줌
+  (function () {
+    try {
+      var touch = (navigator.maxTouchPoints || 0) > 0 && !(root.matchMedia && root.matchMedia('(pointer: fine)').matches) && !(root.__TAURI__);
+      if (!touch) return;
+      var fit = function () {
+        var m = document.querySelector('meta[name=viewport]'); if (!m) return;
+        var w = Math.max(screen.width, 0), want = (w > 600 && w <= 1180) ? 'width=680, viewport-fit=cover' : 'width=device-width, initial-scale=1, viewport-fit=cover';
+        if (m.getAttribute('content') !== want) m.setAttribute('content', want);
+      };
+      fit(); root.addEventListener('resize', fit); root.addEventListener('orientationchange', function () { setTimeout(fit, 300); });
+      if (screen.orientation && screen.orientation.addEventListener) screen.orientation.addEventListener('change', fit);
+    } catch (e) { }
+  })();
   if (!on) return;
   document.documentElement.classList.add('is-native');
   // 예전 앱(크롬 기반) 버전 확인 코드와 맞추기: 진짜 앱은 항상 '최신 기능 있음'
