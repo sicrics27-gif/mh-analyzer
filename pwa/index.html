@@ -2078,6 +2078,11 @@ img,svg,a{-webkit-user-drag:none;user-drag:none}
 @keyframes incShake{0%,100%{transform:translateY(0) rotate(0)}10%{transform:translateY(-6px) rotate(-12deg)}20%{transform:translateY(-6px) rotate(12deg)}30%{transform:translateY(0) rotate(0)}}
 @media (prefers-reduced-motion:reduce){.inc-av i,.inc-ok svg{animation:none}}
 
+.ctseg{display:flex;gap:6px;padding:4px;margin:0 0 14px;border-radius:12px;background:var(--soft);border:1px solid var(--line)}
+.ctseg button{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;padding:10px 8px;border:0;border-radius:9px;background:transparent;color:var(--ink2);font-weight:700;font-size:14.5px;cursor:pointer}
+.ctseg button small{font-weight:500;font-size:11px;color:var(--mute)}
+.ctseg button[aria-selected="true"]{background:var(--paper);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.18)}
+
 </style>
 </head>
 <body>
@@ -2106,21 +2111,21 @@ img,svg,a{-webkit-user-drag:none;user-drag:none}
     <div class="sfilt" id="sfilt"><button id="fAll" type="button" data-f="all">전체</button><button id="fTodo" type="button" data-f="todo">할 일</button><button id="fSel" type="button" title="여러 명 골라서 채널·단계·할 일을 한 번에">선택</button><select id="fStage" aria-label="고객 단계로 거르기"><option value="">모든 단계</option><option value="lead">가망</option><option value="consult">상담 중</option><option value="contract">계약</option><option value="care">관리</option></select></div>
     <div class="schan" id="schan" role="group" aria-label="영업 채널"></div>
     <div class="snav">
-    <button type="button" class="sct scm" data-cm="open" data-tb="chan"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.5a3 3 0 0 1 0 6M18 14c2 .7 3.5 2.8 3.5 5.5"/></svg><b>고객관리</b><small>영업 채널별</small></button>
+    <button type="button" class="sct" data-act="contacts" data-tb="contacts"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><b>연락</b><small>연락 현황 · 액션콜</small></button><button type="button" class="sct scm" data-cm="open" data-tb="chan"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.5a3 3 0 0 1 0 6M18 14c2 .7 3.5 2.8 3.5 5.5"/></svg><b>고객관리</b><small>영업 채널별</small></button>
     <button type="button" class="sct spl" data-pl="open" data-tb="plan"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M7 14h4M7 17h7"/></svg><b>싯플랜</b><small>ACFP 목표</small></button>
     <button type="button" class="sct sbr" id="snMap" data-tb="map"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4z"/><path d="M9 4v13M15 6.5v13"/></svg><b>지도</b><small>고객 지도·내 동선</small></button>
-    <button type="button" class="sct" data-act="contacts" data-tb="contacts"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><b>연락 현황</b><small>통화·문자·카톡</small></button>
+    
     </div>
     <div class="clist" id="clist"></div>
     <div class="sclip" id="sclip" hidden></div>
     <div class="ssync" id="ssync"></div>
-    <details class="smenu" id="smenu"><summary><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>도구 · 백업 · 사용자 관리</summary><div class="sfoot"><button type="button" class="dbm" data-act="dbImport">회사 DB 고객 가져오기</button><button id="teamSetBtn" type="button" class="adm-only">🏆 팀 서버</button><button id="arcBtn" type="button" data-arc="open">🏙️ 아케이드 화면 (AOB9 타워)</button><button id="connBtn" type="button">🔗 연결 · 권한</button><button id="keysBtn" type="button" data-hd="keys">⌨ 단축키</button><button id="regBtn" type="button">🏢 보험사 고객등록</button><button id="mapBtn" type="button">🗺️ 지역별 고객 (지도)</button><button id="callBtn" type="button">☎️ 액션콜 연습</button><button id="mdBtn" type="button">⭐ MD’s PICK</button><button id="sugBtn" type="button">💡 건의사항</button><button id="apkBtn" type="button">안드로이드 앱 (APK)</button><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button><button type="button" data-sync="signout">구글 계정 바꾸기</button><button type="button" id="themeBtn">밝은 화면으로</button><button id="admBtn" type="button" class="adm adm-only">사용자 관리</button><button type="button" class="adm nxm adm-only" data-nx="setup">NHC 본사 연결 · 보장분석부서</button></div></details>
+    <details class="smenu" id="smenu"><summary><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>도구 · 백업 · 사용자 관리</summary><div class="sfoot"><button type="button" class="dbm" data-act="dbImport">회사 DB 고객 가져오기</button><button id="teamSetBtn" type="button" class="adm-only">🏆 팀 서버</button><button id="arcBtn" type="button" data-arc="open">🏙️ 아케이드 화면 (AOB9 타워)</button><button id="connBtn" type="button">🔗 연결 · 권한</button><button id="keysBtn" type="button" data-hd="keys">⌨ 단축키</button><button id="regBtn" type="button">🏢 보험사 고객등록</button><button id="mapBtn" type="button">🗺️ 지역별 고객 (지도)</button><button id="callBtn" type="button" hidden>☎️ 액션콜 연습</button><button id="mdBtn" type="button">⭐ MD’s PICK</button><button id="sugBtn" type="button">💡 건의사항</button><button id="apkBtn" type="button">안드로이드 앱 (APK)</button><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button><button type="button" data-sync="signout">구글 계정 바꾸기</button><button type="button" id="themeBtn">밝은 화면으로</button><button id="admBtn" type="button" class="adm adm-only">사용자 관리</button><button type="button" class="adm nxm adm-only" data-nx="setup">NHC 본사 연결 · 보장분석부서</button></div></details>
     <input type="file" id="bkFile" accept=".json,application/json" hidden>
     <div class="slock"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6 10V8a6 6 0 1 1 12 0v2h1v12H5V10zm2 0h8V8a4 4 0 1 0-8 0z"/></svg>고객 정보는 잠금 비밀번호로 암호화 저장 <span id="verTag"></span></div>
     <div id="memBan" class="membanner" hidden>저장소를 쓸 수 없는 화면입니다 · 창을 닫으면 사라집니다</div>
   </aside>
   <main class="main" id="main"></main>
-  <nav class="tabbar" id="tabbar" aria-label="주요 메뉴"><button type="button" data-act="back" data-tb="list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><circle cx="9" cy="8" r="3.4"/><path d="M2.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5M16.5 4.6a3.2 3.2 0 0 1 0 6.2M18.5 14c2 .8 3.4 3 3.4 5.6"/></svg><span>고객</span></button><button type="button" data-pl="open" data-tb="plan"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M7 14h4M7 17h7"/></svg><span>싯플랜</span></button><button type="button" data-tb="map" id="tbMap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4z"/><path d="M9 4v13M15 6.5v13"/></svg><span>지도</span></button><button type="button" data-act="contacts" data-tb="contacts"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><span>연락</span></button><button type="button" data-tb="more" id="tbMore"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg><span>더보기</span></button></nav>
+  <nav class="tabbar" id="tabbar" aria-label="주요 메뉴"><button type="button" data-act="contacts" data-tb="contacts"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><span>연락</span></button><button type="button" data-act="back" data-tb="list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><circle cx="9" cy="8" r="3.4"/><path d="M2.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5M16.5 4.6a3.2 3.2 0 0 1 0 6.2M18.5 14c2 .8 3.4 3 3.4 5.6"/></svg><span>고객</span></button><button type="button" data-pl="open" data-tb="plan"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M7 14h4M7 17h7"/></svg><span>싯플랜</span></button><button type="button" data-tb="map" id="tbMap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4z"/><path d="M9 4v13M15 6.5v13"/></svg><span>지도</span></button><button type="button" data-tb="more" id="tbMore"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg><span>더보기</span></button></nav>
   <button type="button" class="fab" id="fab" aria-label="신규 고객 등록"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
 </div>
 <template id="tplWelcome">
@@ -6641,6 +6646,9 @@ function HealthUI(root, H) {
   }
 
   // ================= 연락 현황 화면 =================
+  // 연락 탭 안의 두 칸: 연락 현황 · 액션콜
+  function ctSeg(k){ return '<div class="ctseg" role="tablist"><button type="button" role="tab" data-ctseg="contacts" aria-selected="' + (k === 'contacts') + '">📞 연락 현황</button><button type="button" role="tab" data-ctseg="call" aria-selected="' + (k === 'call') + '">☎️ 액션콜 <small>통화 연습 · AI 통화</small></button></div>'; }
+  document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-ctseg]'); if (!b) return; if (b.dataset.ctseg === 'call') showCall(); else showContacts(); });
   function showContacts(){
     S.cur = null; S.data = null; S.view = 'contacts';
     $('shell').classList.add('has-c'); armBack(); renderList();
@@ -6651,7 +6659,7 @@ function HealthUI(root, H) {
     if (f === 'none') rows = rows.filter(function(r){ return r.gap == null; });
     rows.sort(function(a, b){ var x = a.gap == null ? 1e9 : a.gap, y = b.gap == null ? 1e9 : b.gap; return y - x; });
     var cell = function(d){ return d ? '<td class="n">' + dot(d) + '<small>' + ago(d) + '</small></td>' : '<td class="n z">—</td>'; };
-    var h = '<div class="chead"><button class="btn back" type="button" data-act="back">‹ 목록</button><h2 data-i="☎">연락 현황</h2><span class="cmeta">고객별 마지막 통화·문자·카톡·만남 날짜</span></div>' +
+    var h = '<div class="chead"><button class="btn back" type="button" data-act="back">‹ 목록</button><h2 data-i="☎">연락</h2><span class="cmeta">고객별 마지막 통화·문자·카톡·만남 날짜</span></div>' + ctSeg('contacts') +
       '<div class="ctf" role="group" aria-label="거르기">' + [['all', '전체'], ['d30', '30일 넘게 연락 없음'], ['d90', '90일 넘게'], ['none', '연락 기록 없음']].map(function(x){ return '<button type="button" data-ctf="' + x[0] + '" aria-pressed="' + (f === x[0]) + '">' + x[1] + ' <b>' + cnt[x[0]] + '</b></button>'; }).join('') + '</div>' +
       '<div class="tw"><table class="t ctt"><thead><tr><th>고객</th><th>단계</th><th>마지막 통화</th><th>마지막 문자</th><th>마지막 카톡</th><th>마지막 만남</th><th>다음 할 일</th><th></th></tr></thead><tbody>' +
       (rows.length ? rows.map(function(r){ var c = r.c, ph = normPhone(c.phone), n = nextDue(c);
@@ -6873,7 +6881,7 @@ function HealthUI(root, H) {
   });
 
   // 휴대폰: 화면을 좌우로 밀면 옆 탭으로 (고객 ↔ 싯플랜 ↔ 지도 ↔ 연락) · 고객 상세 화면에서는 오른쪽으로 밀면 목록으로
-  var TABS = ['list', 'plan', 'map', 'contacts'];
+  var TABS = ['contacts', 'list', 'plan', 'map'];
   // 손가락이 닿은 곳(또는 그 위 칸)이 옆으로 밀리는 줄이면 탭 넘김을 하지 않음 (채널 칩·필터·표·지도 등)
   function hScroll(el){ for (var n = el; n && n !== document.body && n.nodeType === 1; n = n.parentElement) { var cs = getComputedStyle(n); if (/(auto|scroll)/.test(cs.overflowX) && n.scrollWidth > n.clientWidth + 2) return true; if (n.id === 'main' || n.id === 'clist') break; } return false; }
   function curTab(){ var b = document.querySelector('.tabbar [data-tb].on'); return b ? b.dataset.tb : ''; }
@@ -7509,9 +7517,9 @@ function HealthUI(root, H) {
   async function elFetch(path, opt){ opt = opt || {}; opt.headers = Object.assign({ 'xi-api-key': EL.d.key }, opt.headers || {}); var r = await fetch('https://api.elevenlabs.io' + path, opt); if (!r.ok) { var t = ''; try { var j = await r.json(); t = (j.detail && (j.detail.message || j.detail.status || JSON.stringify(j.detail))) || ''; } catch(e){} var er = new Error('ElevenLabs ' + r.status + (t ? ' · ' + t : '')); er.status = r.status; throw er; } return r; }
   async function elTts(text, female){
     var vid = female ? (EL.d.vf || EL.d.vm) : (EL.d.vm || EL.d.vf); if (!vid) throw new Error('ElevenLabs 목소리를 먼저 고르세요 (액션콜 → 설정)');
-    var models = EL.d.model === 'v2' ? ['eleven_multilingual_v2'] : ['eleven_v3', 'eleven_multilingual_v2'], last = null;
+    var models = EL.d.model === 'v2' ? ['eleven_multilingual_v2'] : EL.d.model === 'v3' && !CALL.fast ? ['eleven_v3', 'eleven_flash_v2_5', 'eleven_multilingual_v2'] : ['eleven_flash_v2_5', 'eleven_v3', 'eleven_multilingual_v2'], last = null; // 통화는 빠른 모델 먼저 (대답 지연 최소)
     for (var i = 0; i < models.length; i++) {
-      try { var r = await elFetch('/v1/text-to-speech/' + encodeURIComponent(vid) + '?output_format=mp3_44100_128', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: text, model_id: models[i], language_code: 'ko', voice_settings: { stability: 0.4, similarity_boost: 0.8, style: 0.35, use_speaker_boost: true } }) });
+      try { var r = await elFetch('/v1/text-to-speech/' + encodeURIComponent(vid) + '?output_format=mp3_22050_32', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: text, model_id: models[i], language_code: 'ko', voice_settings: { stability: 0.32, similarity_boost: 0.8, style: 0.45, use_speaker_boost: true, speed: 1.05 } }) });
         return await actx().decodeAudioData(await r.arrayBuffer()); }
       catch(e){ last = e; if (e.status === 401 || e.status === 402) break; }
     }
@@ -7556,7 +7564,7 @@ function HealthUI(root, H) {
   }
   function sayDevice(text, female){ if (CALL.native && natHas('say')) return Promise.race([natCall('say', { text: text, female: !!female, vol: VO.vol }).catch(function(){}), new Promise(function(r){ setTimeout(r, 4000 + String(text).length * 200); })]); return new Promise(function(res){ if (!ttsOk()) return res(); try { speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(text); u.lang = 'ko-KR'; var bv = bestVoice(female); if (bv) u.voice = bv; u.rate = 1.06; u.pitch = female ? 1.08 : 0.88; u.volume = VO.vol; u.onend = function(){ res(); }; u.onerror = function(){ res(); }; setTimeout(res, 4000 + String(text).length * 200); speechSynthesis.speak(u); } catch(e){ res(); } }); }
   async function speak(text, female){
-    await new Promise(function(r){ setTimeout(r, 250 + Math.random() * 500); }); // 실제 통화처럼 대답 전 짧은 뜸
+    await new Promise(function(r){ setTimeout(r, 60 + Math.random() * 180); }); // 실제 통화처럼 대답 전 짧은 뜸
     if (aiVoiceOk()) { try { return await playBuf(await aiTts(text, female)); } catch(e){ if (!VO.warned) { VO.warned = true; toast('AI 목소리를 못 불러와 기기 목소리로 합니다 · ' + (e.message || e)); } } }
     return sayDevice(text, female);
   }
@@ -7731,7 +7739,7 @@ function HealthUI(root, H) {
   // ---------- 액션콜 화면 ----------
   async function showCall(){
     S.cur = null; S.data = null; S.view = 'call'; $('shell').classList.add('has-c'); armBack(); renderList(); await mdLoad(); await planLoad(); await elLoad();
-    var ai = await aiLoad(), head = '<div class="chead"><button class="btn back" type="button" data-act="back">‹ 목록</button><h2 data-i="☎">액션콜</h2><span class="cmeta">실제 통화 화면에서 가상 고객과 연습 · 말하면 대본이 노래 가사처럼 따라옵니다</span></div>';
+    var ai = await aiLoad(), head = '<div class="chead"><button class="btn back" type="button" data-act="back">‹ 목록</button><h2 data-i="☎">연락</h2><span class="cmeta">실제 통화 화면에서 가상 고객과 연습 · 말하면 대본이 노래 가사처럼 따라옵니다</span></div>' + ctSeg('call');
     if (!CALL.s) CALL.s = callScript(CALL.sc);
     var h = head + '<div class="sgf">' + SC.map(function(s){ return '<button type="button" data-csc="' + s.k + '" aria-pressed="' + (CALL.sc === s.k) + '">' + s.t + '</button>'; }).join('') + '</div>';
     var sc = SC.find(function(s){ return s.k === CALL.sc; }), v = voiceCfg();
@@ -7909,20 +7917,27 @@ function HealthUI(root, H) {
     keyToolsBind('aiKey', function(){ return aiKeyTest($('aiProv').value, $('aiKey').value.replace(/\s+/g, '')); });
     $('aiGo').onclick = async function(){ var k = $('aiKey').value.replace(/\s+/g, ''); if (!k) { $('aiErr').textContent = 'API 키를 넣어 주세요'; return; } var wk = keyWrong($('aiProv').value, k); if (wk) { $('aiErr').textContent = wk; return; } BZ.ai = { prov: $('aiProv').value, key: k, model: $('aiModel').value.trim() }; await hidSave('__ai', '__ai', BZ.ai); closeDlg(); VO.cache = {}; VO.gm = ''; VO.warned = false; if (back === 'plan') openPlanPhoto(); else if (back === 'conn') openConnCenter(); else if (back) showCall(); else callAi(); };
   }
-  async function aiChat(sys, hist){
+  async function aiChat(sys, hist){ // CALL.fast: 통화용 (빠른 모델 · 생각 끄기)
     var a = BZ.ai, p = AI_PROV[a.prov] || AI_PROV.gemini, model = a.model || p.model, r, j;
     if (a.prov === 'openai') { r = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + a.key }, body: JSON.stringify({ model: model, max_tokens: 200, temperature: 0.9, messages: [{ role: 'system', content: sys }].concat(hist.map(function(m){ return { role: m.me ? 'user' : 'assistant', content: m.t }; })) }) }); j = await r.json(); if (!r.ok) throw new Error((j.error && j.error.message) || ('HTTP ' + r.status)); return j.choices[0].message.content.trim(); }
     if (a.prov === 'anthropic') { r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': a.key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, body: JSON.stringify({ model: model, max_tokens: 200, system: sys, messages: hist.length ? hist.map(function(m){ return { role: m.me ? 'user' : 'assistant', content: m.t }; }) : [{ role: 'user', content: '(전화벨이 울린다)' }] }) }); j = await r.json(); if (!r.ok) throw new Error((j.error && j.error.message) || ('HTTP ' + r.status)); return j.content[0].text.trim(); }
-    var contents = hist.map(function(m){ return { role: m.me ? 'user' : 'model', parts: [{ text: m.t }] }; }); if (!contents.length) contents.push({ role: 'user', parts: [{ text: '(전화벨이 울린다)' }] });
+    var contents = hist.map(function(m){ return { role: m.me ? 'user' : 'model', parts: [{ text: m.t }] }; }); if (!contents.length || contents[0].role !== 'user') contents.unshift({ role: 'user', parts: [{ text: '(전화가 연결됨)' }] });
     // 새 Gemini 모델은 대답 전에 '생각'하는 데 글자 수를 써서, 한도가 작으면 빈 대답이 옴 → 한도를 넉넉히, 빈 대답이면 한 번 더
     var txt = function(j){ return (j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts || []).filter(function(x){ return !x.thought; }).map(function(x){ return x.text || ''; }).join('').trim(); };
     for (var tr = 0; tr < 2; tr++) {
-      j = await gemCall(a.model || a.autoModel || p.model, { system_instruction: { parts: [{ text: sys + ' 대답은 1~3문장으로 짧게, 바로 말하세요.' }] }, contents: contents, generationConfig: { maxOutputTokens: 4096, temperature: 0.9 } });
+      var gc = { maxOutputTokens: 4096, temperature: 0.95 }; if (CALL.fast && !CALL.noThink) gc.thinkingConfig = { thinkingBudget: 0 };
+      try { j = await gemCall(a.model || (CALL.fast ? 'gemini-flash-lite-latest' : (a.autoModel || p.model)), { system_instruction: { parts: [{ text: sys }] }, contents: contents, generationConfig: gc }); }
+      catch(e1){ if (gc.thinkingConfig && /think/i.test(e1.message || '')) { CALL.noThink = true; tr--; continue; } throw e1; }
       var out = txt(j); if (out) return out;
     }
     var ee = new Error('AI가 대답을 만들지 못했습니다 · ⏭ 보내기를 눌러 다시 시도하세요'); ee.busy = true; throw ee;
   }
-  function aiSys(sc, nm){ var fem = FEMALE.indexOf(nm) >= 0, age = pick(['30대 후반', '40대 초반', '40대 후반', '50대 초반']); return '당신은 한국의 보험 고객 역할을 연기하는 통화 상대입니다. 이름은 ' + nm + '(' + (fem ? '여성' : '남성') + ', ' + age + '), ' + sc.who + '입니다. 성별과 나이에 맞는 말투와 호칭(가족을 말할 때 ' + (fem ? '언니·오빠·남편' : '형·누나·아내') + ' 등)을 일관되게 쓰고, 상대 설계사는 "팀장님" 또는 "설계사님"이라고 부릅니다. 상대방은 보험설계사이고 이 통화의 목표는 "' + sc.goal + '"입니다. 반드시 지킬 것: 1) 실제 전화 통화처럼 짧게(한두 문장) 자연스러운 구어체로만 말한다. 2) 처음에는 조금 무심하거나 바쁜 척하지만, 설계사가 구체적인 숫자·혜택·다음 행동을 분명히 말하면 점점 호의적으로 반응한다. 3) 가끔 현실적인 질문이나 거절("보험료 부담돼요", "지금 바빠요")을 던진다. 4) 설계사가 약속(날짜·시간)을 잡으면 받아들이고 통화를 마무리한다. 5) 괄호 지문이나 설명을 쓰지 말고 대사만 말한다. 첫 대사는 "여보세요?"로 시작한다.'; }
+  function aiSys(sc, nm){ var fem = FEMALE.indexOf(nm) >= 0, age = pick(['30대 후반', '40대 초반', '40대 후반', '50대 초반']), old = /40대 후반|50대/.test(age);
+    var tone = fem ? (old ? '말끝을 "~요", "~네요", "~거든요"로 부드럽게, 놀라면 "어머", "아이고", 맞장구는 "네네", "그쵸"' : '"~요" 위주의 밝은 말투, 놀라면 "헐 진짜요?", "어머", 맞장구는 "아 네네", "그쵸그쵸"')
+      : (old ? '무뚝뚝하고 짧게 "예", "아 그래요?", "그건 좀…", 말끝은 "~요"나 "~지요", 가끔 "허허"' : '담백하게 "아 네", "음… 그래요?", "그게 뭔데요?", 말끝은 "~요"');
+    return '너는 지금 휴대폰으로 보험설계사 전화를 받은 한국 사람 ' + nm + '(' + (fem ? '여성' : '남성') + ', ' + age + ', ' + sc.who + ')이다. AI·상담원·비서가 아니라 바쁜 일상 중에 전화를 받은 평범한 사람처럼 말한다. 설계사의 목표: "' + sc.goal + '". ' +
+      '말투: ' + tone + '. 가족 얘기를 할 땐 ' + (fem ? '남편·언니·애들' : '아내·형·애들') + '처럼 성별에 맞게. 설계사는 "팀장님"이라고 부른다. ' +
+      '규칙: 1) 대부분 한 문장, 길어야 두 문장. 짧을수록 좋다. 2) 실제 통화처럼 "아", "음", "어…", "근데", "그러니까"를 자연스럽게 섞고, 가끔 말을 끝까지 안 맺는다("그건 좀…"). 3) 상대가 방금 한 말에 바로 반응한다. 같은 말을 되풀이하거나 요약하지 않는다. 4) "물론입니다", "도움이 되셨으면", "궁금하신 점", "감사합니다만" 같은 상담원·AI 말투, 존댓말 문어체("~습니다", "~하겠습니다")는 쓰지 않는다. 5) 처음엔 조금 경계하거나 바쁜 척, 구체적인 금액·혜택·날짜를 들으면 점점 관심을 보인다. 가끔 현실적인 걱정("보험료 또 나가는 거 아니에요?", "지금 운전 중이라서요")을 말한다. 6) 약속을 잡자고 하면 요일·시간을 정하고 짧게 끊는다("네 그럼 그때 봬요~"). 7) 괄호, 지문, 이모지, 따옴표 없이 대사만.'; }
   // ---------- AI 고객과 자유 통화 (같은 전화 화면) ----------
   function callAi(){
     var sc = SC.find(function(s){ return s.k === CALL.sc; }), nm = pick(FAKE), female = FEMALE.indexOf(nm) >= 0, sys = aiSys(sc, nm) + ' 설계사는 자신을 "' + meLine() + '"라고 소개합니다.', ended = false, busy = false, buf = '', idleT = null;
@@ -7934,7 +7949,7 @@ function HealthUI(root, H) {
     el.querySelector('[data-cp="script"] span').textContent = '글로 쓰기';
     var turn = async function(){
       busy = true; if (CALL.ear) CALL.ear.pause(); note('상대가 말하는 중…');
-      try { note('상대가 대답을 생각하는 중…'); var t = await aiChat(sys, CALL.hist); if (ended) return; CALL.hist.push({ me: false, t: t }); $('cphYou').innerHTML = '<small>' + esc(nm) + '</small>' + esc(t); note('상대가 말하는 중…'); if (t) await speak(t, female); }
+      try { note('상대가 대답을 생각하는 중…'); CALL.fast = true; var t = !CALL.hist.length ? '여보세요?' : await aiChat(sys, CALL.hist); if (ended) return; CALL.hist.push({ me: false, t: t }); $('cphYou').innerHTML = '<small>' + esc(nm) + '</small>' + esc(t); note('상대가 말하는 중…'); if (t) await speak(t, female); }
       catch(e){ note(e && e.busy ? '⏳ ' + e.message + ' (보내기 ⏭ 를 누르면 다시 시도)' : 'AI 오류: ' + (e.message || e) + ' · 설정에서 키·모델을 확인하세요'); busy = false; return; }
       busy = false; if (ended) return; pg();
       if (CALL.ear) { CALL.ear.resume(); note('🎙 말하세요 · 말을 멈추면 잠시 뒤 상대가 대답합니다'); } else note('아래 칸에 내 말을 쓰고 [보내기]');
@@ -7942,7 +7957,7 @@ function HealthUI(root, H) {
     var send = function(){ var t = String(buf || '').trim(); if (!t || busy || ended) return; buf = ''; clearTimeout(idleT); CALL.hist.push({ me: true, t: t }); $('cphMe').innerHTML = '<span class="k-on">' + esc(t) + '</span>'; $('cphHeard').textContent = ''; if (CALL.ear) CALL.ear.reset(); turn(); };
     var onHeard = function(text, isFinal, err){
       if (err) { CALL.ear = null; note('마이크 권한이 없어 글로 대화합니다 · [글로 쓰기]를 누르세요'); return; }
-      if (busy || ended) return; buf = text; $('cphMe').innerHTML = '<span class="k-off">' + esc(text) + '</span>'; clearTimeout(idleT); idleT = setTimeout(send, isFinal ? 1000 : 2000);
+      if (busy || ended) return; buf = text; $('cphMe').innerHTML = '<span class="k-off">' + esc(text) + '</span>'; clearTimeout(idleT); idleT = setTimeout(send, isFinal ? 450 : 1300);
     };
     var typeBox = function(){ var b = $('cphType'); if (b) { b.remove(); return; } var d = document.createElement('div'); d.id = 'cphType'; d.className = 'cph-type'; d.innerHTML = '<input type="text" id="cphTx" placeholder="내 말을 글로"><button type="button" class="go" id="cphTxGo">보내기</button>'; el.querySelector('.cph-card').appendChild(d); var go = function(){ buf = $('cphTx').value; $('cphTx').value = ''; send(); }; $('cphTxGo').onclick = go; $('cphTx').onkeydown = function(e){ if (e.key === 'Enter') go(); }; $('cphTx').focus(); };
     var finish = async function(){
@@ -7953,7 +7968,7 @@ function HealthUI(root, H) {
       if (CALL.hist.filter(function(m){ return m.me; }).length < 2) { back(); return; }
       if (secs >= 10) await logCall({ secs: secs, score: null, ai: 1 });
       $('cphMe').innerHTML = '<div class="cph-rep"><b>코치 피드백 정리 중…</b></div>';
-      try { var fb = await aiChat('당신은 보험 영업 코치입니다. 아래는 설계사(나)와 고객의 통화 연습 기록입니다. 한국어로, 잘한 점 2가지와 더 좋아질 점 2가지를 각각 한 줄씩, 마지막에 다음 연습에서 써 볼 한 문장을 제안하세요. 총 6줄 이내.', [{ me: true, t: CALL.hist.map(function(m){ return (m.me ? '설계사: ' : '고객: ') + m.t; }).join('\n') }]);
+      try { CALL.fast = false; var fb = await aiChat('당신은 보험 영업 코치입니다. 아래는 설계사(나)와 고객의 통화 연습 기록입니다. 한국어로, 잘한 점 2가지와 더 좋아질 점 2가지를 각각 한 줄씩, 마지막에 다음 연습에서 써 볼 한 문장을 제안하세요. 총 6줄 이내.', [{ me: true, t: CALL.hist.map(function(m){ return (m.me ? '설계사: ' : '고객: ') + m.t; }).join('\n') }]);
         $('cphMe').innerHTML = '<div class="cph-rep"><b>코치 피드백</b><small>' + Math.floor(secs / 60) + '분 ' + (secs % 60) + '초</small><p>' + esc(fb).replace(/\n/g, '<br>') + '</p><div class="cph-ra"><button type="button" class="btn" id="cphFb">복사</button><button type="button" class="go" id="cphClose">닫기</button></div></div>';
         $('cphFb').onclick = function(){ copyText(fb, '피드백'); }; $('cphClose').onclick = back; }
       catch(e){ toast('피드백을 받지 못했습니다 · ' + (e.message || e)); back(); }
@@ -7967,7 +7982,7 @@ function HealthUI(root, H) {
     el.querySelector('[data-cp="mute"]').onclick = function(){ var on = this.classList.toggle('on'); if (CALL.ear) { if (!on) CALL.ear.pause(); else if (!busy) CALL.ear.resume(); } };
     if (SRC) el.querySelector('[data-cp="mute"]').classList.add('on'); else el.querySelector('[data-cp="mute"]').disabled = true;
     CALL.ear = SRC ? Ear(onHeard) : null; if (!SRC) setTimeout(typeBox, 50);
-    (async function(){ actx(); note(''); if (!(await incoming(el))) { ended = true; return; } if (ended) return; $('cphSt').textContent = '통화 중'; phoneTimer(); if (CALL.ear) { CALL.ear.begin(); CALL.ear.pause(); } turn(); })();
+    (async function(){ actx(); note(''); CALL.fast = true; if (aiVoiceOk()) aiTts('여보세요?', female).catch(function(){}); if (!(await incoming(el))) { ended = true; return; } if (ended) return; $('cphSt').textContent = '통화 중'; phoneTimer(); if (CALL.ear) { CALL.ear.begin(); CALL.ear.pause(); } turn(); })();
   }
   // ---------- 사진으로 싯플랜 넣기: 지점 교육일정표 · 손글씨 싯플랜 → AI가 읽어 일정으로 (미리 보고 고른 뒤 저장 → 캘린더 자동 동기화) ----------
   async function aiVision(prompt, imgs){
@@ -8255,7 +8270,7 @@ function HealthUI(root, H) {
 
   // ================= 아래 메뉴(휴대폰) · 현재 화면 표시 =================
   function tabSync(){
-    var k = !$('shell').classList.contains('has-c') ? 'list' : S.view === 'plan' ? 'plan' : S.view === 'map' ? 'map' : S.view === 'contacts' ? 'contacts' : S.view === 'chan' ? 'chan' : S.cur ? 'list' : '';
+    var k = !$('shell').classList.contains('has-c') ? 'list' : S.view === 'plan' ? 'plan' : S.view === 'map' ? 'map' : (S.view === 'contacts' || S.view === 'call') ? 'contacts' : S.view === 'chan' ? 'chan' : S.cur ? 'list' : '';
     document.querySelectorAll('[data-tb]').forEach(function(b){ var on = b.dataset.tb === k && !(k === 'list' && b.closest('.snav')); b.classList.toggle('on', on); });
   }
   try { new MutationObserver(function(){ setTimeout(tabSync, 0); }).observe($('main'), { childList: true }); } catch(e){}
@@ -8266,7 +8281,7 @@ function HealthUI(root, H) {
       ['#bkOut', '💾', '백업 내보내기', ''], ['#bkIn', '📂', '백업 불러오기', ''], ['#sample', '🧪', '예시 고객 보기', ''], ['#themeBtn', '🌗', $('themeBtn').textContent, ''], ['[data-sync="signout"]', '🔄', '구글 계정 바꾸기', ''], ['#lockBtn', '🔒', '잠그기', '']];
     var AD = ROLE.admin ? [['#admBtn', '🛡️', '사용자 관리', 'OTP 발급 · 요청 · 정지'], ['#teamSetBtn', '🏆', '팀 서버', '팀원 공유 기능 연결'], ['[data-nx="setup"]', '🏢', 'NHC 본사 연결', '보장분석 · 숫자 보고']] : [];
     it.splice(2, 0, ['#sugBtn', '💡', '건의사항', '기능 아이디어 올리기 · 검토']);
-    it.splice(2, 0, ['#regBtn', '🏢', '보험사 고객등록', '보험사별 등록 현황'], ['#mapBtn', '🗺️', '지역별 고객', '지도로 보기'], ['#callBtn', '☎️', '액션콜', '통화 대본 · 연습 · AI 통화'], ['#mdBtn', '⭐', 'MD\u2019s PICK', '추천 상품 노트']);
+    it.splice(2, 0, ['#regBtn', '🏢', '보험사 고객등록', '보험사별 등록 현황'], ['#mapBtn', '🗺️', '지역별 고객', '지도로 보기'], ['#mdBtn', '⭐', 'MD\u2019s PICK', '추천 상품 노트']);
     if (!IS_MOBILE) it.splice(2, 0, ['#keysBtn', '⌨️', '단축키', '키보드로 빠르게']);
     it.splice(3, 0, ['#apkBtn', '📱', inApk() ? '앱 정보' : '안드로이드 앱 받기', inApk() ? '자동 업데이트 중' : 'APK로 설치']);
     var vis = function(x){ var el = document.querySelector(x[0]); if (!el) return false; if (x[0] === '#gchip' || x[0] === '.scm') return true; return !el.hidden && getComputedStyle(el).display !== 'none'; }, btn = function(x){ return '<button type="button" data-px=\'' + x[0] + '\'><i>' + x[1] + '</i><b>' + esc(x[2]) + '</b>' + (x[3] ? '<small>' + esc(x[3]) + '</small>' : '') + '</button>'; };
