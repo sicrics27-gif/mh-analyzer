@@ -65,7 +65,8 @@ import java.util.Set;
 @CapacitorPlugin(name = "AobNative", permissions = {
         @Permission(alias = "mic", strings = { Manifest.permission.RECORD_AUDIO }),
         @Permission(alias = "loc", strings = { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }),
-        @Permission(alias = "noti", strings = { "android.permission.POST_NOTIFICATIONS" })
+        @Permission(alias = "noti", strings = { "android.permission.POST_NOTIFICATIONS" }),
+        @Permission(alias = "sms", strings = { Manifest.permission.SEND_SMS })
 })
 public class AobNativePlugin extends Plugin {
     // 다른 웹페이지가 아무 앱이나 열지 못하도록 허용 목록만
@@ -278,6 +279,12 @@ public class AobNativePlugin extends Plugin {
         List<Uri> uris = new ArrayList<>();
         if (Intent.ACTION_SEND.equals(act)) { Uri u = it.getParcelableExtra(Intent.EXTRA_STREAM); if (u != null) uris.add(u); }
         else { ArrayList<Uri> l = it.getParcelableArrayListExtra(Intent.EXTRA_STREAM); if (l != null) uris.addAll(l); }
+        // 카톡 '나와의 채팅' 등에서 글을 공유한 경우 (파일이 아닌 글)
+        CharSequence tx = it.getCharSequenceExtra(Intent.EXTRA_TEXT);
+        if (uris.isEmpty() && tx != null && tx.length() > 0) {
+            JSObject o = new JSObject(); o.put("name", "shared.txt"); o.put("mime", "text/plain"); o.put("text", tx.toString().substring(0, Math.min(tx.length(), 200000)));
+            shared.add(o); it.setAction(Intent.ACTION_MAIN); return true;
+        }
         ContentResolver cr = getContext().getContentResolver();
         for (Uri u : uris) {
             if (shared.size() >= 10) break;
@@ -451,6 +458,86 @@ public class AobNativePlugin extends Plugin {
             } else if (prox != null && prox.isHeld()) prox.release();
             call.resolve();
         } catch (Exception e) { call.reject(e.getMessage()); }
+    }
+
+    /** 글을 특정 앱(카카오톡 등)으로 바로 보내기: 앱 고르는 창 없이 그 앱의 '보낼 곳 고르기'로 */
+    @PluginMethod
+    public void shareText(PluginCall call) {
+        String t = call.getString("text", ""), pkg = call.getString("pkg", "");
+        Intent it = new Intent(Intent.ACTION_SEND); it.setType("text/plain"); it.putExtra(Intent.EXTRA_TEXT, t);
+        if (pkg.length() > 0) it.setPackage(pkg);
+        it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        String title = call.getString("title", "보낼 곳 고르기");
+        try { getActivity().startActivity(pkg.length() > 0 ? it : Intent.createChooser(it, title).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); call.resolve(); }
+        catch (ActivityNotFoundException e) { call.reject("앱이 설치되어 있지 않습니다", "noapp"); }
+    }
+
+    // ================= 문자 자동 발송 (담당 비서에게 등록 요청서) =================
+    @PluginMethod
+    public void sendSms(PluginCall call) {
+        if (getPermissionState("sms") != PermissionState.GRANTED) { requestPermissionForAlias("sms", call, "smsPerm"); return; }
+        doSms(call);
+    }
+
+    @PermissionCallback
+    private void smsPerm(PluginCall call) {
+        if (getPermissionState("sms") != PermissionState.GRANTED) { call.reject("문자 보내기 권한이 없습니다", "no-sms"); return; }
+        doSms(call);
+    }
+
+    private void doSms(PluginCall call) {
+        String to = call.getString("to", "").replaceAll("[^0-9]", ""), text = call.getString("text", "");
+        if (to.length() < 10 || text.length() == 0) { call.reject("번호나 내용이 없습니다"); return; }
+        try {
+            android.telephony.SmsManager sm = android.os.Build.VERSION.SDK_INT >= 31 ? getContext().getSystemService(android.telephony.SmsManager.class) : android.telephony.SmsManager.getDefault();
+            java.util.ArrayList<String> parts = sm.divideMessage(text);
+            if (parts.size() > 1) sm.sendMultipartTextMessage(to, null, parts, null, null); else sm.sendTextMessage(to, null, text, null, null);
+            call.resolve();
+        } catch (Exception e) { call.reject("문자를 보내지 못했습니다: " + e.getMessage()); }
+    }
+
+    /** 지금 복사되어 있는 글 읽기 (앱이 화면에 떠 있을 때만 가능) */
+    @PluginMethod
+    public void clipRead(PluginCall call) {
+        getActivity().runOnUiThread(() -> {
+            String t = "";
+            try {
+                android.content.ClipboardManager cm = (android.content.ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                if (cm != null && cm.hasPrimaryClip()) { android.content.ClipData c = cm.getPrimaryClip(); if (c != null && c.getItemCount() > 0) { CharSequence x = c.getItemAt(0).coerceToText(getContext()); if (x != null) t = x.toString(); } }
+            } catch (Exception ignored) { }
+            JSObject r = new JSObject(); r.put("text", t.length() > 20000 ? t.substring(0, 20000) : t); call.resolve(r);
+        });
+    }
+
+    /** 앱 안에서 새 버전 받기 → 설치 창 (브라우저·내 파일 거치지 않음) */
+    @PluginMethod
+    public void installApk(PluginCall call) {
+        final String url = call.getString("url", "");
+        if (!url.startsWith("https://github.com/sicrics27-gif/mh-analyzer/")) { call.reject("허용되지 않은 주소"); return; }
+        new Thread(() -> {
+            try {
+                java.io.File dir = new java.io.File(getContext().getCacheDir(), "upd"); dir.mkdirs();
+                java.io.File f = new java.io.File(dir, "AOB.apk");
+                java.net.HttpURLConnection c = null; String u = url;
+                for (int hop = 0; hop < 6; hop++) {
+                    c = (java.net.HttpURLConnection) new java.net.URL(u).openConnection(); c.setInstanceFollowRedirects(false); c.setConnectTimeout(20000); c.setReadTimeout(60000);
+                    int code = c.getResponseCode();
+                    if (code >= 300 && code < 400) { u = c.getHeaderField("Location"); c.disconnect(); continue; }
+                    if (code != 200) throw new Exception("HTTP " + code);
+                    break;
+                }
+                long total = c.getContentLengthLong(), got = 0; long lastPct = -1;
+                try (InputStream in = c.getInputStream(); java.io.FileOutputStream out = new java.io.FileOutputStream(f)) {
+                    byte[] buf = new byte[65536]; int n;
+                    while ((n = in.read(buf)) > 0) { out.write(buf, 0, n); got += n; if (total > 0) { long pct = got * 100 / total; if (pct != lastPct) { lastPct = pct; JSObject o = new JSObject(); o.put("p", pct); notifyListeners("dl", o); } } }
+                }
+                Uri cu = androidx.core.content.FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".fileprovider", f);
+                Intent it = new Intent(Intent.ACTION_VIEW); it.setDataAndType(cu, "application/vnd.android.package-archive");
+                it.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+                getActivity().startActivity(it);
+                call.resolve();
+            } catch (Exception e) { call.reject("새 버전을 받지 못했습니다: " + e.getMessage()); }
+        }).start();
     }
 
     // ================= 자동 동선 기록 =================
