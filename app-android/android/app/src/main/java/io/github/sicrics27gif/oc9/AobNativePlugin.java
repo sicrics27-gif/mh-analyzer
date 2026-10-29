@@ -63,7 +63,9 @@ import java.util.Set;
  * 고객 정보는 여기서 어디로도 보내지 않습니다 (로그인 토큰과 파일은 앱 화면으로만 전달).
  */
 @CapacitorPlugin(name = "AobNative", permissions = {
-        @Permission(alias = "mic", strings = { Manifest.permission.RECORD_AUDIO })
+        @Permission(alias = "mic", strings = { Manifest.permission.RECORD_AUDIO }),
+        @Permission(alias = "loc", strings = { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }),
+        @Permission(alias = "noti", strings = { "android.permission.POST_NOTIFICATIONS" })
 })
 public class AobNativePlugin extends Plugin {
     // 다른 웹페이지가 아무 앱이나 열지 못하도록 허용 목록만
@@ -449,6 +451,79 @@ public class AobNativePlugin extends Plugin {
             } else if (prox != null && prox.isHeld()) prox.release();
             call.resolve();
         } catch (Exception e) { call.reject(e.getMessage()); }
+    }
+
+    // ================= 자동 동선 기록 =================
+    @PluginMethod
+    public void trackStart(PluginCall call) {
+        if (getPermissionState("loc") != PermissionState.GRANTED) { requestPermissionForAlias("loc", call, "trackPerm"); return; }
+        if (android.os.Build.VERSION.SDK_INT >= 33 && getPermissionState("noti") != PermissionState.GRANTED) { requestPermissionForAlias("noti", call, "trackPerm"); return; }
+        startTrack(call);
+    }
+
+    @PermissionCallback
+    private void trackPerm(PluginCall call) {
+        if (getPermissionState("loc") != PermissionState.GRANTED) { call.reject("위치 권한이 없습니다", "no-loc"); return; }
+        if (android.os.Build.VERSION.SDK_INT >= 33 && getPermissionState("noti") != PermissionState.GRANTED) { requestPermissionForAlias("noti", call, "trackPerm2"); return; }
+        startTrack(call);
+    }
+
+    @PermissionCallback
+    private void trackPerm2(PluginCall call) { startTrack(call); }
+
+    private void startTrack(PluginCall call) {
+        try {
+            TrackService.prefs(getContext()).edit().putBoolean("on", true).apply();
+            Intent it = new Intent(getContext(), TrackService.class);
+            if (android.os.Build.VERSION.SDK_INT >= 26) getContext().startForegroundService(it); else getContext().startService(it);
+            JSObject r = new JSObject(); r.put("on", true); call.resolve(r);
+        } catch (Exception e) { call.reject("동선 기록을 켜지 못했습니다: " + e.getMessage()); }
+    }
+
+    @PluginMethod
+    public void trackStop(PluginCall call) {
+        TrackService.prefs(getContext()).edit().putBoolean("on", false).apply();
+        getContext().stopService(new Intent(getContext(), TrackService.class));
+        call.resolve();
+    }
+
+    /** 앱을 열 때: 켜 두었는데 꺼져 있으면 다시 켬 (휴대폰을 껐다 켠 경우 등) */
+    @PluginMethod
+    public void trackStatus(PluginCall call) {
+        boolean on = TrackService.prefs(getContext()).getBoolean("on", false);
+        boolean perm = getPermissionState("loc") == PermissionState.GRANTED;
+        if (on && perm && !TrackService.running) { try { Intent it = new Intent(getContext(), TrackService.class); if (android.os.Build.VERSION.SDK_INT >= 26) getContext().startForegroundService(it); else getContext().startService(it); } catch (Exception ignored) { } }
+        JSObject r = new JSObject(); r.put("on", on); r.put("running", TrackService.running || (on && perm)); r.put("perm", perm);
+        java.io.File f = TrackService.file(getContext()); r.put("bytes", f.exists() ? f.length() : 0);
+        try { android.os.PowerManager pm = (android.os.PowerManager) getContext().getSystemService(Context.POWER_SERVICE); r.put("battery", pm.isIgnoringBatteryOptimizations(getContext().getPackageName())); } catch (Exception ignored) { }
+        call.resolve(r);
+    }
+
+    /** 쌓인 위치를 가져가고 파일은 비움 */
+    @PluginMethod
+    public void trackTake(PluginCall call) {
+        JSArray a = new JSArray();
+        synchronized (TrackService.class) {
+            java.io.File f = TrackService.file(getContext());
+            if (f.exists()) {
+                try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(f))) {
+                    String line; while ((line = br.readLine()) != null) { String[] p = line.split(","); if (p.length < 3) continue; JSArray x = new JSArray(); x.put(Long.parseLong(p[0])); x.put(Double.parseDouble(p[1])); x.put(Double.parseDouble(p[2])); x.put(p.length > 3 ? Integer.parseInt(p[3]) : 0); a.put(x); }
+                } catch (Exception ignored) { }
+                f.delete();
+            }
+        }
+        JSObject r = new JSObject(); r.put("points", a); call.resolve(r);
+    }
+
+    /** 배터리 '제한 없음' 설정 화면 열기 (삼성 휴대폰이 기록을 멈추지 않게) */
+    @PluginMethod
+    public void openBattery(PluginCall call) {
+        try {
+            Intent it = new Intent(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:" + getContext().getPackageName()));
+            it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); getContext().startActivity(it); call.resolve();
+        } catch (Exception e) {
+            try { Intent it2 = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + getContext().getPackageName())); it2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); getContext().startActivity(it2); call.resolve(); } catch (Exception e2) { call.reject(e2.getMessage()); }
+        }
     }
 
     @Override
