@@ -540,6 +540,20 @@ public class AobNativePlugin extends Plugin {
         }).start();
     }
 
+    /** 사진 속 글자 읽기 — 휴대폰 안에서만 (구글 ML Kit 한국어, 인터넷으로 보내지 않음) */
+    @PluginMethod
+    public void ocr(PluginCall call) {
+        try {
+            byte[] b = Base64.decode(call.getString("b64", ""), Base64.DEFAULT);
+            android.graphics.Bitmap bm = android.graphics.BitmapFactory.decodeByteArray(b, 0, b.length);
+            if (bm == null) { call.reject("사진을 읽지 못했습니다"); return; }
+            com.google.mlkit.vision.common.InputImage img = com.google.mlkit.vision.common.InputImage.fromBitmap(bm, call.getInt("rot", 0));
+            com.google.mlkit.vision.text.TextRecognizer rec = com.google.mlkit.vision.text.TextRecognition.getClient(new com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions.Builder().build());
+            rec.process(img).addOnSuccessListener(t -> { JSObject r = new JSObject(); r.put("text", t.getText()); call.resolve(r); rec.close(); })
+               .addOnFailureListener(e -> { call.reject("글자를 읽지 못했습니다: " + e.getMessage()); rec.close(); });
+        } catch (Exception e) { call.reject("글자를 읽지 못했습니다: " + e.getMessage()); }
+    }
+
     // ================= 자동 동선 기록 =================
     @PluginMethod
     public void trackStart(PluginCall call) {
