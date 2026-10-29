@@ -279,6 +279,12 @@ public class AobNativePlugin extends Plugin {
         List<Uri> uris = new ArrayList<>();
         if (Intent.ACTION_SEND.equals(act)) { Uri u = it.getParcelableExtra(Intent.EXTRA_STREAM); if (u != null) uris.add(u); }
         else { ArrayList<Uri> l = it.getParcelableArrayListExtra(Intent.EXTRA_STREAM); if (l != null) uris.addAll(l); }
+        // 카톡 '나와의 채팅' 등에서 글을 공유한 경우 (파일이 아닌 글)
+        CharSequence tx = it.getCharSequenceExtra(Intent.EXTRA_TEXT);
+        if (uris.isEmpty() && tx != null && tx.length() > 0) {
+            JSObject o = new JSObject(); o.put("name", "shared.txt"); o.put("mime", "text/plain"); o.put("text", tx.toString().substring(0, Math.min(tx.length(), 200000)));
+            shared.add(o); it.setAction(Intent.ACTION_MAIN); return true;
+        }
         ContentResolver cr = getContext().getContentResolver();
         for (Uri u : uris) {
             if (shared.size() >= 10) break;
