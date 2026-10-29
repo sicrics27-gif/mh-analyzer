@@ -65,7 +65,8 @@ import java.util.Set;
 @CapacitorPlugin(name = "AobNative", permissions = {
         @Permission(alias = "mic", strings = { Manifest.permission.RECORD_AUDIO }),
         @Permission(alias = "loc", strings = { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }),
-        @Permission(alias = "noti", strings = { "android.permission.POST_NOTIFICATIONS" })
+        @Permission(alias = "noti", strings = { "android.permission.POST_NOTIFICATIONS" }),
+        @Permission(alias = "sms", strings = { Manifest.permission.SEND_SMS })
 })
 public class AobNativePlugin extends Plugin {
     // 다른 웹페이지가 아무 앱이나 열지 못하도록 허용 목록만
@@ -460,8 +461,33 @@ public class AobNativePlugin extends Plugin {
         Intent it = new Intent(Intent.ACTION_SEND); it.setType("text/plain"); it.putExtra(Intent.EXTRA_TEXT, t);
         if (pkg.length() > 0) it.setPackage(pkg);
         it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        try { getActivity().startActivity(pkg.length() > 0 ? it : Intent.createChooser(it, "보낼 곳 고르기").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); call.resolve(); }
+        String title = call.getString("title", "보낼 곳 고르기");
+        try { getActivity().startActivity(pkg.length() > 0 ? it : Intent.createChooser(it, title).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); call.resolve(); }
         catch (ActivityNotFoundException e) { call.reject("앱이 설치되어 있지 않습니다", "noapp"); }
+    }
+
+    // ================= 문자 자동 발송 (담당 비서에게 등록 요청서) =================
+    @PluginMethod
+    public void sendSms(PluginCall call) {
+        if (getPermissionState("sms") != PermissionState.GRANTED) { requestPermissionForAlias("sms", call, "smsPerm"); return; }
+        doSms(call);
+    }
+
+    @PermissionCallback
+    private void smsPerm(PluginCall call) {
+        if (getPermissionState("sms") != PermissionState.GRANTED) { call.reject("문자 보내기 권한이 없습니다", "no-sms"); return; }
+        doSms(call);
+    }
+
+    private void doSms(PluginCall call) {
+        String to = call.getString("to", "").replaceAll("[^0-9]", ""), text = call.getString("text", "");
+        if (to.length() < 10 || text.length() == 0) { call.reject("번호나 내용이 없습니다"); return; }
+        try {
+            android.telephony.SmsManager sm = android.os.Build.VERSION.SDK_INT >= 31 ? getContext().getSystemService(android.telephony.SmsManager.class) : android.telephony.SmsManager.getDefault();
+            java.util.ArrayList<String> parts = sm.divideMessage(text);
+            if (parts.size() > 1) sm.sendMultipartTextMessage(to, null, parts, null, null); else sm.sendTextMessage(to, null, text, null, null);
+            call.resolve();
+        } catch (Exception e) { call.reject("문자를 보내지 못했습니다: " + e.getMessage()); }
     }
 
     // ================= 자동 동선 기록 =================
