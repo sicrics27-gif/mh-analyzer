@@ -509,6 +509,37 @@ public class AobNativePlugin extends Plugin {
         });
     }
 
+    /** 앱 안에서 새 버전 받기 → 설치 창 (브라우저·내 파일 거치지 않음) */
+    @PluginMethod
+    public void installApk(PluginCall call) {
+        final String url = call.getString("url", "");
+        if (!url.startsWith("https://github.com/sicrics27-gif/mh-analyzer/")) { call.reject("허용되지 않은 주소"); return; }
+        new Thread(() -> {
+            try {
+                java.io.File dir = new java.io.File(getContext().getCacheDir(), "upd"); dir.mkdirs();
+                java.io.File f = new java.io.File(dir, "AOB.apk");
+                java.net.HttpURLConnection c = null; String u = url;
+                for (int hop = 0; hop < 6; hop++) {
+                    c = (java.net.HttpURLConnection) new java.net.URL(u).openConnection(); c.setInstanceFollowRedirects(false); c.setConnectTimeout(20000); c.setReadTimeout(60000);
+                    int code = c.getResponseCode();
+                    if (code >= 300 && code < 400) { u = c.getHeaderField("Location"); c.disconnect(); continue; }
+                    if (code != 200) throw new Exception("HTTP " + code);
+                    break;
+                }
+                long total = c.getContentLengthLong(), got = 0; long lastPct = -1;
+                try (InputStream in = c.getInputStream(); java.io.FileOutputStream out = new java.io.FileOutputStream(f)) {
+                    byte[] buf = new byte[65536]; int n;
+                    while ((n = in.read(buf)) > 0) { out.write(buf, 0, n); got += n; if (total > 0) { long pct = got * 100 / total; if (pct != lastPct) { lastPct = pct; JSObject o = new JSObject(); o.put("p", pct); notifyListeners("dl", o); } } }
+                }
+                Uri cu = androidx.core.content.FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".fileprovider", f);
+                Intent it = new Intent(Intent.ACTION_VIEW); it.setDataAndType(cu, "application/vnd.android.package-archive");
+                it.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+                getActivity().startActivity(it);
+                call.resolve();
+            } catch (Exception e) { call.reject("새 버전을 받지 못했습니다: " + e.getMessage()); }
+        }).start();
+    }
+
     // ================= 자동 동선 기록 =================
     @PluginMethod
     public void trackStart(PluginCall call) {
