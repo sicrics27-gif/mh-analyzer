@@ -496,6 +496,19 @@ public class AobNativePlugin extends Plugin {
         } catch (Exception e) { call.reject("문자를 보내지 못했습니다: " + e.getMessage()); }
     }
 
+    /** 지금 복사되어 있는 글 읽기 (앱이 화면에 떠 있을 때만 가능) */
+    @PluginMethod
+    public void clipRead(PluginCall call) {
+        getActivity().runOnUiThread(() -> {
+            String t = "";
+            try {
+                android.content.ClipboardManager cm = (android.content.ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                if (cm != null && cm.hasPrimaryClip()) { android.content.ClipData c = cm.getPrimaryClip(); if (c != null && c.getItemCount() > 0) { CharSequence x = c.getItemAt(0).coerceToText(getContext()); if (x != null) t = x.toString(); } }
+            } catch (Exception ignored) { }
+            JSObject r = new JSObject(); r.put("text", t.length() > 20000 ? t.substring(0, 20000) : t); call.resolve(r);
+        });
+    }
+
     // ================= 자동 동선 기록 =================
     @PluginMethod
     public void trackStart(PluginCall call) {
