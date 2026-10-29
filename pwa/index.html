@@ -2106,6 +2106,36 @@ img,svg,a{-webkit-user-drag:none;user-drag:none}
 .pastebig small{font-size:12.5px;color:var(--ink2);line-height:1.45}
 .pastebig:active{transform:scale(.99)}
 
+.rqgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px 12px;margin-bottom:10px}
+.rqgrid label{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--ink2)}
+.rqgrid input{height:40px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--paper);color:var(--ink);font:inherit;font-size:14px}
+.rqcos{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
+.rqcos button{padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;font-size:13px}
+.rqcos button[aria-pressed="true"]{background:var(--accent,#4f7dff);border-color:transparent;color:#fff}
+.rqpv{margin:4px 0 8px;padding:12px 14px;border-radius:10px;background:var(--soft);border:1px solid var(--line);font:inherit;font-size:14px;line-height:1.6;white-space:pre-wrap;user-select:text;-webkit-user-select:text}
+.rqbtns{flex-wrap:wrap;gap:8px}
+.ckl{display:flex;align-items:center;gap:8px;font-size:14px;margin-top:8px}
+
+.scw{grid-template-columns:repeat(3,1fr)!important}
+.scw button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 6px!important;height:auto!important}
+.scw button small{font-size:11px;font-weight:500;color:var(--mute);line-height:1.3;text-align:center}
+.scw button[aria-pressed="true"] small{color:rgba(255,255,255,.85)}
+
+.clipbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(152px + env(safe-area-inset-bottom,0px));z-index:75;width:min(640px,calc(100vw - 24px));display:flex;align-items:center;gap:10px;padding:10px 12px 10px 16px;border-radius:14px;background:var(--paper);border:1px solid rgba(79,125,255,.55);box-shadow:0 12px 30px rgba(0,0,0,.35);font-size:14px}
+.clipbar span{flex:1;line-height:1.4}.clipbar .x{border:0;background:none;color:var(--mute);font-size:22px;width:34px;height:34px;cursor:pointer}
+@media (min-width:901px){.clipbar{bottom:24px}}
+
+/* 휴대폰 위쪽 시계·카메라 자리와 겹치지 않게 */
+.shell{padding-top:env(safe-area-inset-top,0px);box-sizing:border-box}
+.modal{padding-top:env(safe-area-inset-top,0px)}
+
+/* 고객 화면: 관련 있는 것끼리 묶음 */
+.cgrp{margin:14px 0 4px;padding:12px 12px 4px;border-radius:16px;border:1px solid var(--line);background:color-mix(in srgb,var(--paper) 55%,transparent)}
+.cgh{margin:0 2px 10px;font-size:14px;font-weight:800;color:var(--ink2);letter-spacing:-.2px}
+.cgrp > .pcard,.cgrp > details,.cgrp > section{margin-top:0}
+.btn.cmore{min-width:48px;font-size:20px;letter-spacing:1px}
+.msh{margin:14px 2px 8px;font-size:13px;font-weight:800;color:var(--ink2)}
+
 </style>
 </head>
 <body>
@@ -2325,7 +2355,7 @@ img,svg,a{-webkit-user-drag:none;user-drag:none}
   function pullShared() {
     if (!N) return;
     N.takeShared().then(function (r) {
-      var fs = ((r && r.files) || []).map(function (f) { var bin = atob(f.b64), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new File([u], f.name || 'shared', { type: f.mime || '' }); });
+      var fs = ((r && r.files) || []).map(function (f) { if (f.text != null) return new File([f.text], f.name || 'shared.txt', { type: 'text/plain' }); var bin = atob(f.b64), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new File([u], f.name || 'shared', { type: f.mime || '' }); });
       if (fs.length) { root.__sharedFiles = (root.__sharedFiles || []).concat(fs); document.dispatchEvent(new CustomEvent('native-shared', { detail: fs })); }
     }).catch(function () { });
   }
@@ -5464,6 +5494,13 @@ function HealthUI(root, H) {
   var IS_MOBILE = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
   async function saveCur(msg){ if (S.cur.sample) { renderCustomer(); return; } S.cur = await Store.saveHead(S.cur); S.list = await Store.list(); renderList(); var y = window.scrollY; renderCustomer(); window.scrollTo(0, y); if (msg) toast(msg); }
 
+  function cgrp(t, inner){ return String(inner || '').trim() ? '<section class="cgrp"><h5 class="cgh">' + t + '</h5>' + inner + '</section>' : ''; }
+  // 고객 화면 ⋯ : 자주 안 쓰는 것(정보 수정 · 삭제)
+  document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-act="cmore"]'); if (!b) return; e.stopPropagation();
+    openDlg('<h4>' + esc(S.cur ? S.cur.name : '') + '님</h4><div class="msheet"><button type="button" data-cm2="edit"><i>✏️</i><b>정보 수정</b><small>이름 · 생년월일 · 번호 · 채널</small></button><button type="button" data-cm2="req"><i>📝</i><b>등록 요청서</b><small>비서에게 보험사 등록 요청</small></button><button type="button" data-cm2="del"><i>🗑️</i><b>삭제</b><small>되돌릴 수 없음</small></button></div><div class="mrow"><button class="btn lg" type="button" id="cm2X" style="margin-left:auto">닫기</button></div>');
+    $('cm2X').onclick = closeDlg;
+    $('dlgBox').querySelectorAll('[data-cm2]').forEach(function(x){ x.onclick = function(){ var k = x.dataset.cm2; closeDlg(); if (k === 'req') { openReqForm(S.cur); return; } var t = document.createElement('button'); t.dataset.act = k; t.hidden = true; $('main').appendChild(t); t.click(); t.remove(); }; });
+  }, true);
   function renderCard(){
     var c = S.cur, n = nextDue(c), ph = normPhone(c.phone);
     var h = '<section class="ccard">' +
@@ -5475,7 +5512,7 @@ function HealthUI(root, H) {
         (c.interest ? '<span class="cc-kv"><small>관심</small>' + esc(c.interest) + '</span>' : '') +
       '</div>' +
       '<div class="cc-next' + (n != null && n <= 0 ? ' due' : '') + '">' + (c.next && c.next.d ? '<span><small>다음 할 일</small><b>' + dot(c.next.d) + ' · ' + dueTxt(n) + '</b> ' + esc(c.next.t || '') + '</span><button type="button" class="pb" data-act="nextDone">완료</button>' : '<span class="note">다음 할 일이 없습니다</span>') + '<button type="button" class="pb" data-ptab="log">기록 · 할 일 추가</button></div>' +
-      '</section>' + contactBar() + meetBar() + covReqBar() + contractsBar() + regBar() + procBar() + refundBar();
+      '</section>' + cgrp('📞 연락 · 만남', contactBar() + meetBar()) + cgrp('🩺 보장분석 요청', covReqBar()) + cgrp('📑 계약 · 보험사 등록', contractsBar() + regBar() + procBar() + refundBar());
     return h;
   }
   function timeline(){
@@ -7069,7 +7106,7 @@ function HealthUI(root, H) {
     setTimeout(takeShared, 400);
     setTimeout(function(){ nhcDaily().then(function(){ if (!S.cur && !S.view) showWelcome(); }); }, 2500);
     setTimeout(function(){ nhcPoll(); }, 4000);
-    setTimeout(trkAuto, 2500); gameTick(true).then(function(){ if (!S.cur && !S.view) { if (ARC_ON && skin() === 'arc') Arcade.show(); else showWelcome(); } });
+    setTimeout(trkAuto, 2500); setTimeout(clipCheck, 1500); gameTick(true).then(function(){ if (!S.cur && !S.view) { if (ARC_ON && skin() === 'arc') Arcade.show(); else showWelcome(); } });
     if (Sync.isOn()) { if (Sync.autoRefresh && Sync.autoRefresh()) return; syncNow(); }
   }
 
@@ -7428,12 +7465,117 @@ function HealthUI(root, H) {
   function regSt(c, co){ var k = regKey(co), r = c && c.reg && c.reg[k]; return r && r.st ? r.st : 'none'; }
   function regCount(c){ var o = { done: 0, pending: 0, none: 0 }; regCos().forEach(function(co){ o[regSt(c, co)]++; }); return o; }
   function regSeg(c, co, cls){ var st = regSt(c, co); return '<span class="rgseg' + (cls ? ' ' + cls : '') + '">' + ['done', 'pending', 'none'].map(function(k){ return '<button type="button" class="rg-' + k + '" data-rgs="' + c.id + '|' + esc(co) + '|' + k + '" aria-pressed="' + (st === k) + '">' + ({ done: '완료', pending: '요청중', none: '미등록' })[k] + '</button>'; }).join('') + '</span>'; }
+  // ================= 보험사 고객등록 요청서 (담당 비서에게 보내는 양식) =================
+  // 고객별로 저장(잠금 비밀번호로 암호화) → 양식 복사 · 비서에게 카톡/문자 · 등록하자마자 보낼 창 자동으로
+  var REQF = [['rrn2', '주민번호 뒷자리', '7자리 (화면엔 가려서 보임)', 'numeric'], ['tel', '통신사', '예: SKT · KT · LGU+ · KT알뜰폰'], ['addr', '주소', '예: 경남 통영시 ○○길 28, ○○아파트 가동 407호'], ['job', '직업', '예: 무직 · 회사원 · 자영업'], ['hw', '키/몸무게', '예: 148/46', 'text'], ['drive', '운전', 'O 또는 X'], ['bank', '은행/계좌번호', '예: 농협 123-4567-8901'], ['email', '이메일', ''], ['hobby', '위험한 취미', 'X 또는 내용']];
+  function reqOf(c){ return c && c.req || {}; }
+  function rrnFront(c){ var b = String(c.birth || ''); return b.length === 8 ? b.slice(2) : ''; }
+  function mask(v){ v = String(v || ''); return v ? v.slice(0, 1) + '******'.slice(0, Math.max(0, v.length - 1)) : ''; }
+  function reqText(c, cos){
+    var r = reqOf(c), ph = normPhone(c.phone), yn = function(v, lab){ v = String(v || '').trim(); if (!v) return lab + ' X'; if (/^(x|아니|안|없|무)/i.test(v)) return lab + ' X'; if (/^(o|예|네|함|있|유)/i.test(v)) return lab + ' O'; return lab + ' ' + v; };
+    var L = [];
+    if (cos && cos.length) L.push('[고객등록 요청] ' + cos.join('·'));
+    L.push(c.name);
+    L.push(rrnFront(c) + '-' + (r.rrn2 || (c.sex === 'F' ? '2' : c.sex === 'M' ? '1' : '')));
+    L.push((ph ? phoneTxt(ph) : '010-') + (r.tel ? ' ' + r.tel : ''));
+    L.push(r.addr || '주소');
+    L.push(r.job || '직업');
+    L.push(r.hw || '키/몸무게');
+    L.push(yn(r.drive, '운전'));
+    L.push(r.bank || '은행/계좌번호');
+    L.push(r.email || '이메일');
+    L.push(yn(r.hobby, '위험한취미').replace('위험한취미 ', '위험한취미'));
+    return L.join('\n');
+  }
+  async function secLoad(){ await planLoad(); return PL.d.sec || {}; }
+  function openSecSet(after){
+    var d = PL.d.sec || {};
+    openDlg('<h4>🧑‍💼 담당 비서</h4><div class="form plform"><p class="note">고객등록 요청서를 보낼 내 담당 비서입니다. 번호는 문자로 보낼 때만 씁니다.</p>' +
+      '<label class="l">이름</label><input id="scN" type="text" maxlength="20" value="' + esc(d.name || '') + '" placeholder="예: 김비서">' +
+      '<label class="l">휴대폰 번호</label><input id="scP" inputmode="tel" maxlength="13" value="' + esc(d.phone ? phoneTxt(d.phone) : '') + '" placeholder="010-0000-0000">' +
+      '<span class="l">보내는 방법</span><div class="sexsel scw" id="scW">' + [['kakao', '💬 카톡', '비서 채팅방 한 번 누르면 글이 들어가 있음'], ['auto', '⚡ 문자 자동', '5초 뒤 저절로 문자 발송 (취소 가능)'], ['sms', '✉️ 문자 창', '내용 채워진 문자 창이 열림']].map(function(w){ return '<button type="button" data-v="' + w[0] + '" aria-pressed="' + ((d.via || 'kakao') === w[0]) + '"><b>' + w[1] + '</b><small>' + w[2] + '</small></button>'; }).join('') + '</div>' +
+      '<label class="ckl"><input type="checkbox" id="scA"' + (d.auto !== false ? ' checked' : '') + '> 고객을 등록하면 바로 비서에게 보낼 창 띄우기</label>' +
+      '<div class="ferr" id="scE"></div></div><div class="mrow"><button class="btn lg" type="button" id="scX" style="margin-right:auto">닫기</button><button class="go" type="button" id="scGo">저장</button></div>');
+    var via = d.via || 'kakao'; $('scW').querySelectorAll('button').forEach(function(b){ b.onclick = function(){ via = b.dataset.v; $('scW').querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed', x === b); }); }; });
+    $('scX').onclick = closeDlg;
+    $('scGo').onclick = async function(){ var n = $('scN').value.trim(), ph = normPhone($('scP').value); if (!n) { $('scE').textContent = '비서 이름을 넣어 주세요'; return; } if (via !== 'kakao' && !ph) { $('scE').textContent = '문자로 보내려면 번호가 필요합니다'; return; }
+      PL.d.sec = { name: n, phone: ph || '', via: via, auto: $('scA').checked }; await planSave(); closeDlg(); toast('담당 비서를 저장했습니다'); if (after) after(); };
+  }
+  async function sendToSec(text, via){
+    var sec = await secLoad(); via = via || sec.via || 'kakao';
+    try { await navigator.clipboard.writeText(text); } catch(e){}
+    if (via === 'auto') return autoSms(sec, text);
+    if (via === 'sms') { if (!sec.phone) { openSecSet(); return false; } location.href = 'sms:' + sec.phone + '?body=' + encodeURIComponent(text); return true; }
+    // 카톡: 휴대폰 '공유' 창 맨 위에 최근 카톡 대화방(예: 김비서)이 바로 보임 → 누르면 그 방에 글이 들어가 있음
+    if (window.Native && Native.on) { try { await natCall('shareText', { text: text, title: (sec.name || '비서') + '님 카톡방을 누르세요' }); toast('맨 위 카카오톡 대화방 중 ' + (sec.name || '비서') + '님을 누르면 글이 들어가 있습니다'); return true; } catch(e){} }
+    if (navigator.share) { try { await navigator.share({ text: text }); return true; } catch(e){ if (e && e.name === 'AbortError') return false; } }
+    toast('요청서를 복사했습니다 · 카톡 ' + (sec.name || '비서') + '님 채팅방에 붙여 넣으세요'); return true;
+  }
+  // 문자 자동 발송: 5초 동안 취소할 수 있게 보여 주고 저절로 보냄 (앱에서만)
+  function autoSms(sec, text){
+    return new Promise(function(done){
+      if (!sec.phone) { openSecSet(); return done(false); }
+      if (!(window.Native && Native.on)) { location.href = 'sms:' + sec.phone + '?body=' + encodeURIComponent(text); return done(true); }
+      var n = 5, t = null;
+      openDlg('<h4>⚡ ' + esc(sec.name || '비서') + '님께 문자 자동 발송</h4><div class="form"><p class="note">' + esc(phoneTxt(sec.phone)) + ' 로 아래 글을 보냅니다.</p><pre class="rqpv selectable">' + esc(text) + '</pre></div><div class="mrow"><button class="btn lg" type="button" id="asX" style="margin-right:auto">취소</button><button class="go" type="button" id="asGo"><span id="asN">5</span>초 뒤 보냄 · 지금 보내기</button></div>');
+      var fire = async function(){ clearInterval(t); var b = $('asGo'); if (b) { b.disabled = true; b.textContent = '보내는 중…'; }
+        try { await natCall('sendSms', { to: sec.phone, text: text }); closeDlg(); toast((sec.name || '비서') + '님께 문자를 보냈습니다'); done(true); }
+        catch(e){ closeDlg(); if (/no-sms|권한/.test(String(e && (e.code || e.message)))) toast('문자 보내기 권한을 허용해야 자동으로 보낼 수 있습니다 · 이번엔 문자 창으로 엽니다'); location.href = 'sms:' + sec.phone + '?body=' + encodeURIComponent(text); done(true); } };
+      $('asX').onclick = function(){ clearInterval(t); closeDlg(); toast('보내지 않았습니다'); done(false); };
+      $('asGo').onclick = fire;
+      t = setInterval(function(){ n--; var e = $('asN'); if (!e) { clearInterval(t); return; } e.textContent = n; if (n <= 0) fire(); }, 1000);
+    });
+  }
+  // 요청서 창: 빈 칸 채우기 · 요청할 보험사 고르기 · 보내기
+  async function openReqForm(c, opts){
+    opts = opts || {}; var sec = await secLoad(), r = Object.assign({}, reqOf(c)), cos = [];
+    var regs = regCos().filter(function(co){ return regSt(c, co) !== 'done'; });
+    var draw = function(){ $('rqPv').textContent = reqText(Object.assign({}, c, { req: r }), cos); };
+    openDlg('<h4>📝 보험사 고객등록 요청서 — ' + esc(c.name) + '님</h4><div class="form plform">' + (opts.fresh ? '<p class="note">방금 등록한 고객입니다. 빈 칸을 채우고 담당 비서에게 보내세요. (빈 칸은 양식 이름 그대로 나갑니다)</p>' : '') +
+      '<div class="rqgrid">' + REQF.map(function(f){ return '<label><span>' + f[1] + '</span><input data-rq="' + f[0] + '" ' + (f[3] === 'numeric' ? 'inputmode="numeric" maxlength="7" class="pw"' : 'type="text"') + ' value="' + esc(r[f[0]] || '') + '" placeholder="' + esc(f[2]) + '" autocomplete="off"></label>'; }).join('') + '</div>' +
+      (regs.length ? '<span class="l">등록 요청할 보험사 <small class="note">(고르면 첫 줄에 들어가고 ‘요청중’으로 바뀝니다)</small></span><div class="rqcos">' + regs.map(function(co){ return '<button type="button" data-rqco="' + esc(co) + '" aria-pressed="false">' + esc(co) + '</button>'; }).join('') + '</div>' : '') +
+      '<span class="l">보낼 글 미리보기</span><pre class="rqpv selectable" id="rqPv"></pre>' +
+      '<div class="note">담당 비서: <b>' + esc(sec.name || '아직 없음') + '</b> <button type="button" class="lnk2" id="rqSec">' + (sec.name ? '바꾸기' : '정하기') + '</button></div><div class="ferr" id="rqE"></div></div>' +
+      '<div class="mrow rqbtns"><button class="btn lg" type="button" id="rqX" style="margin-right:auto">닫기</button><button class="btn lg" type="button" id="rqCp">📋 복사</button><button class="btn lg" type="button" id="rqSms">' + (sec.via === 'kakao' || !sec.via ? '✉️ 문자' : '💬 카톡') + '</button><button class="go" type="button" id="rqKk">' + ({ kakao: '💬 ' + esc(sec.name || '비서') + '님께 카톡', auto: '⚡ ' + esc(sec.name || '비서') + '님께 자동 문자', sms: '✉️ ' + esc(sec.name || '비서') + '님께 문자' })[sec.via || 'kakao'] + '</button></div>', 'wide');
+    draw();
+    $('dlgBox').querySelectorAll('[data-rq]').forEach(function(i){ i.addEventListener('input', function(){ var v = i.value; if (i.dataset.rq === 'rrn2') v = i.value = v.replace(/\D/g, '').slice(0, 7); r[i.dataset.rq] = v.trim(); draw(); }); });
+    $('dlgBox').querySelectorAll('[data-rqco]').forEach(function(b){ b.onclick = function(){ var co = b.dataset.rqco, on = cos.indexOf(co) < 0; if (on) cos.push(co); else cos.splice(cos.indexOf(co), 1); b.setAttribute('aria-pressed', on); draw(); }; });
+    var save = async function(){ var C = S.list.find(function(x){ return x.id === c.id; }) || c; C.req = r; await Store.saveHead(C); c.req = r; if (S.cur && S.cur.id === c.id) S.cur.req = r; };
+    var after = async function(){ for (var i = 0; i < cos.length; i++) await regSet(c.id, cos[i], { st: 'pending', d: todayStr(), m: (sec.name || '비서') + '님께 요청' }); };
+    $('rqSec').onclick = function(){ openSecSet(function(){ openReqForm(c, opts); }); };
+    $('rqX').onclick = async function(){ await save(); closeDlg(); };
+    $('rqCp').onclick = async function(){ await save(); copyText($('rqPv').textContent, '등록 요청서'); };
+    var go = async function(via){ await save(); if (!sec.name) { openSecSet(function(){ openReqForm(c, opts); }); return; } var tx = $('rqPv').textContent; if (via !== 'auto') closeDlg(); if (await sendToSec(tx, via) !== false) await after(); };
+    $('rqSms').onclick = function(){ go(sec.via === 'kakao' || !sec.via ? 'sms' : 'kakao'); };
+    $('rqKk').onclick = function(){ go(sec.via || 'kakao'); };
+  }
+  // 신규 등록 직후: 비서를 정해 두었고 '바로 띄우기'가 켜져 있으면 요청서 창
+  async function reqAfterNew(c){ var sec = await secLoad(); if (!sec.name || sec.auto === false) return; var r = reqOf(c);
+    if (r.rrn2 && r.addr) { setTimeout(async function(){ if (await sendToSec(reqText(c, []), sec.via) === false) openReqForm(c, { fresh: true }); }, 400); return; } // 메모에 다 있으면 바로 보내기
+    setTimeout(function(){ openReqForm(c, { fresh: true }); }, 400); }
+  // 메모에서 요청서 칸 뽑기 (주민번호 뒷자리·통신사·주소·직업·키/몸무게·운전·계좌·이메일·취미)
+  function parseReq(text){
+    var r = {}, lines = String(text || '').split(/\r?\n/).map(function(l){ return l.trim(); }).filter(Boolean);
+    lines.forEach(function(l){
+      var m;
+      if ((m = l.match(/\d{6}\s*-\s*(\d{7})(?!\d)/))) r.rrn2 = m[1];
+      if ((m = l.match(/01[016789][-\s.]?\d{3,4}[-\s.]?\d{4}\s*(.*)$/)) && m[1].trim()) r.tel = m[1].trim().slice(0, 20);
+      if (!r.addr && /(시|도|군|구)\s/.test(l) && /(로|길|동|읍|면|리|아파트|호)/.test(l) && !/^\d{6}/.test(l)) r.addr = l.slice(0, 80);
+      if ((m = l.match(/^(\d{2,3})\s*\/\s*(\d{2,3})$/))) r.hw = m[1] + '/' + m[2];
+      if ((m = l.match(/^운전\s*(.*)$/))) r.drive = m[1].trim() || '';
+      if ((m = l.match(/^위험(?:한)?\s*취미\s*(.*)$/))) r.hobby = m[1].trim();
+      if ((m = l.match(/[\w.+-]+@[\w-]+\.[\w.]+/))) r.email = m[0];
+      if (/(은행|농협|국민|신한|우리|하나|기업|카카오뱅크|토스|새마을|우체국|수협|부산|경남|대구)/.test(l) && /\d{2,}[-\d]{6,}/.test(l)) r.bank = l.slice(0, 40);
+      if (!r.job && /^(무직|주부|회사원|직장인|자영업|공무원|학생|교사|간호사|의사|사무직|생산직|운전기사|택시|농업|어업|프리랜서|은퇴|퇴직|군인|경찰|소방관|미용사|요리사|판매직|영업직|사업|대표|건설|일용직|아르바이트|알바)/.test(l)) r.job = l.slice(0, 30);
+    });
+    return r;
+  }
   function regBar(){
     var c = S.cur; if (!c || c.sample) return '';
     var n = regCount(c), warn = dealsOf(c).filter(function(x){ return x.co && regSt(c, x.co) !== 'done'; });
     return '<details class="pcard rgc"' + (n.pending || warn.length ? ' open' : '') + '><summary><b>🏢 보험사 고객등록</b><small>완료 ' + n.done + ' · 요청중 ' + n.pending + ' · 미등록 ' + n.none + (warn.length ? ' · <em class="rgwarn">⚠ 계약 넣을 보험사 미등록 ' + warn.length + '곳</em>' : '') + '</small></summary>' +
       '<div class="rgl">' + regCos().map(function(co){ var r = (c.reg || {})[co] || {}; return '<div class="rgr"><b>' + esc(co) + '</b>' + regSeg(c, co) + '<input type="date" data-rgd="' + esc(co) + '" value="' + esc(r.d || '') + '" title="등록일"><input type="text" data-rgm="' + esc(co) + '" value="' + esc(r.m || '') + '" maxlength="40" placeholder="메모 (예: 서류 보냄)"></div>'; }).join('') + '</div>' +
-      '<div class="ct-a"><button type="button" class="btn" data-rgview="">보험사별 등록 현황</button><button type="button" class="btn" data-rgcos="1">보험사 목록 편집</button></div></details>';
+      '<div class="ct-a"><button type="button" class="go" data-rqopen="1">📝 등록 요청서 (비서에게 보내기)</button><button type="button" class="btn" data-rgview="">보험사별 등록 현황</button><button type="button" class="btn" data-rgcos="1">보험사 목록 편집</button></div></details>';
   }
   var REG_NT = null;
   function regChanged(){ clearTimeout(REG_NT); REG_NT = setTimeout(function(){ try { if (nhcOn()) nhcStats(briefData(), true); } catch(e){} }, 5000); }
@@ -7483,6 +7625,7 @@ function HealthUI(root, H) {
   document.addEventListener('click', async function(e){
     var t;
     if ((t = e.target.closest('[data-rgs]'))) { var p = t.dataset.rgs.split('|'); await regSet(p[0], p[1], { st: p[2] }); if (S.view === 'reg') { var y = window.scrollY; showReg(); window.scrollTo(0, y); } return; }
+    if ((t = e.target.closest('[data-rqopen]'))) { if (S.cur) openReqForm(S.cur); return; }
     if ((t = e.target.closest('[data-rgview]'))) { showReg(); return; }
     if ((t = e.target.closest('[data-rgcos]'))) { await planLoad(); openRegCos(); return; }
     if ((t = e.target.closest('[data-rgco]'))) { showReg(t.dataset.rgco); return; }
@@ -8569,15 +8712,17 @@ function HealthUI(root, H) {
   $('fab').onclick = function(){ $('newCust').click(); };
   ['tbMap', 'snMap', 'rlMap'].forEach(function(id){ var b = $(id); if (b) b.onclick = function(){ showMap(); }; });
   $('tbMore').onclick = function(){
-    var it = [['#arcBtn', '🏙️', '아케이드 화면 (AOB9 타워)', '건물 단면에서 방을 눌러 메뉴 열기'], ['#connBtn', '🔗', '연결 · 권한', '캘린더·위치·마이크·알림·AI 한 번에'], ['.scm', '👥', '고객관리', '영업 채널별로 보기'], ['#gchip', '⭐', '내 성장', '레벨 · 퀘스트 · 배지'], ['[data-act="dbImport"]', '📥', 'DB 고객 가져오기', '회사 DB 사이트'],
-      ['#bkOut', '💾', '백업 내보내기', ''], ['#bkIn', '📂', '백업 불러오기', ''], ['#sample', '🧪', '예시 고객 보기', ''], ['#themeBtn', '🌗', $('themeBtn').textContent, ''], ['[data-sync="signout"]', '🔄', '구글 계정 바꾸기', ''], ['#lockBtn', '🔒', '잠그기', '']];
+    // 관련 있는 것끼리 묶은 메뉴 (자주 쓰는 순서)
+    var G = [
+      ['💼 영업', [['.scm', '👥', '고객관리', '영업 채널별로 보기'], ['#regBtn', '🏢', '보험사 고객등록', '보험사별 등록 현황'], ['#mdBtn', '⭐', 'MD’s PICK', '추천 상품 노트'], ['[data-act="dbImport"]', '📥', 'DB 고객 가져오기', '회사 DB 사이트']]],
+      ['🌱 성장 · 소통', [['#gchip', '🏆', '내 성장', '레벨 · 퀘스트 · 배지'], ['#sugBtn', '💡', '건의사항', '기능 아이디어 올리기 · 검토'], ['#arcBtn', '🏙️', '아케이드 화면', 'AOB9 타워']]],
+      ['🔗 연결 · 앱', [['#connBtn', '🔗', '연결 · 권한', '구글·위치·마이크·알림·AI·자동 동선'], ['#apkBtn', '📱', inApk() ? '앱 정보 · 업데이트' : '안드로이드 앱 받기', inApk() ? '새 버전 확인' : 'APK로 설치'], ['#keysBtn', '⌨️', '단축키', '키보드로 빠르게'], ['#themeBtn', '🌗', $('themeBtn').textContent, ''], ['[data-sync="signout"]', '🔄', '구글 계정 바꾸기', '']]],
+      ['🗂 자료 · 보안', [['#bkOut', '💾', '백업 내보내기', ''], ['#bkIn', '📂', '백업 불러오기', ''], ['#sample', '🧪', '예시 고객 보기', ''], ['#lockBtn', '🔒', '잠그기', '']]]
+    ];
+    if (IS_MOBILE) G[2][1] = G[2][1].filter(function(x){ return x[0] !== '#keysBtn'; });
     var AD = ROLE.admin ? [['#admBtn', '🛡️', '사용자 관리', 'OTP 발급 · 요청 · 정지'], ['#teamSetBtn', '🏆', '팀 서버', '팀원 공유 기능 연결'], ['[data-nx="setup"]', '🏢', 'NHC 본사 연결', '보장분석 · 숫자 보고']] : [];
-    it.splice(2, 0, ['#sugBtn', '💡', '건의사항', '기능 아이디어 올리기 · 검토']);
-    it.splice(2, 0, ['#regBtn', '🏢', '보험사 고객등록', '보험사별 등록 현황'], ['#mapBtn', '🗺️', '지역별 고객', '지도로 보기'], ['#mdBtn', '⭐', 'MD\u2019s PICK', '추천 상품 노트']);
-    if (!IS_MOBILE) it.splice(2, 0, ['#keysBtn', '⌨️', '단축키', '키보드로 빠르게']);
-    it.splice(3, 0, ['#apkBtn', '📱', inApk() ? '앱 정보' : '안드로이드 앱 받기', inApk() ? '자동 업데이트 중' : 'APK로 설치']);
     var vis = function(x){ var el = document.querySelector(x[0]); if (!el) return false; if (x[0] === '#gchip' || x[0] === '.scm') return true; return !el.hidden && getComputedStyle(el).display !== 'none'; }, btn = function(x){ return '<button type="button" data-px=\'' + x[0] + '\'><i>' + x[1] + '</i><b>' + esc(x[2]) + '</b>' + (x[3] ? '<small>' + esc(x[3]) + '</small>' : '') + '</button>'; };
-    openDlg('<h4>⚙️ 설정 · 메뉴</h4><div class="msheet">' + it.filter(vis).map(btn).join('') + '</div>' + (AD.length ? '<div class="msh">🛡️ 관리자 전용 <small>팀원 화면에는 보이지 않습니다</small></div><div class="msheet adm">' + AD.filter(vis).map(btn).join('') + '</div>' : '') + '<div class="mrow"><button class="btn lg" type="button" id="msX" style="margin-left:auto">닫기</button></div>');
+    openDlg('<h4>⚙️ 설정 · 메뉴</h4>' + G.map(function(g){ var l = g[1].filter(vis); return l.length ? '<div class="msh">' + g[0] + '</div><div class="msheet">' + l.map(btn).join('') + '</div>' : ''; }).join('') + (AD.length ? '<div class="msh">🛡️ 관리자 전용 <small>팀원 화면에는 보이지 않습니다</small></div><div class="msheet adm">' + AD.filter(vis).map(btn).join('') + '</div>' : '') + '<div class="mrow"><button class="btn lg" type="button" id="msX" style="margin-left:auto">닫기</button></div>');
     $('msX').onclick = closeDlg;
     $('dlgBox').querySelectorAll('[data-px]').forEach(function(b){ b.onclick = function(){ var el = document.querySelector(b.dataset.px); closeDlg(); if (el) { if (el.hidden && el.id === 'gchip') { showGame && showGame(); return; } el.click(); } }; });
   };
@@ -8679,7 +8824,7 @@ function HealthUI(root, H) {
     try {
       var r = await fetch('https://api.github.com/repos/sicrics27-gif/mh-analyzer/releases/tags/apk-latest'); if (!r.ok) return;
       var j = await r.json(), n = +((/빌드 (\d+)/.exec(j.body || '') || [])[1] || 0);
-      if (n > apkCode()) { var b = document.createElement('div'); b.className = 'apkbar'; b.innerHTML = '<span>' + (Native.on ? '새 앱 버전이 있습니다' : '새 AOB9 앱(크롬 없는 진짜 앱)이 나왔습니다') + '</span><a href="#">받기</a><button type="button" aria-label="닫기">×</button>'; b.querySelector('button').onclick = function(){ b.remove(); }; b.querySelector('a').onclick = function(e){ e.preventDefault(); b.remove(); openApk(); }; document.body.appendChild(b); }
+      if (n > apkCode()) { var b = document.createElement('div'); b.className = 'apkbar'; b.innerHTML = '<span>' + (Native.on ? '새 앱 버전이 있습니다' : '새 AOB9 앱(크롬 없는 진짜 앱)이 나왔습니다') + '</span><a href="#">받기</a><button type="button" aria-label="닫기">×</button>'; b.querySelector('button').onclick = function(){ b.remove(); }; b.querySelector('a').onclick = function(e){ e.preventDefault(); b.remove(); if (Native.on) apkInstall(); else openApk(); }; document.body.appendChild(b); }
     } catch(e){}
   }
   function openApk(){
@@ -8690,7 +8835,26 @@ function HealthUI(root, H) {
       '<p class="note">앱은 처음 한 번만 설치하면 됩니다. 기능이 바뀌어도 다시 설치할 필요 없이 열 때마다 최신으로 바뀝니다.</p></div>' +
       '<div class="mrow"><button class="btn lg" type="button" id="apkX">닫기</button><a class="go" id="apkGo" href="' + APK_URL + '" style="margin-left:auto;display:inline-flex;align-items:center;text-decoration:none">앱 받기 (APK)</a></div>');
     $('apkX').onclick = closeDlg;
+    if (window.Native && Native.on && $('apkGo')) $('apkGo').onclick = function(e){ e.preventDefault(); closeDlg(); apkInstall(); };
   }
+  // 앱 안에서 새 버전 받아 바로 설치 창 (진짜 앱 빌드 24부터) · 안 되면 브라우저로 받기
+  async function apkInstall(){
+    var bar = document.createElement('div'); bar.className = 'apkbar'; bar.innerHTML = '<span id="dlTx">새 버전 받는 중… 0%</span>'; document.body.appendChild(bar);
+    var sub = null; try { sub = await Native.aob.addListener('dl', function(d){ var t = $('dlTx'); if (t) t.textContent = '새 버전 받는 중… ' + d.p + '%'; }); } catch(e){}
+    try { await natCall('installApk', { url: APK_URL }); bar.remove(); toast('설치 창에서 [업데이트]를 누르세요 · 처음이면 \u2018이 출처 허용\u2019을 켜고 돌아오세요'); }
+    catch(e){ bar.remove(); location.href = APK_URL; }
+    try { if (sub) sub.remove(); } catch(e){}
+  }
+  // 휴대폰 크롬(웹사이트)으로 쓰는 팀원에게: 앱으로 쓰라는 안내 (사흘에 한 번)
+  (function(){
+    if ((window.Native && Native.on) || !/Android/i.test(navigator.userAgent || '') || IS_DESKTOP) return;
+    var k = 'mhs_appnag', last = 0; try { last = +localStorage.getItem(k) || 0; } catch(e){}
+    if (Date.now() - last < 3 * 864e5) return;
+    setTimeout(function(){ if (!Store.isOpen() || !$('lock').hidden) return; var b = document.createElement('div'); b.className = 'apkbar'; b.innerHTML = '<span>📱 AOB9를 <b>앱</b>으로 설치하면 전체 화면·벨소리 통화·자동 동선·자동 업데이트가 됩니다</span><a href="#">설치</a><button type="button" aria-label="닫기">×</button>';
+      b.querySelector('button').onclick = function(){ b.remove(); try { localStorage.setItem(k, Date.now()); } catch(e){} };
+      b.querySelector('a').onclick = function(e){ e.preventDefault(); b.remove(); try { localStorage.setItem(k, Date.now()); } catch(e2){} openApk(); };
+      document.body.appendChild(b); }, 6000);
+  })();
 
   $('apkBtn').onclick = openApk;
   $('sugBtn').onclick = function(){ showSug('all'); };
@@ -9021,7 +9185,7 @@ function HealthUI(root, H) {
       '<div class="cact">' + (d ? (d.covOnly ? '<span class="stbadge w">보장분석만</span>' : '<span class="stbadge">' + IC.ok + '분석완료</span>') : '<span class="stbadge w">파일 첨부 대기</span>') +
       (c.sample ? '' : '<button class="btn lg" type="button" data-act="docs">' + IC.doc + '서류 받기</button>') +
       (c.sample ? '' : '<button class="btn lg pri" type="button" data-act="files">' + IC.clip + (d ? '다시 분석' : '병력파악 (파일 첨부)') + '</button>') +
-      (c.sample ? '' : '<button class="btn lg" type="button" data-act="edit">정보 수정</button><button class="btn lg" type="button" data-act="del">삭제</button>') + '</div></div>';
+      (c.sample ? '' : '<button class="btn lg cmore" type="button" data-act="cmore" aria-label="더보기 (정보 수정 · 삭제)">⋯</button>') + '</div></div>';
     h += renderCard();
     if (d && !d.covOnly) {
       var DD = S.DD, F = freshOf(DD.asOf);
@@ -9645,7 +9809,7 @@ function HealthUI(root, H) {
       '<span class="l">영업 채널</span><div class="sexsel st4 ch7" id="fCh">' + CH.map(function(x){ return '<button type="button" data-v="' + x[0] + '" aria-pressed="' + ((c ? chOf(c) : (S.ch && S.ch !== 'mine' && S.ch !== 'none' ? S.ch : '')) === x[0]) + '">' + x[1] + '</button>'; }).join('') + '</div>' +
       '<div class="frow2"><div><label class="l" for="fRef">소개자 <small class="note">(선택)</small></label><input id="fRef" type="text" maxlength="20" value="' + esc(c && c.ref || '') + '" placeholder="예: 김OO 고객 소개"></div><div><label class="l" for="fInt">관심 상품 <small class="note">(선택)</small></label><input id="fInt" type="text" maxlength="30" value="' + esc(c && c.interest || '') + '" placeholder="예: 간편 3.5.5, 실손"></div></div>' +
       '<label class="l" for="fMemo">메모 <small class="note">(선택)</small></label><textarea id="fMemo" placeholder="상담 내용 등">' + esc(c ? c.memo || '' : '') + '</textarea>' +
-      '<div class="safe">' + IC.lock + '<span>고객 정보는 잠금 비밀번호로 암호화되어 이 기기(와 동기화를 켠 내 구글 드라이브)에만 저장됩니다. 주민번호 뒷자리·계좌번호는 입력하지 마세요.</span></div>' +
+      '<div class="safe">' + IC.lock + '<span>고객 정보는 잠금 비밀번호로 암호화되어 이 기기(와 동기화를 켠 내 구글 드라이브)에만 저장됩니다. 주민번호 뒷자리·계좌번호는 고객 화면의 <b>등록 요청서</b>에만 넣으세요 (화면에는 가려서 보이고, AI·회사 서버로는 절대 보내지 않습니다).</span></div>' +
       (c ? '' : '<label class="consent"><input type="checkbox" id="fOk"> 고객 개인정보 수집·이용 동의 받음</label>') +
       '<div class="ferr" id="fErr"></div></div><div class="mrow">' + '<button class="btn lg" type="button" id="fCancel" style="margin-left:auto">취소</button><button class="go" type="button" id="fSave">' + (c ? '저장' : '등록') + '</button></div>');
     var sx = sex, stg = (c && c.stage && c.stage !== 'db' ? c.stage : 'lead'), chv = c ? chOf(c) : (S.ch && S.ch !== 'mine' && S.ch !== 'none' ? S.ch : '');
@@ -9673,7 +9837,7 @@ function HealthUI(root, H) {
       S.list = await Store.list();
       closeDlg();
       await openCustomer(h.id);
-      if (!c) openFiles();
+      if (!c) { var sec0 = await secLoad(); if (sec0.name && sec0.auto !== false) openReqForm(S.cur || h, { fresh: true }); else openFiles(); }
     };
   }
 
@@ -9724,14 +9888,39 @@ function HealthUI(root, H) {
     }
     return out;
   }
-  function openPaste(){
-    openDlg('<h4>' + IC.user + ' SMemo에서 고객 가져오기</h4><div class="form">' +
+  // 카톡 대화 내보내기 줄 머리(날짜·시간·보낸 사람) 지우기
+  function cleanKakao(t){ return String(t || '').split(/\r?\n/).map(function(l){ return l.replace(/^\[[^\]]{1,20}\]\s*\[(오전|오후)\s*\d{1,2}:\d{2}\]\s*/, '').replace(/^\d{4}[.년]\s*\d{1,2}[.월]\s*\d{1,2}[.일]?\s*(오전|오후)?\s*\d{1,2}:\d{2},?\s*[^:：]{1,20}\s*[:：]\s*/, '').replace(/^-+\s*\d{4}년.*요일\s*-+$/, '').replace(/^(저장한 날짜|.*님과 카카오톡 대화)\s*:?.*$/, ''); }).join('\n'); }
+  // ---------- 복사한 고객 정보 모으기: 다른 앱에서 복사하고 AOB9로 돌아오면 자동으로 바구니에 → 한꺼번에 등록 ----------
+  var PASTE_CHUNKS = null, CLIP = { list: [], last: '' };
+  function clipSave(){ try { sessionStorage.removeItem('mhs_clip'); } catch(e){} }
+  async function clipCheck(){
+    if (!(window.Native && Native.on) || !Store.isOpen() || !$('lock').hidden) return;
+    try { await planLoad(); if (PL.d.clipOff) return; } catch(e){}
+    var t = ''; try { t = ((await natCall('clipRead')) || {}).text || ''; } catch(e){ return; }
+    t = String(t).trim(); if (!t || t === CLIP.last) return; CLIP.last = t;
+    var ppl = parsePeople(t); if (!ppl.length) return;
+    var have = {}; S.list.forEach(function(c){ have[c.name + c.birth] = 1; }); CLIP.list.forEach(function(x){ parsePeople(x).forEach(function(p){ have[p.name + p.birth] = 1; }); });
+    var fresh = ppl.filter(function(p){ return !have[p.name + p.birth]; }); if (!fresh.length) return;
+    CLIP.list.push(t); clipBar(); toast('📋 복사한 고객 ' + fresh.map(function(p){ return p.name; }).join(', ') + ' 을(를) 모아 두었습니다');
+  }
+  function clipBar(){
+    var b = $('clipBar'), n = 0; CLIP.list.forEach(function(t){ n += parsePeople(t).length; });
+    if (!n) { if (b) b.remove(); return; }
+    if (!b) { b = document.createElement('div'); b.id = 'clipBar'; b.className = 'clipbar'; document.body.appendChild(b); }
+    b.innerHTML = '<span>📋 복사해 온 고객 <b>' + n + '명</b> 대기 중 · 더 복사하고 돌아오면 계속 쌓입니다</span><button type="button" class="go" id="cbGo">한꺼번에 등록</button><button type="button" class="x" id="cbX" aria-label="비우기">×</button>';
+    $('cbGo').onclick = function(){ var ch = CLIP.list.slice(); closeDlg(); openPaste(ch.join('\n\n'), ch); };
+    $('cbX').onclick = function(){ CLIP.list = []; clipBar(); toast('모아 둔 고객을 비웠습니다'); };
+  }
+  document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'visible') setTimeout(clipCheck, 600); });
+  function openPaste(pre, chunks){
+    PASTE_CHUNKS = chunks || null;
+    openDlg('<h4>' + IC.user + ' 메모·카톡·SMemo에서 고객 가져오기</h4><div class="form">' +
       '<div class="smb"><b>방법 1 · SMemo 백업으로 한 번에</b><span class="note">SMemo 설정 → 백업하기를 누른 뒤 아래 버튼을 누르세요. 메모 속 이름·주민번호를 찾아 고객 목록을 만듭니다.</span><div class="smb-r">' +
       (IS_DESKTOP ? '<button type="button" class="go" id="smAuto">최신 SMemo 백업 자동 불러오기</button>' : '') +
       '<label class="btn lg" for="smFile">백업 ZIP 파일 고르기</label><input type="file" id="smFile" accept=".zip" hidden></div></div>' +
-      '<b style="font-size:14px">방법 2 · 메모 붙여넣기</b>' +
+      '<b style="font-size:14px">방법 2 · 메모 붙여넣기 · 카톡에서 공유</b><p class="note" style="margin:0">카톡 \u2018나와의 채팅\u2019에 적어 둔 고객 정보는 말풍선을 <b>길게 누르기 → 공유 → AOB9</b> 하면 이 창에 바로 들어옵니다. 여러 명은 채팅방 <b>≡ → 대화 내보내기</b> → AOB9.</p>' +
       '<p style="margin:0;color:var(--ink2)">SMemo 고객 메모를 <b>전체 선택(Ctrl+A) → 복사(Ctrl+C)</b>해서 아래에 붙여 넣으세요. 여러 고객 메모를 이어서 붙여 넣어도 됩니다.<br>이름과 주민번호 앞 7자리로 <b>이름·성별·생년월일만</b> 가져옵니다. 주민번호 뒷자리·연락처·주소는 저장하지 않습니다.</p>' +
-      '<textarea id="pTxt" style="min-height:160px" placeholder="여기에 붙여 넣기"></textarea><div id="pPrev"></div><div class="ferr" id="pErr"></div></div>' +
+      '<button type="button" class="btn" id="pClip">📋 복사해 둔 글 바로 붙여넣기</button><textarea id="pTxt" style="min-height:160px" placeholder="여기에 붙여 넣기"></textarea><div id="pPrev"></div><div class="ferr" id="pErr"></div></div>' +
       '<div class="mrow"><button class="btn lg" type="button" id="pCancel">닫기</button><button class="go" type="button" id="pGo" disabled>등록</button></div>', 'wide');
     var found = [];
     var draw = function(){
@@ -9748,6 +9937,8 @@ function HealthUI(root, H) {
       if ($('pAll')) $('pAll').onclick = function(){ var bx = Array.prototype.slice.call(document.querySelectorAll('[data-pi]:not([disabled])')); var on = !bx.every(function(x){ return x.checked; }); bx.forEach(function(x){ x.checked = on; }); };
     };
     $('pTxt').addEventListener('input', function(){ fromZip = null; draw(); });
+    $('pClip').onclick = async function(){ var t = ''; try { t = (window.Native && Native.on) ? ((await natCall('clipRead')) || {}).text || '' : await navigator.clipboard.readText(); } catch(e){} if (!t) { toast('복사해 둔 글이 없거나 읽지 못했습니다 · 칸을 길게 눌러 붙여넣기 하세요'); return; } $('pTxt').value = ($('pTxt').value ? $('pTxt').value + '\n\n' : '') + t; fromZip = null; draw(); };
+    if (pre) { $('pTxt').value = pre; setTimeout(function(){ draw(); toast('공유받은 글에서 고객 ' + found.length + '명을 찾았습니다'); }, 0); }
     var fromZip = null;
     var loadZip = async function(u8, label){
       try {
@@ -9773,10 +9964,13 @@ function HealthUI(root, H) {
       if (!picks.length) { $('pErr').textContent = '등록할 고객을 선택하세요.'; return; }
       this.disabled = true; this.textContent = '등록 중…';
       var last = null;
-      for (var i = 0; i < picks.length; i++) last = await Store.saveHead({ status: 'wait', name: picks[i].name, sex: picks[i].sex, birth: picks[i].birth, phone: picks[i].phone || '', memo: '', from: 'memo' });
+      var blocks = fromZip ? [] : (PASTE_CHUNKS && PASTE_CHUNKS.length ? PASTE_CHUNKS : (found.length === 1 ? [$('pTxt').value] : $('pTxt').value.split(/\n\s*\n/)));
+      var reqFor = function(pp){ var bl = blocks.filter(function(t){ var q = parsePeople(t); return q.length === 1 && q[0].name === pp.name && q[0].birth === pp.birth; })[0]; var r = bl ? parseReq(bl) : null; return r && Object.keys(r).length ? r : null; };
+      for (var i = 0; i < picks.length; i++) { var rq1 = reqFor(picks[i]); last = await Store.saveHead(Object.assign({ status: 'wait', name: picks[i].name, sex: picks[i].sex, birth: picks[i].birth, phone: picks[i].phone || '', memo: '', from: 'memo' }, rq1 ? { req: rq1 } : {})); }
+      PASTE_CHUNKS = null; CLIP.list = []; clipSave(); clipBar();
       S.list = await Store.list(); closeDlg(); renderList();
       toast(picks.length + '명을 등록했습니다');
-      if (picks.length === 1 && last) openCustomer(last.id);
+      if (picks.length === 1 && last) { await openCustomer(last.id); reqAfterNew(S.cur || last); }
     };
     setTimeout(function(){ $('pTxt').focus(); }, 30);
   }
@@ -9944,6 +10138,9 @@ function HealthUI(root, H) {
   function sharedIn(){
     var fs = window.__sharedFiles || []; if (!fs.length) return;
     if (!$('lock').hidden || $('shell').hidden) { clearTimeout(sharedIn._t); sharedIn._t = setTimeout(sharedIn, 2500); return; }
+    // 글(카톡 '나와의 채팅'에서 공유 · 카톡 대화 내보내기 .txt) → 메모에서 고객 등록 창으로
+    var txt = fs.filter(function(f){ return /^text\/plain/.test(f.type || '') || /\.txt$/i.test(f.name || ''); });
+    if (txt.length) { window.__sharedFiles = fs.filter(function(f){ return txt.indexOf(f) < 0; }); Promise.all(txt.map(function(f){ return f.text(); })).then(function(a){ closeDlg(); openPaste(cleanKakao(a.join('\n\n'))); }); return; }
     if ($('fdrop')) { window.__sharedFiles = []; takeFiles(fs); toast('공유받은 파일 ' + fs.length + '개를 넣었습니다'); return; }
     if (S.cur) { openFiles(); window.__sharedFiles = []; takeFiles(fs); toast('공유받은 파일 ' + fs.length + '개를 넣었습니다'); return; }
     toast('공유받은 파일 ' + fs.length + '개가 있습니다 · 고객을 고른 뒤 [병력파악]을 누르면 자동으로 들어갑니다', 6000);
