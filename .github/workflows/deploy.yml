@@ -1,0 +1,60 @@
+# 배포 창구 (AOB9) — 고칠 때마다 빌드하지 않고 여기서만 한 번에 배포 (GitHub 사용 시간 절약)
+#  · 대표님 "배포해" (NHC 지시함·자비스·대화 → NHC 배포가 이 워크플로를 같이 부름) 또는 수동 실행
+#  · 매일 새벽 3시 47분: 그날 바뀐 것만 (바뀐 게 없으면 1분 안에 끝)
+name: 배포
+
+on:
+  schedule:
+    - cron: "47 18 * * *"     # 한국시간 03:47
+  workflow_dispatch:
+    inputs:
+      targets:
+        description: "auto = 바뀐 것만 · all = 전부 · 또는 쉼표로 (pwa,windows,android)"
+        default: auto
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  pick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: 바뀐 것만 골라 배포
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGETS: ${{ github.event.inputs.targets || 'auto' }}
+        run: |
+          python3 - <<'PY'
+          import os, subprocess
+          IGN = ("access.json", "android/", ".github/workflows/build-android.yml", ".github/workflows/deploy.yml")
+          T = {  # 이름: (워크플로, 해당 파일인지)
+            "pwa":     ("pages.yml",         lambda f: not f.startswith(IGN)),
+            "windows": ("build-windows.yml", lambda f: not f.startswith(IGN)),
+            "android": ("build-android.yml", lambda f: f.startswith(("app-android/", ".github/workflows/build-android.yml"))),
+          }
+          repo = os.environ["GITHUB_REPOSITORY"]
+          want = (os.environ.get("TARGETS") or "auto").strip()
+          sh = lambda *a: subprocess.run(a, capture_output=True, text=True).stdout.strip()
+          for name, (wf, hit) in T.items():
+              if want not in ("auto", "all") and name not in [x.strip() for x in want.split(",")]:
+                  continue
+              go = want != "auto"
+              if not go:
+                  base = sh("gh", "api", f"repos/{repo}/actions/workflows/{wf}/runs?status=success&branch=main&per_page=1", "--jq", ".workflow_runs[0].head_sha // \"\"")
+                  if not base or subprocess.run(["git", "cat-file", "-e", base]).returncode:
+                      go = True
+                  else:
+                      go = any(hit(f) for f in sh("git", "diff", "--name-only", base, "HEAD").splitlines() if f)
+              print(f"{name}: {'배포' if go else '바뀐 것 없음'}")
+              if go:
+                  subprocess.run(["gh", "workflow", "run", wf, "--ref", "main"], check=False)
+          PY

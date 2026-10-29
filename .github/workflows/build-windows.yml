@@ -1,8 +1,5 @@
 name: 윈도우 exe 만들기
-on:
-  push:
-    branches: [main]
-    paths-ignore: ['access.json', 'android/**', '.github/workflows/build-android.yml']
+on:   # 고칠 때마다 자동으로 돌지 않음 → '배포'(deploy.yml)가 대표님 "배포해" 또는 매일 03:47에 바뀐 것만 실행 (GitHub 사용 시간 절약)
   workflow_dispatch:
 jobs:
   build:
