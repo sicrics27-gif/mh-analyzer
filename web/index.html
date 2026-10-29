@@ -1805,8 +1805,8 @@ details.pcard>summary::after{content:"▾";margin-left:auto;color:var(--mute)}de
 .chc[aria-pressed="true"]{border-color:var(--accent);background:rgba(79,125,255,.16);color:var(--ink);font-weight:700;box-shadow:0 0 0 1px var(--accent) inset}
 /* ===== 액션콜: 실제 통화 화면 ===== */
 body.cph-on{overflow:hidden}
-.cph{position:fixed;inset:0;z-index:9000;background:#f4f4f6;color:#111;display:flex;flex-direction:column;align-items:stretch;padding:calc(env(safe-area-inset-top) + 14px) 18px calc(env(safe-area-inset-bottom) + 18px);font-family:inherit;user-select:none;-webkit-user-select:none;touch-action:manipulation;max-width:560px;margin:0 auto}
-@media (min-width:600px){.cph{box-shadow:0 0 0 100vmax rgba(0,0,0,.55)}}
+#cph.cph{position:fixed;inset:0;z-index:9000;background:#f4f4f6;color:#111;display:flex;flex-direction:column;align-items:stretch;padding:calc(env(safe-area-inset-top) + 14px) 18px calc(env(safe-area-inset-bottom) + 18px);font-family:inherit;user-select:none;-webkit-user-select:none;touch-action:manipulation;max-width:560px;margin:0 auto}
+@media (min-width:600px){#cph.cph{box-shadow:0 0 0 100vmax rgba(0,0,0,.55)}}
 .cph-top{display:flex;justify-content:center;align-items:center;position:relative;color:#555;font-size:14px;min-height:28px}
 .cph-x{position:absolute;right:0;top:0;border:0;background:none;font-size:20px;color:#888;width:36px;height:36px;cursor:pointer}
 .cph-who{display:flex;align-items:center;gap:14px;margin:14px 6px 16px}
@@ -1833,11 +1833,11 @@ body.cph-on{overflow:hidden}
 .cph-lock b{display:block;color:#888;font-size:16px;margin-bottom:6px}.cph-lock small{font-size:12.5px;line-height:1.6}
 .cph-all{position:absolute;inset:0;background:#fff;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:8px;z-index:2}
 .cph-all p{margin:0;font-size:14px;line-height:1.5;color:#555;padding:8px 10px;border-radius:10px;background:#f4f5f8}.cph-all p.me{background:#eaf0ff;color:#1d3b8f}.cph-all p.cur{outline:2px solid #1f5eff}
-.cph.showall .cph-heard{color:#555}
+#cph.showall .cph-heard{color:#555}
 .cph-rep{display:flex;flex-direction:column;gap:6px;font-weight:500}.cph-rep>b{font-size:30px;color:#1f5eff}.cph-rep>small{color:#888;font-size:13px}
 .cph-rep ul{margin:6px 0 0;padding-left:18px;font-size:15px;line-height:1.7;color:#333}.cph-rep p{font-size:14.5px;line-height:1.65;color:#333;margin:4px 0}
 .cph-ra{display:flex;gap:8px;margin-top:10px}.cph-ra .go,.cph-ra .btn{height:44px;flex:1}
-.cph .cph-ra .btn{background:#eef0f4;color:#222;border:1px solid #e2e5ea}
+#cph .cph-ra .btn{background:#eef0f4;color:#222;border:1px solid #e2e5ea}
 .cph-type{display:flex;gap:6px}.cph-type input{flex:1;height:42px;border-radius:12px;border:1px solid #dde1e8;padding:0 12px;font-size:15px;background:#fff;color:#111}
 .clme{margin-top:4px}.clme b{color:var(--ink)}
 .cllog2 .clrows{display:flex;flex-direction:column;gap:4px;margin-top:6px}.cllog2 .clrows span{display:flex;gap:8px;align-items:baseline;font-size:13px;flex-wrap:wrap}.cllog2 .clrows em{font-style:normal;color:#3ecf8e;font-weight:700}.cllog2 .clrows small{color:var(--mute)}
@@ -2078,6 +2078,15 @@ img,svg,a{-webkit-user-drag:none;user-drag:none}
 .ctseg button{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;padding:10px 8px;border:0;border-radius:9px;background:transparent;color:var(--ink2);font-weight:700;font-size:14.5px;cursor:pointer}
 .ctseg button small{font-weight:500;font-size:11px;color:var(--mute)}
 .ctseg button[aria-selected="true"]{background:var(--paper);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.18)}
+
+/* 목록: 이름 옆 단계·채널 바로 바꾸기 버튼 */
+.citem .r1 .pk{display:inline-flex;align-items:center;gap:3px;font-style:normal;font-size:11.5px;font-weight:700;line-height:1;padding:5px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);cursor:pointer;white-space:nowrap;flex:none}
+.citem .r1 .pk u{text-decoration:none;font-size:9px;opacity:.7}
+.citem .r1 .chp{color:#F2B880;border-color:rgba(242,184,128,.35);background:rgba(242,184,128,.08)}
+.citem .r1 .chp.none{color:var(--side-mute);border-style:dashed;background:transparent}
+.citem .r1 .pk:active{transform:scale(.96)}
+.citem .r1 .pk:hover{box-shadow:0 0 0 1px rgba(255,255,255,.3)}
+@media (hover:none){.citem .r1 .pk{padding:6px 9px;font-size:12px}}
 
 </style>
 </head>
@@ -3644,6 +3653,150 @@ function HealthUI(root, H) {
 
 </script>
 <script>
+// 잠긴(비밀번호) 엑셀 풀기 — 휴대폰·브라우저 안에서만 처리 (파일을 밖으로 보내지 않음)
+// 지원: 옛 엑셀(.xls) RC4 · RC4 CryptoAPI, 새 엑셀(.xlsx) 표준(AES-ECB) · Agile(AES-CBC)
+// 사용: await XlsCrypt.decrypt(Uint8Array, '비밀번호') → 풀린 파일(Uint8Array). 틀리면 Error('BADPW'), 잠겨 있지 않으면 Error('NOTENC')
+(function (root) {
+  var te = new TextEncoder();
+  function u16(s) { var o = new Uint8Array(s.length * 2); for (var i = 0; i < s.length; i++) { var c = s.charCodeAt(i); o[i * 2] = c & 255; o[i * 2 + 1] = c >> 8; } return o; }
+  function cat() { var n = 0, i; for (i = 0; i < arguments.length; i++) n += arguments[i].length; var o = new Uint8Array(n), p = 0; for (i = 0; i < arguments.length; i++) { o.set(arguments[i], p); p += arguments[i].length; } return o; }
+  function le32(n) { return new Uint8Array([n & 255, (n >>> 8) & 255, (n >>> 16) & 255, (n >>> 24) & 255]); }
+  function rd16(b, o) { return b[o] | (b[o + 1] << 8); }
+  function rd32(b, o) { return (b[o] | (b[o + 1] << 8) | (b[o + 2] << 16) | (b[o + 3] << 24)) >>> 0; }
+  function eq(a, b, n) { for (var i = 0; i < n; i++) if (a[i] !== b[i]) return false; return true; }
+  function err(c) { var e = new Error(c); e.code = c; return e; }
+  var subtle = root.crypto && root.crypto.subtle;
+  async function H(alg, data) { return new Uint8Array(await subtle.digest(alg, data)); }
+
+  // ---------- MD5 (옛 RC4 방식용, 브라우저에 없어 직접) ----------
+  function md5(bytes) {
+    var K = [], S = [7, 12, 17, 22, 5, 9, 14, 20, 4, 11, 16, 23, 6, 10, 15, 21], i;
+    for (i = 0; i < 64; i++) K[i] = Math.floor(Math.abs(Math.sin(i + 1)) * 4294967296) >>> 0;
+    var len = bytes.length, nb = ((len + 8) >> 6) + 1, W = new Uint32Array(nb * 16);
+    for (i = 0; i < len; i++) W[i >> 2] |= bytes[i] << ((i % 4) * 8);
+    W[len >> 2] |= 0x80 << ((len % 4) * 8); W[nb * 16 - 2] = (len * 8) >>> 0; W[nb * 16 - 1] = Math.floor(len / 536870912);
+    var a0 = 0x67452301, b0 = 0xefcdab89, c0 = 0x98badcfe, d0 = 0x10325476;
+    for (var blk = 0; blk < nb; blk++) {
+      var A = a0, B = b0, C = c0, D = d0;
+      for (i = 0; i < 64; i++) {
+        var F, g;
+        if (i < 16) { F = (B & C) | (~B & D); g = i; } else if (i < 32) { F = (D & B) | (~D & C); g = (5 * i + 1) % 16; } else if (i < 48) { F = B ^ C ^ D; g = (3 * i + 5) % 16; } else { F = C ^ (B | ~D); g = (7 * i) % 16; }
+        var t = D; D = C; C = B; var x = (A + F + K[i] + W[blk * 16 + g]) >>> 0, s = S[(i >> 4) * 4 + (i % 4)];
+        B = (B + ((x << s) | (x >>> (32 - s)))) >>> 0; A = t;
+      }
+      a0 = (a0 + A) >>> 0; b0 = (b0 + B) >>> 0; c0 = (c0 + C) >>> 0; d0 = (d0 + D) >>> 0;
+    }
+    var o = new Uint8Array(16); [a0, b0, c0, d0].forEach(function (v, j) { o[j * 4] = v & 255; o[j * 4 + 1] = (v >>> 8) & 255; o[j * 4 + 2] = (v >>> 16) & 255; o[j * 4 + 3] = (v >>> 24) & 255; }); return o;
+  }
+  // ---------- RC4 ----------
+  function rc4(key, n) { var s = new Uint8Array(256), i, j = 0, t; for (i = 0; i < 256; i++) s[i] = i; for (i = 0; i < 256; i++) { j = (j + s[i] + key[i % key.length]) & 255; t = s[i]; s[i] = s[j]; s[j] = t; } var o = new Uint8Array(n); i = 0; j = 0; for (var k = 0; k < n; k++) { i = (i + 1) & 255; j = (j + s[i]) & 255; t = s[i]; s[i] = s[j]; s[j] = t; o[k] = s[(s[i] + s[j]) & 255]; } return o; }
+
+  // ---------- 옛 엑셀 (.xls, BIFF8) ----------
+  var NOENC = { 0x0809: 1, 0x002F: 1, 0x0194: 1, 0x0195: 1, 0x00E1: 1, 0x0196: 1, 0x0138: 1 };
+  async function xlsKeyFn(fp, pw) {
+    var type = rd16(fp, 0); if (type !== 1) throw err('UNSUPPORTED'); // 0 = XOR 난독화 (드묾)
+    var vMaj = rd16(fp, 2), vMin = rd16(fp, 4);
+    if (vMaj === 1 && vMin === 1) { // RC4 (MD5, 40비트)
+      var salt = fp.slice(6, 22), ev = fp.slice(22, 38), evh = fp.slice(38, 54);
+      var h0 = md5(u16(pw)).slice(0, 5), buf = new Uint8Array(21 * 16); for (var i = 0; i < 16; i++) { buf.set(h0, i * 21); buf.set(salt, i * 21 + 5); }
+      var h1 = md5(buf).slice(0, 5), key = function (b) { return md5(cat(h1, le32(b))); };
+      var ks = rc4(key(0), 32), v = new Uint8Array(16), vh = new Uint8Array(16); for (var k = 0; k < 16; k++) { v[k] = ev[k] ^ ks[k]; vh[k] = evh[k] ^ ks[16 + k]; }
+      if (!eq(md5(v), vh, 16)) throw err('BADPW');
+      return async function (b) { return key(b); };
+    }
+    if ((vMaj === 2 || vMaj === 3 || vMaj === 4) && vMin === 2) { // RC4 CryptoAPI (SHA1)
+      var p = 10, hs = rd32(fp, p); p += 4; var keyBits = rd32(fp, p + 16) || 40; p += hs;
+      var ss = rd32(fp, p); p += 4; var salt2 = fp.slice(p, p + ss); p += ss; var ev2 = fp.slice(p, p + 16); p += 16; var vhs = rd32(fp, p); p += 4; var evh2 = fp.slice(p, p + 20);
+      var h0b = await H('SHA-1', cat(salt2, u16(pw)));
+      var key2 = async function (b) { var hf = await H('SHA-1', cat(h0b, le32(b))); if (keyBits === 40) { var kk = new Uint8Array(16); kk.set(hf.slice(0, 5)); return kk; } return hf.slice(0, keyBits / 8); };
+      var ks2 = rc4(await key2(0), 36), v2 = new Uint8Array(16), vh2 = new Uint8Array(20); for (var m = 0; m < 16; m++) v2[m] = ev2[m] ^ ks2[m]; for (m = 0; m < 20; m++) vh2[m] = evh2[m] ^ ks2[16 + m];
+      if (!eq(await H('SHA-1', v2), vh2, Math.min(20, vhs || 20))) throw err('BADPW');
+      return key2;
+    }
+    throw err('UNSUPPORTED');
+  }
+  async function decryptBiff(wb, pw) {
+    var pos = 0, fpAt = -1, fpLen = 0, fp = null;
+    while (pos + 4 <= wb.length) { var t = rd16(wb, pos), l = rd16(wb, pos + 2); if (t === 0x002F) { fpAt = pos; fpLen = 4 + l; fp = wb.slice(pos + 4, pos + 4 + l); break; } if (t === 0x000A && pos > 0) break; pos += 4 + l; }
+    if (!fp) throw err('NOTENC');
+    var keyOf = await xlsKeyFn(fp, pw);
+    // 위치 기준 키 흐름 (1024바이트마다 새 키)
+    var ks = new Uint8Array(wb.length);
+    for (var b = 0; b * 1024 < wb.length; b++) { var part = rc4(await keyOf(b), 1024); ks.set(part.subarray(0, Math.min(1024, wb.length - b * 1024)), b * 1024); }
+    var out = new Uint8Array(wb.length - fpLen), q = 0, sheets = [];
+    pos = 0;
+    while (pos + 4 <= wb.length) {
+      var ty = rd16(wb, pos), ln = rd16(wb, pos + 2), st = pos + 4, en = Math.min(st + ln, wb.length);
+      if (pos === fpAt) { pos = en; continue; }
+      out.set(wb.subarray(pos, st), q); q += 4;
+      for (var i = st; i < en; i++) { var plain = NOENC[ty] || (ty === 0x0085 && i < st + 4); out[q++] = plain ? wb[i] : (wb[i] ^ ks[i]); }
+      if (ty === 0x0085) sheets.push(q - (en - st));
+      pos = en;
+    }
+    // 시트 위치(lbPlyPos) 고치기: 지운 FILEPASS 길이만큼 앞으로
+    sheets.forEach(function (o) { var v = rd32(out, o); if (v > fpAt) { v -= fpLen; out[o] = v & 255; out[o + 1] = (v >>> 8) & 255; out[o + 2] = (v >>> 16) & 255; out[o + 3] = (v >>> 24) & 255; } });
+    return out.subarray(0, q);
+  }
+
+  // ---------- 새 엑셀 (.xlsx) 암호: AES ----------
+  async function aesCbcRaw(key, iv, data) { // 패딩 없는 AES-CBC 복호화 (웹 암호 기능은 패딩을 요구해서 끝에 맞춤 블록을 붙임)
+    var k = await subtle.importKey('raw', key, { name: 'AES-CBC' }, false, ['encrypt', 'decrypt']);
+    var last = data.slice(data.length - 16), pad = new Uint8Array(16).fill(16), x = new Uint8Array(16); for (var i = 0; i < 16; i++) x[i] = pad[i] ^ last[i];
+    var ex = new Uint8Array(await subtle.encrypt({ name: 'AES-CBC', iv: new Uint8Array(16) }, k, x)).slice(0, 16);
+    return new Uint8Array(await subtle.decrypt({ name: 'AES-CBC', iv: iv }, k, cat(data, ex)));
+  }
+  async function aesEcb(key, data) { var p = await aesCbcRaw(key, new Uint8Array(16), data); for (var i = 16; i < p.length; i++) p[i] ^= data[i - 16]; return p; }
+  function b64(s) { var b = atob(s), o = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) o[i] = b.charCodeAt(i); return o; }
+  var HN = { SHA1: 'SHA-1', 'SHA-1': 'SHA-1', SHA256: 'SHA-256', SHA384: 'SHA-384', SHA512: 'SHA-512' };
+  function fit(b, n, c) { if (b.length >= n) return b.slice(0, n); var o = new Uint8Array(n).fill(c); o.set(b); return o; }
+  async function decryptOoxml(info, pkg, pw) {
+    var vMaj = rd16(info, 0), vMin = rd16(info, 2), size = Number(rd32(pkg, 0)) + rd32(pkg, 4) * 4294967296, body = pkg.subarray(8);
+    if (vMaj === 4 && vMin === 4) { // Agile
+      var xml = new TextDecoder().decode(info.subarray(8)), doc = new DOMParser().parseFromString(xml, 'application/xml');
+      var kd = doc.getElementsByTagName('keyData')[0], ek = doc.getElementsByTagNameNS('*', 'encryptedKey')[0] || doc.querySelector('[spinCount]');
+      var ha = HN[ek.getAttribute('hashAlgorithm')] || 'SHA-1', salt = b64(ek.getAttribute('saltValue')), spin = +ek.getAttribute('spinCount'), kb = +ek.getAttribute('keyBits'), bs = +ek.getAttribute('blockSize') || 16;
+      var h = await H(ha, cat(salt, u16(pw))); for (var i = 0; i < spin; i++) h = await H(ha, cat(le32(i), h));
+      var dk = async function (blk) { return fit(await H(ha, cat(h, blk)), kb / 8, 0x36); };
+      var iv = fit(salt, bs, 0x36);
+      var vIn = await aesCbcRaw(await dk(new Uint8Array([0xFE, 0xA7, 0xD2, 0x76, 0x3B, 0x4B, 0x9E, 0x79])), iv, b64(ek.getAttribute('encryptedVerifierHashInput')));
+      var vHv = await aesCbcRaw(await dk(new Uint8Array([0xD7, 0xAA, 0x0F, 0x6D, 0x30, 0x61, 0x34, 0x4E])), iv, b64(ek.getAttribute('encryptedVerifierHashValue')));
+      var hv = await H(ha, vIn.slice(0, +ek.getAttribute('saltSize') || 16)); if (!eq(hv, vHv, hv.length)) throw err('BADPW');
+      var secret = (await aesCbcRaw(await dk(new Uint8Array([0x14, 0x6E, 0x0B, 0xE7, 0xAB, 0xAC, 0xD0, 0xD6])), iv, b64(ek.getAttribute('encryptedKeyValue')))).slice(0, (+kd.getAttribute('keyBits')) / 8);
+      var kdSalt = b64(kd.getAttribute('saltValue')), kha = HN[kd.getAttribute('hashAlgorithm')] || 'SHA-1', out = new Uint8Array(size), p = 0;
+      for (var s = 0; p < size; s++) { var seg = body.subarray(s * 4096, Math.min((s + 1) * 4096, body.length)); if (!seg.length) break; var d = await aesCbcRaw(secret, (await H(kha, cat(kdSalt, le32(s)))).slice(0, 16), seg); var n = Math.min(d.length, size - p); out.set(d.subarray(0, n), p); p += n; }
+      return out;
+    }
+    if ((vMaj === 3 || vMaj === 4) && vMin === 2) { // Standard
+      var hs = rd32(info, 8), hp = 12, keyBits = rd32(info, hp + 16), vp = hp + hs, ss = rd32(info, vp), salt2 = info.slice(vp + 4, vp + 4 + ss), ev = info.slice(vp + 4 + ss, vp + 20 + ss), evh = info.slice(vp + 24 + ss, vp + 56 + ss);
+      var h2 = await H('SHA-1', cat(salt2, u16(pw))); for (var j = 0; j < 50000; j++) h2 = await H('SHA-1', cat(le32(j), h2));
+      var hf = await H('SHA-1', cat(h2, le32(0))), b1 = new Uint8Array(64).fill(0x36); for (j = 0; j < 20; j++) b1[j] ^= hf[j];
+      var b2 = new Uint8Array(64).fill(0x5c); for (j = 0; j < 20; j++) b2[j] ^= hf[j];
+      var key = cat(await H('SHA-1', b1), await H('SHA-1', b2)).slice(0, keyBits / 8);
+      var v = await aesEcb(key, ev), vh = await aesEcb(key, evh); if (!eq(await H('SHA-1', v.slice(0, 16)), vh, 20)) throw err('BADPW');
+      var dec = await aesEcb(key, body.subarray(0, body.length - (body.length % 16))); return dec.slice(0, size);
+    }
+    throw err('UNSUPPORTED');
+  }
+
+  async function decrypt(data, pw) {
+    var CFB = root.XLSX && root.XLSX.CFB; if (!CFB) throw new Error('엑셀 모듈 없음');
+    var u8 = data instanceof Uint8Array ? data : new Uint8Array(data);
+    if (!(u8[0] === 0xD0 && u8[1] === 0xCF)) throw err('NOTENC');
+    var cfb = CFB.read(u8, { type: 'array' });
+    var ei = CFB.find(cfb, 'EncryptionInfo'), ep = CFB.find(cfb, 'EncryptedPackage');
+    if (ei && ep) return decryptOoxml(new Uint8Array(ei.content), new Uint8Array(ep.content), pw);
+    var w = CFB.find(cfb, 'Workbook') || CFB.find(cfb, 'Book'); if (!w) throw err('NOTENC');
+    var plain = await decryptBiff(new Uint8Array(w.content), pw);
+    w.content = plain; w.size = plain.length;
+    return new Uint8Array(CFB.write(cfb, { type: 'array', fileType: 'cfb' }));
+  }
+  // 여러 비밀번호 후보를 차례로 시도
+  async function tryAll(data, pws) { var last = null; for (var i = 0; i < pws.length; i++) { try { return { data: await decrypt(data, String(pws[i])), pw: pws[i] }; } catch (e) { last = e; if (e.code !== 'BADPW') throw e; } } throw last || err('BADPW'); }
+  root.XlsCrypt = { decrypt: decrypt, tryAll: tryAll, _md5: md5 };
+})(this);
+
+</script>
+<script>
 // 파일 읽기: PDF(심평원·공단·검진) / 투약이력 엑셀 → 분석 입력 (브라우저/Node 공용)
 (function (root) {
   function sniff(u) {
@@ -3732,10 +3885,12 @@ function HealthUI(root, H) {
           var wb;
           try { wb = L.XLSX.read(f.data, { type: 'array' }); }
           catch (e0) {
-            // 잠긴 엑셀: PC 프로그램이면 이 PC의 엑셀로 자동 해제
-            if (!(L.unlockSheet && /password|encrypt|암호/i.test(String(e0 && e0.message)))) throw e0;
-            var plain;
-            try { plain = await L.unlockSheet(f.data, pws); }
+            // 잠긴 엑셀: 먼저 프로그램 안에서 직접 풀기(휴대폰·PC 모두) → 안 되면 PC의 엑셀로
+            if (!/password|encrypt|암호/i.test(String(e0 && e0.message))) throw e0;
+            var plain = null, X = (typeof XlsCrypt !== 'undefined') ? XlsCrypt : null;
+            if (X) { try { plain = (await X.tryAll(f.data, pws)).data; } catch (ex) { if (ex && ex.code === 'BADPW' && !L.unlockSheet) { var bp = new Error('password-protected'); bp.unlockWhy = 'badpw'; throw bp; } } }
+            if (!plain && !L.unlockSheet) throw e0;
+            if (!plain) try { plain = await L.unlockSheet(f.data, pws); }
             catch (e1) {
               var why = String(e1 && e1.message || e1);
               var er = new Error('password-protected'); er.unlockWhy = /NOEXCEL/.test(why) ? 'noexcel' : /BADPW/.test(why) ? 'badpw' : 'fail'; throw er;
@@ -7083,7 +7238,7 @@ function HealthUI(root, H) {
         var nd = nextDue(c), r4 = nd != null ? '<span class="r4' + (nd < 0 ? ' late' : nd === 0 ? ' due' : nd <= 2 ? ' soon' : '') + '"><i>' + (nd < 0 ? 'D+' + (-nd) : nd === 0 ? '오늘' : 'D-' + nd) + '</i>' + esc(c.next.t || '할 일') + '</span>' : '';
         var r2 = c.status === 'done' ? '<span class="r2 ' + (c.sumOk ? 'ok' : '') + '">' + esc(c.summary || '') + '</span>' : '';
         var lo = lastOf(c), ph2 = normPhone(c.phone), r5 = '<span class="r5">' + (ph2 ? '<span class="ph">' + phoneTxt(ph2) + '</span>' : '<span class="ph none">번호 없음</span>') + (lo.any ? '<span class="lc' + (dayDiff(lo.any, todayStr()) > 60 ? ' old' : '') + '">' + ago(lo.any) + ' 연락</span>' : '<span class="lc old">연락 기록 없음</span>') + '</span>';
-        return '<button type="button" class="citem" data-cid="' + c.id + '" aria-current="' + cur + '"><span class="cav s-' + (c.stage === 'db' ? 'lead' : c.stage || 'lead') + '" aria-hidden="true">' + esc(String(c.name || '?').slice(0, 1)) + '</span><span class="r1">' + (QS.sel ? '<span class="qck' + (QS.sel[c.id] ? ' on' : '') + '" aria-hidden="true"></span>' : '') + '<b>' + esc(c.name) + (chOf(c) ? '<em class="chn" data-q="ch" title="영업 채널 바꾸기">(' + chTxt(chOf(c)) + ')</em>' : '<em class="chn add" data-q="ch" title="영업 채널 정하기">+채널</em>') + '</b><small>' + sexTxt(c.sex) + (ageOf(c.birth) !== '' ? '·' + ageOf(c.birth) + '세' : '') + (dupName[c.name] > 1 && c.birth ? ' · ' + String(c.birth).slice(2, 4) + '.' + String(c.birth).slice(4, 6) + '.' + String(c.birth).slice(6, 8) + '생' : '') + '</small><i class="stg s-' + (c.stage === 'db' ? 'lead' : c.stage || 'lead') + '" data-q="stage" title="단계 바꾸기">' + stageTxt(c.stage) + '</i>' + (c.status === 'done' ? '<span class="stt' + (/^보장분석만/.test(c.summary || '') ? ' w' : '') + '">' + (/^보장분석만/.test(c.summary || '') ? '보장만' : '✓ 분석') + '</span>' : '<span class="stt sp"></span>') + '<span class="qmore" data-q="more" title="빠른 메뉴 (오른쪽 클릭·길게 누르기)">⋯</span></span>' + (c.status === 'done' && c.asOf ? (function(){ var F = freshOf(c.asOf); return '<span class="r3"><i class="fp ' + F.lv + '"></i>자료 ' + dot(c.asOf) + ' · ' + F.txt + (c.applyDate ? ' · 청약 ' + dot(c.applyDate) : '') + '</span>'; })() : '') + r5 + r4 + r2 + '</button>';
+        return '<button type="button" class="citem" data-cid="' + c.id + '" aria-current="' + cur + '"><span class="cav s-' + (c.stage === 'db' ? 'lead' : c.stage || 'lead') + '" aria-hidden="true">' + esc(String(c.name || '?').slice(0, 1)) + '</span><span class="r1">' + (QS.sel ? '<span class="qck' + (QS.sel[c.id] ? ' on' : '') + '" aria-hidden="true"></span>' : '') + '<b>' + esc(c.name) + '</b><i class="stg pk s-' + (c.stage === 'db' ? 'lead' : c.stage || 'lead') + '" data-q="stage" title="고객 단계 바꾸기">' + stageTxt(c.stage) + '<u>▾</u></i><i class="chp pk' + (chOf(c) ? '' : ' none') + '" data-q="ch" title="영업 채널 바꾸기">' + (chOf(c) ? chTxt(chOf(c)) : '채널') + '<u>▾</u></i><small>' + sexTxt(c.sex) + (ageOf(c.birth) !== '' ? '·' + ageOf(c.birth) + '세' : '') + (dupName[c.name] > 1 && c.birth ? ' · ' + String(c.birth).slice(2, 4) + '.' + String(c.birth).slice(4, 6) + '.' + String(c.birth).slice(6, 8) + '생' : '') + '</small>' + (c.status === 'done' ? '<span class="stt' + (/^보장분석만/.test(c.summary || '') ? ' w' : '') + '">' + (/^보장분석만/.test(c.summary || '') ? '보장만' : '✓ 분석') + '</span>' : '<span class="stt sp"></span>') + '<span class="qmore" data-q="more" title="빠른 메뉴 (오른쪽 클릭·길게 누르기)">⋯</span></span>' + (c.status === 'done' && c.asOf ? (function(){ var F = freshOf(c.asOf); return '<span class="r3"><i class="fp ' + F.lv + '"></i>자료 ' + dot(c.asOf) + ' · ' + F.txt + (c.applyDate ? ' · 청약 ' + dot(c.applyDate) : '') + '</span>'; })() : '') + r5 + r4 + r2 + '</button>';
       }).join('');
     });
     if (!S.list.length) h = '<div class="cempty">등록된 고객이 없습니다.<br>위의 <b>신규 고객 등록</b>으로 시작하세요.</div>';
@@ -7474,12 +7629,12 @@ function HealthUI(root, H) {
     var M = callMaterial(), nm = pick(FAKE), FEM = FEMALE.indexOf(nm) >= 0, amt = M.refundTot && M.refundN ? Math.round(M.refundTot / M.refundN / 10000) * 10000 : pick([180000, 350000, 620000, 1240000]), A = man(amt);
     var me = meLine();
     var L = {
-      refund: [['상', '여보세요?'], ['나', nm + ' 고객님, 안녕하세요. ' + me + '입니다. 지난번에 말씀드린 못 받으신 보험금 확인해 봤는데요, 결과가 나와서 바로 전화드렸어요.'], ['상', '아 네, 뭐 나온 게 있나요?'], ['나', '네. 3년 전 입원하셨던 건이 청구가 안 돼 있었더라고요. 서류만 내시면 ' + A + ' 정도 받으실 수 있어요.'], ['상', (FEM ? '어머, ' : '아, ') + '진짜요? 그런 게 있는 줄도 몰랐네요.'], ['나', '대부분 모르세요. 저희는 고객님 보험을 계속 들여다보니까 찾을 수 있는 거예요. 제가 청구 서류 준비해서 내일 오전에 찾아뵐게요.'], ['상', '감사해요. ' + (FEM ? '우리 언니도' : '우리 형도') + ' 비슷한 게 있을 텐데…'], ['나', '그럼 ' + (FEM ? '언니분도' : '형님분도') + ' 한번 봐 드릴게요. 번호만 알려 주시면 제가 정중하게 연락드리겠습니다. 내일 뵙겠습니다.']],
-      claim: [['상', '네, 여보세요.'], ['나', nm + ' 고객님, ' + me + '입니다. 지난달에 병원 다녀오신 거 있으시죠? 그 건 청구 가능한지 확인해 드리려고요.'], ['상', '아, 그냥 통원 몇 번 한 건데 그것도 되나요?'], ['나', '네, 실손으로 통원비랑 약값 청구되고요, 진단명에 따라 따로 나오는 진단비도 있을 수 있어요. 진료비 영수증이랑 세부내역서만 있으면 됩니다.'], ['상', '서류는 병원 가서 떼야 하나요?'], ['나', '요즘은 병원 앱이나 무인기에서 바로 나와요. 어려우시면 제가 같이 가 드릴게요. 이번 주 중 언제가 편하세요?'], ['상', '목요일 오후요.'], ['나', '목요일 3시에 뵐게요. 서류 챙기는 법은 문자로 정리해 보내 드리겠습니다.']],
-      product: [['상', '여보세요.'], ['나', nm + ' 고객님, ' + me + '입니다. 지난번 말씀하신 건강보험, 제가 여러 회사 비교해 봤는데 ' + M.prod + ' 쪽이 고객님 상황에 제일 맞더라고요.'], ['상', '그게 뭐가 다른데요?'], ['나', M.tip + '. 보험료 차이는 크지 않은데 보장 범위가 넓어요.'], ['상', '음, 보험료가 얼마나 되는데요?'], ['나', '고객님 나이 기준으로 월 8만 원대인데, 설계서 뽑아서 직접 보여 드리는 게 제일 정확해요. 내일 저녁이나 모레 점심 중에 언제가 편하세요?'], ['상', '모레 점심이요.'], ['나', '네, 모레 12시 반에 회사 근처로 가겠습니다. 설계서 두 가지 버전으로 준비할게요.']],
-      check: [['상', '네.'], ['나', nm + ' 고객님, ' + me + '입니다. 고객님 보험 전체를 한 번 정리해 봤는데, 암 진단비는 잘 돼 있는데 뇌·심장 쪽이 비어 있더라고요.'], ['상', '그래요? 다 들어 있는 줄 알았는데.'], ['나', '예전 상품들이 그 부분이 약해요. 지금 보험료 안 늘리고 특약 정리해서 채우는 방법도 있어서, 15분만 보여 드리고 싶어요.'], ['상', '보험료 더 내는 건 부담인데.'], ['나', '그래서 불필요한 특약 빼고 그 돈으로 채우는 쪽으로 설계했어요. 오히려 해약환급금이 조금 나올 수도 있고요. 토요일 오전 괜찮으세요?'], ['상', '토요일 11시요.'], ['나', '네, 11시에 뵙겠습니다. 증권 사진만 미리 보내 주시면 더 정확하게 준비할게요.']],
-      intro: [['상', '여보세요?'], ['나', nm + ' 고객님, ' + me + '입니다. 지난주에 소개해 주신 분이랑 어제 상담 잘 마쳤어요. 먼저 감사 인사 드리려고요.'], ['상', '아, 잘됐어요? 그 친구가 보험을 잘 몰라서요.'], ['나', '네, 실손이 아예 없으셔서 그것부터 정리해 드리기로 했어요. 고객님 덕분에 꼭 필요한 분을 도울 수 있었어요.'], ['상', '다행이네요.'], ['나', '다음에 식사 한번 대접하고 싶어요. 이번 달 중 편하신 날 알려 주세요. 그리고 혹시 주변에 저 같은 사람 필요한 분 계시면 언제든 말씀해 주세요.'], ['상', '네, 생각나면 연락할게요.'], ['나', '감사합니다. 고객님 보험도 응당일 다가오면 제가 먼저 연락드리겠습니다.']],
-      acare: [['상', '네, 여보세요.'], ['나', nm + ' 고객님, ' + me + '입니다. 가입하신 지 한 달 됐는데 증권은 잘 받으셨는지, 궁금한 점은 없으신지 전화드렸어요.'], ['상', '증권은 받았는데 뭐가 뭔지는 잘 모르겠어요.'], ['나', '그러실 수 있어요. 제가 한 장짜리 보장 요약표 만들어 놨는데, 카톡으로 보내 드리고 중요한 세 가지만 설명드릴게요.'], ['상', '네, 그렇게 해 주세요.'], ['나', '그리고 병원 가실 일 생기면 저한테 먼저 문자 주세요. 청구 서류 뭐 챙길지 바로 알려 드릴게요.'], ['상', '알겠어요, 고마워요.'], ['나', '네, 다음 달에도 한 번 더 안부 드릴게요. 건강하세요.']]
+      refund: [['상', '여보세요, 팀장님? 아까 전화 주셨던데요.'], ['나', nm + ' 고객님, 안녕하세요. ' + me + '입니다. 지난번에 말씀드린 못 받으신 보험금 확인해 봤는데요, 결과가 나와서 바로 전화드렸어요.'], ['상', '아 네, 뭐 나온 게 있나요?'], ['나', '네. 3년 전 입원하셨던 건이 청구가 안 돼 있었더라고요. 서류만 내시면 ' + A + ' 정도 받으실 수 있어요.'], ['상', (FEM ? '어머, ' : '아, ') + '진짜요? 그런 게 있는 줄도 몰랐네요.'], ['나', '대부분 모르세요. 저희는 고객님 보험을 계속 들여다보니까 찾을 수 있는 거예요. 제가 청구 서류 준비해서 내일 오전에 찾아뵐게요.'], ['상', '감사해요. ' + (FEM ? '우리 언니도' : '우리 형도') + ' 비슷한 게 있을 텐데…'], ['나', '그럼 ' + (FEM ? '언니분도' : '형님분도') + ' 한번 봐 드릴게요. 번호만 알려 주시면 제가 정중하게 연락드리겠습니다. 내일 뵙겠습니다.']],
+      claim: [['상', '네 팀장님, 부재중 전화가 와 있어서요.'], ['나', nm + ' 고객님, ' + me + '입니다. 지난달에 병원 다녀오신 거 있으시죠? 그 건 청구 가능한지 확인해 드리려고요.'], ['상', '아, 그냥 통원 몇 번 한 건데 그것도 되나요?'], ['나', '네, 실손으로 통원비랑 약값 청구되고요, 진단명에 따라 따로 나오는 진단비도 있을 수 있어요. 진료비 영수증이랑 세부내역서만 있으면 됩니다.'], ['상', '서류는 병원 가서 떼야 하나요?'], ['나', '요즘은 병원 앱이나 무인기에서 바로 나와요. 어려우시면 제가 같이 가 드릴게요. 이번 주 중 언제가 편하세요?'], ['상', '목요일 오후요.'], ['나', '목요일 3시에 뵐게요. 서류 챙기는 법은 문자로 정리해 보내 드리겠습니다.']],
+      product: [['상', '여보세요? 전화 주셨었죠?'], ['나', nm + ' 고객님, ' + me + '입니다. 지난번 말씀하신 건강보험, 제가 여러 회사 비교해 봤는데 ' + M.prod + ' 쪽이 고객님 상황에 제일 맞더라고요.'], ['상', '그게 뭐가 다른데요?'], ['나', M.tip + '. 보험료 차이는 크지 않은데 보장 범위가 넓어요.'], ['상', '음, 보험료가 얼마나 되는데요?'], ['나', '고객님 나이 기준으로 월 8만 원대인데, 설계서 뽑아서 직접 보여 드리는 게 제일 정확해요. 내일 저녁이나 모레 점심 중에 언제가 편하세요?'], ['상', '모레 점심이요.'], ['나', '네, 모레 12시 반에 회사 근처로 가겠습니다. 설계서 두 가지 버전으로 준비할게요.']],
+      check: [['상', '네 팀장님, 전화하셨길래요.'], ['나', nm + ' 고객님, ' + me + '입니다. 고객님 보험 전체를 한 번 정리해 봤는데, 암 진단비는 잘 돼 있는데 뇌·심장 쪽이 비어 있더라고요.'], ['상', '그래요? 다 들어 있는 줄 알았는데.'], ['나', '예전 상품들이 그 부분이 약해요. 지금 보험료 안 늘리고 특약 정리해서 채우는 방법도 있어서, 15분만 보여 드리고 싶어요.'], ['상', '보험료 더 내는 건 부담인데.'], ['나', '그래서 불필요한 특약 빼고 그 돈으로 채우는 쪽으로 설계했어요. 오히려 해약환급금이 조금 나올 수도 있고요. 토요일 오전 괜찮으세요?'], ['상', '토요일 11시요.'], ['나', '네, 11시에 뵙겠습니다. 증권 사진만 미리 보내 주시면 더 정확하게 준비할게요.']],
+      intro: [['상', '여보세요, 팀장님? 아까 전화 못 받았네요.'], ['나', nm + ' 고객님, ' + me + '입니다. 지난주에 소개해 주신 분이랑 어제 상담 잘 마쳤어요. 먼저 감사 인사 드리려고요.'], ['상', '아, 잘됐어요? 그 친구가 보험을 잘 몰라서요.'], ['나', '네, 실손이 아예 없으셔서 그것부터 정리해 드리기로 했어요. 고객님 덕분에 꼭 필요한 분을 도울 수 있었어요.'], ['상', '다행이네요.'], ['나', '다음에 식사 한번 대접하고 싶어요. 이번 달 중 편하신 날 알려 주세요. 그리고 혹시 주변에 저 같은 사람 필요한 분 계시면 언제든 말씀해 주세요.'], ['상', '네, 생각나면 연락할게요.'], ['나', '감사합니다. 고객님 보험도 응당일 다가오면 제가 먼저 연락드리겠습니다.']],
+      acare: [['상', '네 팀장님, 전화 주셨더라고요.'], ['나', nm + ' 고객님, ' + me + '입니다. 가입하신 지 한 달 됐는데 증권은 잘 받으셨는지, 궁금한 점은 없으신지 전화드렸어요.'], ['상', '증권은 받았는데 뭐가 뭔지는 잘 모르겠어요.'], ['나', '그러실 수 있어요. 제가 한 장짜리 보장 요약표 만들어 놨는데, 카톡으로 보내 드리고 중요한 세 가지만 설명드릴게요.'], ['상', '네, 그렇게 해 주세요.'], ['나', '그리고 병원 가실 일 생기면 저한테 먼저 문자 주세요. 청구 서류 뭐 챙길지 바로 알려 드릴게요.'], ['상', '알겠어요, 고마워요.'], ['나', '네, 다음 달에도 한 번 더 안부 드릴게요. 건강하세요.']]
     };
     return { lines: L[k] || L.refund, nm: nm, amt: amt };
   }
@@ -7928,12 +8083,34 @@ function HealthUI(root, H) {
     }
     var ee = new Error('AI가 대답을 만들지 못했습니다 · ⏭ 보내기를 눌러 다시 시도하세요'); ee.busy = true; throw ee;
   }
+  // 통화용: 대답을 글자가 만들어지는 대로 받아서, 한 문장이 끝날 때마다 바로 넘김 (첫 문장부터 바로 말하게)
+  async function aiStream(sys, hist, onSentence){
+    var a = BZ.ai || {};
+    if (a.prov && a.prov !== 'gemini') { var full = await aiChat(sys, hist); splitSent(full).forEach(onSentence); return full; }
+    var contents = hist.map(function(m){ return { role: m.me ? 'user' : 'model', parts: [{ text: m.t }] }; });
+    if (!contents.length || contents[0].role !== 'user') contents.unshift({ role: 'user', parts: [{ text: '(전화가 연결됨)' }] });
+    var model = a.model || 'gemini-flash-lite-latest', gc = { maxOutputTokens: 2048, temperature: 0.95 }; if (!CALL.noThink) gc.thinkingConfig = { thinkingBudget: 0 };
+    var r = null; try { r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':streamGenerateContent?alt=sse', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': a.key }, body: JSON.stringify({ system_instruction: { parts: [{ text: sys }] }, contents: contents, generationConfig: gc }) }); } catch(e){ r = null; }
+    if (!r || !r.ok || !r.body) { var f2 = await aiChat(sys, hist); splitSent(f2).forEach(onSentence); return f2; } // 실패하면 기존 방식(다른 모델 자동 전환 포함)
+    var rd = r.body.getReader(), dec = new TextDecoder(), raw = '', text = '', sent = 0;
+    var flush = function(final){ var rest = text.slice(sent); var m; while ((m = /^[\s\S]*?([.?!~…]+|요(?=[ ,])|다(?=[ ,]))(\s|$)/.exec(rest)) && (m[0].trim().length >= 2)) { if (!final && m.index + m[0].length >= rest.length && !/\s$/.test(m[0])) break; onSentence(m[0].trim()); sent += m[0].length; rest = text.slice(sent); }
+      if (final && rest.trim()) { onSentence(rest.trim()); sent = text.length; } };
+    for (;;) { var x = await rd.read(); if (x.done) break; raw += dec.decode(x.value, { stream: true }); var lines = raw.split('\n'); raw = lines.pop();
+      lines.forEach(function(l){ if (!/^data:/.test(l)) return; try { var j = JSON.parse(l.slice(5)); ((((j.candidates || [])[0] || {}).content || {}).parts || []).forEach(function(pt){ if (!pt.thought && pt.text) text += pt.text; }); } catch(e){} });
+      flush(false); }
+    flush(true);
+    if (!text.trim()) { var f3 = await aiChat(sys, hist); splitSent(f3).forEach(onSentence); return f3; }
+    return text.trim();
+  }
+  function splitSent(t){ return String(t || '').split(/(?<=[.?!~…])\s+/).map(function(x){ return x.trim(); }).filter(Boolean); }
   function aiSys(sc, nm){ var fem = FEMALE.indexOf(nm) >= 0, age = pick(['30대 후반', '40대 초반', '40대 후반', '50대 초반']), old = /40대 후반|50대/.test(age);
-    var tone = fem ? (old ? '말끝을 "~요", "~네요", "~거든요"로 부드럽게, 놀라면 "어머", "아이고", 맞장구는 "네네", "그쵸"' : '"~요" 위주의 밝은 말투, 놀라면 "헐 진짜요?", "어머", 맞장구는 "아 네네", "그쵸그쵸"')
-      : (old ? '무뚝뚝하고 짧게 "예", "아 그래요?", "그건 좀…", 말끝은 "~요"나 "~지요", 가끔 "허허"' : '담백하게 "아 네", "음… 그래요?", "그게 뭔데요?", 말끝은 "~요"');
-    return '너는 지금 휴대폰으로 보험설계사 전화를 받은 한국 사람 ' + nm + '(' + (fem ? '여성' : '남성') + ', ' + age + ', ' + sc.who + ')이다. AI·상담원·비서가 아니라 바쁜 일상 중에 전화를 받은 평범한 사람처럼 말한다. 설계사의 목표: "' + sc.goal + '". ' +
-      '말투: ' + tone + '. 가족 얘기를 할 땐 ' + (fem ? '남편·언니·애들' : '아내·형·애들') + '처럼 성별에 맞게. 설계사는 "팀장님"이라고 부른다. ' +
-      '규칙: 1) 대부분 한 문장, 길어야 두 문장. 짧을수록 좋다. 2) 실제 통화처럼 "아", "음", "어…", "근데", "그러니까"를 자연스럽게 섞고, 가끔 말을 끝까지 안 맺는다("그건 좀…"). 3) 상대가 방금 한 말에 바로 반응한다. 같은 말을 되풀이하거나 요약하지 않는다. 4) "물론입니다", "도움이 되셨으면", "궁금하신 점", "감사합니다만" 같은 상담원·AI 말투, 존댓말 문어체("~습니다", "~하겠습니다")는 쓰지 않는다. 5) 처음엔 조금 경계하거나 바쁜 척, 구체적인 금액·혜택·날짜를 들으면 점점 관심을 보인다. 가끔 현실적인 걱정("보험료 또 나가는 거 아니에요?", "지금 운전 중이라서요")을 말한다. 6) 약속을 잡자고 하면 요일·시간을 정하고 짧게 끊는다("네 그럼 그때 봬요~"). 7) 괄호, 지문, 이모지, 따옴표 없이 대사만.'; }
+    var tone = fem ? (old ? '말끝 "~요", "~네요", "~거든요"를 부드럽게, 놀라면 "어머", "아이고", 맞장구 "네네", "그쵸"' : '"~요" 위주 밝은 말투, 놀라면 "헐 진짜요?", "어머", 맞장구 "아 네네", "그쵸그쵸"')
+      : (old ? '짧고 무뚝뚝하게 "예", "아 그래요?", "그건 좀…", 가끔 "허허"' : '담백하게 "아 네", "음… 그래요?", "그게 뭔데요?"');
+    var ex = fem ? '예) 설계사: "고객님 보험금 확인해 보니까 받으실 게 있더라고요." → "어머, 진짜요? 얼마나요?" / 설계사: "서류만 내시면 돼요." → "아 그래요? 근데 그건 병원 가서 떼야 돼요?"'
+      : '예) 설계사: "고객님 보험금 확인해 보니까 받으실 게 있더라고요." → "아 그래요? 얼만데요?" / 설계사: "서류만 내시면 돼요." → "음… 병원 가서 떼야 되는 거죠?"';
+    return '상황: 너는 ' + nm + '(' + (fem ? '여성' : '남성') + ', ' + age + ', ' + sc.who + ')이다. 아까 보험설계사(팀장님)한테서 부재중 전화가 와 있어서, 네가 먼저 다시 전화를 걸었다. 그러니 "바쁘다", "누구세요", "무슨 일로 전화하셨어요?"처럼 전화를 받은 사람 같은 말은 하지 않는다. 팀장님은 이미 아는 사이다. 설계사가 이 통화로 하려는 일: "' + sc.goal + '". ' +
+      '말투: ' + tone + '. 가족 얘기는 ' + (fem ? '남편·언니·애들' : '아내·형·애들') + '처럼 성별에 맞게. ' + ex + ' ' +
+      '규칙: 1) 한 번에 한 문장, 길어야 두 문장. 짧을수록 좋다. 2) 실제 통화처럼 "아", "음", "어…", "근데", "그러니까"를 섞고, 가끔 말을 끝까지 안 맺는다. 3) 방금 들은 말에만 바로 반응하고, 되풀이·요약·정리하지 않는다. 4) 상담원·AI 말투 금지: "물론입니다", "도움이 되셨으면", "궁금하신 점", "말씀해 주시면", "~하겠습니다", "~습니다". 5) 처음엔 궁금해하거나 살짝 의심하다가, 구체적인 금액·혜택·날짜를 들으면 관심을 보인다. 가끔 현실적인 걱정("보험료 또 나가는 거 아니에요?", "그거 복잡하지 않아요?")을 말한다. 6) 약속을 잡자고 하면 요일·시간을 정하고 짧게 끊는다("네 그럼 그때 봬요~"). 7) 괄호, 지문, 이모지, 따옴표 없이 대사만.'; }
   // ---------- AI 고객과 자유 통화 (같은 전화 화면) ----------
   function callAi(){
     var sc = SC.find(function(s){ return s.k === CALL.sc; }), nm = pick(FAKE), female = FEMALE.indexOf(nm) >= 0, sys = aiSys(sc, nm) + ' 설계사는 자신을 "' + meLine() + '"라고 소개합니다.', ended = false, busy = false, buf = '', idleT = null;
@@ -7943,17 +8120,33 @@ function HealthUI(root, H) {
     var pg = function(){ $('cphPg').textContent = CALL.hist.filter(function(m){ return m.me; }).length + '마디'; };
     el.querySelector('[data-cp="next"] span').textContent = '보내기';
     el.querySelector('[data-cp="script"] span').textContent = '글로 쓰기';
+    // 먼저 전화를 건 쪽(고객)의 첫마디 · 맞장구(네~, 아~)는 미리 만들어 둠 → 말 끝나자마자 바로
+    var OPEN = female ? ['여보세요, 팀장님? 아까 전화 주셨던데요.', '네 팀장님~ 부재중 전화가 와 있어서요.', '여보세요? 팀장님, 전화하셨었죠?'] : ['여보세요, 팀장님? 아까 전화 주셨던데요.', '예 팀장님, 부재중 와 있길래요.', '여보세요? 전화 주셨었죠?'];
+    var opener = pick(OPEN), FILL = female ? ['네~', '아 네네.', '음…', '아~'] : ['네.', '예예.', '음…', '아~'], fillBuf = {};
+    var prep = function(){ if (!aiVoiceOk()) return; aiTts(opener, female).catch(function(){}); FILL.forEach(function(f){ aiTts(f, female).then(function(b){ fillBuf[f] = b; }).catch(function(){}); }); };
+    var queue = Promise.resolve();
+    var say1 = function(line){ var ap = aiVoiceOk() ? aiTts(line, female).catch(function(){ return null; }) : null;
+      queue = queue.then(async function(){ if (ended) return; var y = $('cphYou'); if (y) { var cur = y.dataset.t ? y.dataset.t + ' ' : ''; y.dataset.t = cur + line; y.innerHTML = '<small>' + esc(nm) + '</small>' + esc(y.dataset.t); } note('상대가 말하는 중…');
+        var b = ap ? await ap : null; if (ended) return; if (b) await playBuf(b); else await sayDevice(line, female); }); };
     var turn = async function(){
-      busy = true; if (CALL.ear) CALL.ear.pause(); note('상대가 말하는 중…');
-      try { note('상대가 대답을 생각하는 중…'); CALL.fast = true; var t = !CALL.hist.length ? '여보세요?' : await aiChat(sys, CALL.hist); if (ended) return; CALL.hist.push({ me: false, t: t }); $('cphYou').innerHTML = '<small>' + esc(nm) + '</small>' + esc(t); note('상대가 말하는 중…'); if (t) await speak(t, female); }
+      busy = true; if (CALL.ear) CALL.ear.pause();
+      var y0 = $('cphYou'); if (y0) { y0.dataset.t = ''; }
+      try {
+        if (!CALL.hist.length) { CALL.hist.push({ me: false, t: opener }); say1(opener); }
+        else { note('상대가 대답하는 중…'); CALL.fast = true; var t = await aiStream(sys, CALL.hist, say1); if (ended) return; CALL.hist.push({ me: false, t: t }); }
+        await queue;
+      }
       catch(e){ note(e && e.busy ? '⏳ ' + e.message + ' (보내기 ⏭ 를 누르면 다시 시도)' : 'AI 오류: ' + (e.message || e) + ' · 설정에서 키·모델을 확인하세요'); busy = false; return; }
       busy = false; if (ended) return; pg();
-      if (CALL.ear) { CALL.ear.resume(); note('🎙 말하세요 · 말을 멈추면 잠시 뒤 상대가 대답합니다'); } else note('아래 칸에 내 말을 쓰고 [보내기]');
+      if (CALL.ear) { CALL.ear.resume(); note('🎙 말하세요 · 말을 멈추면 바로 상대가 대답합니다'); } else note('아래 칸에 내 말을 쓰고 [보내기]');
     };
-    var send = function(){ var t = String(buf || '').trim(); if (!t || busy || ended) return; buf = ''; clearTimeout(idleT); CALL.hist.push({ me: true, t: t }); $('cphMe').innerHTML = '<span class="k-on">' + esc(t) + '</span>'; $('cphHeard').textContent = ''; if (CALL.ear) CALL.ear.reset(); turn(); };
+    var send = function(){ var t = String(buf || '').trim(); if (!t || busy || ended) return; buf = ''; clearTimeout(idleT); CALL.hist.push({ me: true, t: t }); $('cphMe').innerHTML = '<span class="k-on">' + esc(t) + '</span>'; $('cphHeard').textContent = ''; if (CALL.ear) CALL.ear.reset();
+      var fk = Object.keys(fillBuf); if (fk.length && Math.random() < 0.55) { var fb = fillBuf[pick(fk)]; queue = queue.then(function(){ return ended ? null : playBuf(fb); }); }
+      turn(); };
     var onHeard = function(text, isFinal, err){
       if (err) { CALL.ear = null; note('마이크 권한이 없어 글로 대화합니다 · [글로 쓰기]를 누르세요'); return; }
-      if (busy || ended) return; buf = text; $('cphMe').innerHTML = '<span class="k-off">' + esc(text) + '</span>'; clearTimeout(idleT); idleT = setTimeout(send, isFinal ? 450 : 1300);
+      if (busy || ended) return; buf = text; $('cphMe').innerHTML = '<span class="k-off">' + esc(text) + '</span>'; clearTimeout(idleT); var tt = String(text || '').trim(), done = /(요|다|까|죠|네|지|야|래|데|게|니|어|아|구나|거든)[.?!~…]*$/.test(tt); // 말이 끝난 모양이면 더 빨리
+      idleT = setTimeout(send, isFinal ? (done ? 120 : 350) : (done ? 550 : 950));
     };
     var typeBox = function(){ var b = $('cphType'); if (b) { b.remove(); return; } var d = document.createElement('div'); d.id = 'cphType'; d.className = 'cph-type'; d.innerHTML = '<input type="text" id="cphTx" placeholder="내 말을 글로"><button type="button" class="go" id="cphTxGo">보내기</button>'; el.querySelector('.cph-card').appendChild(d); var go = function(){ buf = $('cphTx').value; $('cphTx').value = ''; send(); }; $('cphTxGo').onclick = go; $('cphTx').onkeydown = function(e){ if (e.key === 'Enter') go(); }; $('cphTx').focus(); };
     var finish = async function(){
@@ -7978,7 +8171,7 @@ function HealthUI(root, H) {
     el.querySelector('[data-cp="mute"]').onclick = function(){ var on = this.classList.toggle('on'); if (CALL.ear) { if (!on) CALL.ear.pause(); else if (!busy) CALL.ear.resume(); } };
     if (SRC) el.querySelector('[data-cp="mute"]').classList.add('on'); else el.querySelector('[data-cp="mute"]').disabled = true;
     CALL.ear = SRC ? Ear(onHeard) : null; if (!SRC) setTimeout(typeBox, 50);
-    (async function(){ actx(); note(''); CALL.fast = true; if (aiVoiceOk()) aiTts('여보세요?', female).catch(function(){}); if (!(await incoming(el))) { ended = true; return; } if (ended) return; $('cphSt').textContent = '통화 중'; phoneTimer(); if (CALL.ear) { CALL.ear.begin(); CALL.ear.pause(); } turn(); })();
+    (async function(){ actx(); note(''); CALL.fast = true; prep(); if (!(await incoming(el))) { ended = true; return; } if (ended) return; $('cphSt').textContent = '통화 중'; phoneTimer(); if (CALL.ear) { CALL.ear.begin(); CALL.ear.pause(); } turn(); })();
   }
   // ---------- 사진으로 싯플랜 넣기: 지점 교육일정표 · 손글씨 싯플랜 → AI가 읽어 일정으로 (미리 보고 고른 뒤 저장 → 캘린더 자동 동기화) ----------
   async function aiVision(prompt, imgs){
@@ -9684,8 +9877,8 @@ function HealthUI(root, H) {
     FILES = []; FSTATE = {};
     var c = S.cur;
     openDlg('<h4>' + IC.clip + ' 병력파악 (파일 첨부) — ' + esc(c.name) + '님</h4>' +
-      '<p style="color:var(--ink2)">심평원 진단·세부·처방, 공단 요양급여내역서·건강검진, 투약이력 엑셀, <b>보장분석 PDF(메리츠·KB)</b>를 한 번에 첨부하세요. 비밀번호는 생년월일(' + birthTxt(c.birth) + ')로 자동 입력합니다.' + (IS_DESKTOP ? ' 잠긴 투약이력 엑셀도 이 PC의 엑셀로 자동으로 풉니다.' : '') + '</p>' +
-      '<label class="fdrop" id="fdrop" for="fIn"><b>파일을 끌어 놓거나 눌러서 선택</b><small>PDF · 엑셀(투약이력, 암호 해제한 파일) · zip 모두 가능 · 휴대폰은 zip 하나로 묶으면 편합니다</small><input id="fIn" type="file" multiple hidden></label>' +
+      '<p style="color:var(--ink2)">심평원 진단·세부·처방, 공단 요양급여내역서·건강검진, 투약이력 엑셀, <b>보장분석 PDF(메리츠·KB)</b>를 한 번에 첨부하세요. 비밀번호는 생년월일(' + birthTxt(c.birth) + ')로 자동 입력합니다.' + ' 잠긴 투약이력 엑셀(내가 먹는 약 한눈에)도 그대로 넣으면 자동으로 풉니다.' + '</p>' +
+      '<label class="fdrop" id="fdrop" for="fIn"><b>파일을 끌어 놓거나 눌러서 선택</b><small>PDF · 엑셀(투약이력 — 비밀번호 걸린 그대로 넣으면 자동으로 풉니다) · zip 모두 가능</small><input id="fIn" type="file" multiple hidden></label>' +
       '<div class="fneed" id="fneed"></div><div class="flist" id="flist"></div><div class="prog" id="fprog" hidden><i></i></div>' +
       '<div class="note"><button type="button" class="lnk2" id="fDocs">' + IC.doc + ' 서류를 아직 안 받았다면: 사이트 바로가기</button></div>' +
       (S.data && S.DD ? '<div class="prevrec">지난 병력파악 · 자료 조회 <b>' + dot(S.DD.asOf) + '</b> · 마지막 진료 ' + dot(S.DD.last) + ' · 분석 ' + dot(S.DD.analyzed) + '</div>' : '') +
@@ -9720,7 +9913,7 @@ function HealthUI(root, H) {
     if (R.needPw) msgs.push('비밀번호가 맞지 않는 PDF가 있습니다. 고객 생년월일(' + birthTxt(S.cur.birth) + ')을 확인하세요.');
     if (R.sheetPw && R.sheetWhy === 'noexcel') msgs.push('이 PC에 Microsoft Excel이 없어 투약이력 엑셀의 암호를 자동으로 풀지 못했습니다. 엑셀이 설치된 PC에서 분석하거나, 암호를 푼 파일(_unlocked.xlsx)을 넣어 주세요.');
     else if (R.sheetPw && R.sheetWhy === 'badpw') msgs.push('투약이력 엑셀의 비밀번호가 고객 생년월일(' + birthTxt(S.cur.birth) + ')과 맞지 않습니다. 생년월일을 확인하세요.');
-    else if (R.sheetPw) msgs.push('투약이력 엑셀에 비밀번호가 걸려 있습니다. PC에서 "투약암호풀기" 아이콘 위로 엑셀 파일을 끌어다 놓으면 암호 없는 파일(_unlocked.xlsx)이 만들어집니다. 그 파일로 바꿔 넣어 주세요. (엑셀에서 직접: 생년월일로 열기 → 다른 이름으로 저장 → 도구 → 일반 옵션 → 암호 지우기)');
+    else if (R.sheetPw) msgs.push('투약이력 엑셀의 비밀번호를 자동으로 풀지 못했습니다. 고객 생년월일(' + birthTxt(S.cur.birth) + ')이 맞는지 확인해 주세요. 계속 안 되면 그 엑셀 파일 종류가 특이한 것이니 알려 주세요.');
     var badF = Object.keys(R.states).filter(function(n){ return R.states[n].bad; });
     var isLockedSheet = function(n){ var f = FILES.find(function(x){ return x.name === n; }); return f && Ingest.sniff(f.data) === 'sheet' && /암호/.test(R.states[n].kind || ''); };
     var lockedTuyak = badF.filter(isLockedSheet), otherBad = badF.filter(function(n){ return !isLockedSheet(n); });
