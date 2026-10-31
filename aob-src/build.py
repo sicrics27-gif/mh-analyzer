@@ -28,7 +28,7 @@ LOCAL='''<script src="lib/pdf.worker.min.js"></script>
 <script src="lib/jszip.min.js"></script>
 <script src="lib/xlsx.full.min.js"></script>
 <script src="lib/qrcode.js"></script>'''
-title='<title>AOB9 · 어센틱 오션브랜치 9팀</title>'
+title='<title>AOB9 · Authentic Ocean Branch · Team 9</title>'
 # 1) 아티팩트 (조각)
 art=title+'\n<meta name="claude:viewport-fit-sides" content="cover">\n'+FONT+'\n<style>\n'+css+'\n</style>\n'+body+'\n'+CDN+'\n'+engine+'\n'+ui
 open(os.path.join(O,'artifact.html'),'w',encoding='utf-8').write(art)
@@ -61,7 +61,7 @@ reg='<script>window.AOB_V="'+ver+'";if("serviceWorker" in navigator&&location.pr
 pwa=pwahead+PFONT+FONT+'\n<style>\n'+css+'\n</style>\n</head>\n<body>\n'+body+'\n'+LOCAL+'\n'+engine+'\n'+ui+'\n'+reg+'\n</body>\n</html>\n'
 open(os.path.join(P,'index.html'),'w',encoding='utf-8').write(pwa)
 open(os.path.join(P,'version.json'),'w').write(json.dumps({'v':ver}))
-open(os.path.join(P,'manifest.webmanifest'),'w',encoding='utf-8').write(json.dumps({"name":"AOB9 · 어센틱 오션브랜치 9팀","short_name":"AOB9","description":"어센틱 오션브랜치 9팀 고객관리 (병력고지·보장분석·싯플랜)","share_target":{"action":"./share-target","method":"POST","enctype":"multipart/form-data","params":{"files":[{"name":"file","accept":["application/pdf",".pdf","application/zip",".zip"]}]}},"lang":"ko","start_url":"./","scope":"./","display":"standalone","background_color":"#090B10","theme_color":"#090B10","icons":[{"src":"icon-192.png","sizes":"192x192","type":"image/png"},{"src":"icon-512.png","sizes":"512x512","type":"image/png"},{"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"maskable"}]},ensure_ascii=False,indent=1))
+open(os.path.join(P,'manifest.webmanifest'),'w',encoding='utf-8').write(json.dumps({"name":"AOB9 · Authentic Ocean Branch · Team 9","short_name":"AOB9","description":"어센틱 오션브랜치 9팀 고객관리 (병력고지·보장분석·싯플랜)","share_target":{"action":"./share-target","method":"POST","enctype":"multipart/form-data","params":{"files":[{"name":"file","accept":["application/pdf",".pdf","application/zip",".zip"]}]}},"lang":"ko","start_url":"./","scope":"./","display":"standalone","background_color":"#090B10","theme_color":"#090B10","icons":[{"src":"icon-192.png","sizes":"192x192","type":"image/png"},{"src":"icon-512.png","sizes":"512x512","type":"image/png"},{"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"maskable"}]},ensure_ascii=False,indent=1))
 sw='''const V="mhs-%s";const ASSETS=["./","index.html","manifest.webmanifest","icon-192.png","icon-512.png","lib/pdf.min.js","lib/pdf.worker.min.js","lib/jszip.min.js","lib/xlsx.full.min.js","lib/PretendardVariable.woff2","lib/qrcode.js","lib/bg-afg.jpg","lib/bg-afg-tall.jpg","lib/bg-afg-hero.jpg","lib/bg-concrete-side.jpg","lib/bg-main.jpg","lib/afg-mark.jpg","lib/leaflet.js","lib/leaflet.css"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()));});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
