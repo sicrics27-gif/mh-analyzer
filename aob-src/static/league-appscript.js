@@ -210,7 +210,9 @@ function mdList(me) {
 }
 function doGet(e) { try { return doGet_(e); } catch (err) { return out({ ok: false, error: '팀 서버 오류: ' + err }); } }
 function doGet_(e) {
-  const prm = e.parameter || {};
+  const prm = Object.assign({}, e.parameter || {});
+  // 'c' 는 구글이 예약한 이름이라 주소에 쓰면 '파일을 열 수 없습니다' 가 남 → 앱은 uid 로 보냄
+  if (prm.uid) prm.c = prm.uid;
   if (prm.a === 'otpreq') { if (!isAdmin(prm.k)) return out({ ok: false, error: '관리자만' }); return out({ ok: true, rows: otpRows(otpSheet()).filter(o => o.st === 'new').map(o => ({ rid: String(o.rid), at: +o.at, n: String(o.n), m: String(o.m), dev: String(o.dev || ''), note: String(o.note || '') })) }); }
   if (prm.a === 'otpstat') { const o = otpRows(otpSheet()).find(x => String(x.rid) === String(prm.rid) && x.m === String(prm.m || '').toLowerCase()); if (!o) return out({ ok: false }); return out({ ok: true, st: String(o.st), code: o.st === 'done' ? String(o.code || '') : '' }); }
   // 자동 개선 워크플로가 신고 내용·사진을 받아 감 (신고마다 한 번 쓰는 열쇠)

@@ -1015,7 +1015,7 @@
         var j = await r.json(); if (j.ok) localStorage.setItem('mhs_lgsent', key); else L.err = j.error || '';
       } catch(e){ L.err = '리그 서버에 연결하지 못했습니다'; }
     }
-    async function load(G){ var u = await url(); if (!u) return null; var r = await fetch(u + '?week=' + encodeURIComponent(G.monday) + '&c=' + encodeURIComponent(me() || '') + '&t=' + Date.now()); var j = await r.json(); return j.rows || []; }
+    async function load(G){ var u = await url(); if (!u) return null; var r = await fetch(u + '?week=' + encodeURIComponent(G.monday) + '&uid=' + encodeURIComponent(me() || '') + '&t=' + Date.now()); var j = await r.json(); return j.rows || []; }
     async function draw(box, G){
       if (!box) return;
       var u = await url(), adm = await admLoad();
@@ -3266,7 +3266,7 @@
   var MD_CAT = ['실손', '암', '뇌·심장', '종합건강', '운전자', '치아', '어린이·태아', '연금·저축', '치매·간병', '종신·정기', '기타'];
   async function mdLoad(){ if (!BZ.md) { BZ.md = await hidLoad('__md', { items: [] }); BZ.md.items = BZ.md.items || []; } return BZ.md; }
   async function mdServer(){ try { return await League.url(); } catch(e){ return ''; } }
-  async function mdFetch(u){ var j = await (await fetch(u + '?a=md&c=' + encodeURIComponent(League.me() || '') + '&t=' + Date.now())).json(); if (!j.ok) throw new Error(j.error || '불러오지 못했습니다'); return j.rows || []; }
+  async function mdFetch(u){ var j = await (await fetch(u + '?a=md&uid=' + encodeURIComponent(League.me() || '') + '&t=' + Date.now())).json(); if (!j.ok) throw new Error(j.error || '불러오지 못했습니다'); return j.rows || []; }
   async function showMd(cat){
     if (cat !== undefined) S.mdc = cat;
     S.cur = null; S.data = null; S.view = 'md'; $('shell').classList.add('has-c'); armBack(); renderList();
@@ -4320,7 +4320,7 @@
   async function teamSave(){ await Store.saveHead({ id: TEAM.id, hidden: true, name: '__team', status: 'admin', created: TEAM.d.created || Date.now() }); await Store.saveData(TEAM.id, TEAM.d); }
   async function teamPost(u, body){ var r = await fetch(u, { method: 'POST', body: JSON.stringify(body) }); return r.json(); }
   async function teamClaim(u){ var c = League.me(); if (!c) return false; var j = await teamPost(u, { a: 'claim', c: c }); if (j.ok && j.key) { await teamLoad(); TEAM.d.key = j.key; await teamSave(); return true; } return false; }
-  async function sugFetch(u){ var j = await (await fetch(u + '?a=sug&c=' + encodeURIComponent(League.me() || '') + '&t=' + Date.now())).json(); if (!j.ok) throw new Error(j.error || '불러오지 못했습니다'); SUG.adminState = j.admin; SUG.srv = { bug: +j.bug || 0, gh: !!j.gh }; return j.rows || []; }
+  async function sugFetch(u){ var j = await (await fetch(u + '?a=sug&uid=' + encodeURIComponent(League.me() || '') + '&t=' + Date.now())).json(); if (!j.ok) throw new Error(j.error || '불러오지 못했습니다'); SUG.adminState = j.admin; SUG.srv = { bug: +j.bug || 0, gh: !!j.gh }; return j.rows || []; }
   async function showSug(f){
     if (f) SUG.f = f;
     S.cur = null; S.data = null; S.view = 'sug'; $('shell').classList.add('has-c'); armBack(); renderList();
