@@ -2207,6 +2207,26 @@ img,svg,a{-webkit-user-drag:none;user-drag:none}
 .inc2-pill button{border:0;background:none;padding:9px 18px;font-size:13.5px;color:#222;cursor:pointer}.inc2-pill button+button{border-left:1px solid #e5e5e5}
 .cph-all p.me{background:#eaf0ff}.cph-all p small{display:block;font-size:11px;color:#888}
 .inc2 .inc-no svg,.inc2 .inc-ok svg{background:none;box-shadow:none;padding:0;animation:none}
+/* ===== 티맵 느낌 고객 지도 ===== */
+.tmap{position:relative}
+.tmap .mapbox{height:min(68vh,640px);border-radius:18px}
+.tm-top{position:absolute;top:10px;left:10px;right:56px;z-index:500}
+.tm-top input{width:100%;height:44px;border-radius:14px;border:0;padding:0 14px;font:inherit;font-size:15px;background:#fff;color:#111;box-shadow:0 4px 14px rgba(0,0,0,.18);box-sizing:border-box}
+.tm-fab{position:absolute;right:10px;bottom:34px;z-index:500;display:flex;flex-direction:column;gap:8px}
+.tm-fab button{width:46px;height:46px;border-radius:50%;border:0;background:#fff;color:#1f5eff;font-size:22px;box-shadow:0 4px 14px rgba(0,0,0,.22);cursor:pointer}
+.tm-leg{position:absolute;left:10px;bottom:10px;z-index:500;background:rgba(255,255,255,.92);color:#333;border-radius:10px;padding:4px 9px;font-size:11.5px;display:flex;align-items:center;gap:4px}
+.tm-leg i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-left:5px}.tm-leg i:first-child{margin-left:0}
+.tm-pin{background:none;border:0}
+.tm-pin span{display:grid;place-items:center;width:36px;height:36px;margin:0 auto;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--c);box-shadow:0 3px 8px rgba(0,0,0,.35);border:2px solid #fff}
+.tm-pin span b{transform:rotate(45deg);color:#fff;font-size:14px;font-weight:800}
+.tm-pin em{display:block;text-align:center;font-style:normal;font-size:11px;font-weight:700;color:#222;text-shadow:0 0 3px #fff,0 0 3px #fff;white-space:nowrap;margin-top:2px;transform:translateX(-10%)}
+.mapbox.zin .tm-pin{opacity:.35}
+.tm-man{background:none;border:0}
+.tm-man span{display:inline-block;transform:translate(-50%,-100%);white-space:nowrap;background:#fff;color:#111;font-size:12.5px;font-weight:700;padding:4px 9px;border-radius:999px;border:2px solid var(--c);box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer}
+.tm-man span::after{content:'';position:absolute;left:50%;bottom:-6px;margin-left:-5px;border:5px solid transparent;border-top-color:var(--c);border-bottom:0}
+.tm-me{background:none;border:0}.tm-me i{display:block;width:16px;height:16px;margin:3px;border-radius:50%;background:#1f6bff;border:3px solid #fff;box-shadow:0 0 0 6px rgba(31,107,255,.25),0 2px 6px rgba(0,0,0,.3);box-sizing:border-box}
+.tmap .mapbox{height:max(360px,calc(100dvh - 340px));max-height:760px}
+.tmap .leaflet-top.leaflet-right{top:62px}
 
 </style>
 </head>
@@ -7892,7 +7912,20 @@ function HealthUI(root, H) {
   // ---------- 지도: 지역별 내 고객 ----------
   var MAPV = { map: null, layer: null, f: '' };
   function loadLeaflet(){ return new Promise(function(res, rej){ if (window.L && window.L.map) return res(); var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'lib/leaflet.css'; document.head.appendChild(l); var s = document.createElement('script'); s.src = 'lib/leaflet.js'; s.onload = function(){ res(); }; s.onerror = function(){ rej(new Error('지도 모듈을 불러오지 못했습니다')); }; document.head.appendChild(s); }); }
-  function areaKey(c){ var a = String(meetOf(c).area || '').replace(/\s+/g, ' ').trim(); return a; }
+  // 주소 → 지도 검색용 짧은 주소 (시·구·동 또는 도로 이름까지만 · 번지·동호수·건물명은 버림 → 정확한 집 위치는 어디에도 보내지 않음)
+  function areaOfAddr(a){
+    a = String(a || '').replace(/\([^)]*\)/g, ' ').replace(/[,·]/g, ' ').replace(/\s+/g, ' ').trim(); if (!a) return '';
+    var T = a.split(' '), out = [];
+    for (var i = 0; i < T.length && out.length < 5; i++) {
+      var t = T[i]; if (/^\d/.test(t)) break;
+      var m = /^([가-힣]+?\d*(?:로|길))\d*(?:번길)?.*$/.exec(t); if (m && out.length) { out.push(m[1].replace(/\d+$/, '') === m[1] ? m[1] : m[1]); break; }
+      out.push(t);
+      if (/(동|읍|면|리|가)$/.test(t) && out.length >= 2 && !/(시|도|군|구)$/.test(t)) break;
+    }
+    return out.length >= 2 ? out.join(' ') : '';
+  }
+  function areaKey(c){ var a = String(meetOf(c).area || '').replace(/\s+/g, ' ').trim(); if (!a) a = areaOfAddr(reqOf(c).addr); return a; }
+  function areaSrc(c){ return String(meetOf(c).area || '').trim() ? '만남 정보' : (reqOf(c).addr ? '주소' : ''); }
   async function geoLoad(){ if (!BZ.geo) BZ.geo = await hidLoad('__geo', {}); return BZ.geo; }
   async function geocode(area){
     var g = await geoLoad(); if (g[area] && g[area].lat) return g[area]; if (g[area] && g[area].fail && Date.now() - g[area].fail < 7 * 864e5) return null;
@@ -7913,39 +7946,82 @@ function HealthUI(root, H) {
     return out;
   }
   function mnote(t){ var e = $('mapNote'); if (e) e.textContent = t; }
+  // 티맵처럼: 가까이 확대하면 동네 핀이 고객 한 명 한 명 이름표로 펼쳐짐 (같은 동네 안에서 살짝 흩어 표시 · 실제 집 위치 아님)
+  function hashN(s){ var h = 0; s = String(s); for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return Math.abs(h); }
+  function tmPeople(k, cs, pos, col){
+    var LF = window.L, map = MAPV.map; if (!MAPV.ppl) { MAPV.ppl = LF.layerGroup(); }
+    cs.forEach(function(c, i){ var h = hashN(c.id), ang = (h % 360) * Math.PI / 180, r = 0.0012 + (h % 7) * 0.00035 + (cs.length > 1 ? 0.0004 : 0), st = c.stage === 'db' ? 'lead' : (c.stage || 'lead');
+      var ll = cs.length === 1 ? [pos.lat, pos.lng] : [pos.lat + Math.sin(ang) * r, pos.lng + Math.cos(ang) * r * 1.25];
+      var mk = LF.marker(ll, { icon: LF.divIcon({ className: 'tm-man', html: '<span style="--c:' + col[st] + '">' + esc(c.name) + '</span>', iconSize: null, iconAnchor: [0, 0] }) });
+      mk.on('click', function(){ mk.bindPopup('<div class="mpp"><b>' + esc(c.name) + '</b> <small>' + stageTxt(c.stage) + ' · ' + esc(k) + '</small>' + (MAPV.me ? '<small> · 내 위치에서 ' + kmTxt(Trail.dist(MAPV.me, [pos.lat, pos.lng])) + '</small>' : '') + '<button type="button" class="bzrow" data-ctopen="' + c.id + '"><b>고객 화면 열기</b><span>통화 · 문자 · 만남</span></button>' + (normPhone(c.phone) && IS_MOBILE ? '<a class="pb" href="tel:' + normPhone(c.phone) + '" data-ctcall="' + c.id + '">전화</a>' : '') + '</div>', { maxWidth: 240 }).openPopup(); });
+      mk.addTo(MAPV.ppl); (MAPV.cm = MAPV.cm || {})[c.id] = mk; });
+    var tog = function(){ var z = map.getZoom(), on = z >= 15; if (on && !map.hasLayer(MAPV.ppl)) MAPV.ppl.addTo(map); if (!on && map.hasLayer(MAPV.ppl)) map.removeLayer(MAPV.ppl); $('mapBox').classList.toggle('zin', on); };
+    if (!MAPV.zb) { MAPV.zb = 1; map.on('zoomend', tog); } tog();
+  }
+  function kmTxt(k){ return k < 1 ? Math.round(k * 1000) + 'm' : (k < 10 ? k.toFixed(1) : Math.round(k)) + 'km'; }
+  function tmBind(map, groups){
+    MAPV.ppl = null; MAPV.cm = {}; MAPV.zb = 0; MAPV.me = null;
+    var q = $('tmQ');
+    q.addEventListener('keydown', function(e){ if (e.key !== 'Enter') return; var v = q.value.trim(); if (!v) return; q.blur();
+      var c = S.list.find(function(x){ return x.name === v; }) || S.list.find(function(x){ return x.name && x.name.indexOf(v) >= 0 && areaKey(x); });
+      if (c && areaKey(c)) { var p = MAPV.pos[areaKey(c)]; if (p) { map.setView([p.lat, p.lng], 16, { animate: true }); setTimeout(function(){ var mk = MAPV.cm[c.id]; if (mk) mk.fire('click'); }, 400); return; } }
+      var k = Object.keys(MAPV.pos).find(function(a){ return a.indexOf(v) >= 0; }); if (k) { map.setView([MAPV.pos[k].lat, MAPV.pos[k].lng], 15, { animate: true }); MAPV.mk[k] && MAPV.mk[k].openPopup(); return; }
+      toast('"' + v + '" 고객이나 동네를 지도에서 찾지 못했습니다'); });
+    $('tmAll').onclick = function(){ var pts = Object.keys(MAPV.pos).map(function(k){ return [MAPV.pos[k].lat, MAPV.pos[k].lng]; }); if (MAPV.me) pts.push(MAPV.me); if (pts.length) map.fitBounds(pts, { padding: [40, 40], maxZoom: 14 }); };
+    $('tmMe').onclick = function(){
+      if (!navigator.geolocation) { toast('이 기기에서는 위치를 쓸 수 없습니다'); return; }
+      toast('내 위치를 찾는 중…');
+      navigator.geolocation.getCurrentPosition(function(p){
+        var ll = [p.coords.latitude, p.coords.longitude], LF = window.L; MAPV.me = ll;
+        if (MAPV.meMk) MAPV.meMk.setLatLng(ll); else MAPV.meMk = LF.marker(ll, { icon: LF.divIcon({ className: 'tm-me', html: '<i></i>', iconSize: [22, 22], iconAnchor: [11, 11] }), zIndexOffset: 1000 }).addTo(map);
+        map.setView(ll, 14, { animate: true }); tmNear();
+      }, function(){ toast('위치 권한을 허용해 주세요 (연결 · 권한 → 위치)'); }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+    };
+  }
+  // 내 위치에서 가까운 동네 순으로 목록 다시 정렬 + 거리 표시
+  function tmNear(){
+    if (!MAPV.me) return; var box = $('main').querySelector('.maplist'); if (!box) return;
+    var ds = Array.prototype.slice.call(box.querySelectorAll('details.mpa:not(.none)'));
+    ds.forEach(function(d){ var k = d.querySelector('summary b').textContent, p = MAPV.pos[k]; d._km = p ? Trail.dist(MAPV.me, [p.lat, p.lng]) : 1e9; var sm = d.querySelector('summary small'); if (p && sm && !sm.dataset.km) { sm.dataset.km = 1; sm.textContent += ' · ' + kmTxt(d._km); } });
+    ds.sort(function(a, b){ return a._km - b._km; }).forEach(function(d){ box.insertBefore(d, box.querySelector('details.none')); });
+    var near = ds.filter(function(d){ return d._km <= 3; }).length; mnote('📍 내 위치 기준 3km 안 동네 ' + near + '곳 · 아래 목록이 가까운 순으로 바뀌었습니다');
+  }
   async function showMap(tab){
     if (tab) MAPV.tab = tab;
     S.cur = null; S.data = null; S.view = 'map'; $('shell').classList.add('has-c'); armBack(); renderList();
     var tabs = '<div class="sgf maptabs"><button type="button" data-maptab="cust" aria-pressed="' + (MAPV.tab !== 'trail') + '">👥 고객 지도</button><button type="button" data-maptab="trail" aria-pressed="' + (MAPV.tab === 'trail') + '">📍 내 동선</button></div>';
     if (MAPV.tab === 'trail') return trailView(tabs);
-    var head = '<div class="chead"><button class="btn back" type="button" data-act="back">‹ 목록</button><h2 data-i="◎">지역별 고객</h2><span class="cmeta">만남 정보의 지역(구·동)으로 지도에 표시 · 번지수는 저장하지 않습니다</span></div>' + tabs;
+    var head = '<div class="chead"><button class="btn back" type="button" data-act="back">‹ 목록</button><h2 data-i="◎">지역별 고객</h2><span class="cmeta">고객 주소·만남 지역을 동네 단위로 표시 · 번지·이름은 지도 검색에 보내지 않습니다</span></div>' + tabs;
     var list = S.list.filter(function(c){ return !c.sample && (!MAPV.f || (MAPV.f === chOf(c)) || (MAPV.f === 'st:' + (c.stage === 'db' ? 'lead' : (c.stage || 'lead')))); });
     var groups = {}, none = []; list.forEach(function(c){ var a = areaKey(c); if (a) (groups[a] = groups[a] || []).push(c); else none.push(c); });
     var keys = Object.keys(groups).sort(function(a, b){ return groups[b].length - groups[a].length; });
     var chips = [['', '전체']].concat(STAGES.map(function(s){ return ['st:' + s[0], s[1]]; })).concat(CH.map(function(x){ return [x[0], x[1]]; }));
     $('main').innerHTML = head + '<div class="mapf">' + chips.map(function(x){ return '<button type="button" data-mapf="' + x[0] + '" aria-pressed="' + (MAPV.f === x[0]) + '">' + x[1] + '</button>'; }).join('') + '</div>' +
-      '<div id="mapBox" class="mapbox"><div class="note" style="padding:20px">지도를 불러오는 중…</div></div><div id="mapNote" class="note"></div>' +
+      '<div class="tmap"><div id="mapBox" class="mapbox"><div class="note" style="padding:20px">지도를 불러오는 중…</div></div>' +
+      '<div class="tm-top"><input id="tmQ" type="search" placeholder="🔍 고객 이름 · 동네 검색" autocomplete="off"></div>' +
+      '<div class="tm-fab"><button type="button" id="tmMe" title="내 위치">◎</button><button type="button" id="tmAll" title="전체 보기">⤢</button></div>' +
+      '<div class="tm-leg"><i style="background:#9aa3b2"></i>가망<i style="background:#4f7dff"></i>상담<i style="background:#d9a521"></i>계약<i style="background:#21b573"></i>관리</div></div><div id="mapNote" class="note"></div>' +
       '<div class="maplist">' + keys.map(function(k){ return '<details class="mpa"><summary><b>' + esc(k) + '</b><small>' + groups[k].length + '명</small></summary>' + groups[k].map(function(c){ return '<div class="mprow"><button type="button" class="bzrow" data-mapgo="' + c.id + '"><b>' + esc(c.name) + '</b><span>' + stageTxt(c.stage) + (meetOf(c).near ? ' · ' + esc(meetOf(c).near) : '') + '</span></button><button type="button" class="pb" data-ctopen="' + c.id + '">열기</button></div>'; }).join('') + '</details>'; }).join('') +
-      (none.length ? '<details class="mpa none"><summary><b>지역 미입력</b><small>' + none.length + '명 · 고객 화면의 만남 정보에서 지역을 넣으면 지도에 올라갑니다</small></summary>' + none.slice(0, 60).map(function(c){ return '<button type="button" class="bzrow" data-ctopen="' + c.id + '"><b>' + esc(c.name) + '</b><span>' + stageTxt(c.stage) + '</span></button>'; }).join('') + '</details>' : '') + '</div>';
+      (none.length ? '<details class="mpa none"><summary><b>주소·지역 없음</b><small>' + none.length + '명 · 고객 화면 ⋯ → 등록 요청서의 주소나, 만남 정보의 지역을 넣으면 지도에 올라갑니다</small></summary>' + none.slice(0, 60).map(function(c){ return '<button type="button" class="bzrow" data-ctopen="' + c.id + '"><b>' + esc(c.name) + '</b><span>' + stageTxt(c.stage) + '</span></button>'; }).join('') + '</details>' : '') + '</div>';
     window.scrollTo(0, 0);
     $('main').querySelectorAll('[data-mapf]').forEach(function(b){ b.onclick = function(){ MAPV.f = b.dataset.mapf; showMap(); }; });
-    if (!keys.length) { $('mapBox').innerHTML = '<div class="note" style="padding:20px">지역을 넣어 둔 고객이 아직 없습니다. 고객 화면 → 만남 정보에서 지역(구·동)을 넣어 보세요.</div>'; return; }
+    if (!keys.length) { $('mapBox').innerHTML = '<div class="note" style="padding:20px">주소나 지역이 있는 고객이 아직 없습니다. 고객 화면 ⋯ → 등록 요청서의 주소, 또는 만남 정보의 지역(구·동)을 넣으면 여기 지도에 올라갑니다.</div>'; return; }
     try { await loadLeaflet(); } catch(e){ $('mapBox').innerHTML = '<div class="note" style="padding:20px">' + esc(e.message) + '</div>'; return; }
     if (S.view !== 'map') return;
     $('mapBox').innerHTML = '';
-    var LF = window.L, dark = THEME === 'dark', map = LF.map('mapBox', { zoomControl: true, attributionControl: true }).setView([36.5, 127.8], 7);
-    LF.tileLayer('https://{s}.basemaps.cartocdn.com/' + (dark ? 'dark_all' : 'light_all') + '/{z}/{x}/{y}{r}.png', { maxZoom: 19, subdomains: 'abcd', attribution: '&copy; OpenStreetMap &copy; CARTO' }).addTo(map);
-    MAPV.map = map; MAPV.mk = {}; var layer = LF.layerGroup().addTo(map), pts = [], miss = 0, key = await kakaoKey(), fk = MAPV.focus ? (function(){ var fc = S.list.find(function(x){ return x.id === MAPV.focus; }); return fc ? areaKey(fc) : ''; })() : '';
+    var LF = window.L, dark = THEME === 'dark', map = LF.map('mapBox', { zoomControl: false, attributionControl: true }).setView([36.5, 127.8], 7); if (!IS_MOBILE) LF.control.zoom({ position: 'topright' }).addTo(map);
+    LF.tileLayer('https://{s}.basemaps.cartocdn.com/' + (dark ? 'dark_all' : 'rastertiles/voyager') + '/{z}/{x}/{y}{r}.png', { maxZoom: 19, subdomains: 'abcd', attribution: '&copy; OpenStreetMap &copy; CARTO' }).addTo(map);
+    MAPV.map = map; MAPV.mk = {}; MAPV.pos = {}; MAPV.groups = groups; tmBind(map, groups); var layer = LF.layerGroup().addTo(map), pts = [], miss = 0, key = await kakaoKey(), fk = MAPV.focus ? (function(){ var fc = S.list.find(function(x){ return x.id === MAPV.focus; }); return fc ? areaKey(fc) : ''; })() : '';
     if (fk) { var ki = keys.indexOf(fk); if (ki > 0) { keys.splice(ki, 1); keys.unshift(fk); } }
     mnote((key ? '카카오' : 'OpenStreetMap') + ' 지도 검색으로 지역 위치를 찾는 중… (처음 한 번만, 그다음은 저장된 위치 사용)');
-    var col = { lead: '#9aa3b2', consult: '#4f7dff', contract: '#e2c27e', care: '#3ecf8e' };
+    var col = { lead: '#9aa3b2', consult: '#4f7dff', contract: '#d9a521', care: '#21b573' };
     for (var i = 0; i < keys.length; i++) {
       if (S.view !== 'map') return;
       var k = keys[i], pos = await geocode(k); if (!pos) { miss++; continue; }
       var cs = groups[k], cnt = {}; cs.forEach(function(c){ var s = c.stage === 'db' ? 'lead' : (c.stage || 'lead'); cnt[s] = (cnt[s] || 0) + 1; });
       var top = Object.keys(cnt).sort(function(a, b){ return cnt[b] - cnt[a]; })[0];
-      var m = LF.circleMarker([pos.lat, pos.lng], { radius: 9 + Math.min(14, Math.sqrt(cs.length) * 4), color: col[top], fillColor: col[top], fillOpacity: .45, weight: 2 }).addTo(layer);
-      m.bindTooltip('<b>' + esc(k) + '</b> ' + cs.length + '명', { direction: 'top' });
+      var m = LF.marker([pos.lat, pos.lng], { icon: LF.divIcon({ className: 'tm-pin', html: '<span style="--c:' + col[top] + '"><b>' + cs.length + '</b></span><em>' + esc(k.split(' ').slice(-1)[0]) + '</em>', iconSize: [40, 52], iconAnchor: [20, 46], popupAnchor: [0, -40] }) }).addTo(layer);
+      MAPV.pos[k] = pos; tmPeople(k, cs, pos, col);
       m.bindPopup('<div class="mpp"><b>' + esc(k) + '</b> <small>' + cs.length + '명</small>' + cs.slice(0, 15).map(function(c){ return '<button type="button" class="bzrow" data-ctopen="' + c.id + '"><b>' + esc(c.name) + '</b><span>' + stageTxt(c.stage) + '</span></button>'; }).join('') + (cs.length > 15 ? '<em class="note">외 ' + (cs.length - 15) + '명</em>' : '') + '</div>', { maxWidth: 260 });
       pts.push([pos.lat, pos.lng]); MAPV.mk[k] = m;
       if (fk) { if (k === fk) mapFocus(MAPV.focus, true); }
@@ -10654,6 +10730,6 @@ function HealthUI(root, H) {
 })();
 
 </script>
-<script>window.AOB_V="a8e73bd1c02c";if("serviceWorker" in navigator&&location.protocol!=="file:"){addEventListener("load",function(){navigator.serviceWorker.register("sw.js").then(function(r){try{r.update();}catch(e){}}).catch(function(){});});}(function(){if(location.protocol==="file:")return;var hid=0,shown=0;function busy(){return !!document.getElementById("cph")||!!document.querySelector("#dlg:not([hidden])");}function bar(){if(shown)return;shown=1;var b=document.createElement("button");b.type="button";b.id="verBar";b.textContent="🔄 새 버전이 나왔습니다 · 눌러서 바로 적용";b.style.cssText="position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 8px);transform:translateX(-50%);z-index:99999;border:0;border-radius:999px;padding:10px 18px;background:#2f6bff;color:#fff;font:600 14px sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.35)";b.onclick=function(){location.reload();};document.body.appendChild(b);}function chk(auto){fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();}).then(function(j){if(j&&j.v&&j.v!==window.AOB_V){if(auto&&!busy())location.reload();else bar();}}).catch(function(){});}document.addEventListener("visibilitychange",function(){if(document.hidden){hid=Date.now();return;}var away=hid?Date.now()-hid:0;hid=0;chk(away>30*60*1000);});setInterval(function(){if(!document.hidden)chk(false);},5*60*1000);setTimeout(function(){chk(false);},20000);})();</script>
+<script>window.AOB_V="def2652799c2";if("serviceWorker" in navigator&&location.protocol!=="file:"){addEventListener("load",function(){navigator.serviceWorker.register("sw.js").then(function(r){try{r.update();}catch(e){}}).catch(function(){});});}(function(){if(location.protocol==="file:")return;var hid=0,shown=0;function busy(){return !!document.getElementById("cph")||!!document.querySelector("#dlg:not([hidden])");}function bar(){if(shown)return;shown=1;var b=document.createElement("button");b.type="button";b.id="verBar";b.textContent="🔄 새 버전이 나왔습니다 · 눌러서 바로 적용";b.style.cssText="position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 8px);transform:translateX(-50%);z-index:99999;border:0;border-radius:999px;padding:10px 18px;background:#2f6bff;color:#fff;font:600 14px sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.35)";b.onclick=function(){location.reload();};document.body.appendChild(b);}function chk(auto){fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();}).then(function(j){if(j&&j.v&&j.v!==window.AOB_V){if(auto&&!busy())location.reload();else bar();}}).catch(function(){});}document.addEventListener("visibilitychange",function(){if(document.hidden){hid=Date.now();return;}var away=hid?Date.now()-hid:0;hid=0;chk(away>30*60*1000);});setInterval(function(){if(!document.hidden)chk(false);},5*60*1000);setTimeout(function(){chk(false);},20000);})();</script>
 </body>
 </html>
