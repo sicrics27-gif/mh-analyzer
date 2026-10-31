@@ -2062,3 +2062,12 @@ html:has(.modal:not([hidden])),html:has(.modal:not([hidden])) body{overflow:hidd
 .tn[data-ctopen]{cursor:pointer}
 .tn.g{background:#d9f5e4;border-color:#5cc98a;color:#0f5a32}.tn.o{background:#ffe9c2;border-color:#f0a000;color:#6b4300}.tn.n{background:var(--paper)}
 .tn.cat{background:var(--accent);color:var(--on-accent);border-color:transparent}
+/* 고객 목록: 진행현황 · 채널 바로 고르기 아이콘 (⋯ 메뉴 안 열어도 됨) */
+.citem{position:relative}
+.citem .qbox{position:absolute;right:36px;top:50%;transform:translateY(-50%);display:flex;gap:6px;z-index:2}
+.citem .qico{display:flex;flex-direction:column;align-items:center;justify-content:center;width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);cursor:pointer;line-height:1}
+.citem .qico i{font-style:normal;font-size:16px}.citem .qico small{font-size:9.5px!important;opacity:.85!important;margin-top:2px}
+.citem .qico:active{transform:scale(.94);background:rgba(79,125,255,.25)}
+:root[data-theme="light"] .citem .qico{background:#f2f4f8;border-color:#dfe3ea}
+
+.citem{padding-right:130px!important}

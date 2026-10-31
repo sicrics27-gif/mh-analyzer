@@ -186,7 +186,7 @@
       if (fs.length) { root.__sharedFiles = (root.__sharedFiles || []).concat(fs); document.dispatchEvent(new CustomEvent('native-shared', { detail: fs })); }
     }).catch(function () { });
   }
-  if (N) { N.addListener('shared', pullShared); document.addEventListener('DOMContentLoaded', function () { setTimeout(pullShared, 1500); }); }
+  if (N) { root.addEventListener('aobShared', function () { setTimeout(pullShared, 300); }); N.addListener('shared', pullShared); document.addEventListener('DOMContentLoaded', function () { setTimeout(pullShared, 1500); }); }
 
   // 뒤로가기 버튼은 앱 기본 동작(화면 기록 뒤로)을 그대로 씀 → 기존 '창 닫기 → 목록 → 두 번 누르면 종료'와 같음
 })(this);

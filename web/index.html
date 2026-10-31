@@ -2283,6 +2283,15 @@ html:has(.modal:not([hidden])),html:has(.modal:not([hidden])) body{overflow:hidd
 .tn[data-ctopen]{cursor:pointer}
 .tn.g{background:#d9f5e4;border-color:#5cc98a;color:#0f5a32}.tn.o{background:#ffe9c2;border-color:#f0a000;color:#6b4300}.tn.n{background:var(--paper)}
 .tn.cat{background:var(--accent);color:var(--on-accent);border-color:transparent}
+/* 고객 목록: 진행현황 · 채널 바로 고르기 아이콘 (⋯ 메뉴 안 열어도 됨) */
+.citem{position:relative}
+.citem .qbox{position:absolute;right:36px;top:50%;transform:translateY(-50%);display:flex;gap:6px;z-index:2}
+.citem .qico{display:flex;flex-direction:column;align-items:center;justify-content:center;width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);cursor:pointer;line-height:1}
+.citem .qico i{font-style:normal;font-size:16px}.citem .qico small{font-size:9.5px!important;opacity:.85!important;margin-top:2px}
+.citem .qico:active{transform:scale(.94);background:rgba(79,125,255,.25)}
+:root[data-theme="light"] .citem .qico{background:#f2f4f8;border-color:#dfe3ea}
+
+.citem{padding-right:130px!important}
 
 </style>
 </head>
@@ -2548,7 +2557,7 @@ html:has(.modal:not([hidden])),html:has(.modal:not([hidden])) body{overflow:hidd
       if (fs.length) { root.__sharedFiles = (root.__sharedFiles || []).concat(fs); document.dispatchEvent(new CustomEvent('native-shared', { detail: fs })); }
     }).catch(function () { });
   }
-  if (N) { N.addListener('shared', pullShared); document.addEventListener('DOMContentLoaded', function () { setTimeout(pullShared, 1500); }); }
+  if (N) { root.addEventListener('aobShared', function () { setTimeout(pullShared, 300); }); N.addListener('shared', pullShared); document.addEventListener('DOMContentLoaded', function () { setTimeout(pullShared, 1500); }); }
 
   // 뒤로가기 버튼은 앱 기본 동작(화면 기록 뒤로)을 그대로 씀 → 기존 '창 닫기 → 목록 → 두 번 누르면 종료'와 같음
 })(this);
@@ -5936,7 +5945,7 @@ function HealthUI(root, H) {
       showTree();
     };
   }
-  // 🌳 영업 트리: 알마인드 모양 그대로 (지금 고객 단계로 색을 다시 칠함 · 누르면 고객 화면)
+  // 🌳 영업 트리: 알마인드 모양 그대로 (지금 진행현황로 색을 다시 칠함 · 누르면 고객 화면)
   async function showTree(){
     S.cur = null; S.data = null; S.view = 'tree'; $('shell').classList.add('has-c'); armBack(); renderList();
     var M = await mindLoad(), head = '<div class="chead"><button class="btn back" type="button" data-act="back">‹ 목록</button><h2 data-i="🌳">영업 트리</h2><span class="cmeta">알마인드 모양 그대로 · <span class="mdot g"></span>계약자 <span class="mdot o"></span>계약 전 · 이름을 누르면 고객 화면</span></div>';
@@ -5969,7 +5978,7 @@ function HealthUI(root, H) {
   function renderCard(){
     var c = S.cur, n = nextDue(c), ph = normPhone(c.phone);
     var h = '<section class="ccard">' +
-      '<div class="cc-stage" role="group" aria-label="고객 단계">' + STAGES.map(function(s){ return '<button type="button" data-stage="' + s[0] + '" aria-pressed="' + ((c.stage === 'db' ? 'lead' : c.stage || 'lead') === s[0]) + '">' + s[1] + '</button>'; }).join('') + '</div>' +
+      '<div class="cc-stage" role="group" aria-label="진행현황">' + STAGES.map(function(s){ return '<button type="button" data-stage="' + s[0] + '" aria-pressed="' + ((c.stage === 'db' ? 'lead' : c.stage || 'lead') === s[0]) + '">' + s[1] + '</button>'; }).join('') + '</div>' +
       '<div class="cc-info">' +
         (ph ? '<span class="cc-ph"><b>' + phoneTxt(ph) + '</b>' + '' + '<button type="button" class="pb" data-copyph="' + ph + '">복사</button></span>' : '<button type="button" class="lnk2" data-act="edit">휴대폰 번호 넣기</button>') +
         '<span class="cc-kv cc-ch"><small>영업 채널</small>' + (c.sample ? '—' : chChips(c)) + '</span>' +
@@ -6283,7 +6292,7 @@ function HealthUI(root, H) {
     if (nChk) h += '<div class="gapban a">' + IC.warn + '<span>같은 이름이 두 번 있어 <b>동일인인지 확인</b>이 필요한 고객 ' + nChk + '명</span><button class="pb" type="button" data-cm="chk">확인 목록</button></div>';
     if (k === 'all') h += '<div class="dbbar"><div><b>엑셀로 고객 한꺼번에 가져오기</b><small>정리해 둔 고객표(.xlsx)를 골라 영업·사업, 가족·지인·친구·DB, 소개자까지 한 번에 등록합니다. 파일은 이 기기 안에서만 읽습니다.</small></div><button class="go" type="button" data-cm="xlsx">📥 엑셀 가져오기</button><button class="go" type="button" data-cm="emm">🧠 알마인드 가져오기</button><button class="btn" type="button" data-cm="tree">🌳 영업 트리</button></div>';
     if (k === 'db') h += '<div class="dbbar"><div><b>회사 DB 고객 가져오기</b><small>DB 사이트 상세 화면에서 "AOB로 복사" 북마크를 차례로 누른 뒤, 여기서 한 번에 가져옵니다.</small></div><button class="go" type="button" data-cm="db">DB 고객 가져오기</button><button class="btn" type="button" data-cm="bm">북마크 만들기 페이지</button><button class="btn" type="button" data-cm="how">사용법</button></div>';
-    if (k === 'none' && rows.length) h += '<div class="gapban a">' + IC.warn + '<span>오른쪽 <b>영업 채널</b> 칸에서 고르면 바로 그 채널로 옮겨집니다. 계약을 마친 고객은 고객 단계를 <b>계약</b>이나 <b>관리</b>로 두면 자동으로 보유고객에 들어갑니다.</span></div>';
+    if (k === 'none' && rows.length) h += '<div class="gapban a">' + IC.warn + '<span>오른쪽 <b>영업 채널</b> 칸에서 고르면 바로 그 채널로 옮겨집니다. 계약을 마친 고객은 진행현황를 <b>계약</b>이나 <b>관리</b>로 두면 자동으로 보유고객에 들어갑니다.</span></div>';
     var extraHead = k === 'db' ? '<th>인수상태</th><th>배분일</th><th>AS 마감</th>' : k === 'mine' ? '<th>보유 계약</th><th>월 보험료</th><th>응당일</th>' : '<th>지역</th><th>만남</th>';
     var extra = function(c){
       if (k === 'db') { var d = c.db || {}, left = d.asDue ? dayDiff(t, d.asDue) : null; return '<td>' + esc(d.status || '—') + '</td><td class="n">' + (d.dist ? dot(d.dist) : '—') + '</td><td class="n' + (left != null && left >= 0 && left <= 7 && /가입불가|AS재신청/.test(d.status || '') ? ' due' : '') + '">' + (d.asDue ? dot(d.asDue) + (left != null && left >= 0 ? '<small>D-' + left + '</small>' : '') : '—') + '</td>'; }
@@ -6330,7 +6339,7 @@ function HealthUI(root, H) {
   window.addEventListener('resize', qclose); document.addEventListener('scroll', function(e){ if ($('qpop') && !$('qpop').contains(e.target)) qclose(); }, true);
   function qItem(v, label, on, sub){ return '<button type="button" class="qi' + (on ? ' on' : '') + '" data-qv="' + esc(v) + '" role="menuitem">' + label + (sub ? '<small>' + sub + '</small>' : '') + (on ? '<i>✓</i>' : '') + '</button>'; }
   var STG_DOT = { lead: '#9AA6BF', consult: '#6F9BFF', contract: '#D9BC86', care: '#5ED39A' };
-  function stageMenu(cur){ return '<div class="qh">고객 단계</div>' + STAGES.map(function(s){ return qItem('stage:' + s[0], '<span class="qd" style="background:' + STG_DOT[s[0]] + '"></span>' + s[1], cur === s[0], s[0] === 'contract' || s[0] === 'care' ? '보유고객' : ''); }).join(''); }
+  function stageMenu(cur){ return '<div class="qh">진행현황</div>' + STAGES.map(function(s){ return qItem('stage:' + s[0], '<span class="qd" style="background:' + STG_DOT[s[0]] + '"></span>' + s[1], cur === s[0], s[0] === 'contract' || s[0] === 'care' ? '보유고객' : ''); }).join(''); }
   function chMenu(cur){ return '<div class="qh">영업 채널</div>' + CH.map(function(x){ return qItem('ch:' + x[0], x[1], cur === x[0]); }).join('') + qItem('ch:', '<span class="note">미분류로</span>', !cur); }
   function todoMenu(){ var t = todayStr(), nm = function(){ var d = new Date(t + 'T12:00:00'), k = (8 - d.getDay()) % 7 || 7; return addDay(t, k); };
     return '<div class="qh">할 일 잡기 (연락하기)</div>' + [['todo:' + t, '오늘'], ['todo:' + addDay(t, 1), '내일'], ['todo:' + addDay(t, 3), '3일 뒤'], ['todo:' + nm(), '다음 주 월요일'], ['todo:' + addDay(t, 14), '2주 뒤']].map(function(x){ return qItem(x[0], x[1], false, dot(x[0].slice(5))); }).join('') + '<div class="qdate"><input type="date" id="qDate" min="' + t + '"><button type="button" class="pb" data-qv="todo:pick">지정</button></div>' + qItem('todo:clear', '<span class="note">할 일 지우기</span>'); }
@@ -7752,7 +7761,7 @@ function HealthUI(root, H) {
     setTimeout(sugNotify, 9000);
     setTimeout(takeShared, 400);
     setTimeout(function(){ var g0 = window.__aobGo || ''; if (g0 && g0 !== 'c5') window.dispatchEvent(new CustomEvent('aob-go', { detail: g0 })); }, 1200);
-    setTimeout(function(){ nhcDaily().then(function(){ if (window.__aobGo === 'c5') { window.__aobGo = ''; showContacts(); } else if (!S.cur && !S.view) showWelcome(); c5Sched(); setTimeout(function(){ briefCalc(true); }, 4000); }); }, 2500);
+    setTimeout(function(){ nhcDaily().then(function(){ if (window.__aobGo === 'c5') { window.__aobGo = ''; showContacts(); } else if (!S.cur && !S.view) showWelcome(); c5Sched(); setTimeout(function(){ briefCalc(true); }, 4000); crashCheck(); }); }, 2500);
     setTimeout(function(){ nhcPoll(); }, 4000);
     setTimeout(trkAuto, 2500); setTimeout(clipCheck, 1500); gameTick(true).then(function(){ if (!S.cur && !S.view) { if (ARC_ON && skin() === 'arc') Arcade.show(); else showWelcome(); } });
     if (Sync.isOn()) { if (Sync.autoRefresh && Sync.autoRefresh()) return; syncNow(); }
@@ -7985,7 +7994,7 @@ function HealthUI(root, H) {
         var nd = nextDue(c), r4 = nd != null ? '<span class="r4' + (nd < 0 ? ' late' : nd === 0 ? ' due' : nd <= 2 ? ' soon' : '') + '"><i>' + (nd < 0 ? 'D+' + (-nd) : nd === 0 ? '오늘' : 'D-' + nd) + '</i>' + esc(c.next.t || '할 일') + '</span>' : '';
         var r2 = c.status === 'done' ? '<span class="r2 ' + (c.sumOk ? 'ok' : '') + '">' + esc(c.summary || '') + '</span>' : '';
         var lo = lastOf(c), ph2 = normPhone(c.phone), r5 = '<span class="r5">' + (ph2 ? '<span class="ph">' + phoneTxt(ph2) + '</span>' : '<span class="ph none">번호 없음</span>') + (lo.any ? '<span class="lc' + (dayDiff(lo.any, todayStr()) > 60 ? ' old' : '') + '">' + ago(lo.any) + ' 연락</span>' : '<span class="lc old">연락 기록 없음</span>') + '</span>';
-        return '<button type="button" class="citem" data-cid="' + c.id + '" aria-current="' + cur + '"><span class="cav s-' + (c.stage === 'db' ? 'lead' : c.stage || 'lead') + (/^(contract|care)$/.test(c.stage || '') ? ' mk-g' : ' mk-o') + '" aria-hidden="true" title="' + (/^(contract|care)$/.test(c.stage || '') ? '계약자' : '아직 계약 전') + '">' + esc(String(c.name || '?').slice(0, 1)) + '</span><span class="r1">' + (QS.sel ? '<span class="qck' + (QS.sel[c.id] ? ' on' : '') + '" aria-hidden="true"></span>' : '') + '<b>' + esc(c.name) + '</b><i class="stg pk s-' + (c.stage === 'db' ? 'lead' : c.stage || 'lead') + '" data-q="stage" title="고객 단계 바꾸기">' + stageTxt(c.stage) + '<u>▾</u></i><i class="chp pk' + (chOf(c) ? '' : ' none') + '" data-q="ch" title="영업 채널 바꾸기">' + (chOf(c) ? chTxt(chOf(c)) : '채널') + '<u>▾</u></i><small>' + sexTxt(c.sex) + (ageOf(c.birth) !== '' ? '·' + ageOf(c.birth) + '세' : '') + (dupName[c.name] > 1 && c.birth ? ' · ' + String(c.birth).slice(2, 4) + '.' + String(c.birth).slice(4, 6) + '.' + String(c.birth).slice(6, 8) + '생' : '') + '</small>' + (c.status === 'done' ? '<span class="stt' + (/^보장분석만/.test(c.summary || '') ? ' w' : '') + '">' + (/^보장분석만/.test(c.summary || '') ? '보장만' : '✓ 분석') + '</span>' : '<span class="stt sp"></span>') + '<span class="qmore" data-q="more" title="빠른 메뉴 (오른쪽 클릭·길게 누르기)">⋯</span></span>' + (c.status === 'done' && c.asOf ? (function(){ var F = freshOf(c.asOf); return '<span class="r3"><i class="fp ' + F.lv + '"></i>자료 ' + dot(c.asOf) + ' · ' + F.txt + (c.applyDate ? ' · 청약 ' + dot(c.applyDate) : '') + '</span>'; })() : '') + r5 + r4 + r2 + '</button>';
+        return '<button type="button" class="citem" data-cid="' + c.id + '" aria-current="' + cur + '"><span class="cav s-' + (c.stage === 'db' ? 'lead' : c.stage || 'lead') + (/^(contract|care)$/.test(c.stage || '') ? ' mk-g' : ' mk-o') + '" aria-hidden="true" title="' + (/^(contract|care)$/.test(c.stage || '') ? '계약자' : '아직 계약 전') + '">' + esc(String(c.name || '?').slice(0, 1)) + '</span><span class="r1">' + (QS.sel ? '<span class="qck' + (QS.sel[c.id] ? ' on' : '') + '" aria-hidden="true"></span>' : '') + '<b>' + esc(c.name) + '</b><i class="stg pk s-' + (c.stage === 'db' ? 'lead' : c.stage || 'lead') + '" data-q="stage" title="진행현황 바꾸기">' + stageTxt(c.stage) + '<u>▾</u></i><i class="chp pk' + (chOf(c) ? '' : ' none') + '" data-q="ch" title="영업 채널 바꾸기">' + (chOf(c) ? chTxt(chOf(c)) : '채널') + '<u>▾</u></i><small>' + sexTxt(c.sex) + (ageOf(c.birth) !== '' ? '·' + ageOf(c.birth) + '세' : '') + (dupName[c.name] > 1 && c.birth ? ' · ' + String(c.birth).slice(2, 4) + '.' + String(c.birth).slice(4, 6) + '.' + String(c.birth).slice(6, 8) + '생' : '') + '</small>' + (c.status === 'done' ? '<span class="stt' + (/^보장분석만/.test(c.summary || '') ? ' w' : '') + '">' + (/^보장분석만/.test(c.summary || '') ? '보장만' : '✓ 분석') + '</span>' : '<span class="stt sp"></span>') + '<span class="qbox"><span class="qico" data-q="stage" title="진행현황 바꾸기"><i>📊</i><small>진행</small></span><span class="qico" data-q="ch" title="영업 채널 바꾸기"><i>🏷️</i><small>채널</small></span></span><span class="qmore" data-q="more" title="빠른 메뉴 (오른쪽 클릭·길게 누르기)">⋯</span></span>' + (c.status === 'done' && c.asOf ? (function(){ var F = freshOf(c.asOf); return '<span class="r3"><i class="fp ' + F.lv + '"></i>자료 ' + dot(c.asOf) + ' · ' + F.txt + (c.applyDate ? ' · 청약 ' + dot(c.applyDate) : '') + '</span>'; })() : '') + r5 + r4 + r2 + '</button>';
       }).join('');
     });
     if (!S.list.length) h = '<div class="cempty">등록된 고객이 없습니다.<br>위의 <b>신규 고객 등록</b>으로 시작하세요.</div>';
@@ -9867,7 +9876,7 @@ function HealthUI(root, H) {
     $('main').querySelectorAll('[data-bugre]').forEach(function(b){ b.onclick = async function(){ var more = prompt('AI에게 더 알려 줄 내용이 있으면 적어 주세요 (없으면 비워 두고 확인)', ''); if (more === null) return; b.disabled = true; try { var j = await teamPost(u, { a: 'bug_retry', k: team.key, id: b.dataset.bugre, more: more }); if (!j.ok) throw new Error(j.error); toast('AI가 다시 고쳐 봅니다'); rerun(); } catch(e){ b.disabled = false; toast(String(e.message || e)); } }; });
     $('main').querySelectorAll('[data-bugpr]').forEach(function(b){ b.onclick = function(){ openExt('https://github.com/sicrics27-gif/mh-analyzer/pull/' + b.dataset.bugpr + '/files'); }; });
     $('main').querySelectorAll('[data-bugimg]').forEach(function(b){ b.onclick = async function(){ b.disabled = true; try { var j = await (await fetch(u + '?a=bug_img&k=' + encodeURIComponent(team.key) + '&id=' + encodeURIComponent(b.dataset.bugimg))).json(); if (!j.ok) throw new Error('사진을 불러오지 못했습니다'); openDlg('<h4>📷 캡처</h4><img src="data:image/jpeg;base64,' + j.img + '" style="width:100%;border-radius:10px"><div class="mrow"><button class="go" type="button" id="biX" style="margin-left:auto">닫기</button></div>', 'wide'); $('biX').onclick = closeDlg; } catch(e){ toast(String(e.message || e)); } b.disabled = false; }; });
-    if (SUG.focus) { SUG.focus = 0; var nf = $('sgNew'); if (nf) { nf.scrollIntoView({ block: 'start' }); setTimeout(function(){ if ($('sgT')) $('sgT').focus(); }, 300); } }
+    if (SUG.preT && $('sgT')) { $('sgT').value = SUG.preT; SUG.preT = ''; } if (SUG.focus) { SUG.focus = 0; var nf = $('sgNew'); if (nf) { nf.scrollIntoView({ block: 'start' }); setTimeout(function(){ if ($('sgT')) $('sgT').focus(); }, 300); } }
     $('main').querySelectorAll('[data-sgl]').forEach(function(b){ b.onclick = async function(){ b.disabled = true; try { await teamPost(u, { a: 'sug_like', c: me, id: b.dataset.sgl }); } catch(e){} rerun(); }; });
     $('main').querySelectorAll('[data-sgdel]').forEach(function(b){ b.onclick = async function(){ if (!confirm('이 건의를 지울까요?')) return; try { var j = await teamPost(u, { a: 'sug_del', c: me, k: team.key || '', id: b.dataset.sgdel }); if (!j.ok) throw new Error(j.error); toast('지웠습니다'); rerun(); } catch(e){ toast(String(e.message || e)); } }; });
     $('main').querySelectorAll('[data-sgsave]').forEach(function(b){ b.onclick = async function(){ var id = b.dataset.sgsave, st = $('main').querySelector('[data-sgs="' + id + '"]').value, rp = $('main').querySelector('[data-sgr="' + id + '"]').value.trim(); b.disabled = true; try { var j = await teamPost(u, { a: 'sug_rev', k: team.key, id: id, st: st, reply: rp }); if (!j.ok) throw new Error(j.error); toast('검토 결과를 저장했습니다 · 팀원에게 바로 보입니다'); rerun(); } catch(e){ b.disabled = false; toast(String(e.message || e)); } }; });
@@ -9879,9 +9888,19 @@ function HealthUI(root, H) {
   window.addEventListener('unhandledrejection', function(e){ var r = e.reason; ERRS.push({ at: new Date().toISOString().slice(11, 19), m: 'promise: ' + String(r && (r.message || r) || '').slice(0, 200) }); if (ERRS.length > 15) ERRS.shift(); });
   var NUDGED = false;
   function errNudge(){ if (NUDGED || !Store.isOpen || !Store.isOpen()) return; NUDGED = true; setTimeout(function(){ var b = document.createElement('button'); b.type = 'button'; b.className = 'errnudge'; b.innerHTML = '🐞 화면에 문제가 생겼나요? <b>오류 신고하기</b>'; b.onclick = function(){ b.remove(); bugReport(); }; document.body.appendChild(b); setTimeout(function(){ b.remove(); }, 12000); }, 600); }
+  // 지난번에 앱이 갑자기 꺼졌으면(휴대폰 앱이 원인을 남겨 둠) → 오류 신고로 바로 보낼 수 있게
+  var CRASH = '';
+  async function crashCheck(){
+    if (!(window.Native && Native.on && Native.aob && Native.aob.lastCrash)) return;
+    try { var r = await natCall('lastCrash'); CRASH = (r && r.text || '').slice(0, 6000); } catch(e){ return; }
+    if (!CRASH) return;
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'errnudge'; b.innerHTML = '⚠️ 지난번에 앱이 갑자기 꺼졌습니다 · <b>원인 보내기</b>';
+    b.onclick = function(){ b.remove(); SUG.kind = 'bug'; SUG.focus = 1; SUG.preT = '앱이 갑자기 꺼짐 (자동 기록)'; showSug('all'); };
+    document.body.appendChild(b); setTimeout(function(){ b.remove(); }, 20000);
+  }
   function bugReport(){ SUG.kind = 'bug'; SUG.focus = 1; showSug('all'); }
   function bugDiag(){
-    var o = { app: window.AOB_V || '', apk: apkCode(), view: S.view || (S.cur ? 'customer' : 'list'), screen: innerWidth + 'x' + innerHeight + '@' + (devicePixelRatio || 1), theme: THEME, online: navigator.onLine, ua: navigator.userAgent.slice(0, 160), at: new Date().toISOString(), errors: ERRS.slice(-10) };
+    var o = { crash: CRASH ? CRASH.split('\n').slice(0, 40).join('\n') : undefined, app: window.AOB_V || '', apk: apkCode(), view: S.view || (S.cur ? 'customer' : 'list'), screen: innerWidth + 'x' + innerHeight + '@' + (devicePixelRatio || 1), theme: THEME, online: navigator.onLine, ua: navigator.userAgent.slice(0, 160), at: new Date().toISOString(), errors: ERRS.slice(-10) };
     return JSON.stringify(o, null, 1).replace(/01[016789][-\s]?\d{3,4}[-\s]?\d{4}/g, '[번호]');
   }
   // 캡처 사진에서 고객 정보를 손가락으로 문질러 까맣게 가리기 → JPEG(최대 1280px)
@@ -11032,7 +11051,7 @@ function HealthUI(root, H) {
       '<span class="l">성별</span><div class="sexsel" id="fSex"><button type="button" data-s="M" aria-pressed="' + (sex === 'M') + '">남</button><button type="button" data-s="F" aria-pressed="' + (sex === 'F') + '">여</button></div>' +
       '<label class="l" for="fBirth">생년월일 <small class="note">(PDF 비밀번호로 자동 사용)</small></label><input id="fBirth" inputmode="numeric" maxlength="10" placeholder="YYYY-MM-DD (예: 19580707)" value="' + b + '" autocomplete="off">' +
       '<label class="l" for="fPhone">휴대폰 번호 <small class="note">(선택 · 문자·전화용)</small></label><input id="fPhone" inputmode="tel" maxlength="13" placeholder="010-0000-0000" value="' + esc(c && c.phone ? phoneTxt(c.phone) : '') + '" autocomplete="off">' +
-      '<span class="l">고객 단계</span><div class="sexsel st4" id="fStg">' + STAGES.map(function(x){ return '<button type="button" data-v="' + x[0] + '" aria-pressed="' + (((c && c.stage) || 'lead') === x[0]) + '">' + x[1] + '</button>'; }).join('') + '</div>' +
+      '<span class="l">진행현황</span><div class="sexsel st4" id="fStg">' + STAGES.map(function(x){ return '<button type="button" data-v="' + x[0] + '" aria-pressed="' + (((c && c.stage) || 'lead') === x[0]) + '">' + x[1] + '</button>'; }).join('') + '</div>' +
       '<span class="l">영업 채널</span><div class="sexsel st4 ch7" id="fCh">' + CH.map(function(x){ return '<button type="button" data-v="' + x[0] + '" aria-pressed="' + ((c ? chOf(c) : (S.ch && S.ch !== 'mine' && S.ch !== 'none' ? S.ch : '')) === x[0]) + '">' + x[1] + '</button>'; }).join('') + '</div>' +
       '<div class="frow2"><div><label class="l" for="fRef">소개자 <small class="note">(선택)</small></label><input id="fRef" type="text" maxlength="20" value="' + esc(c && c.ref || '') + '" placeholder="예: 김OO 고객 소개"></div><div><label class="l" for="fInt">관심 상품 <small class="note">(선택)</small></label><input id="fInt" type="text" maxlength="30" value="' + esc(c && c.interest || '') + '" placeholder="예: 간편 3.5.5, 실손"></div></div>' +
       '<label class="l" for="fMemo">메모 <small class="note">(선택)</small></label><textarea id="fMemo" placeholder="상담 내용 등">' + esc(c ? c.memo || '' : '') + '</textarea>' +
