@@ -2048,3 +2048,17 @@ html:has(.modal:not([hidden])),html:has(.modal:not([hidden])) body{overflow:hidd
 .sgfx-a{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .mskw{max-height:62vh;overflow:auto;border-radius:10px;background:#000;touch-action:none}.mskw canvas{display:block;width:100%;height:auto;touch-action:none;cursor:crosshair}
 .errnudge{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 84px);transform:translateX(-50%);z-index:9500;border:0;border-radius:999px;padding:10px 16px;background:#1f2433;color:#fff;font:inherit;font-size:13.5px;box-shadow:0 8px 24px rgba(0,0,0,.4);cursor:pointer;white-space:nowrap}.errnudge b{color:#ffcf5c}
+/* ===== 계약자 초록 · 계약 전 주황 (고객 목록 동그라미) + 영업 트리 ===== */
+.cav.mk-g{background:linear-gradient(135deg,#3ecf8e,#1a9a5c)!important;color:#fff!important}
+.cav.mk-o{background:linear-gradient(135deg,#ffb347,#e07b00)!important;color:#fff!important}
+.mdot{display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 4px 0 2px;vertical-align:-1px}.mdot.g{background:#21b573}.mdot.o{background:#f0a000}
+.tag.new{background:var(--accent-soft);color:var(--accent)}
+.mtw{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 10px;overflow:auto}
+.mtree,.mtree ul{list-style:none;margin:0;padding:0}.mtree ul{padding-left:18px;border-left:2px solid var(--line);margin-left:12px}
+.mtree li{margin:5px 0}.mtree summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px}.mtree summary::-webkit-details-marker{display:none}
+.mtree summary em{font-style:normal;font-size:11px;color:var(--mute)}
+.tn{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:10px;font-weight:700;font-size:13.5px;border:1px solid var(--line);background:var(--soft);color:var(--ink)}
+.tn small{font-weight:500;font-size:11px;opacity:.8}.tn i{font-style:normal;font-size:11px}
+.tn[data-ctopen]{cursor:pointer}
+.tn.g{background:#d9f5e4;border-color:#5cc98a;color:#0f5a32}.tn.o{background:#ffe9c2;border-color:#f0a000;color:#6b4300}.tn.n{background:var(--paper)}
+.tn.cat{background:var(--accent);color:var(--on-accent);border-color:transparent}

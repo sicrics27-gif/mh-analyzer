@@ -2269,6 +2269,20 @@ html:has(.modal:not([hidden])),html:has(.modal:not([hidden])) body{overflow:hidd
 .sgfx-a{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .mskw{max-height:62vh;overflow:auto;border-radius:10px;background:#000;touch-action:none}.mskw canvas{display:block;width:100%;height:auto;touch-action:none;cursor:crosshair}
 .errnudge{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 84px);transform:translateX(-50%);z-index:9500;border:0;border-radius:999px;padding:10px 16px;background:#1f2433;color:#fff;font:inherit;font-size:13.5px;box-shadow:0 8px 24px rgba(0,0,0,.4);cursor:pointer;white-space:nowrap}.errnudge b{color:#ffcf5c}
+/* ===== 계약자 초록 · 계약 전 주황 (고객 목록 동그라미) + 영업 트리 ===== */
+.cav.mk-g{background:linear-gradient(135deg,#3ecf8e,#1a9a5c)!important;color:#fff!important}
+.cav.mk-o{background:linear-gradient(135deg,#ffb347,#e07b00)!important;color:#fff!important}
+.mdot{display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 4px 0 2px;vertical-align:-1px}.mdot.g{background:#21b573}.mdot.o{background:#f0a000}
+.tag.new{background:var(--accent-soft);color:var(--accent)}
+.mtw{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 10px;overflow:auto}
+.mtree,.mtree ul{list-style:none;margin:0;padding:0}.mtree ul{padding-left:18px;border-left:2px solid var(--line);margin-left:12px}
+.mtree li{margin:5px 0}.mtree summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px}.mtree summary::-webkit-details-marker{display:none}
+.mtree summary em{font-style:normal;font-size:11px;color:var(--mute)}
+.tn{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:10px;font-weight:700;font-size:13.5px;border:1px solid var(--line);background:var(--soft);color:var(--ink)}
+.tn small{font-weight:500;font-size:11px;opacity:.8}.tn i{font-style:normal;font-size:11px}
+.tn[data-ctopen]{cursor:pointer}
+.tn.g{background:#d9f5e4;border-color:#5cc98a;color:#0f5a32}.tn.o{background:#ffe9c2;border-color:#f0a000;color:#6b4300}.tn.n{background:var(--paper)}
+.tn.cat{background:var(--accent);color:var(--on-accent);border-color:transparent}
 
 </style>
 </head>
@@ -5810,6 +5824,140 @@ function HealthUI(root, H) {
       if (S.list.some(function(c){ return c.chk; })) openChkList();
     };
   }
+
+  // ================= 🧠 알마인드(.emm) 가져오기 — 마인드맵 색깔로 계약자(초록)·미계약(노랑·주황) 구분 · 소개 관계 · 영업 트리 =================
+  // .emm 은 zip 안의 XML. 이 기기 안에서만 읽음 (서버·AI로 안 보냄)
+  var EMM_CAT = /^(남혁|영업|사업|가족|지인|친구|DB|돌방|인하우스|하위\s*토픽|태아|소개)$/i;
+  async function emmParse(u8){
+    var z = await JSZip.loadAsync(u8), rd = function(n){ var f = z.file(n); return f ? f.async('string') : Promise.resolve(''); };
+    var mp = await rd('map/maps/map1.xml'), sh = await rd('map/shape/shape.xml'), ps = await rd('map/shape/presentShape.xml');
+    if (!mp) throw new Error('알마인드 파일(.emm)이 아닙니다');
+    var theme = {}; ['dark1', 'ligth1', 'dark2', 'light2', 'accent1', 'accent2', 'accent3', 'accent4', 'accent5', 'accent6'].forEach(function(k){ var m = new RegExp('<m:' + k + '><m:srgbClr m:val="(\\d+)"').exec(sh); theme[k] = m ? +m[1] : 0; });
+    var AL = { dk1: 'dark1', lt1: 'ligth1', dk2: 'dark2', lt2: 'light2' };
+    var bgr = function(v){ return [v & 255, (v >> 8) & 255, (v >> 16) & 255]; };
+    var tint = function(c, t){ t /= 100; return c.map(function(x){ return t < 0 ? Math.round(x * (1 + t)) : Math.round(x + (255 - x) * t); }); };
+    var clr = function(x){ var m = /<m:srgbClr m:val="(\d+)"/.exec(x); if (m) return bgr(+m[1]); m = /<m:schemeClr m:val="(\w+)" m:tint="(-?\d+)"/.exec(x); return m ? tint(bgr(theme[AL[m[1]] || m[1]] || 0), +m[2]) : null; };
+    var grads = {}, m, re = /<m:presentGradient m:id="(\d+)"([\s\S]*?)<\/m:presentGradient>/g; while ((m = re.exec(ps))) grads[m[1]] = m[2];
+    var fills = {}; re = /<m:presentFill m:id="(\d+)" m:type="(\w+)" m:gradientID="(\w+)"([\s\S]*?)<\/m:presentFill>/g;
+    while ((m = re.exec(ps))) { if (m[2] === 'Solid') fills[m[1]] = clr(m[4]); else if (m[2] === 'Gradient' && grads[m[3]]) { var cs = (grads[m[3]].match(/<m:presentGradientstop[\s\S]*?<\/m:presentGradientstop>/g) || []).map(clr).filter(Boolean); fills[m[1]] = cs.length ? [0, 1, 2].map(function(k){ return Math.round(cs.reduce(function(a, c){ return a + c[k]; }, 0) / cs.length); }) : null; } }
+    var pshape = []; re = /<m:presentShape m:fillID="(\w+)"/g; while ((m = re.exec(sh))) pshape.push(m[1]);
+    var cat = function(c){ if (!c) return ''; var r = c[0], g = c[1], b = c[2]; if (g > r + 25 && g > b + 25) return 'g'; if (r > 200 && g > 190 && b < 140) return 'y'; if (r > 200 && b < 120) return 'o'; return ''; };
+    var root = null, stack = [], tk = /<m:topic |<\/m:topic>|<m:char>([\s\S]*?)<\/m:char>|m:topicPSID="(\d+)"/g;
+    while ((m = tk.exec(mp))) {
+      if (m[0] === '<m:topic ') { var n = { t: '', ps: null, k: [] }; if (stack.length) stack[stack.length - 1].k.push(n); else root = n; stack.push(n); continue; }
+      if (m[0] === '</m:topic>') { stack.pop(); continue; }
+      var top = stack[stack.length - 1]; if (!top) continue;
+      if (m[2] && top.ps == null) { top.ps = +m[2]; continue; }
+      if (m[1] != null) top.t += m[1].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+    }
+    var fin = function(n){ var fid = n.ps ? pshape[n.ps - 1] : null; n.c = cat(fid ? fills[fid] : null); n.t = n.t.trim(); delete n.ps; n.k.forEach(fin); };
+    if (root) fin(root);
+    return root;
+  }
+  // 이름 칸 정리: "김연옥(사송)" → 지역, "이춘희 LI CHUNJI" → 영문 메모, "강민창(타사이탈)" → 메모
+  function emmName(t){
+    var o = { name: '', area: '', memo: '' }, s = String(t || '').trim(), pm = /\(([^)]*)\)/.exec(s);
+    if (pm) { var v = pm[1].trim(); if (/^[가-힣]{2,4}$/.test(v) && !/이탈|해지|보류|예정|완료/.test(v)) o.area = v; else o.memo = v; s = s.replace(pm[0], '').trim(); }
+    var en = /^([가-힣]{2,5})\s+([A-Z][A-Z\s]+)$/.exec(s); if (en) { s = en[1]; o.memo = ['영문표기 ' + en[2].trim(), o.memo].filter(Boolean).join(' · '); }
+    o.name = s.replace(/\s+/g, ''); return o;
+  }
+  // 트리 → 고객 줄 (엑셀 가져오기와 같은 모양 + 색깔)
+  function emmRows(root){
+    var rows = [];
+    var walk = function(n, big, sub, refName){
+      n.k.forEach(function(k){
+        if (!k.t) { walk(k, big, sub, refName); return; }
+        if (/^영업$/.test(k.t)) return walk(k, 'sales', '', '');
+        if (/^사업$/.test(k.t)) return walk(k, 'biz', '', '');
+        if (EMM_CAT.test(k.t)) { if (/^태아$/.test(k.t)) { var pr = rows[rows.length - 1]; rows.forEach(function(r){ if (r.name === refName) r.memo = [r.memo, '태아 있음(알마인드)'].filter(Boolean).join(' · '); }); return; } return walk(k, big, /하위\s*토픽/.test(k.t) ? sub : k.t, refName); }
+        var nm = emmName(k.t); if (!/^[가-힣A-Za-z]{1,12}$/.test(nm.name)) return walk(k, big, sub, refName);
+        rows.push({ name: nm.name, big: big || 'sales', ch: big === 'biz' ? '' : (XL_SUB[String(sub).toLowerCase()] || ''), sub: sub, ref: refName, area: nm.area, memo: nm.memo, mc: k.c });
+        walk(k, big, sub, nm.name);
+      });
+    };
+    walk(root, '', '', '');
+    // 같은 이름·같은 자리에 두 번 그린 것은 하나로 (색은 초록 우선)
+    var seen = {}, out = [];
+    rows.forEach(function(r){ var key = r.name + '|' + r.big + '|' + r.sub + '|' + r.ref; if (seen[key]) { if (r.mc === 'g') seen[key].mc = 'g'; return; } seen[key] = r; out.push(r); });
+    return out;
+  }
+  async function mindLoad(){ try { return await hidLoad('__mind', null); } catch(e){ return null; } }
+  function openEmmImport(){
+    openDlg('<h4>🧠 알마인드 가져오기</h4><div class="form dbform">' +
+      '<p class="note" style="margin:0 0 8px">알마인드 파일(<b>.emm</b>)을 고르세요. 휴대폰은 파일 선택 창에서 <b>구글 드라이브</b> → "강남혁 알마인드.emm"을 누르면 됩니다.<br>마인드맵의 <b style="color:#21b573">초록 = 계약자</b>, <b style="color:#e8a200">노랑·주황 = 아직 계약 전</b>, 가지(가족·지인·친구·DB·사업)와 <b>누가 누구를 소개했는지</b>를 그대로 고객 목록에 넣습니다.</p>' +
+      '<input id="emFile" type="file" accept=".emm,application/zip,application/x-zip,application/octet-stream">' +
+      '<div class="safe">' + IC.lock + '<span>파일은 이 기기 안에서만 읽고, 잠금 비밀번호로 암호화해 저장합니다.</span></div>' +
+      '<div id="emPrev"></div><div class="ferr" id="emErr"></div></div><div class="mrow"><button class="btn lg" type="button" id="emX" style="margin-right:auto">닫기</button><button class="go" type="button" id="emGo" disabled>고객 목록에 반영</button></div>', 'wide');
+    var people = [], tree = null;
+    $('emX').onclick = closeDlg;
+    $('emFile').onchange = async function(){
+      var f = this.files && this.files[0]; $('emErr').textContent = ''; $('emPrev').innerHTML = ''; $('emGo').disabled = true; if (!f) return;
+      try {
+        tree = await emmParse(new Uint8Array(await f.arrayBuffer()));
+        var rows = emmRows(tree); people = xlPeople(rows);
+        // xlPeople 가 합친 뒤에도 색 유지
+        people.forEach(function(p){ var r = rows.filter(function(x){ return x.name === p.name; }); p.mc = r.some(function(x){ return x.mc === 'g'; }) ? 'g' : (r.map(function(x){ return x.mc; }).filter(Boolean)[0] || ''); });
+        if (!people.length) { $('emErr').textContent = '마인드맵에서 고객 이름을 찾지 못했습니다'; return; }
+        var cnt = function(f2){ return people.filter(f2).length; }, cur = function(p){ return p._ex ? S.list.find(function(x){ return x.id === p._ex; }) : null; };
+        var up = cnt(function(p){ var c = cur(p); return p.mc === 'g' && (!c || !/^(contract|care)$/.test(c.stage || '')); });
+        var down = people.filter(function(p){ var c = cur(p); return p.mc && p.mc !== 'g' && c && /^(contract|care)$/.test(c.stage || ''); });
+        $('emPrev').innerHTML = '<p class="note"><b>' + people.length + '명</b> · <span style="color:#21b573">●</span> 계약자 ' + cnt(function(p){ return p.mc === 'g'; }) + '명 · <span style="color:#e8a200">●</span> 계약 전 ' + cnt(function(p){ return p.mc && p.mc !== 'g'; }) + '명 · ○ 색 없음 ' + cnt(function(p){ return !p.mc; }) + '명<br>새로 등록 ' + cnt(function(p){ return !p._ex; }) + '명 · 기존 고객과 이름으로 맞춤 ' + cnt(function(p){ return p._ex; }) + '명 · <b>계약자로 바뀌는 고객 ' + up + '명</b></p>' +
+          (down.length ? '<div class="gapban a">' + IC.warn + '<span>프로그램에는 계약인데 마인드맵은 계약 전 색인 고객 ' + down.length + '명(' + down.slice(0, 8).map(function(p){ return esc(p.name); }).join(', ') + ')은 <b>단계를 바꾸지 않았습니다</b>. 마인드맵을 고치거나 고객 화면에서 직접 바꿔 주세요.</span></div>' : '') +
+          '<div class="tw" style="max-height:300px;overflow:auto"><table class="t dbt"><thead><tr><th>고객</th><th>색</th><th>분류</th><th>소개자</th><th>처리</th></tr></thead><tbody>' + people.map(function(p){ var c = cur(p);
+            return '<tr><td><b>' + esc(p.name) + '</b>' + (p.area ? '<small class="note"> ' + esc(p.area) + '</small>' : '') + '</td><td>' + (p.mc === 'g' ? '<span class="mdot g"></span>계약' : p.mc ? '<span class="mdot o"></span>계약 전' : '—') + '</td><td>' + (p.big === 'biz' ? '사업' : esc(chTxt(p.ch) || p.sub || '영업')) + (p.big === 'both' ? '·사업' : '') + '</td><td>' + esc(p.ref || '—') + '</td><td>' + (c ? '<span class="tag">기존 · ' + stageTxt(c.stage) + '</span>' : '<span class="tag new">새로 등록</span>') + '</td></tr>'; }).join('') + '</tbody></table></div>';
+        $('emGo').disabled = false;
+      } catch (e) { $('emErr').textContent = '알마인드 파일을 읽지 못했습니다: ' + (e.message || e); }
+    };
+    $('emGo').onclick = async function(){
+      this.disabled = true; this.textContent = '반영 중…';
+      var nNew = 0, nUp = 0, nC = 0, nLink = 0, saved = [];
+      for (var i = 0; i < people.length; i++) {
+        var p = people[i], c = p._ex ? Object.assign({}, S.list.find(function(x){ return x.id === p._ex; })) : { status: 'wait', name: p.name, stage: 'lead', from: 'emm' };
+        if (p._ex) nUp++; else nNew++;
+        var was = c.big || (p._ex ? 'sales' : ''); c.big = !was || was === p.big ? p.big : 'both';
+        if (p.ch && !c.ch) c.ch = p.ch;
+        if (p.ref && !c.ref) c.ref = p.ref;
+        if (p.area) { var mt = Object.assign({}, c.meet || {}); if (!mt.area) { mt.area = p.area; c.meet = mt; } }
+        if (p.memo && (c.memo || '').indexOf(p.memo) < 0) c.memo = ((c.memo ? c.memo + '\n' : '') + '[알마인드] ' + p.memo).trim();
+        if (p.mc === 'g' && !/^(contract|care)$/.test(c.stage || '')) { c.stage = 'contract'; nC++; }
+        c.mc = p.mc || ''; if (p.chk) c.chk = 1;
+        c = await Store.saveHead(c); saved.push({ p: p, c: c });
+      }
+      var all = await Store.list();
+      for (var j = 0; j < saved.length; j++) {
+        var sv = saved[j], ref = sv.p.ref; if (!ref) continue;
+        var cs = all.filter(function(x){ return x.name === ref && x.id !== sv.c.id; }), pick = cs.length === 1 ? cs[0] : cs.filter(function(x){ return bigMatch(x, sv.p.big === 'biz' ? 'biz' : 'sales'); })[0];
+        var cu = all.find(function(x){ return x.id === sv.c.id; });
+        if (pick && cu && !cu.refId) { cu.refId = pick.id; await Store.saveHead(cu); nLink++; }
+      }
+      try { await hidSave('__mind', '__mind', { at: Date.now(), tree: tree }); } catch(e){}
+      S.list = await Store.list(); renderList(); closeDlg();
+      toast('알마인드 반영: 새 고객 ' + nNew + '명 · 기존 ' + nUp + '명 · 계약자로 표시 ' + nC + '명 · 소개 연결 ' + nLink + '건');
+      showTree();
+    };
+  }
+  // 🌳 영업 트리: 알마인드 모양 그대로 (지금 고객 단계로 색을 다시 칠함 · 누르면 고객 화면)
+  async function showTree(){
+    S.cur = null; S.data = null; S.view = 'tree'; $('shell').classList.add('has-c'); armBack(); renderList();
+    var M = await mindLoad(), head = '<div class="chead"><button class="btn back" type="button" data-act="back">‹ 목록</button><h2 data-i="🌳">영업 트리</h2><span class="cmeta">알마인드 모양 그대로 · <span class="mdot g"></span>계약자 <span class="mdot o"></span>계약 전 · 이름을 누르면 고객 화면</span></div>';
+    if (!M || !M.tree) { $('main').innerHTML = head + '<section class="sgbox"><b>아직 알마인드를 가져오지 않았습니다</b><p class="note">고객관리 → 전체 탭의 <b>🧠 알마인드 가져오기</b>로 .emm 파일을 한 번 넣으면, 여기서 마인드맵처럼 볼 수 있습니다.</p><button class="go" type="button" data-cm="emm">🧠 알마인드 가져오기</button></section>'; return; }
+    var by = {}; S.list.forEach(function(c){ if (!c.sample) (by[c.name] = by[c.name] || []).push(c); });
+    var st = { g: 0, o: 0, n: 0 };
+    var node = function(n, d){
+      if (!n.t) return n.k.map(function(k){ return node(k, d); }).join('');
+      var nm = emmName(n.t), cs = by[nm.name] || [], c = cs[0], isCat = EMM_CAT.test(n.t) || !/^[가-힣A-Za-z]{1,12}$/.test(nm.name);
+      if (/^하위\s*토픽$/.test(n.t)) return n.k.map(function(k){ return node(k, d); }).join('');
+      var cls = isCat ? 'cat' : c ? (/^(contract|care)$/.test(c.stage || '') ? 'g' : 'o') : (n.c === 'g' ? 'g' : n.c ? 'o' : 'n');
+      if (!isCat) st[cls === 'g' ? 'g' : cls === 'o' ? 'o' : 'n']++;
+      var lab = '<span class="tn ' + cls + '"' + (c ? ' data-ctopen="' + c.id + '"' : '') + '>' + esc(isCat ? n.t : nm.name) + (nm.area ? '<small>' + esc(nm.area) + '</small>' : '') + (c && c.phone ? '<i>📞</i>' : '') + '</span>';
+      var kids = n.k.map(function(k){ return node(k, d + 1); }).join('');
+      return '<li>' + (kids ? '<details' + (d < 3 ? ' open' : '') + '><summary>' + lab + '<em>' + n.k.length + '</em></summary><ul>' + kids + '</ul></details>' : lab) + '</li>';
+    };
+    var body = '<ul class="mtree">' + node(M.tree, 0) + '</ul>';
+    $('main').innerHTML = head + '<div class="bkpi"><div><small>계약자</small><b style="color:#21b573">' + st.g + '</b></div><div><small>계약 전</small><b style="color:#e8a200">' + st.o + '</b></div><div><small>색 없음</small><b>' + st.n + '</b></div></div>' +
+      '<div class="mtw">' + body + '</div><p class="note">마인드맵을 고쳤으면 <button type="button" class="lnk2" data-cm="emm">알마인드 다시 가져오기</button> · 가져온 날 ' + dot(new Date(M.at - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10)) + '</p>';
+    window.scrollTo(0, 0);
+  }
   // 동일인 확인 목록
   function openChkList(){
     var L = S.list.filter(function(c){ return c.chk; }).sort(function(a, b){ return a.name < b.name ? -1 : a.name > b.name ? 1 : 0; });
@@ -6099,7 +6247,7 @@ function HealthUI(root, H) {
   document.addEventListener('click', function(e){
     var t = e.target.closest('[data-bigf]'); if (t) { S.big = t.dataset.bigf; S.ch = ''; renderList(); if (S.view === 'chan') showChan('all'); return; }
     t = e.target.closest('[data-chf]'); if (t) { S.ch = t.dataset.chf === 'all' ? '' : t.dataset.chf; renderList(); if (S.view === 'chan') showChan(S.ch || 'all'); return; }
-    t = e.target.closest('[data-cm]'); if (t) { var a = t.dataset.cm; if (a === 'open') showChan(S.ch || 'all'); else if (a === 'tab') { S.ch = t.dataset.k === 'all' ? '' : t.dataset.k; renderList(); showChan(t.dataset.k); } else if (a === 'db') openDbImport(); else if (a === 'bm') openExt('https://sicrics27-gif.github.io/mh-analyzer/bookmark.html'); else if (a === 'how') openDbHow(); else if (a === 'xlsx') openXlsxImport(); else if (a === 'chk') openChkList(); return; }
+    t = e.target.closest('[data-cm]'); if (t) { var a = t.dataset.cm; if (a === 'open') showChan(S.ch || 'all'); else if (a === 'tab') { S.ch = t.dataset.k === 'all' ? '' : t.dataset.k; renderList(); showChan(t.dataset.k); } else if (a === 'db') openDbImport(); else if (a === 'bm') openExt('https://sicrics27-gif.github.io/mh-analyzer/bookmark.html'); else if (a === 'how') openDbHow(); else if (a === 'xlsx') openXlsxImport(); else if (a === 'emm') openEmmImport(); else if (a === 'tree') showTree(); else if (a === 'chk') openChkList(); return; }
   });
   document.addEventListener('change', async function(e){
     var t = e.target.closest('[data-chsel]'); if (!t) return;
@@ -6133,7 +6281,7 @@ function HealthUI(root, H) {
       '<div class="bkpi chk">' + [['고객', rows.length], ['가망', stg.lead || 0], ['상담 중', stg.consult || 0], ['계약', stg.contract || 0], ['관리', stg.care || 0], ['이번 달 신규', nNew], ['할 일', nTodo], ['30일+ 미연락', nQuiet]].map(function(x){ return '<div><small>' + x[0] + '</small><b>' + x[1] + '</b></div>'; }).join('') + '</div>';
     var nChk = S.list.filter(function(c){ return c.chk; }).length;
     if (nChk) h += '<div class="gapban a">' + IC.warn + '<span>같은 이름이 두 번 있어 <b>동일인인지 확인</b>이 필요한 고객 ' + nChk + '명</span><button class="pb" type="button" data-cm="chk">확인 목록</button></div>';
-    if (k === 'all') h += '<div class="dbbar"><div><b>엑셀로 고객 한꺼번에 가져오기</b><small>정리해 둔 고객표(.xlsx)를 골라 영업·사업, 가족·지인·친구·DB, 소개자까지 한 번에 등록합니다. 파일은 이 기기 안에서만 읽습니다.</small></div><button class="go" type="button" data-cm="xlsx">📥 엑셀 가져오기</button></div>';
+    if (k === 'all') h += '<div class="dbbar"><div><b>엑셀로 고객 한꺼번에 가져오기</b><small>정리해 둔 고객표(.xlsx)를 골라 영업·사업, 가족·지인·친구·DB, 소개자까지 한 번에 등록합니다. 파일은 이 기기 안에서만 읽습니다.</small></div><button class="go" type="button" data-cm="xlsx">📥 엑셀 가져오기</button><button class="go" type="button" data-cm="emm">🧠 알마인드 가져오기</button><button class="btn" type="button" data-cm="tree">🌳 영업 트리</button></div>';
     if (k === 'db') h += '<div class="dbbar"><div><b>회사 DB 고객 가져오기</b><small>DB 사이트 상세 화면에서 "AOB로 복사" 북마크를 차례로 누른 뒤, 여기서 한 번에 가져옵니다.</small></div><button class="go" type="button" data-cm="db">DB 고객 가져오기</button><button class="btn" type="button" data-cm="bm">북마크 만들기 페이지</button><button class="btn" type="button" data-cm="how">사용법</button></div>';
     if (k === 'none' && rows.length) h += '<div class="gapban a">' + IC.warn + '<span>오른쪽 <b>영업 채널</b> 칸에서 고르면 바로 그 채널로 옮겨집니다. 계약을 마친 고객은 고객 단계를 <b>계약</b>이나 <b>관리</b>로 두면 자동으로 보유고객에 들어갑니다.</span></div>';
     var extraHead = k === 'db' ? '<th>인수상태</th><th>배분일</th><th>AS 마감</th>' : k === 'mine' ? '<th>보유 계약</th><th>월 보험료</th><th>응당일</th>' : '<th>지역</th><th>만남</th>';
@@ -7837,7 +7985,7 @@ function HealthUI(root, H) {
         var nd = nextDue(c), r4 = nd != null ? '<span class="r4' + (nd < 0 ? ' late' : nd === 0 ? ' due' : nd <= 2 ? ' soon' : '') + '"><i>' + (nd < 0 ? 'D+' + (-nd) : nd === 0 ? '오늘' : 'D-' + nd) + '</i>' + esc(c.next.t || '할 일') + '</span>' : '';
         var r2 = c.status === 'done' ? '<span class="r2 ' + (c.sumOk ? 'ok' : '') + '">' + esc(c.summary || '') + '</span>' : '';
         var lo = lastOf(c), ph2 = normPhone(c.phone), r5 = '<span class="r5">' + (ph2 ? '<span class="ph">' + phoneTxt(ph2) + '</span>' : '<span class="ph none">번호 없음</span>') + (lo.any ? '<span class="lc' + (dayDiff(lo.any, todayStr()) > 60 ? ' old' : '') + '">' + ago(lo.any) + ' 연락</span>' : '<span class="lc old">연락 기록 없음</span>') + '</span>';
-        return '<button type="button" class="citem" data-cid="' + c.id + '" aria-current="' + cur + '"><span class="cav s-' + (c.stage === 'db' ? 'lead' : c.stage || 'lead') + '" aria-hidden="true">' + esc(String(c.name || '?').slice(0, 1)) + '</span><span class="r1">' + (QS.sel ? '<span class="qck' + (QS.sel[c.id] ? ' on' : '') + '" aria-hidden="true"></span>' : '') + '<b>' + esc(c.name) + '</b><i class="stg pk s-' + (c.stage === 'db' ? 'lead' : c.stage || 'lead') + '" data-q="stage" title="고객 단계 바꾸기">' + stageTxt(c.stage) + '<u>▾</u></i><i class="chp pk' + (chOf(c) ? '' : ' none') + '" data-q="ch" title="영업 채널 바꾸기">' + (chOf(c) ? chTxt(chOf(c)) : '채널') + '<u>▾</u></i><small>' + sexTxt(c.sex) + (ageOf(c.birth) !== '' ? '·' + ageOf(c.birth) + '세' : '') + (dupName[c.name] > 1 && c.birth ? ' · ' + String(c.birth).slice(2, 4) + '.' + String(c.birth).slice(4, 6) + '.' + String(c.birth).slice(6, 8) + '생' : '') + '</small>' + (c.status === 'done' ? '<span class="stt' + (/^보장분석만/.test(c.summary || '') ? ' w' : '') + '">' + (/^보장분석만/.test(c.summary || '') ? '보장만' : '✓ 분석') + '</span>' : '<span class="stt sp"></span>') + '<span class="qmore" data-q="more" title="빠른 메뉴 (오른쪽 클릭·길게 누르기)">⋯</span></span>' + (c.status === 'done' && c.asOf ? (function(){ var F = freshOf(c.asOf); return '<span class="r3"><i class="fp ' + F.lv + '"></i>자료 ' + dot(c.asOf) + ' · ' + F.txt + (c.applyDate ? ' · 청약 ' + dot(c.applyDate) : '') + '</span>'; })() : '') + r5 + r4 + r2 + '</button>';
+        return '<button type="button" class="citem" data-cid="' + c.id + '" aria-current="' + cur + '"><span class="cav s-' + (c.stage === 'db' ? 'lead' : c.stage || 'lead') + (/^(contract|care)$/.test(c.stage || '') ? ' mk-g' : ' mk-o') + '" aria-hidden="true" title="' + (/^(contract|care)$/.test(c.stage || '') ? '계약자' : '아직 계약 전') + '">' + esc(String(c.name || '?').slice(0, 1)) + '</span><span class="r1">' + (QS.sel ? '<span class="qck' + (QS.sel[c.id] ? ' on' : '') + '" aria-hidden="true"></span>' : '') + '<b>' + esc(c.name) + '</b><i class="stg pk s-' + (c.stage === 'db' ? 'lead' : c.stage || 'lead') + '" data-q="stage" title="고객 단계 바꾸기">' + stageTxt(c.stage) + '<u>▾</u></i><i class="chp pk' + (chOf(c) ? '' : ' none') + '" data-q="ch" title="영업 채널 바꾸기">' + (chOf(c) ? chTxt(chOf(c)) : '채널') + '<u>▾</u></i><small>' + sexTxt(c.sex) + (ageOf(c.birth) !== '' ? '·' + ageOf(c.birth) + '세' : '') + (dupName[c.name] > 1 && c.birth ? ' · ' + String(c.birth).slice(2, 4) + '.' + String(c.birth).slice(4, 6) + '.' + String(c.birth).slice(6, 8) + '생' : '') + '</small>' + (c.status === 'done' ? '<span class="stt' + (/^보장분석만/.test(c.summary || '') ? ' w' : '') + '">' + (/^보장분석만/.test(c.summary || '') ? '보장만' : '✓ 분석') + '</span>' : '<span class="stt sp"></span>') + '<span class="qmore" data-q="more" title="빠른 메뉴 (오른쪽 클릭·길게 누르기)">⋯</span></span>' + (c.status === 'done' && c.asOf ? (function(){ var F = freshOf(c.asOf); return '<span class="r3"><i class="fp ' + F.lv + '"></i>자료 ' + dot(c.asOf) + ' · ' + F.txt + (c.applyDate ? ' · 청약 ' + dot(c.applyDate) : '') + '</span>'; })() : '') + r5 + r4 + r2 + '</button>';
       }).join('');
     });
     if (!S.list.length) h = '<div class="cempty">등록된 고객이 없습니다.<br>위의 <b>신규 고객 등록</b>으로 시작하세요.</div>';
@@ -9790,17 +9938,17 @@ function HealthUI(root, H) {
   $('tbMore').onclick = function(){
     // 관련 있는 것끼리 묶은 메뉴 (자주 쓰는 순서)
     var G = [
-      ['💼 영업', [['.scm', '👥', '고객관리', '영업 채널별로 보기'], ['#wkMenu', '📊', '주간 활동 보고', '이번 주 숫자 · 카톡 공유'], ['#regBtn', '🏢', '보험사 고객등록', '보험사별 등록 현황'], ['#mdBtn', '⭐', 'MD’s PICK', '추천 상품 노트'], ['#mdbBtn', '📚', 'MD 백과', '담보별 한도·보험료 비교 (사내 교육용)'],['[data-act="dbImport"]', '📥', 'DB 고객 가져오기', '회사 DB 사이트'], ['.sfoot [data-cm="xlsx"]', '📊', '엑셀 고객 가져오기', '고객표 한꺼번에 등록'], ['.sfoot [data-act="ntSet"]', '🔔', '알림 설정', '할 일·생일·갱신·회사 소식']]],
+      ['💼 영업', [['.scm', '👥', '고객관리', '영업 채널별로 보기'], ['#wkMenu', '📊', '주간 활동 보고', '이번 주 숫자 · 카톡 공유'], ['#treeMenu', '🌳', '영업 트리', '알마인드 · 계약자 초록/계약 전 주황'], ['#regBtn', '🏢', '보험사 고객등록', '보험사별 등록 현황'], ['#mdBtn', '⭐', 'MD’s PICK', '추천 상품 노트'], ['#mdbBtn', '📚', 'MD 백과', '담보별 한도·보험료 비교 (사내 교육용)'],['[data-act="dbImport"]', '📥', 'DB 고객 가져오기', '회사 DB 사이트'], ['.sfoot [data-cm="xlsx"]', '📊', '엑셀 고객 가져오기', '고객표 한꺼번에 등록'], ['.sfoot [data-act="ntSet"]', '🔔', '알림 설정', '할 일·생일·갱신·회사 소식']]],
       ['🌱 성장 · 소통', [['#gchip', '🏆', '내 성장', '레벨 · 퀘스트 · 배지'], ['#bugMenu', '🐞', '오류 신고', '캡처 붙여 올리면 AI가 고침'], ['#sugBtn', '💡', '건의사항', '기능 아이디어 올리기 · 검토'], ['#arcBtn', '🏙️', '아케이드 화면', 'AOB9 타워']]],
       ['🔗 연결 · 앱', [['#connBtn', '🔗', '연결 · 권한', '구글·위치·마이크·알림·AI·자동 동선'], ['#apkBtn', '📱', inApk() ? '앱 정보 · 업데이트' : '안드로이드 앱 받기', inApk() ? '새 버전 확인' : 'APK로 설치'], ['#keysBtn', '⌨️', '단축키', '키보드로 빠르게'], ['#themeBtn', '🌗', $('themeBtn').textContent, ''], ['[data-sync="signout"]', '🔄', '구글 계정 바꾸기', '']]],
       ['🗂 자료 · 보안', [['#bkOut', '💾', '백업 내보내기', ''], ['#bkIn', '📂', '백업 불러오기', ''], ['#sample', '🧪', '예시 고객 보기', ''], ['#lockBtn', '🔒', '잠그기', '']]]
     ];
     if (IS_MOBILE) G[2][1] = G[2][1].filter(function(x){ return x[0] !== '#keysBtn'; });
     var AD = ROLE.admin ? [['#admBtn', '🛡️', '사용자 관리', 'OTP 발급 · 요청 · 정지'], ['#teamSetBtn', '🏆', '팀 서버', '팀원 공유 기능 연결'], ['[data-nx="setup"]', '🏢', 'NHC 본사 연결', '보장분석 · 숫자 보고']] : [];
-    var vis = function(x){ if (x[0] === '#wkMenu') return !!S.list.length; if (x[0] === '#bugMenu') return true; var el = document.querySelector(x[0]); if (!el) return false; if (x[0] === '#gchip' || x[0] === '.scm' || x[0] === '#wkMenu') return true; return !el.hidden && getComputedStyle(el).display !== 'none'; }, btn = function(x){ return '<button type="button" data-px=\'' + x[0] + '\'><i>' + x[1] + '</i><b>' + esc(x[2]) + '</b>' + (x[3] ? '<small>' + esc(x[3]) + '</small>' : '') + '</button>'; };
+    var vis = function(x){ if (x[0] === '#wkMenu') return !!S.list.length; if (x[0] === '#bugMenu' || x[0] === '#treeMenu') return true; var el = document.querySelector(x[0]); if (!el) return false; if (x[0] === '#gchip' || x[0] === '.scm' || x[0] === '#wkMenu') return true; return !el.hidden && getComputedStyle(el).display !== 'none'; }, btn = function(x){ return '<button type="button" data-px=\'' + x[0] + '\'><i>' + x[1] + '</i><b>' + esc(x[2]) + '</b>' + (x[3] ? '<small>' + esc(x[3]) + '</small>' : '') + '</button>'; };
     openDlg('<h4>⚙️ 설정 · 메뉴</h4>' + G.map(function(g){ var l = g[1].filter(vis); return l.length ? '<div class="msh">' + g[0] + '</div><div class="msheet">' + l.map(btn).join('') + '</div>' : ''; }).join('') + (AD.length ? '<div class="msh">🛡️ 관리자 전용 <small>팀원 화면에는 보이지 않습니다</small></div><div class="msheet adm">' + AD.filter(vis).map(btn).join('') + '</div>' : '') + '<div class="mrow"><button class="btn lg" type="button" id="msX" style="margin-left:auto">닫기</button></div>');
     $('msX').onclick = closeDlg;
-    $('dlgBox').querySelectorAll('[data-px]').forEach(function(b){ b.onclick = function(){ var el = document.querySelector(b.dataset.px); closeDlg(); if (b.dataset.px === '#wkMenu') { showWeek(0); return; } if (b.dataset.px === '#bugMenu') { bugReport(); return; } if (el) { if (el.hidden && el.id === 'gchip') { showGame && showGame(); return; } el.click(); } }; });
+    $('dlgBox').querySelectorAll('[data-px]').forEach(function(b){ b.onclick = function(){ var el = document.querySelector(b.dataset.px); closeDlg(); if (b.dataset.px === '#wkMenu') { showWeek(0); return; } if (b.dataset.px === '#bugMenu') { bugReport(); return; } if (b.dataset.px === '#treeMenu') { showTree(); return; } if (el) { if (el.hidden && el.id === 'gchip') { showGame && showGame(); return; } el.click(); } }; });
   };
 
   $('connBtn').onclick = function(){ openConnCenter(); };
