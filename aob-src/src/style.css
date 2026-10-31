@@ -2038,3 +2038,13 @@ html.mdl-on,html.mdl-on body{overflow:hidden !important;overscroll-behavior:none
 html:has(.modal:not([hidden])),html:has(.modal:not([hidden])) body{overflow:hidden;overscroll-behavior:none}
 .modal{overscroll-behavior:contain;touch-action:pan-y}
 .modal .mbox{overscroll-behavior:contain}
+/* ===== 건의 · 오류 신고 ===== */
+.sgkind{display:flex;gap:6px;margin:4px 0 8px}.sgkind button{flex:1;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--soft);color:var(--ink2);font:inherit;font-weight:700;font-size:13.5px;cursor:pointer}
+.sgkind button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:transparent}
+.sgshot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0}.sgshot img{max-height:120px;max-width:60%;border-radius:8px;border:1px solid var(--line)}.sgshot span{display:flex;flex-direction:column;gap:6px}
+.sgkb{font-size:11.5px;font-weight:700;color:var(--ink2);background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:1px 8px;flex:none}
+.sgfx{margin:8px 0 2px;padding:10px 12px;border-radius:12px;background:var(--accent-soft);font-size:13.5px}.sgfx b{display:block}.sgfx p{margin:6px 0 0;line-height:1.6;color:var(--ink2)}
+.sgfx.g{background:var(--green-soft)}.sgfx.r{background:var(--red-soft)}.sgfx.w{background:var(--amber-soft)}
+.sgfx-a{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.mskw{max-height:62vh;overflow:auto;border-radius:10px;background:#000;touch-action:none}.mskw canvas{display:block;width:100%;height:auto;touch-action:none;cursor:crosshair}
+.errnudge{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 84px);transform:translateX(-50%);z-index:9500;border:0;border-radius:999px;padding:10px 16px;background:#1f2433;color:#fff;font:inherit;font-size:13.5px;box-shadow:0 8px 24px rgba(0,0,0,.4);cursor:pointer;white-space:nowrap}.errnudge b{color:#ffcf5c}

@@ -1,4 +1,4 @@
-// AOB9 · 9팀 팀 서버 (리그전 + 건의사항 + MD's PICK + OTP 요청) — 구글 Apps Script, 관리자(강남혁) 구글 계정에서 한 번 배포
+// AOB9 · 9팀 팀 서버 (리그전 + 건의사항·오류 신고(자동 개선) + MD's PICK + OTP 요청) · 버전 2026-10-31 — 구글 Apps Script, 관리자(강남혁) 구글 계정에서 한 번 배포
 // 저장하는 것: 리그(별명·주간 숫자), 건의사항(이름·제목·내용·상태·답변). 고객 정보는 받지 않습니다.
 // OTP가 '사용 중'인 사람만 글을 올릴 수 있습니다 (access.json 확인). 건의사항 검토는 관리자 열쇠가 있어야 합니다.
 const ACCESS = 'https://raw.githubusercontent.com/sicrics27-gif/mh-analyzer/main/access.json';
@@ -14,7 +14,23 @@ function props() { return PropertiesService.getScriptProperties(); }
 function isAdmin(k) { const a = props().getProperty('ADMIN_KEY'); return !!(a && k && k === a); }
 
 // ---------- 건의사항: 관리자 구글 드라이브의 시트 'AOB 건의사항'에 저장 ----------
-const COLS = ['id', 'at', 'c', 'n', 'title', 'desc', 'st', 'reply', 'rat', 'likes'];
+const COLS = ['id', 'at', 'c', 'n', 'title', 'desc', 'st', 'reply', 'rat', 'likes', 'kind', 'img', 'diag', 'fix', 'pr', 'fsum', 'ft'];
+// ---------- 오류·개선 신고 → GitHub 자동 개선 (2026-10-31) ----------
+// 캡처 사진은 관리자 구글 드라이브 'AOB 오류 캡처' 폴더에만 저장(공개 안 함). 신고가 들어오면 GitHub 에 알림 → Claude 가 고친 안(PR)을 만듦
+const REPO = 'sicrics27-gif/mh-analyzer';
+function shotFolder() {
+  const p = props(); let id = p.getProperty('SHOT_DIR'), f = null;
+  if (id) { try { f = DriveApp.getFolderById(id); } catch (e) { f = null; } }
+  if (!f) { f = DriveApp.createFolder('AOB 오류 캡처'); p.setProperty('SHOT_DIR', f.getId()); }
+  return f;
+}
+function ghDispatch(type, payload) {
+  const t = props().getProperty('GH_TOKEN'); if (!t) return false;
+  const r = UrlFetchApp.fetch('https://api.github.com/repos/' + REPO + '/dispatches', { method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+    headers: { Authorization: 'Bearer ' + t, Accept: 'application/vnd.github+json' }, payload: JSON.stringify({ event_type: type, client_payload: payload }) });
+  return r.getResponseCode() < 300;
+}
+function bugOne(id) { return rows(sheet()).find(x => String(x.id) === String(id)); }
 function sheet() {
   const p = props(); let id = p.getProperty('SUG_SHEET'), ss = null;
   if (id) { try { ss = SpreadsheetApp.openById(id); } catch (e) { ss = null; } }
@@ -34,7 +50,8 @@ function sugList(me, admin) {
   return rows(sh).map(o => {
     const likes = String(o.likes || '').split(',').filter(Boolean);
     return { id: String(o.id), at: +o.at, n: String(o.n), title: String(o.title), desc: String(o.desc), st: String(o.st || 'new'), reply: String(o.reply || ''), rat: +o.rat || 0,
-      likes: likes.length, liked: !!(me && likes.indexOf(me) >= 0), mine: !!(me && o.c === me) };
+      likes: likes.length, liked: !!(me && likes.indexOf(me) >= 0), mine: !!(me && o.c === me),
+      kind: String(o.kind || 'idea'), shot: !!o.img, fix: String(o.fix || ''), pr: String(o.pr || ''), fsum: String(o.fsum || '') };
   }).sort((a, b) => b.at - a.at);
 }
 
@@ -52,13 +69,19 @@ function doPost(e) {
     }
     if (b.a === 'sug_add') {
       if (!allowed(b.c)) return out({ ok: false, error: 'OTP 사용자가 아닙니다' });
-      const title = String(b.title || '').trim().slice(0, 60), desc = String(b.desc || '').trim().slice(0, 1000);
+      const title = String(b.title || '').trim().slice(0, 60), desc = String(b.desc || '').trim().slice(0, 1500);
       if (!title) return out({ ok: false, error: '제목을 적어 주세요' });
+      const kind = ['bug', 'imp', 'idea'].indexOf(b.kind) >= 0 ? b.kind : 'idea';
       const sh = sheet(), mine = rows(sh).filter(o => o.c === b.c && Date.now() - +o.at < 3600e3).length;
       if (mine >= 10) return out({ ok: false, error: '한 시간에 10개까지 올릴 수 있습니다' });
       const id = Utilities.getUuid().slice(0, 8);
-      sh.appendRow([id, Date.now(), b.c, String(b.n || '팀원').slice(0, 10), title, desc, 'new', '', '', '']);
-      return out({ ok: true, id: id });
+      let img = '';
+      if (b.img && String(b.img).length < 3000000) { try { const f = shotFolder().createFile(Utilities.newBlob(Utilities.base64Decode(String(b.img)), 'image/jpeg', id + '.jpg')); img = f.getId(); } catch (e) { img = ''; } }
+      const ft = Utilities.getUuid().replace(/-/g, '');
+      const auto = kind !== 'idea' && !!props().getProperty('GH_TOKEN');
+      sh.appendRow([id, Date.now(), b.c, String(b.n || '팀원').slice(0, 10), title, desc, 'new', '', '', '', kind, img, String(b.diag || '').slice(0, 6000), auto ? 'queued' : '', '', '', ft]);
+      if (auto) { const ok = ghDispatch('aob-bug', { id: id, t: ft, u: ScriptApp.getService().getUrl() }); if (!ok) { const o = bugOne(id); sheet().getRange(o.row, COLS.indexOf('fix') + 1).setValue(''); } }
+      return out({ ok: true, id: id, auto: auto });
     }
     if (b.a === 'sug_like') {
       if (!allowed(b.c)) return out({ ok: false, error: 'OTP 사용자가 아닙니다' });
@@ -79,6 +102,36 @@ function doPost(e) {
       const sh = sheet(), o = rows(sh).find(x => String(x.id) === String(b.id)); if (!o) return out({ ok: false, error: '없는 글' });
       if (!(isAdmin(b.k) || (allowed(b.c) && o.c === b.c && (o.st || 'new') === 'new'))) return out({ ok: false, error: '지울 수 없습니다' });
       sh.deleteRow(o.row);
+      return out({ ok: true });
+    }
+    // 관리자: GitHub 열쇠 맡기기 (오류 신고가 오면 자동 개선을 부르는 데만 씀)
+    if (b.a === 'gh_set') {
+      if (!isAdmin(b.k)) return out({ ok: false, error: '관리자만' });
+      const g = String(b.gh || '').trim(); if (!/^(gh[pousr]_|github_pat_)[\w]+$/.test(g)) return out({ ok: false, error: '열쇠 형식이 아닙니다' });
+      props().setProperty('GH_TOKEN', g); return out({ ok: true });
+    }
+    // 자동 개선 결과 (GitHub 워크플로가 보냄 · 신고마다 한 번 쓰는 열쇠 ft 로 확인)
+    if (b.a === 'bug_done') {
+      const o = bugOne(b.id); if (!o || !o.ft || String(o.ft) !== String(b.t)) return out({ ok: false, error: '열쇠가 맞지 않습니다' });
+      const st = ['ready', 'nochange', 'review', 'done', 'fail', 'working'].indexOf(b.st) >= 0 ? b.st : 'fail';
+      const sh = sheet(); sh.getRange(o.row, COLS.indexOf('fix') + 1, 1, 3).setValues([[st, String(b.pr || o.pr || ''), String(b.sum || o.fsum || '').slice(0, 1500)]]);
+      if (st === 'done') sh.getRange(o.row, COLS.indexOf('st') + 1, 1, 3).setValues([['done', String(o.reply || '') || '자동 개선으로 반영했습니다', Date.now()]]);
+      return out({ ok: true });
+    }
+    // 관리자: 고친 안 반영 → GitHub 에 합치기·배포 요청
+    if (b.a === 'bug_ok') {
+      if (!isAdmin(b.k)) return out({ ok: false, error: '관리자만' });
+      const o = bugOne(b.id); if (!o || String(o.fix) !== 'ready' || !o.pr) return out({ ok: false, error: '반영할 고친 안이 없습니다' });
+      if (!ghDispatch('aob-merge', { id: String(o.id), t: String(o.ft), u: ScriptApp.getService().getUrl(), pr: String(o.pr) })) return out({ ok: false, error: 'GitHub 열쇠가 없거나 만료됐습니다' });
+      sheet().getRange(o.row, COLS.indexOf('fix') + 1).setValue('merging'); return out({ ok: true });
+    }
+    // 관리자: 다시 고쳐 보기
+    if (b.a === 'bug_retry') {
+      if (!isAdmin(b.k)) return out({ ok: false, error: '관리자만' });
+      const o = bugOne(b.id); if (!o) return out({ ok: false, error: '없는 글' });
+      const ft = Utilities.getUuid().replace(/-/g, ''), sh = sheet();
+      sh.getRange(o.row, COLS.indexOf('fix') + 1, 1, 4).setValues([['queued', '', '', ft]]);
+      if (!ghDispatch('aob-bug', { id: String(o.id), t: ft, u: ScriptApp.getService().getUrl(), more: String(b.more || '').slice(0, 800) })) { sh.getRange(o.row, COLS.indexOf('fix') + 1).setValue(''); return out({ ok: false, error: 'GitHub 열쇠가 없거나 만료됐습니다' }); }
       return out({ ok: true });
     }
     // ---------- OTP 요청 (아직 OTP가 없는 동료 → 관리자) ----------
@@ -158,10 +211,22 @@ function doGet(e) {
   const prm = e.parameter || {};
   if (prm.a === 'otpreq') { if (!isAdmin(prm.k)) return out({ ok: false, error: '관리자만' }); return out({ ok: true, rows: otpRows(otpSheet()).filter(o => o.st === 'new').map(o => ({ rid: String(o.rid), at: +o.at, n: String(o.n), m: String(o.m), dev: String(o.dev || ''), note: String(o.note || '') })) }); }
   if (prm.a === 'otpstat') { const o = otpRows(otpSheet()).find(x => String(x.rid) === String(prm.rid) && x.m === String(prm.m || '').toLowerCase()); if (!o) return out({ ok: false }); return out({ ok: true, st: String(o.st), code: o.st === 'done' ? String(o.code || '') : '' }); }
+  // 자동 개선 워크플로가 신고 내용·사진을 받아 감 (신고마다 한 번 쓰는 열쇠)
+  if (prm.a === 'bug_get') {
+    const o = bugOne(prm.id); if (!o || !o.ft || String(o.ft) !== String(prm.t)) return out({ ok: false, error: '열쇠가 맞지 않습니다' });
+    let img = ''; if (o.img) { try { img = Utilities.base64Encode(DriveApp.getFileById(String(o.img)).getBlob().getBytes()); } catch (e) { img = ''; } }
+    return out({ ok: true, id: String(o.id), kind: String(o.kind), title: String(o.title), desc: String(o.desc), diag: String(o.diag || ''), reply: String(o.reply || ''), img: img });
+  }
+  // 관리자: 캡처 사진 보기
+  if (prm.a === 'bug_img') {
+    if (!isAdmin(prm.k)) return out({ ok: false, error: '관리자만' });
+    const o = bugOne(prm.id); if (!o || !o.img) return out({ ok: false });
+    try { return out({ ok: true, img: Utilities.base64Encode(DriveApp.getFileById(String(o.img)).getBlob().getBytes()) }); } catch (e) { return out({ ok: false }); }
+  }
   if (prm.a === 'md') { const me = allowed(prm.c) ? prm.c : ''; return out({ ok: true, rows: mdList(me) }); }
   if (prm.a === 'sug') {
     const me = allowed(prm.c) ? prm.c : '';
-    return out({ ok: true, admin: !props().getProperty('ADMIN_KEY') ? 'none' : 'set', rows: sugList(me) });
+    return out({ ok: true, admin: !props().getProperty('ADMIN_KEY') ? 'none' : 'set', bug: 2, gh: !!props().getProperty('GH_TOKEN'), rows: sugList(me) });
   }
   const week = (prm.week || ''), me = prm.c || '';
   const t = JSON.parse(props().getProperty('w_' + week) || '{}');
