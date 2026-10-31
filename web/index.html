@@ -5607,7 +5607,7 @@ function HealthUI(root, H) {
   var ADM = { id: '__admin' };
   async function admLoad(){ try { return (await Store.loadData(ADM.id)) || null; } catch(e){ return null; } }
   async function admSave(d){ await Store.saveHead({ id: ADM.id, hidden: true, name: '__admin', status: 'admin', created: d.created || Date.now() }); await Store.saveData(ADM.id, d); }
-  function invite(u){ return '[AOB9 사용 안내]\n' + u.name + '님, AOB9(어센틱 오션브랜치 9팀) 프로그램 OTP입니다.\n\nOTP: ' + u.code + '\n등록할 구글 계정: ' + u.email + '\n\n① 설치\n· 휴대폰: https://sicrics27-gif.github.io/mh-analyzer/ 를 크롬으로 열고 메뉴(⋮) → "홈 화면에 추가"\n· PC: https://github.com/' + Access.REPO + '/releases/latest 에서 MH-Analyzer-setup.exe 설치\n② 처음 열면 나오는 화면에 OTP를 넣고, 위 구글 계정으로 본인 확인\n③ 잠금 비밀번호를 만들고 시작'; }
+  function invite(u){ return '[AOB9 사용 안내]\n' + u.name + '님, AOB9(어센틱 오션브랜치 9팀) 프로그램 OTP입니다.\n\nOTP: ' + u.code + '\n등록할 구글 계정: ' + u.email + '\n\n① 앱 설치 (안드로이드 · 누르면 바로 다운로드)\nhttps://sicrics27-gif.github.io/mh-analyzer/apk.html\n→ 다운로드 알림 "열기" → "출처를 알 수 없는 앱"이 뜨면 설정에서 허용 → 설치\n· 아이폰도 위 주소를 사파리로 열면 설치 방법이 나옵니다\n· PC: https://github.com/' + Access.REPO + '/releases/latest 에서 MH-Analyzer-setup.exe 설치\n② 앱을 열고 위 OTP를 넣은 뒤, 위 구글 계정으로 본인 확인\n③ 잠금 비밀번호를 만들고 시작'; }
   async function openAdmin(){
     var d = await admLoad();
     if (!d || !d.token) { admSetup(d); return; }
