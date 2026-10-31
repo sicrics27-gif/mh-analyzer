@@ -55,7 +55,8 @@ function sugList(me, admin) {
   }).sort((a, b) => b.at - a.at);
 }
 
-function doPost(e) {
+function doPost(e) { try { return doPost_(e); } catch (err) { return out({ ok: false, error: '팀 서버 오류: ' + err }); } }
+function doPost_(e) {
   const b = JSON.parse(e.postData.contents || '{}');
   const lock = LockService.getScriptLock(); lock.waitLock(8000);
   try {
@@ -207,7 +208,8 @@ function mdRows(sh) { const v = sh.getDataRange().getValues(); v.shift(); return
 function mdList(me) {
   return mdRows(mdSheet()).map(o => { const likes = String(o.likes || '').split(',').filter(Boolean); return { id: String(o.id), at: +o.at, by: String(o.n), cat: String(o.cat), ins: String(o.ins), prod: String(o.prod), why: String(o.why || ''), tip: String(o.tip || ''), likes: likes.length, liked: !!(me && likes.indexOf(me) >= 0), mine: !!(me && o.c === me), pin: !!o.pin }; });
 }
-function doGet(e) {
+function doGet(e) { try { return doGet_(e); } catch (err) { return out({ ok: false, error: '팀 서버 오류: ' + err }); } }
+function doGet_(e) {
   const prm = e.parameter || {};
   if (prm.a === 'otpreq') { if (!isAdmin(prm.k)) return out({ ok: false, error: '관리자만' }); return out({ ok: true, rows: otpRows(otpSheet()).filter(o => o.st === 'new').map(o => ({ rid: String(o.rid), at: +o.at, n: String(o.n), m: String(o.m), dev: String(o.dev || ''), note: String(o.note || '') })) }); }
   if (prm.a === 'otpstat') { const o = otpRows(otpSheet()).find(x => String(x.rid) === String(prm.rid) && x.m === String(prm.m || '').toLowerCase()); if (!o) return out({ ok: false }); return out({ ok: true, st: String(o.st), code: o.st === 'done' ? String(o.code || '') : '' }); }
@@ -232,4 +234,12 @@ function doGet(e) {
   const t = JSON.parse(props().getProperty('w_' + week) || '{}');
   const rowsL = Object.keys(t).map(k => Object.assign({ me: k === me }, t[k]));
   return out({ ok: true, week: week, rows: rowsL, sug: true });
+}
+
+// ▶ 처음 한 번: 편집기 위 함수 칸에서 '권한설정' 을 고르고 ▶ 실행 → 권한 검토 → 허용 (시트·드라이브·인터넷 접속을 한 번에 허락)
+function 권한설정() {
+  UrlFetchApp.fetch(ACCESS + '?t=' + Date.now(), { muteHttpExceptions: true });
+  CacheService.getScriptCache().put('ping', '1', 60);
+  sheet(); otpSheet(); mdSheet(); shotFolder();
+  Logger.log('완료: 팀 서버 권한이 모두 허락됐습니다. 이제 배포 → 배포 관리 → 연필 → 새 버전 → 배포 를 해 주세요.');
 }
