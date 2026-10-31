@@ -22,6 +22,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+        </activity>
+
+        <!-- 공유·aob9app 주소는 여기서 받고 본 화면은 평범하게 열기 (최근 앱에서 "앱을 열지 못했어요" 방지) -->
+        <activity
+            android:name=".ShareActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
             <!-- 다른 앱에서 '공유 → AOB9' (보장분석 PDF·엑셀·zip) -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
