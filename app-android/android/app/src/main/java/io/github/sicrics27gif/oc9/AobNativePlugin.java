@@ -70,18 +70,29 @@ import java.util.Set;
 })
 public class AobNativePlugin extends Plugin {
     // 다른 웹페이지가 아무 앱이나 열지 못하도록 허용 목록만
-    private static final Set<String> APPS = new HashSet<>(Arrays.asList(
+    static final Set<String> APPS = new HashSet<>(Arrays.asList(
             "kr.co.meritzfire_sag", "kr.co.meritzfire.meritzoneplus", "kr.co.meritzfire_mof",
             "com.kbinsure.KBSmart", "com.skt.tmap.ku", "com.nhn.android.nmap", "net.daum.android.map",
             "com.kakao.talk", "com.google.android.apps.maps"));
 
     private SpeechRecognizer sr;
-    private final List<JSObject> shared = new ArrayList<>();
+    static final List<JSObject> shared = new ArrayList<>();
 
     @Override
     public void load() {
         Activity a = getActivity();
         if (a != null) readShare(a.getIntent());
+    }
+
+    /** 앱이 갑자기 꺼졌을 때 남긴 기록 (다음에 열면 화면이 받아서 오류 신고로 보냄) */
+    @PluginMethod
+    public void lastCrash(PluginCall call) {
+        JSObject r = new JSObject();
+        try {
+            File f = new File(getContext().getFilesDir(), "last_crash.txt");
+            if (f.exists()) { byte[] b = new byte[(int) Math.min(f.length(), 20000)]; try (java.io.FileInputStream in = new java.io.FileInputStream(f)) { int n = in.read(b); r.put("text", new String(b, 0, Math.max(0, n), "UTF-8")); } f.delete(); }
+        } catch (Exception ignored) { }
+        call.resolve(r);
     }
 
     @Override
@@ -275,7 +286,9 @@ public class AobNativePlugin extends Plugin {
     }
 
     // ---------- 다른 앱에서 공유한 파일 (보장분석 PDF 등) ----------
-    private boolean readShare(Intent it) {
+    private boolean readShare(Intent it) { return readShareStatic(getContext(), it); }
+
+    static boolean readShareStatic(Context ctx, Intent it) {
         if (it == null) return false;
         String act = it.getAction();
         if (!Intent.ACTION_SEND.equals(act) && !Intent.ACTION_SEND_MULTIPLE.equals(act)) return false;
@@ -288,7 +301,7 @@ public class AobNativePlugin extends Plugin {
             JSObject o = new JSObject(); o.put("name", "shared.txt"); o.put("mime", "text/plain"); o.put("text", tx.toString().substring(0, Math.min(tx.length(), 200000)));
             shared.add(o); it.setAction(Intent.ACTION_MAIN); return true;
         }
-        ContentResolver cr = getContext().getContentResolver();
+        ContentResolver cr = ctx.getContentResolver();
         for (Uri u : uris) {
             if (shared.size() >= 10) break;
             try (InputStream in = cr.openInputStream(u)) {
@@ -305,7 +318,7 @@ public class AobNativePlugin extends Plugin {
         return !shared.isEmpty();
     }
 
-    private String nameOf(ContentResolver cr, Uri u) {
+    static String nameOf(ContentResolver cr, Uri u) {
         try (Cursor c = cr.query(u, null, null, null, null)) {
             if (c != null && c.moveToFirst()) { int i = c.getColumnIndex(OpenableColumns.DISPLAY_NAME); if (i >= 0) return c.getString(i); }
         } catch (Exception ignored) { }
