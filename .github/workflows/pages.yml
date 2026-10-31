@@ -13,6 +13,8 @@ jobs:
       url: ${{ steps.d.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: 결과물이 원본(aob-src)과 같은지 확인 (pwa/index.html 직접 수정 방지)
+        run: python3 aob-src/build.py --check
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

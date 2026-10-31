@@ -1,0 +1,66 @@
+<div id="lock" class="lock"><div class="lbox" id="lbox"><p>불러오는 중…</p></div></div>
+<div class="shell" id="shell" hidden>
+  <aside class="side" aria-label="고객 목록">
+    <nav class="srail" aria-label="접힌 메뉴">
+      <button type="button" class="rl-brand" data-rail="open" title="메뉴 펼치기"><b>AOB9</b></button>
+      <button type="button" class="rl lvr" data-gm="open" title="내 성장 · 레벨과 퀘스트"><b id="rlLv">1</b></button>
+      <button type="button" class="rl pri" data-rail="new" title="신규 고객 등록"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><circle cx="10" cy="8" r="4"/><path d="M2 21c0-4 4-7 8-7s8 3 8 7zM19 8h2v3h3v2h-3v3h-2v-3h-3v-2h3z"/></svg></button>
+      <button type="button" class="rl" data-rail="search" title="고객 검색"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button>
+      <button type="button" class="rl" data-rail="list" title="고객 목록"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><i class="rlb" id="rlCnt"></i></button>
+      <button type="button" class="rl" data-pl="open" title="싯플랜"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></button>
+      <button type="button" class="rl gold" id="rlMap" title="지도 (고객 지도·내 동선)"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4z"/><path d="M9 4v13M15 6.5v13"/></svg></button>
+      <button type="button" class="rl" data-cm="open" title="고객관리 (영업 채널별)"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.5a3 3 0 0 1 0 6M18 14c2 .7 3.5 2.8 3.5 5.5"/></svg></button>
+      <button type="button" class="rl" data-act="contacts" title="연락 현황"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg></button>
+      <button type="button" class="rl" id="rlGear" title="설정 · 메뉴"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button><span class="rl-sp"></span>
+      <button type="button" class="rl" data-sync="now" title="구글 동기화 지금 맞추기"><i class="rl-dot" id="rlDot"></i></button>
+      <button type="button" class="rl" data-rail="lock" title="잠그기"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6 10V8a6 6 0 1 1 12 0v2h1v12H5V10zm2 0h8V8a4 4 0 1 0-8 0z"/></svg></button>
+      <button type="button" class="rl" data-rail="open" title="메뉴 펼치기 (오른쪽으로 끌어도 됩니다)">»</button>
+    </nav>
+    <div class="sbrand"><b class="wm"><span>AOB</span><i>9</i></b><small>어센틱 오션브랜치 9팀 · Authentic Ocean Branch</small><button type="button" class="sgear" id="gearBtn" title="설정 · 메뉴 (도구·백업·사용자 관리)" aria-label="설정"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button><button type="button" class="sfold" data-rail="close" title="메뉴 접기 (왼쪽으로 끌어도 됩니다)">«</button></div>
+    <button type="button" class="gchip" id="gchip" data-gm="open" hidden title="내 성장 · 레벨과 퀘스트"></button>
+    <button class="sbtn pri" id="newCust" type="button"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><circle cx="10" cy="8" r="4"/><path d="M2 21c0-4 4-7 8-7s8 3 8 7zM19 8h2v3h3v2h-3v3h-2v-3h-3v-2h3z"/></svg>신규 고객 등록</button>
+    <div class="sqw"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" class="sq" type="search" placeholder="이름 · 전화번호 · 메모 검색" autocomplete="off"></div>
+    <div class="sfilt" id="sfilt"><button id="fAll" type="button" data-f="all">전체</button><button id="fTodo" type="button" data-f="todo">할 일</button><button id="fSel" type="button" title="여러 명 골라서 채널·단계·할 일을 한 번에">선택</button><select id="fStage" aria-label="고객 단계로 거르기"><option value="">모든 단계</option><option value="lead">가망</option><option value="consult">상담 중</option><option value="contract">계약</option><option value="care">관리</option></select></div>
+    <div class="schan" id="schan" role="group" aria-label="영업 채널"></div>
+    <div class="snav">
+    <button type="button" class="sct" data-act="contacts" data-tb="contacts"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><b>연락</b><small>연락 현황 · 액션콜</small></button><button type="button" class="sct scm" data-cm="open" data-tb="chan"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.5a3 3 0 0 1 0 6M18 14c2 .7 3.5 2.8 3.5 5.5"/></svg><b>고객관리</b><small>영업 채널별</small></button>
+    <button type="button" class="sct spl" data-pl="open" data-tb="plan"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M7 14h4M7 17h7"/></svg><b>싯플랜</b><small>ACFP 목표</small></button>
+    <button type="button" class="sct sbr" id="snMap" data-tb="map"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4z"/><path d="M9 4v13M15 6.5v13"/></svg><b>지도</b><small>고객 지도·내 동선</small></button>
+    <button type="button" class="sct scl" id="snCall" data-tb="call"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="2.5" y="13" width="4.5" height="7" rx="1.5"/><rect x="17" y="13" width="4.5" height="7" rx="1.5"/></svg><b>액션콜</b><small>통화 연습 · 실시간</small></button>
+    
+    </div>
+    <div class="clist" id="clist"></div>
+    <div class="sclip" id="sclip" hidden></div>
+    <div class="ssync" id="ssync"></div>
+    <details class="smenu" id="smenu"><summary><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>도구 · 백업 · 사용자 관리</summary><div class="sfoot"><button type="button" class="dbm" data-act="dbImport">회사 DB 고객 가져오기</button><button type="button" class="dbm" data-cm="xlsx">📥 엑셀로 고객 가져오기</button><button type="button" class="dbm" data-act="ntSet">🔔 알림 설정</button><button id="teamSetBtn" type="button" class="adm-only">🏆 팀 서버</button><button id="arcBtn" type="button" data-arc="open">🏙️ 아케이드 화면 (AOB9 타워)</button><button id="connBtn" type="button">🔗 연결 · 권한</button><button id="keysBtn" type="button" data-hd="keys">⌨ 단축키</button><button id="regBtn" type="button">🏢 보험사 고객등록</button><button id="mapBtn" type="button">🗺️ 지역별 고객 (지도)</button><button id="callBtn" type="button">☎️ 액션콜 (통화 연습)</button><button id="mdBtn" type="button">⭐ MD’s PICK</button><button id="mdbBtn" type="button">📚 MD 백과</button><button id="sugBtn" type="button">💡 건의사항</button><button id="apkBtn" type="button">안드로이드 앱 (APK)</button><button id="bkOut" type="button">백업 내보내기</button><button id="bkIn" type="button">백업 불러오기</button><button id="sample" type="button">예시 고객 보기</button><button id="lockBtn" type="button">잠그기</button><button type="button" data-sync="signout">구글 계정 바꾸기</button><button type="button" id="themeBtn">밝은 화면으로</button><button id="admBtn" type="button" class="adm adm-only">사용자 관리</button><button type="button" class="adm nxm adm-only" data-nx="setup">NHC 본사 연결 · 보장분석부서</button></div></details>
+    <input type="file" id="bkFile" accept=".json,application/json" hidden>
+    <div class="slock"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6 10V8a6 6 0 1 1 12 0v2h1v12H5V10zm2 0h8V8a4 4 0 1 0-8 0z"/></svg>고객 정보는 잠금 비밀번호로 암호화 저장 <span id="verTag"></span></div>
+    <div id="memBan" class="membanner" hidden>저장소를 쓸 수 없는 화면입니다 · 창을 닫으면 사라집니다</div>
+  </aside>
+  <main class="main" id="main"></main>
+  <nav class="tabbar" id="tabbar" aria-label="주요 메뉴"><button type="button" data-act="contacts" data-tb="contacts"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><span>연락</span></button><button type="button" data-act="back" data-tb="list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><circle cx="9" cy="8" r="3.4"/><path d="M2.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5M16.5 4.6a3.2 3.2 0 0 1 0 6.2M18.5 14c2 .8 3.4 3 3.4 5.6"/></svg><span>고객</span></button><button type="button" data-pl="open" data-tb="plan"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M7 14h4M7 17h7"/></svg><span>싯플랜</span></button><button type="button" data-tb="map" id="tbMap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4z"/><path d="M9 4v13M15 6.5v13"/></svg><span>지도</span></button><button type="button" data-tb="more" id="tbMore"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg><span>더보기</span></button></nav>
+  <button type="button" class="fab" id="fab" aria-label="신규 고객 등록"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+</div>
+<template id="tplWelcome">
+  <div class="welcome">
+    <div class="wbrand"><span class="wm"><b>AOB</b><i>9</i></span><small>어센틱 오션브랜치 9팀 고객관리</small></div>
+    <h2>고객을 선택하거나 새로 등록하세요</h2>
+    <p>고객을 먼저 등록하고 파일을 첨부하면, 모든 상품의 고지 판정표를 한 번에 만들어 이 기기에 저장합니다.</p>
+    <div class="steps">
+      <div class="step"><i>1</i><b>고객 등록</b><span>이름 · 성별 · 생년월일 (생년월일은 PDF 비밀번호로 자동 사용)</span></div>
+      <div class="step"><i>2</i><b>파일 첨부</b><span>심평원 기본·세부·처방, 공단 요양급여·건강검진, 투약이력 엑셀</span></div>
+      <div class="step"><i>3</i><b>전 상품 판정</b><span>표준체 · 간편 3.N.5 · 실손 · 운전자 + 진료이력 · 미청구 보험금 · 건강 분석</span></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="go" type="button" data-act="new" style="padding:0 24px">신규 고객 등록</button><button class="btn lg" type="button" data-act="sample">예시 고객 보기</button></div>
+  </div>
+</template>
+<div class="toast" id="toast" role="status" hidden></div>
+<div class="modal" id="dlg" hidden><div class="mbox" id="dlgBox" role="dialog" aria-modal="true"></div></div>
+<div class="modal" id="modal" hidden>
+  <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <h4 id="mTitle">고지양식</h4>
+    <p>완치여부·치료내용·추가검사 항목은 세부진료 내역을 참고해 고객과 꼭 교차 확인하세요.</p>
+    <textarea id="mText" readonly></textarea>
+    <div class="mrow"><span id="mMsg" class="note" style="align-self:center;margin-right:auto"></span><button class="btn" id="mClose" type="button">닫기</button><button class="btn pri" id="mCopy" type="button">복사</button></div>
+  </div>
+</div>
